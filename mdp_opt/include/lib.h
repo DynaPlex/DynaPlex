@@ -2,7 +2,7 @@
 class LibraryComponent
 {
 public:
-	void write(mdp& mdp);
+	void write(DynaPlex::MDP mdp);
 
 	LibraryComponent();
 };

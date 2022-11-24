@@ -1,5 +1,6 @@
-class mdp
+#include "MdpInterface.h"
+
+namespace DynaPlex
 {
-public:
-	virtual void write() = 0;
-};
+	using MDP = std::shared_ptr<MdpInterface>;
+}

@@ -1,8 +1,11 @@
-﻿#include "SpecificMDP.h"
+﻿#include "MDP_Implementation.h"
+#include "utilities.h"
 
 int main()
 {
-	SpecificMDP mdp;
-	mdp.dowrite();
+	MDP_Implementation mdp_impl(2);
+	auto mdp = Dynaplex::Convert(mdp_impl);
+
+	mdp->write();
 	return 0;
 }

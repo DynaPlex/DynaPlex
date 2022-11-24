@@ -1,7 +1,7 @@
 #include "lib.h"
 
-void LibraryComponent::write(mdp& mdp)
+void LibraryComponent::write(DynaPlex::MDP mdp)
 {
-	mdp.write();
-	mdp.write();
+	mdp->write();
+	mdp->write();
 }
