@@ -10,12 +10,6 @@ namespace Dynaplex {
 	{
 		auto shared = std::make_shared<DynaPlex::MDPAdapter<t_MDP>>(mdp_impl);
 		auto converted = std::static_pointer_cast<DynaPlex::MdpInterface>(shared);
-		//if (*converted)
-		{
-			//some error
-		}
 		return converted;
 	}
-	
-
 }
