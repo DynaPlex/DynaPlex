@@ -1,4 +1,5 @@
-cmake_minimum_required (VERSION 3.8)
+
+cmake_minimum_required (VERSION 3.20)
 
 set(targetname mdp_interface)
 
@@ -11,9 +12,11 @@ add_library (${targetname} INTERFACE)
 
 target_sources(${targetname} INTERFACE ${headers})
 
-target_include_directories(${targetname} INTERFACE include)
+target_include_directories(${targetname} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set_target_properties(${targetname} PROPERTIES 
 CXX_STANDARD 20 
 LINKER_LANGUAGE CXX
 )
+include(GNUInstallDirs)
+

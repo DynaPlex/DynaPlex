@@ -1,6 +1,7 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿
+cmake_minimum_required (VERSION 3.20)
 
-set(targetname tests)
+set(targetname Example)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/*.h")

@@ -1,10 +1,10 @@
-cmake_minimum_required (VERSION 3.8)
+
+cmake_minimum_required (VERSION 3.20)
 
 set(targetname mdp_opt)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/*.h")
-
 
 add_library (${targetname} STATIC)
 
@@ -18,3 +18,10 @@ LINKER_LANGUAGE CXX
 )
 
 target_link_libraries(${targetname} PUBLIC mdp_interface)
+
+if(MSVC)
+  target_compile_options(${targetname} PRIVATE /W4)
+else()
+  target_compile_options(${targetname} PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+ 
