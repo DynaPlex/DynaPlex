@@ -19,6 +19,14 @@ LINKER_LANGUAGE CXX
 
 target_link_libraries(${targetname} PUBLIC mdp_interface)
 
+#target_include_directories(${targetname} 
+#PUBLIC 
+#$<INSTALL_INTERFACE:include>
+#$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#)
+
+
+
 if(MSVC)
   target_compile_options(${targetname} PRIVATE /W4)
 else()

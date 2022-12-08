@@ -18,5 +18,10 @@ set_target_properties(${targetname} PROPERTIES
 CXX_STANDARD 20 
 LINKER_LANGUAGE CXX
 )
-include(GNUInstallDirs)
+
+target_include_directories(${targetname} 
+INTERFACE 
+$<INSTALL_INTERFACE:include>
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 
