@@ -1,6 +1,6 @@
 #pragma once
-#include "MDPAdapter.h"
-#include "MdpInterface.h"
+#include "mdpadapter.h"
+#include "mdpinterface.h"
 #include "mdp.h"
 
 namespace DynaPlex {

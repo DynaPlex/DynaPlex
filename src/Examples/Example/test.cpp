@@ -1,16 +1,15 @@
-﻿#include "MDP_Implementation.h"
+﻿#include "mdp_implementation.h"
 #include "dynaplex/utilities.h"
-#include "dynaplex/NNTrainer.h"
-#include "dynaplex/LibraryComponent.h"
+#include "dynaplex/neuralnetworktrainer.h"
+#include "dynaplex/librarycomponent.h"
 #include <iostream>
 int main()
 {
 	MDP_Implementation mdp_impl(2);
 
-	//auto mdp2= Dynaplex::Convert( )
 	auto mdp = DynaPlex::Convert(mdp_impl);
 
-	DynaPlex::NNTrainer trainer(mdp);
+	DynaPlex::NeuralNetworkTrainer trainer(mdp);
 	DynaPlex::LibraryComponent comp{mdp};
 
 	trainer.writeidentifier();

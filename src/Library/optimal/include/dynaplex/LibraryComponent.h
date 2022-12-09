@@ -1,5 +1,5 @@
 #pragma once
-#include "dynaplex/MDP.h"
+#include "dynaplex/mdp.h"
 
 namespace DynaPlex {
 	class LibraryComponent

@@ -1,4 +1,4 @@
-#include "dynaplex/LibraryComponent.h"
+#include "dynaplex/librarycomponent.h"
 #include <iostream>
 
 namespace DynaPlex {

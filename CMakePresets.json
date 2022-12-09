@@ -5,8 +5,7 @@
       "name": "windows-base",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "cl.exe"
       },
@@ -17,24 +16,40 @@
       }
     },
     {
-      "name": "x64-debug",
-      "hidden": true,
-      "inherits": "windows-base",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
+      "name": "snellius-base",
+      "displayName": "GCC",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_gurobi": false,
+        "CMAKE_PREFIX_PATH": "~/anaconda3/envs/py37_torch/lib/python3.7/site-packages/torch/share/cmake/Torch;~/anaconda3/envs/py37_torch/lib/python3.7/site-packages/pybind11/share/cmake;~/anaconda3/envs/py37_torch/bin/python"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
       }
     },
-    {
-      "name": "x64-release",
-      "hidden": true,
-      "inherits": "x64-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+      {
+        "name": "x64-debug",
+        "hidden": true,
+        "inherits": "windows-base",
+        "architecture": {
+          "value": "x64",
+          "strategy": "external"
+        },
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug"
+        }
+      },
+      {
+        "name": "x64-release",
+        "hidden": true,
+        "inherits": "x64-debug",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release"
+        }
       }
-    }
-  ]
+    ]
 }

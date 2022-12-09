@@ -1,8 +1,8 @@
 #pragma once
-#include "dynaplex/MDP.h"
+#include "dynaplex/mdp.h"
 
 namespace DynaPlex {
-	class NNTrainer
+	class NeuralNetworkTrainer
 	{
 
 		DynaPlex::MDP mdp;
@@ -10,6 +10,6 @@ namespace DynaPlex {
 		void writeidentifier();
 
 
-		NNTrainer(DynaPlex::MDP mdp);
+		NeuralNetworkTrainer(DynaPlex::MDP mdp);
 	};
 }//namespace DynaPlex

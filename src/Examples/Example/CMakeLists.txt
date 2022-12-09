@@ -7,7 +7,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/*.h")
 
 
-add_executable (DynaPlex_${targetname} ${sources} ${headers})
+add_executable (DynaPlex_${targetname} ${sources})
 
 
 set_target_properties(DynaPlex_${targetname} PROPERTIES 
@@ -18,7 +18,6 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 
 target_include_directories(DynaPlex_${targetname} PUBLIC include)
 
-set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
 
 
 

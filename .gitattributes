@@ -4,6 +4,13 @@
 * text=auto
 
 ###############################################################################
+# Ensure that .scr and .job files always have linux line endings
+###############################################################################
+*.scr text eol=lf
+*.job text eol=lf
+
+
+###############################################################################
 # Set default behavior for command prompt diff.
 #
 # This is need for earlier builds of msysgit that does not have it on by
