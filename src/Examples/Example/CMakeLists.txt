@@ -23,6 +23,5 @@ set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
 
 
 target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::MDP_Interfaces)
-
 target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::Optimal)
 target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::NeuralNetworkTrainer)

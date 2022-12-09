@@ -1,4 +1,4 @@
-#include "dynaplex2/NNTrainer.h"
+#include "dynaplex/NNTrainer.h"
 #include <iostream>
 //#include <torch/torch.h>
 

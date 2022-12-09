@@ -1,7 +1,7 @@
 ﻿#include "MDP_Implementation.h"
 #include "dynaplex/utilities.h"
-#include "dynaplex2/NNTrainer.h"
-#include "dynaplex/LibraryComponent.h"
+#include "dynaplex/NNTrainer.h"
+//#include "dynaplex/LibraryComponent.h"
 #include <iostream>
 int main()
 {
@@ -11,8 +11,8 @@ int main()
 	auto mdp = DynaPlex::Convert(mdp_impl);
 
 	DynaPlex::NNTrainer trainer(mdp);
-	DynaPlex::LibraryComponent comp{mdp};
+	//DynaPlex::LibraryComponent comp{mdp};
 
-	comp.writeidentifier();
+	trainer.writeidentifier();
 	return 0;
 }

@@ -15,8 +15,6 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 	OUTPUT_NAME DynaPlex${targetname}
 	EXPORT_NAME ${targetname}
 )
-
-
 target_sources(DynaPlex_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
 
 
@@ -26,10 +24,7 @@ PUBLIC
 $<INSTALL_INTERFACE:include>
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-
-
 target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::MDP_Interfaces)
-
 
 if(MSVC)
   target_compile_options(DynaPlex_${targetname} PRIVATE /W4)
