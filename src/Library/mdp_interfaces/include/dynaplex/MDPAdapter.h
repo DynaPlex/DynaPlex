@@ -4,7 +4,7 @@
 namespace DynaPlex
 {
 	template<class t_MDP>
-	class MDPAdapter : public MdpInterface
+	class MDPAdapter : public MDPInterface
 	{
 
 	public:
@@ -13,11 +13,11 @@ namespace DynaPlex
 		{
 
 		}
-		void write() override
+		std::string Identifier() override
 		{
-			model.write();
+			return model.Identifier();
 		}
-
+		
 		t_MDP model;
 	};
-}
+}//namespace DynaPlex

@@ -1,14 +1,29 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-#
-cmake_minimum_required (VERSION 3.20)
+﻿#PREAMBLE
+cmake_minimum_required (VERSION 3.21)
+project ("DynaPlex" CXX)
 
-project ("Library" CXX)
+# PROJECT WIDE SETUP
 
-#needed to succesfully make a dll on windows. Currently N/A
-#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+set(CMAKE_CXX_EXTENSIONS NO)
 
-add_subdirectory("DynaPlex")
-add_subdirectory("Examples")
+# DEPENDENCIES
+include(cmake/dependencies.cmake)
+
+# SETTINGS
+include(dynaplex_settings)
+# MAIN TARGETS
+add_subdirectory(src/Library)
+#include examples unless this project is included as part of bigger project.
+if(dynaplex_as_standalone)
+add_subdirectory(src/Examples)
+endif()
+
+
+
+
+
 
 

@@ -1,0 +1,27 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "dynaplex-settings-base",
+      "hidden": true,
+      "cacheVariables": {
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_gurobi": false
+      }
+    },
+    {
+      "name": "DP-windows-release",
+      "inherits": [ "x64-release", "dynaplex-settings-base" ],
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "c:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake"
+      }
+    },
+    {
+      "name": "DP-windows-debug",
+      "inherits": [ "x64-debug", "dynaplex-settings-base" ],
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake"
+      }
+    }
+  ]
+}

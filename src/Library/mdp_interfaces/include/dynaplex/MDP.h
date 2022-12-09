@@ -2,5 +2,5 @@
 #include <memory>
 namespace DynaPlex
 {
-	using MDP = std::shared_ptr<MdpInterface>;
-}
+	using MDP = std::shared_ptr<MDPInterface>;
+}//namespace DynaPlex

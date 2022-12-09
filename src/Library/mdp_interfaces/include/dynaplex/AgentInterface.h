@@ -6,4 +6,4 @@ namespace DynaPlex
 	public:
 		virtual void write() = 0;
 	};
-}
+}//namespace DynaPlex

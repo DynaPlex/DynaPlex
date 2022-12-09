@@ -1,9 +1,9 @@
-
+#include <string>
 class MDP_Implementation
 {
 	int j;
 public:
-	void write();
+	std::string Identifier();
 
 	MDP_Implementation(int j);
 };
