@@ -9,7 +9,6 @@ add_library (DynaPlex::${targetname} ALIAS DynaPlex_${targetname})
 target_sources(DynaPlex_${targetname} INTERFACE ${headers})
 
 
-
 target_include_directories(DynaPlex_${targetname}
 INTERFACE 
 $<INSTALL_INTERFACE:include>

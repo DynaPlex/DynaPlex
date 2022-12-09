@@ -1,3 +1,4 @@
+#pragma once
 #include "MdpInterface.h"
 #include <memory>
 namespace DynaPlex

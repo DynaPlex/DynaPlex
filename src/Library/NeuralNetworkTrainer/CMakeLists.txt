@@ -33,16 +33,16 @@ else()
 endif()
  
 #Logic for including PyTorch Privately
-#if(Torch_FOUND)
-#   target_compile_definitions(DynaPlex_${targetname} PRIVATE Torch_available=0)
-#   target_link_libraries(DynaPlex_${targetname} PRIVATE "${TORCH_LIBRARIES}")
-# if (MSVC)
-#  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-#  add_custom_command(TARGET DynaPlex_${targetname}
-#                     POST_BUILD
-#                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#                     ${TORCH_DLLS}
-#                     $<TARGET_FILE_DIR:DynaPlex_${targetname}>)
- # set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4819 /wd4624")
-#endif (MSVC)
-#endif()
+if(Torch_FOUND)
+   target_compile_definitions(DynaPlex_${targetname} PRIVATE Torch_available=0)
+   target_link_libraries(DynaPlex_${targetname} PRIVATE "${TORCH_LIBRARIES}")
+ if (MSVC)
+  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+  add_custom_command(TARGET DynaPlex_${targetname}
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                     ${TORCH_DLLS}
+                     $<TARGET_FILE_DIR:DynaPlex_${targetname}>)
+# set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4819 /wd4624")
+endif (MSVC)
+endif()
