@@ -1,14 +1,17 @@
-#include "dynaplex/LibraryComponent.h"
+#include "dynaplex2/NNTrainer.h"
 #include <iostream>
+//#include <torch/torch.h>
 
 
 namespace DynaPlex {
-	void LibraryComponent::writeidentifier()
+	void NNTrainer::writeidentifier()
 	{
+	//	torch::Tensor eye = torch::eye(2);
+		//std::cout << eye << std::endl;
 		std::cout << mdp->Identifier() << std::endl;
 	}
 
-	LibraryComponent::LibraryComponent(DynaPlex::MDP mdp) :
+	NNTrainer::NNTrainer(DynaPlex::MDP mdp) :
 		mdp{ mdp }
 	{}
 }

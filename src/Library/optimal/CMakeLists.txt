@@ -17,7 +17,9 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 )
 
 
-target_sources(DynaPlex_${targetname} PRIVATE ${headers} ${private_headers} ${sources})
+target_sources(DynaPlex_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
+
+
 
 target_include_directories(DynaPlex_${targetname} 
 PUBLIC 

@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 3.21)
 set(targetname NeuralNetworkTrainer)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
-file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
+file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex2/*.h")
 file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 
 
@@ -15,9 +15,9 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 	OUTPUT_NAME DynaPlex${targetname}
 	EXPORT_NAME ${targetname}
 )
+target_sources(DynaPlex_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
 
 
-target_sources(DynaPlex_${targetname} PRIVATE ${headers} ${private_headers} ${sources})
 
 target_include_directories(DynaPlex_${targetname} 
 PUBLIC 
@@ -32,3 +32,17 @@ else()
   target_compile_options(DynaPlex_${targetname} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
  
+#Logic for including PyTorch Privately
+#if(Torch_FOUND)
+#   target_compile_definitions(DynaPlex_${targetname} PRIVATE Torch_available=0)
+#   target_link_libraries(DynaPlex_${targetname} PRIVATE "${TORCH_LIBRARIES}")
+# if (MSVC)
+#  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+#  add_custom_command(TARGET DynaPlex_${targetname}
+#                     POST_BUILD
+#                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#                     ${TORCH_DLLS}
+#                     $<TARGET_FILE_DIR:DynaPlex_${targetname}>)
+ # set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4819 /wd4624")
+#endif (MSVC)
+#endif()
