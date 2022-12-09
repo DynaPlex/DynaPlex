@@ -108,12 +108,12 @@
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 2,
-			"id" : "DynaPlex_Optimal::@65c92978360f439f9c12"
-		},
-		{
 			"backtrace" : 3,
 			"id" : "DynaPlex_NeuralNetworkTrainer::@4e957255f580076a667a"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "DynaPlex_Optimal::@65c92978360f439f9c12"
 		}
 	],
 	"id" : "DynaPlex_Example::@57ba5238743b6ba648f4",
