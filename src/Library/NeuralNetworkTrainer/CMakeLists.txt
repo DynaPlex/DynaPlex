@@ -22,9 +22,6 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 )
 target_sources(DynaPlex_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
 
-set_target_properties(DynaPlex_${targetname} PROPERTIES
-	CXX_STANDARD 17
-)
 
 target_include_directories(DynaPlex_${targetname} 
 PUBLIC 
