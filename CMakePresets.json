@@ -16,7 +16,7 @@
       }
     },
     {
-      "name": "snellius-base",
+      "name": "snellius",
       "displayName": "GCC",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/${presetName}",
@@ -24,7 +24,8 @@
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_gurobi": false,
         //"CMAKE_PREFIX_PATH": "~/anaconda3/envs/py37_torch/lib/python3.7/site-packages/torch/share/cmake/Torch;~/anaconda3/envs/py37_torch/lib/python3.7/site-packages/pybind11/share/cmake;~/anaconda3/envs/py37_torch/bin/python",
-        "CMAKE_PREFIX_PATH": "/home/willemvj/libtorch/share/cmake",
+        //"CMAKE_PREFIX_PATH": "/home/willemvj/libtorch/share/cmake",
+        "CMAKE_PREFIX_PATH": "/home/willemvj/libtorchcu117/share/cmake",
         "CMAKE_BUILD_TYPE": "Release"
       },
       "condition": {

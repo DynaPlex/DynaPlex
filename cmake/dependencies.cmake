@@ -17,5 +17,5 @@ else()
  endif()
 
 else()
- message(STATUS "Torch DISABLED : you will not be able to use neural networks. ") 
+ message(STATUS "pytorch DISABLED : you will not be able to use neural networks. ") 
 endif()

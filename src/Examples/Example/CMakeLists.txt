@@ -8,6 +8,11 @@ file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/*.h")
 
 
 add_executable (DynaPlex_${targetname} ${sources})
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_EXTENSIONS off)
+
+
 
 
 set_target_properties(DynaPlex_${targetname} PROPERTIES 
@@ -17,8 +22,6 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 
 
 target_include_directories(DynaPlex_${targetname} PUBLIC include)
-
-
 
 
 target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::MDP_Interfaces)

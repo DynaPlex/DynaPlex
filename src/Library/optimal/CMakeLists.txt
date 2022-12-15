@@ -11,6 +11,10 @@ file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 add_library (DynaPlex_${targetname} SHARED)
 add_library (DynaPlex::${targetname} ALIAS DynaPlex_${targetname})
 
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_EXTENSIONS off)
+
 set_target_properties(DynaPlex_${targetname} PROPERTIES 
 	OUTPUT_NAME DynaPlex${targetname}
 	EXPORT_NAME ${targetname}

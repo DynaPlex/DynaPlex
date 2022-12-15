@@ -8,8 +8,13 @@ file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
 file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 
 
+
 add_library (DynaPlex_${targetname} SHARED)
 add_library (DynaPlex::${targetname} ALIAS DynaPlex_${targetname})
+
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_EXTENSIONS off)
 
 set_target_properties(DynaPlex_${targetname} PROPERTIES 
 	OUTPUT_NAME DynaPlex${targetname}
@@ -17,7 +22,9 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 )
 target_sources(DynaPlex_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
 
-
+set_target_properties(DynaPlex_${targetname} PROPERTIES
+	CXX_STANDARD 17
+)
 
 target_include_directories(DynaPlex_${targetname} 
 PUBLIC 
@@ -34,7 +41,7 @@ endif()
  
 #Logic for including PyTorch Privately
 if(Torch_FOUND)
-   target_compile_definitions(DynaPlex_${targetname} PRIVATE Torch_available=0)
+   target_compile_definitions(DynaPlex_${targetname} PRIVATE Torch_available=1)
    target_link_libraries(DynaPlex_${targetname} PRIVATE "${TORCH_LIBRARIES}")
  if (MSVC)
   file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")

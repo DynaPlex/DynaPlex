@@ -134,8 +134,8 @@ build src\Library\MDP_Interfaces\rebuild_cache: phony src\Library\MDP_Interfaces
 build cmake_object_order_depends_target_DynaPlex_NeuralNetworkTrainer: phony || src\Library\NeuralNetworkTrainer\CMakeFiles\DynaPlex_NeuralNetworkTrainer.dir
 
 build src\Library\NeuralNetworkTrainer\CMakeFiles\DynaPlex_NeuralNetworkTrainer.dir\neuralnetworktrainer.cpp.obj: CXX_COMPILER__DynaPlex_NeuralNetworkTrainer_Debug C$:\Users\wjaarsveld\source\repos\LibraryTests\src\Library\NeuralNetworkTrainer\neuralnetworktrainer.cpp || cmake_object_order_depends_target_DynaPlex_NeuralNetworkTrainer
-  DEFINES = -DDynaPlex_NeuralNetworkTrainer_EXPORTS -DTorch_available=0 -DUSE_C10D_GLOO -DUSE_DISTRIBUTED
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /W4 /Z7 /EHsc /DNOMINMAX /wd4267 /wd4251 /wd4522 /wd4838 /wd4305 /wd4244 /wd4190 /wd4101 /wd4996 /wd4275 /bigobj -std:c++20
+  DEFINES = -DDynaPlex_NeuralNetworkTrainer_EXPORTS -DTorch_available=1 -DUSE_C10D_GLOO -DUSE_DISTRIBUTED
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /W4 /Z7 /EHsc /DNOMINMAX /wd4267 /wd4251 /wd4522 /wd4838 /wd4305 /wd4244 /wd4190 /wd4101 /wd4996 /wd4275 /bigobj -std:c++17
   INCLUDES = -IC:\Users\wjaarsveld\source\repos\LibraryTests\src\Library\NeuralNetworkTrainer\include -IC:\Users\wjaarsveld\source\repos\LibraryTests\src\Library\MDP_Interfaces\include -external:I C:\libtorch-win-shared-with-deps-debug-1.13.0+cpu\libtorch\include -external:I C:\libtorch-win-shared-with-deps-debug-1.13.0+cpu\libtorch\include\torch\csrc\api\include -external:W0
   OBJECT_DIR = src\Library\NeuralNetworkTrainer\CMakeFiles\DynaPlex_NeuralNetworkTrainer.dir
   OBJECT_FILE_DIR = src\Library\NeuralNetworkTrainer\CMakeFiles\DynaPlex_NeuralNetworkTrainer.dir
