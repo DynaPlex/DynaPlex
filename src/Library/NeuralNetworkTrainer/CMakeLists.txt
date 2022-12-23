@@ -12,7 +12,8 @@ file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 add_library (DynaPlex_${targetname} SHARED)
 add_library (DynaPlex::${targetname} ALIAS DynaPlex_${targetname})
 
-set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
+##use CC_17 to avoid issues with PyTorch.
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 17)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_EXTENSIONS off)
 
@@ -30,11 +31,14 @@ $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::MDP_Interfaces)
 
-if(MSVC)
-  target_compile_options(DynaPlex_${targetname} PRIVATE /W4)
-else()
-  target_compile_options(DynaPlex_${targetname} PRIVATE -Wall -Wextra -Wpedantic)
+if(${dynaplex_all_warnings})
+target_compile_options(DynaPlex_${targetname} PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W4>
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
 endif()
+
+
  
 #Logic for including PyTorch Privately
 if(Torch_FOUND)
@@ -47,6 +51,7 @@ if(Torch_FOUND)
                      COMMAND ${CMAKE_COMMAND} -E copy_if_different
                      ${TORCH_DLLS}
                      $<TARGET_FILE_DIR:DynaPlex_${targetname}>)
-# set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4819 /wd4624")
+set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4819 /wd4624")
+set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4702")
 endif (MSVC)
 endif()
