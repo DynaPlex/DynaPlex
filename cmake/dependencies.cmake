@@ -10,7 +10,7 @@ message("CMakeUserPresets detected in ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPrese
 else()
 message("CMakeUserPresets not detected in ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json")
 message("Copying default userpresets")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/resources/CMakeUserPresets.json.in" ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json)
+#configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/resources/CMakeUserPresets.json.in" ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json)
 endif()
 
 
