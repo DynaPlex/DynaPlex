@@ -5,11 +5,15 @@ project ("DynaPlex" CXX)
 # PROJECT WIDE SETUP
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
+
 # DEPENDENCIES
 include(cmake/dependencies.cmake)
 
+
 # SETTINGS
 include(dynaplex_settings)
+
 # MAIN TARGETS
 add_subdirectory(src/Library)
 #include examples unless this project is included as part of bigger project.

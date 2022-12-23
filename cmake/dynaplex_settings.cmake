@@ -1,5 +1,6 @@
 set(dynaplex_as_standalone ${PROJECT_IS_TOP_LEVEL})
 
+
 #for succesfully linking DLL on windows.
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
@@ -14,3 +15,5 @@ endif()
 if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${stageDir}/${CMAKE_INSTALL_LIBDIR})
 endif()
+
+

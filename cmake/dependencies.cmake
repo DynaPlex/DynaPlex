@@ -1,7 +1,22 @@
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json)
+set(dynaplex_CMakeUserPresets_exists on)
+else()
+set(dynaplex_CMakeUserPresets_exists off)
+endif()
+
+if(${dynaplex_CMakeUserPresets_exists})
+message("CMakeUserPresets detected in ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json" )
+else()
+message("CMakeUserPresets not detected in ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json")
+message("Copying default userpresets")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/resources/CMakeUserPresets.json.in" ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json)
+endif()
+
+
 message("inclusion switches (CMakeUserPresets.json):")
 message("dynaplex_enable_pytorch: ${dynaplex_enable_pytorch}")
 message("dynaplex_enable_gurobi: ${dynaplex_enable_gurobi}")
-
 
 if(${dynaplex_enable_pytorch})	
 find_package(Torch QUIET)
