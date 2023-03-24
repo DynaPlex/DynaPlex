@@ -7,7 +7,9 @@ int main()
 {
 	MDP_Implementation mdp_impl(2);
 	MDP_Implementation::State state{ 4 };
-	//auto list = mdp_impl.AllowedActions(state);
+
+
+	auto list = mdp_impl.AllowedActions(state);
 
 	//for (size_t a : list)
 	//{

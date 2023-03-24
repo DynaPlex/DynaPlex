@@ -6,7 +6,7 @@
       "inherits": [ "x64-release" ],
       "cacheVariables": {
         //Location of PyTorch release library:
-        "CMAKE_PREFIX_PATH": "c:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
+        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_gurobi": false,
         "dynaplex_all_warnings": true
@@ -17,7 +17,7 @@
       "inherits": [ "x64-debug" ],
       "cacheVariables": {
         //Location of PyTorch debug library:
-        "CMAKE_PREFIX_PATH": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake",
+        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_gurobi": false,
         "dynaplex_all_warnings": true
@@ -28,7 +28,7 @@
       "inherits": [ "snellius-base" ],
       "cacheVariables": {
         //Location of PyTorch library on snellius:
-        "CMAKE_PREFIX_PATH": "/home/willemvj/libtorch/share/cmake",
+        "dynaplex_pytorch_path": "",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_gurobi": false,
         "dynaplex_all_warnings": true
@@ -39,7 +39,7 @@
       "inherits": [ "snellius-base" ],
       "cacheVariables": {
         //Location of PyTorch library with GPU support on snellius:
-        "CMAKE_PREFIX_PATH": "/home/willemvj/libtorchcu117/share/cmake",
+        "dynaplex_pytorch_path": "",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_gurobi": false,
         "dynaplex_all_warnings": true

@@ -17,7 +17,7 @@ include(dynaplex_settings)
 # MAIN TARGETS
 add_subdirectory(src/Library)
 #include examples unless this project is included as part of bigger project.
-if(dynaplex_as_standalone)
+if(${PROJECT_IS_TOP_LEVEL})
 add_subdirectory(src/Examples)
 endif()
 
