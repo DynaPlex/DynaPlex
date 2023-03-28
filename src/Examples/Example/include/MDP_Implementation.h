@@ -44,6 +44,11 @@ public:
 	int j;
 public:
 
+	void Inc(State& state)
+	{
+		state.content++;
+	}
+
 	bool IsAllowed(State& state, size_t action)
 	{
 		return action % (state.content) == 1;
@@ -51,7 +56,7 @@ public:
 
 	size_t NumAllowedActions()
 	{
-		return 200;
+		return 50;
 	}
 
 	ActionTraverser AllowedActions(State& state)

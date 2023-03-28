@@ -31,7 +31,4 @@ endif()
 
 target_include_directories(DynaPlex_${targetname} PUBLIC include)
 
-
-target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::MDP_Interfaces)
-target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::Optimal)
-target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::NeuralNetworkTrainer)
+target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::AllLibs)

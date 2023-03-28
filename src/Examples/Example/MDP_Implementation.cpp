@@ -24,7 +24,6 @@ MDP_Implementation::Action MDP_Implementation::ActionTraverser::begin()
 	}
 	throw;
 }
-
 MDP_Implementation::Action MDP_Implementation::ActionTraverser::end()
 {
 	return Action(this,maxvalue);

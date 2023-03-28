@@ -1,7 +1,7 @@
 #pragma once
 namespace DynaPlex
 {
-	class MdpInterface
+	class AgentInterface
 	{
 	public:
 		virtual void write() = 0;

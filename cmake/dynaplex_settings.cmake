@@ -1,6 +1,8 @@
 
 #for succesfully linking DLL on windows.
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+#for succesfully linking on linux to desired paths. 
+set(CMAKE_SKIP_RPATH TRUE)
 
 set(stageDir ${CMAKE_CURRENT_BINARY_DIR})
 include(GNUInstallDirs)
