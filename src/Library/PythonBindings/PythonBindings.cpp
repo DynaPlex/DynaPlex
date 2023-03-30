@@ -9,7 +9,7 @@ int add(int i, int j) {
 
 enum class Type{py_str,py_int,py_float};
 
-std::variant<double, long long, std::string> processhandle(py::handle& handle)
+std::variant< std::string, long long, double > processhandle(py::handle& handle)
 {
     std::unordered_map<std::string, Type> map{
         {"<class 'str'>",Type::py_str},
@@ -72,6 +72,6 @@ void process(py::dict dict)
 PYBIND11_MODULE(DynaPlexLib, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
-    m.def("add", &add, "A function that adds two numbers");
+    m.def("DynaPlex.add", &add, "A function that adds two numbers");
     m.def("process", &process, "Processes a dictionary");
 }

@@ -37,4 +37,9 @@ target_compile_options(DynaPlex_${targetname} PRIVATE
 )
 endif()
 
- 
+MESSAGE(${PROJECT_BINARY_DIR})
+
+# add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
+ ##   COMMAND ${CMAKE_COMMAND} -E copy_directory
+ #       "${PROJECT_BINARY_DIR}/lib"
+ #       $<TARGET_FILE_DIR:MyTest>)
