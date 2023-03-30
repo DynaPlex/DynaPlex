@@ -1,4 +1,4 @@
-﻿#include "mdp_implementation.h"
+﻿	#include "mdp_implementation.h"
 #include "dynaplex/utilities.h"
 #include "dynaplex/neuralnetworktrainer.h"
 #include "dynaplex/librarycomponent.h"
@@ -16,7 +16,7 @@ int main()
 		std::cout << a << std::endl;
 	}
 	std::string s;
-	std::cin >> s;
+	//std::cin >> s;
 
 	return 0;
 	auto mdp = DynaPlex::Convert(mdp_impl);

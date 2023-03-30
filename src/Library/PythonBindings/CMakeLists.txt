@@ -30,7 +30,7 @@ target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::AllLibs)
 
 
 
-if(${dynaplex_all_warnings})
+if(false)
 target_compile_options(DynaPlex_${targetname} PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
