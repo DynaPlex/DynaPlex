@@ -4,6 +4,8 @@
 add_subdirectory("MDP_Interfaces")
 add_subdirectory("NeuralNetworkTrainer")
 add_subdirectory("Optimal")
+add_subdirectory("Utilities")
+
 add_subdirectory("AllComponents")
 
 if(${dynaplex_enable_pythonbindings})
