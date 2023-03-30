@@ -24,7 +24,6 @@ endif()
 #glob directories
 
 #https://www.reddit.com/r/cpp_questions/comments/xnu9e0/cmake_how_to_glob_or_add_all_subdirectories/
-
 #maybe add configure_depends?
 #file(GLOB V_GLOB LIST_DIRECTORIES true "*")
 #foreach(item ${V_GLOB})

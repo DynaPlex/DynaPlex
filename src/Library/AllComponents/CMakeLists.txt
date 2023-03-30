@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.21)
 
 #bundles all the libraries for easy target link libraries. 
-set(targetname AllLibs)
+set(targetname AllComponents)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
@@ -31,7 +31,6 @@ $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::MDP_Interfaces)
 target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::NeuralNetworkTrainer)
 target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::Optimal)
-
 
 if(${dynaplex_all_warnings})
 target_compile_options(DynaPlex_${targetname} PRIVATE

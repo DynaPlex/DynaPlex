@@ -1,6 +1,10 @@
 #include <pybind11/pybind11.h>
 #include <iostream>
 #include <variant>
+#include <dynaplex/neuralnetworktrainer.h>
+#include <dynaplex/convert.h>
+#include <mdp_implementation.h>
+
 namespace py = pybind11;
 
 int add(int i, int j) {
@@ -61,6 +65,14 @@ std::variant< std::string, long long, double > processhandle(py::handle& handle)
 
 void process(py::dict dict)
 {
+    MDP_Implementation impl(1);
+
+    auto mdp = DynaPlex::Convert(impl);
+
+
+     DynaPlex::NeuralNetworkTrainer trainer{ mdp };
+    trainer.writeidentifier();
+    return;
     for (auto kv : dict)
     {
         processhandle(kv.first);
@@ -69,7 +81,7 @@ void process(py::dict dict)
 }
 
 
-PYBIND11_MODULE(DynaPlexLib, m) {
+PYBIND11_MODULE(DynaPlex, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
     m.def("DynaPlex.add", &add, "A function that adds two numbers");

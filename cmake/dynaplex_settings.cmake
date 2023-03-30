@@ -15,4 +15,10 @@ endif()
 if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${stageDir}/${CMAKE_INSTALL_LIBDIR})
 endif()
-
+#Modified because of loading issues of .pyd - to have all files in one location
+#if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${stageDir}/${CMAKE_INSTALL_BINDIR})
+#endif()
+#if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${stageDir}/${CMAKE_INSTALL_BINDIR})
+#endif()
