@@ -7,22 +7,31 @@
 
 namespace DynaPlex {
 
-	using Map = std::map<std::string, Params::DataType>;
-
+	using Map = std::map<std::string, size_t>;
+	using TupleVec = std::vector < std::tuple<std::string, Params::DataType>>;
 	
 
 	struct Params::Impl {
 		Map map;
+		TupleVec vec;
+
+	    template <class T>
+		void GenericAdd(std::string& s, T& item)
+		{
+			vec.emplace_back(s, item);
+			map[s] = vec.size();
+		}
+
 
 		template <class T>
-		static void Process(T& type, int indent)
+		static void Print(T& type, int indent)
 		{
-			auto lambda = [indent](auto& arg) { Params::Impl::Process(arg, indent + 1);	};
+			auto lambda = [indent](auto& arg) { Params::Impl::Print(arg, indent + 1);	};
 
 			if constexpr (std::is_same_v<T, DynaPlex::Params>)
 			{
 				bool first = true;
-				for (auto& [key, val] : type.pImpl->map)
+				for (auto& [key, val] : type.pImpl->vec)
 				{			
 					std::cout << std::endl;
 			
@@ -47,9 +56,20 @@ namespace DynaPlex {
 			}
 			else if constexpr (std::is_same_v<T, Params::ParamsVec> ) {
 				std::cout << "(";
+				int i{ 0 };
 				for (DynaPlex::Params& val: type)
 				{
-					val.pImpl->Process(val, indent);
+					val.pImpl->Print(val, indent);
+					if (i++ ==3)
+					{
+						std::cout << std::endl;
+						for (size_t i = 0; i < indent; i++)
+						{
+							std::cout << "\t";
+						}
+						std::cout << "...";
+						break;
+					}
 				}
 				std::cout << ")";
 			}			
@@ -81,57 +101,74 @@ namespace DynaPlex {
 			}			
 		}
 
-		Impl() :map{} {}
+		Impl() :map{}, vec{} {}
 
-		Impl(Map map) :map{ map } {}
+		Impl(TupleList list) :vec{}, map{}
+		{
+			for (auto& [key, val] : list)
+			{
+				if (map.count(key))
+				{
+					throw std::invalid_argument("Same key present twice in argument list.");
+				}
+				vec.emplace_back(key, val);
+				map[key] = vec.size();
+			}
+		
+		}
 	};
 
 	
 
 	Params::Params(TupleList list)
-	{
-		Map map{};
-		for (auto& [key, val] : list)
-		{
-			if (map.count(key))
-			{
-				throw std::invalid_argument("Same key present twice in argument list.");
-			}
-			map[key] = val;
-		}
-		pImpl = std::make_shared<Impl>(std::move(map));
+	{		
+		pImpl = std::make_shared<Impl>(list);
 	}
 
 	Params::Params()
 	{
-		Map map{};
-		pImpl = std::make_shared<Impl>(std::move(map));
+		pImpl = std::make_shared<Impl>();
 	}
 
 	void Params::Print()
 	{
-		pImpl->Process(*this, 0);
+		pImpl->Print(*this, 0);
 		std::cout << std::endl;
 	}
 
 
-	template <class T>
-	void GenericAdd(Map& map, std::string& s, T& item)
-	{
-		map[s] = item;
-	}
+	
 
 	Params& Params::Add(std::string s, std::string val)
 	{
-		GenericAdd(pImpl->map, s, val);
+		pImpl->GenericAdd(s, val);
         return *this;
 	}
 	Params& Params::Add(std::string s, double val)
 	{
-		GenericAdd(pImpl->map, s, val);
+		pImpl->GenericAdd(s, val);
 		return *this;
 	}
-
+	Params& Params::Add(std::string s, int val)
+	{
+		pImpl->GenericAdd(s, val);
+		return *this;
+	}
+	Params& Params::Add(std::string s, Params::IntVec val)
+	{
+		pImpl->GenericAdd(s, val);
+		return *this;
+	}
+	Params& Params::Add(std::string s, Params::DoubleVec val)
+	{
+		pImpl->GenericAdd(s, val);
+		return *this;
+	}
+	Params& Params::Add(std::string s, Params val)
+	{
+		pImpl->GenericAdd(s, val);
+		return *this;
+	}
 	
 
 }
