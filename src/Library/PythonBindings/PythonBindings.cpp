@@ -2,10 +2,9 @@
 #include <iostream>
 #include <variant>
 #include "dataconverter.h"
+#include <dynaplex/utilities.h>
 
 namespace py = pybind11;
-
-
 enum class Type{py_str,py_int,py_float};
 
 std::variant< std::string, long long, double > processhandle(py::handle& handle)
@@ -53,24 +52,22 @@ std::variant< std::string, long long, double > processhandle(py::handle& handle)
     }
     else
     {
-        throw std::exception("This won't work");
+        DynaPlex::Utilities::Fail("this wont work");
     }
     return value;
 }
 
 
-void process(py::kwargs kwargs)
+void process(py::dict dict)
 {
-    auto pars = DynaPlex::Converter::ToDynaPlexParams(kwargs);
+    auto converter = DynaPlex::DataConverter{};
+
+    auto pars = converter.ToDynaPlexParams(dict);
     std::cout << "---" << std::endl;
     pars.Print();
     std::cout << "---" << std::endl;
     return;
-    for (auto kv : kwargs)
-    {
-        processhandle(kv.first);
-        processhandle(kv.second);
-    }
+    
 }
 
 

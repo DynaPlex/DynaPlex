@@ -7,13 +7,18 @@ print("Current version of Python is ", sys.version)
 from lib import DynaPlex as dp
 
 kong = [1,2,3]
-settings = { "ape": 1, "donkey": 0.5, "longsetting": -120231}
+settings = { "ape": 1, "donkey": 0.5, "longsetting": -120000231,
+            "test" : {"test": [1, 2, 3]} ,
+           "names":({"name": "bill"}, {"name2": "bill"})
+            }
 
 #process(settings)
 #dp.process(settings)
 #dp.process(ape=1)
 
-dp.process(**settings)
+#dp.process(**settings)
+
+dp.process(settings)
 
 #input("press enter to finish")
 

@@ -1,9 +1,9 @@
 #include "dynaplex/params.h"
+#include "dynaplex/utilities.h"
 #include <iostream>
 #include <type_traits>
 #include <variant>
 #include <unordered_map>
-#include <stdexcept>
 namespace DynaPlex {
 
 	using Map = std::unordered_map<std::string, size_t>;
@@ -26,7 +26,7 @@ namespace DynaPlex {
 		{
 			if (map.count(key) == 0)
 			{			
-				throw std::invalid_argument(std::string("key '") + key + "' not available in Params");
+				DynaPlex::Utilities::Fail("key '"s + key + "' not available in Params");
 			}
 			auto tuple = vec.at(map.at(key));
 			Params::DataType data = std::get<1>(tuple);
@@ -36,7 +36,7 @@ namespace DynaPlex {
 			}
 			else
 			{
-				throw std::invalid_argument(std::string("Value corresponding to key '") + key + "' is not of the requested type");
+				DynaPlex::Utilities::Fail("Value corresponding to key '"s + key + "' is not of the requested type");
 			}
 		}
 
@@ -136,7 +136,7 @@ namespace DynaPlex {
 			{
 				if (map.count(key))
 				{
-					throw std::invalid_argument("Same key present twice in argument list.");
+					DynaPlex::Utilities::Fail("Same key present twice in argument list:"s + key);
 				}
 				map[key] = vec.size();
 				vec.emplace_back(key, val);

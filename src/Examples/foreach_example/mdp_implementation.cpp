@@ -1,6 +1,6 @@
 #include <iostream>
 #include "mdp_implementation.h"
-
+#include <dynaplex/utilities.h>
 
 std::string MDP_Implementation::Identifier()
 {
@@ -22,7 +22,7 @@ MDP_Implementation::Action MDP_Implementation::ActionTraverser::begin()
 			return Action(this, initvalue);
 		}
 	}
-	throw;
+	DynaPlex::Utilities::Fail("fatal error in MDP_Implementation::ActionTraverser::begin()");
 }
 MDP_Implementation::Action MDP_Implementation::ActionTraverser::end()
 {
