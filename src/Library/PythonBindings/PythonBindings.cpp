@@ -1,15 +1,10 @@
 #include <pybind11/pybind11.h>
 #include <iostream>
 #include <variant>
-#include <dynaplex/neuralnetworktrainer.h>
-#include <dynaplex/convert.h>
-#include <mdp_implementation.h>
+#include "dataconverter.h"
 
 namespace py = pybind11;
 
-int add(int i, int j) {
-    return i + j;
-}
 
 enum class Type{py_str,py_int,py_float};
 
@@ -66,6 +61,11 @@ std::variant< std::string, long long, double > processhandle(py::handle& handle)
 
 void process(py::kwargs kwargs)
 {
+    auto pars = DynaPlex::Converter::ToDynaPlexParams(kwargs);
+    std::cout << "---" << std::endl;
+    pars.Print();
+    std::cout << "---" << std::endl;
+    return;
     for (auto kv : kwargs)
     {
         processhandle(kv.first);
@@ -78,6 +78,5 @@ void process(py::kwargs kwargs)
 PYBIND11_MODULE(DynaPlex, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
-    m.def("DynaPlex.add", &add, "A function that adds two numbers");
-    m.def("process_", &process, "Processes kwargs");
+    m.def("process", &process, "Processes kwargs");
 }

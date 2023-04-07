@@ -2,12 +2,11 @@
 #include <iostream>
 #include <type_traits>
 #include <variant>
-#include <map>
+#include <unordered_map>
 #include <stdexcept>
-
 namespace DynaPlex {
 
-	using Map = std::map<std::string, size_t>;
+	using Map = std::unordered_map<std::string, size_t>;
 	using TupleVec = std::vector < std::tuple<std::string, Params::DataType>>;
 	
 
@@ -22,6 +21,25 @@ namespace DynaPlex {
 			map[s] = vec.size();
 		}
 
+		template <class T>
+		void Populate(std::string& key, T& out_val) const
+		{
+			if (map.count(key) == 0)
+			{			
+				throw std::invalid_argument(std::string("key '") + key + "' not available in Params");
+			}
+			auto tuple = vec.at(map.at(key));
+			Params::DataType data = std::get<1>(tuple);
+			if (std::holds_alternative<T>(data))
+			{
+				out_val = std::get<T>(data);
+			}
+			else
+			{
+				throw std::invalid_argument(std::string("Value corresponding to key '") + key + "' is not of the requested type");
+			}
+		}
+
 
 		template <class T>
 		static void Print(T& type, int indent)
@@ -31,28 +49,37 @@ namespace DynaPlex {
 			if constexpr (std::is_same_v<T, DynaPlex::Params>)
 			{
 				bool first = true;
-				for (auto& [key, val] : type.pImpl->vec)
-				{			
-					std::cout << std::endl;
-			
-					for (size_t i = 0; i < indent; i++)
-					{
-						std::cout << "\t";
-					}	
-					if (first)
-					{
-						std::cout << "{";
-						first = false;
-					}
-					else
-					{
-						std::cout << " ";
-					}
-					std::cout<< "\'" << key << "\'" << ":" << "\t";
-					std::visit(lambda, val);
-				}
+				if (type.pImpl->vec.size() > 0)
+				{
 
-				std::cout << "}";
+					for (auto& [key, val] : type.pImpl->vec)
+					{
+						if (!first || indent > 0)
+						{
+							std::cout << std::endl;
+						}
+						for (size_t i = 0; i < indent; i++)
+						{
+							std::cout << "\t";
+						}
+						if (first)
+						{
+							std::cout << "{";
+							first = false;
+						}
+						else
+						{
+							std::cout << " ";
+						}
+						std::cout << "\'" << key << "\'" << ":" << "\t";
+						std::visit(lambda, val);
+					}
+					std::cout << "}";
+				}
+				else
+				{
+					std::cout << "{empty}";
+				}
 			}
 			else if constexpr (std::is_same_v<T, Params::ParamsVec> ) {
 				std::cout << "(";
@@ -73,7 +100,7 @@ namespace DynaPlex {
 				}
 				std::cout << ")";
 			}			
-			else if constexpr (std::is_same_v<T, Params::IntVec> || std::is_same_v<T, Params::DoubleVec>) {
+			else if constexpr (std::is_same_v<T, Params::LongVec> || std::is_same_v<T, Params::DoubleVec>) {
 				std::cout << "(";
 				size_t i{ 0 };
 				for (auto val : type)
@@ -111,8 +138,8 @@ namespace DynaPlex {
 				{
 					throw std::invalid_argument("Same key present twice in argument list.");
 				}
-				vec.emplace_back(key, val);
 				map[key] = vec.size();
+				vec.emplace_back(key, val);
 			}
 		
 		}
@@ -133,7 +160,7 @@ namespace DynaPlex {
 	void Params::Print()
 	{
 		pImpl->Print(*this, 0);
-		std::cout << std::endl;
+		std::cout  << std::endl;
 	}
 
 
@@ -151,10 +178,16 @@ namespace DynaPlex {
 	}
 	Params& Params::Add(std::string s, int val)
 	{
+		long l = static_cast<long>(val);
+		pImpl->GenericAdd(s, l);
+		return *this;
+	}
+	Params& Params::Add(std::string s, long val)
+	{
 		pImpl->GenericAdd(s, val);
 		return *this;
 	}
-	Params& Params::Add(std::string s, Params::IntVec val)
+	Params& Params::Add(std::string s, Params::LongVec val)
 	{
 		pImpl->GenericAdd(s, val);
 		return *this;
@@ -167,6 +200,13 @@ namespace DynaPlex {
 	Params& Params::Add(std::string s, Params val)
 	{
 		pImpl->GenericAdd(s, val);
+		return *this;
+	}
+
+
+	Params& Params::Populate(std::string s, long& out_val)
+	{
+		pImpl->Populate(s, out_val);
 		return *this;
 	}
 	

@@ -7,11 +7,19 @@ int main()
 
 	};
 
+	pars.Add("test", 123);
+	std::cout << "---" << std::endl;
+	pars.Print();
+	std::cout << "---" << std::endl;
+
+	return 0;
+
 	DynaPlex::Params::DoubleVec vec{ 1.0,2.0 };
 
 	pars.Add("test", vec);
 
-	DynaPlex::Params pars2{};
+	DynaPlex::Params pars2{
+		{"name",4} };
 
 	pars2.Add("par ",pars);
 
@@ -19,6 +27,10 @@ int main()
 	pars.Add("test2", 4);
 	pars2.Print();
 
+	long name;
+
+	pars2.Populate("name", name);
+	std::cout << name;
 
 	return 0;
 	DynaPlex::Params distprops{

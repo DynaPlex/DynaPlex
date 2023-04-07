@@ -4,16 +4,19 @@
 #include <variant>
 #include <map>
 #include <vector>
+#include <type_traits>
+
+
 namespace DynaPlex {
 	
 
 	class Params
 	{
 	public:
-		using IntVec = std::vector<int>;
+		using LongVec = std::vector<long>;
 		using DoubleVec = std::vector<double>;
 		using ParamsVec = std::vector<Params>;
-		using DataType = std::variant<int, double, std::string,DynaPlex::Params,IntVec,ParamsVec,DoubleVec>;
+		using DataType = std::variant<long, double, std::string,DynaPlex::Params, LongVec,ParamsVec,DoubleVec>;
 		using TupleList = std::initializer_list< std::tuple<std::string, DataType>>;
 	    
 	
@@ -24,11 +27,17 @@ namespace DynaPlex {
 
 		//add IntVec and DoubleVec
 		Params& Add(std::string s, int val);
+		Params& Add(std::string s, long val);
 		Params& Add(std::string s, std::string val);
 		Params& Add(std::string s, double val);
-		Params& Add(std::string s, IntVec vec);
+		Params& Add(std::string s, LongVec vec);
 		Params& Add(std::string s, DoubleVec vec);
 		Params& Add(std::string s, Params vec);
+
+
+
+		Params& Populate(std::string s, long& out_val);
+
 
 		void Print();
 
