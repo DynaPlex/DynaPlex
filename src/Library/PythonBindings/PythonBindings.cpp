@@ -63,17 +63,10 @@ std::variant< std::string, long long, double > processhandle(py::handle& handle)
     return value;
 }
 
-void process(py::dict dict)
+
+void process(py::kwargs kwargs)
 {
-    MDP_Implementation impl(1);
-
-    auto mdp = DynaPlex::Convert(impl);
-
-
-     DynaPlex::NeuralNetworkTrainer trainer{ mdp };
-    trainer.writeidentifier();
-    return;
-    for (auto kv : dict)
+    for (auto kv : kwargs)
     {
         processhandle(kv.first);
         processhandle(kv.second);
@@ -81,9 +74,10 @@ void process(py::dict dict)
 }
 
 
+
 PYBIND11_MODULE(DynaPlex, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
     m.def("DynaPlex.add", &add, "A function that adds two numbers");
-    m.def("process", &process, "Processes a dictionary");
+    m.def("process_", &process, "Processes kwargs");
 }
