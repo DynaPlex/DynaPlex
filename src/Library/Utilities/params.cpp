@@ -1,214 +1,161 @@
-#include "dynaplex/params.h"
 #include "dynaplex/utilities.h"
+#include "dynaplex/Params.h"
+#include "json.hpp"
 #include <iostream>
-#include <type_traits>
-#include <variant>
-#include <unordered_map>
+#include <fstream>
+#include <stdexcept>
+#include "dynaplex/utilities.h"
+
+using json = nlohmann::ordered_json;
+
 namespace DynaPlex {
 
-	using Map = std::unordered_map<std::string, size_t>;
-	using TupleVec = std::vector < std::tuple<std::string, Params::DataType>>;
-	
+    class Params::Impl {
+    public:
+        json data;
 
-	struct Params::Impl {
-		Map map;
-		TupleVec vec;
+        void PrintAbbrv(json& obj, std::ostream& os, int indent = 0) {
+            const std::string indentStr(indent, ' ');
 
-	    template <class T>
-		void GenericAdd(std::string& s, T& item)
-		{
-			vec.emplace_back(s, item);
-			map[s] = vec.size();
-		}
+            if (obj.is_object()) {
+                os << "{\n";
+                for (auto it = obj.begin(); it != obj.end();) {
+                    os << indentStr << "    \"" << it.key() << "\": ";
+                    PrintAbbrv(it.value(), os, indent + 4);
+                    if (++it != obj.end()) {
+                        os << ",";
+                    }
+                    os << "\n";
+                }
+                os << indentStr << "}";
+            }
+            else if (obj.is_array()) {
+                os << "[";
+                if (obj.size() > 5) {
+                    PrintAbbrv(obj[0], os);
+                    os << ", ... (" << obj.size() - 2 << " omitted) ..., ";
+                    PrintAbbrv(obj[obj.size() - 1], os);
+                }
+                else {
+                    for (auto it = obj.begin(); it != obj.end();) {
+                        PrintAbbrv(*it, os, indent + 4);
+                        if (++it != obj.end()) {
+                            os << ", ";
+                        }
+                    }
+                }
+                os << "]";
+            }
+            else {
+                os << obj.dump();
+            }
+        }
 
-		template <class T>
-		void Populate(std::string& key, T& out_val) const
-		{
-			if (map.count(key) == 0)
-			{			
-				DynaPlex::Utilities::Fail("key '"s + key + "' not available in Params");
-			}
-			auto tuple = vec.at(map.at(key));
-			Params::DataType data = std::get<1>(tuple);
-			if (std::holds_alternative<T>(data))
-			{
-				out_val = std::get<T>(data);
-			}
-			else
-			{
-				DynaPlex::Utilities::Fail("Value corresponding to key '"s + key + "' is not of the requested type");
-			}
-		}
+        void Add(const std::string& key, const DataType& value) {
+            std::visit(
+                [this, &key](auto&& v) {
+                    using T = std::decay_t<decltype(v)>;
+                    if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, long> || std::is_same_v<T, double>) {
+                        data[key] = v;
+                    }
+                    else if constexpr (std::is_same_v<T, Params>) {
+                        data[key] = v.pImpl->data;
+                    }
+                    else if constexpr (std::is_same_v<T, LongVec> || std::is_same_v<T, DoubleVec>) {
+                        data[key] = json(v);
+                    }
+                    else if constexpr (std::is_same_v<T, ParamsVec>) {
+                        json jsonArray;
+                        for (const auto& p : v) {
+                            jsonArray.push_back(p.pImpl->data);
+                        }
+                        data[key] = jsonArray;
+                    }
+                },
+                value);
+        }
+    };
 
+    Params::Params() : pImpl(std::make_shared<Impl>()) {}
 
-		template <class T>
-		static void Print(T& type, int indent)
-		{
-			auto lambda = [indent](auto& arg) { Params::Impl::Print(arg, indent + 1);	};
+    Params::Params(TupleList list) : Params() {
+        for (const auto& t : list) {
+           pImpl->Add(std::get<0>(t), std::get<1>(t));
+       }
+    }
 
-			if constexpr (std::is_same_v<T, DynaPlex::Params>)
-			{
-				bool first = true;
-				if (type.pImpl->vec.size() > 0)
-				{
-
-					for (auto& [key, val] : type.pImpl->vec)
-					{
-						if (!first || indent > 0)
-						{
-							std::cout << std::endl;
-						}
-						for (size_t i = 0; i < indent; i++)
-						{
-							std::cout << "\t";
-						}
-						if (first)
-						{
-							std::cout << "{";
-							first = false;
-						}
-						else
-						{
-							std::cout << " ";
-						}
-						std::cout << "\'" << key << "\'" << ":" << "\t";
-						std::visit(lambda, val);
-					}
-					std::cout << "}";
-				}
-				else
-				{
-					std::cout << "{empty}";
-				}
-			}
-			else if constexpr (std::is_same_v<T, Params::ParamsVec> ) {
-				std::cout << "(";
-				int i{ 0 };
-				for (DynaPlex::Params& val: type)
-				{
-					val.pImpl->Print(val, indent);
-					if (i++ ==3)
-					{
-						std::cout << std::endl;
-						for (size_t i = 0; i < indent; i++)
-						{
-							std::cout << "\t";
-						}
-						std::cout << "...";
-						break;
-					}
-				}
-				std::cout << ")";
-			}			
-			else if constexpr (std::is_same_v<T, Params::LongVec> || std::is_same_v<T, Params::DoubleVec>) {
-				std::cout << "(";
-				size_t i{ 0 };
-				for (auto val : type)
-				{
-					std::cout << val;
-					if (++i < type.size())
-					{
-						std::cout << ", ";
-						if (i > 6)
-						{
-							std::cout << ".... )";
-							break;
-						}						
-					}
-					else
-					{
-						std::cout << ")";
-					}
-				}
-			}
-			else if constexpr (std::is_same_v<T, std::string>) {
-				std::cout << "\'" << type << "\'";
-			}else{				
-					std::cout << type;
-			}			
-		}
-
-		Impl() :map{}, vec{} {}
-
-		Impl(TupleList list) :vec{}, map{}
-		{
-			for (auto& [key, val] : list)
-			{
-				if (map.count(key))
-				{
-					DynaPlex::Utilities::Fail("Same key present twice in argument list:"s + key);
-				}
-				map[key] = vec.size();
-				vec.emplace_back(key, val);
-			}
-		
-		}
-	};
-
-	
-
-	Params::Params(TupleList list)
-	{		
-		pImpl = std::make_shared<Impl>(list);
-	}
-
-	Params::Params()
-	{
-		pImpl = std::make_shared<Impl>();
-	}
-
-	void Params::Print()
-	{
-		pImpl->Print(*this, 0);
-		std::cout  << std::endl;
-	}
-
-
-	
-
-	Params& Params::Add(std::string s, std::string val)
-	{
-		pImpl->GenericAdd(s, val);
+    Params& Params::Add(std::string s, int val) {
+        pImpl->Add(s, static_cast<long>(val));
         return *this;
-	}
-	Params& Params::Add(std::string s, double val)
-	{
-		pImpl->GenericAdd(s, val);
-		return *this;
-	}
-	Params& Params::Add(std::string s, int val)
-	{
-		long l = static_cast<long>(val);
-		pImpl->GenericAdd(s, l);
-		return *this;
-	}
-	Params& Params::Add(std::string s, long val)
-	{
-		pImpl->GenericAdd(s, val);
-		return *this;
-	}
-	Params& Params::Add(std::string s, Params::LongVec val)
-	{
-		pImpl->GenericAdd(s, val);
-		return *this;
-	}
-	Params& Params::Add(std::string s, Params::DoubleVec val)
-	{
-		pImpl->GenericAdd(s, val);
-		return *this;
-	}
-	Params& Params::Add(std::string s, Params val)
-	{
-		pImpl->GenericAdd(s, val);
-		return *this;
-	}
+    }
+
+    Params& Params::Add(std::string s, long val) {
+        pImpl->Add(s, val);
+        return *this;
+    }
+
+    Params& Params::Add(std::string s, std::string val) {
+        pImpl->Add(s, val);
+        return *this;
+    }
+
+    Params& Params::Add(std::string s, double val) {
+        pImpl->Add(s, val);
+        return *this;
+    }
+
+    Params& Params::Add(std::string s, LongVec vec) {
+        pImpl->Add(s, vec);
+        return *this;
+    }
+
+    Params& Params::Add(std::string s, DoubleVec vec) {
+        pImpl->Add(s, vec);
+        return *this;
+    }
+
+    Params& Params::Add(std::string s, Params vec) {
+        pImpl->Add(s, vec);
+        return *this;
+    }
 
 
-	Params& Params::Populate(std::string s, long& out_val)
-	{
-		pImpl->Populate(s, out_val);
-		return *this;
-	}
-	
+    Params& Params::Add(std::string s, ParamsVec vec) {
+        pImpl->Add(s, vec);
+        return *this;
+    }
 
-}
+    void Params::Print() {
+      //  std::cout << pImpl->data.dump(4) << std::endl;
+    }
+
+    void Params::PrintAbbrv() {
+        pImpl->PrintAbbrv(pImpl->data, std::cout);
+        std::cout << std::endl;
+    }
+
+    void Params::SaveToFile(const std::string& filename) const {
+        std::ofstream file(Utilities::GetOutputLocation(filename));
+        if (!file.is_open()) {
+            throw std::runtime_error("Failed to open file for writing: " + filename);
+        }
+        file << pImpl->data.dump(4); // You can change the number '4' to adjust the indentation in the output file
+        file.close();
+    }
+
+    Params Params::LoadFromFile(const std::string& filename) {
+        std::ifstream file(Utilities::GetOutputLocation( filename));
+        if (!file.is_open()) {
+            throw std::runtime_error("Failed to open file for reading: " + filename);
+        }
+        json data;
+        file >> data;
+        file.close();
+
+        Params params;
+        params.pImpl->data = std::move(data);
+        return params;
+    }
+
+
+}  // namespace DynaPlex

@@ -23,6 +23,8 @@ MDP_Implementation::Action MDP_Implementation::ActionTraverser::begin()
 		}
 	}
 	DynaPlex::Utilities::Fail("fatal error in MDP_Implementation::ActionTraverser::begin()");
+	//to avoid no return warning.
+	return Action(this, 0);
 }
 MDP_Implementation::Action MDP_Implementation::ActionTraverser::end()
 {

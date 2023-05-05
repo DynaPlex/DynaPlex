@@ -2,9 +2,7 @@
 #include <memory>
 #include <string>
 #include <variant>
-#include <map>
 #include <vector>
-#include <type_traits>
 
 
 namespace DynaPlex {
@@ -33,14 +31,14 @@ namespace DynaPlex {
 		Params& Add(std::string s, LongVec vec);
 		Params& Add(std::string s, DoubleVec vec);
 		Params& Add(std::string s, Params vec);
+		Params& Add(std::string s, ParamsVec vec);
 
-
-
-		Params& Populate(std::string s, long& out_val);
+		void SaveToFile(const std::string &filename) const;
+		static Params LoadFromFile(const std::string &filename);
 
 
 		void Print();
-
+		void PrintAbbrv();
 	private:
 		struct Impl;
 		std::shared_ptr<Impl> pImpl;

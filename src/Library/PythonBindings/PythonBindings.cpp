@@ -63,17 +63,22 @@ void process(py::dict dict)
     auto converter = DynaPlex::DataConverter{};
 
     auto pars = converter.ToDynaPlexParams(dict);
-    std::cout << "---" << std::endl;
     pars.Print();
-    std::cout << "---" << std::endl;
     return;
     
 }
 
+void process(py::kwargs kwargs)
+{
+    auto dict = static_cast<py::dict>(kwargs);
+    process(dict);
+}
 
 
 PYBIND11_MODULE(DynaPlex, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
-    m.def("process", &process, "Processes kwargs");
+    m.def("process",py::overload_cast<py::kwargs>(&process), "Processes kwargs");
+    m.def("process", py::overload_cast<py::dict>(&process), "Processes dict");
+   
 }

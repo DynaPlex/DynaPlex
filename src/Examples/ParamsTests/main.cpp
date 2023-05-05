@@ -1,38 +1,9 @@
 ﻿#include <iostream>
 #include <dynaplex/params.h>
+#include <dynaplex/utilities.h>
 int main()
 {
 
-	DynaPlex::Params pars{
-
-	};
-
-	pars.Add("test", 123);
-	std::cout << "---" << std::endl;
-	pars.Print();
-	std::cout << "---" << std::endl;
-
-	return 0;
-
-	DynaPlex::Params::DoubleVec vec{ 1.0,2.0 };
-
-	pars.Add("test", vec);
-
-	DynaPlex::Params pars2{
-		{"name",4} };
-
-	pars2.Add("par ",pars);
-
-	pars2.Print();
-	pars.Add("test2", 4);
-	pars2.Print();
-
-	long name;
-
-	pars2.Populate("name", name);
-	std::cout << name;
-
-	return 0;
 	DynaPlex::Params distprops{
 			{"type","geom"},
 		{"mean",5} };
@@ -48,9 +19,15 @@ int main()
 		{"dist", distprops},
 		{"leadtime",DynaPlex::Params::DoubleVec{1.4,2,1,1,1,1,1,1,1,1,1,1,1,1,1}}
 	});
+	DynaPlex::Params retlast({
+		{"name","retailer 10"},
+		{"dist", distprops},
+		{"leadtime",DynaPlex::Params::DoubleVec{1.4,2,1,1,1,1,1,1,1,1,1,1,1,1,1}}
+		});
+
 	
 	DynaPlex::Params::ParamsVec rets{
-		ret1,ret2,ret1,ret2,ret1,ret2
+		ret1,ret2,ret1,ret2,ret1,retlast
 	};
 
 	auto params= DynaPlex::Params(
@@ -60,8 +37,13 @@ int main()
 		} }
 	);
 	std::cout << "printing" << std::endl;
-	params.Print();
+	//params.PrintAbbrv();
 
+//	params.SaveToFile("test.txt");
+
+	auto pars = DynaPlex::Params::LoadFromFile("test.txt");
+
+	pars.PrintAbbrv();
 
 	std::cout << "done" << std::endl;
 	return 0;
