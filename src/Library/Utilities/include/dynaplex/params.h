@@ -11,10 +11,10 @@ namespace DynaPlex {
 	class Params
 	{
 	public:
-		using LongVec = std::vector<long>;
+		using IntVec = std::vector<int64_t>;
 		using DoubleVec = std::vector<double>;
 		using ParamsVec = std::vector<Params>;
-		using DataType = std::variant<long, double, std::string,DynaPlex::Params, LongVec,ParamsVec,DoubleVec>;
+		using DataType = std::variant<bool,std::nullptr_t, int64_t, double, std::string,DynaPlex::Params, IntVec,ParamsVec,DoubleVec>;
 		using TupleList = std::initializer_list< std::tuple<std::string, DataType>>;
 	    
 	
@@ -23,22 +23,22 @@ namespace DynaPlex {
 
 		Params(TupleList list);
 
-		//add IntVec and DoubleVec
-		Params& Add(std::string s, int val);
-		Params& Add(std::string s, long val);
-		Params& Add(std::string s, std::string val);
-		Params& Add(std::string s, double val);
-		Params& Add(std::string s, LongVec vec);
-		Params& Add(std::string s, DoubleVec vec);
-		Params& Add(std::string s, Params vec);
-		Params& Add(std::string s, ParamsVec vec);
+		void Add(std::string s, int val);
+		void Add(std::string s, int64_t val);
+		void Add(std::string s, bool val);
+		void Add(std::string s, nullptr_t val);
+		void Add(std::string s, std::string val);
+		void Add(std::string s, double val);
+		void Add(std::string s, IntVec vec);
+		void Add(std::string s, DoubleVec vec);
+		void Add(std::string s, Params vec);
+		void Add(std::string s, ParamsVec vec);
 
 		void SaveToFile(const std::string &filename) const;
 		static Params LoadFromFile(const std::string &filename);
 
 
 		void Print();
-		void PrintAbbrv();
 	private:
 		struct Impl;
 		std::shared_ptr<Impl> pImpl;

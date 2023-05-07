@@ -5,16 +5,17 @@
 #include <fstream>
 #include <stdexcept>
 #include "dynaplex/utilities.h"
+#include "dynaplex/errors.h"
 
-using json = nlohmann::ordered_json;
+using ordered_json = nlohmann::ordered_json;
 
 namespace DynaPlex {
 
     class Params::Impl {
     public:
-        json data;
+        ordered_json data;
 
-        void PrintAbbrv(json& obj, std::ostream& os, int indent = 0) {
+        void PrintAbbrv(ordered_json& obj, std::ostream& os, int indent = 0) {
             const std::string indentStr(indent, ' ');
 
             if (obj.is_object()) {
@@ -55,17 +56,17 @@ namespace DynaPlex {
             std::visit(
                 [this, &key](auto&& v) {
                     using T = std::decay_t<decltype(v)>;
-                    if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, long> || std::is_same_v<T, double>) {
+                    if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, int64_t> || std::is_same_v<T, double>|| std::is_same_v<T, std::nullptr_t>|| std::is_same_v<T, bool>) {
                         data[key] = v;
                     }
                     else if constexpr (std::is_same_v<T, Params>) {
                         data[key] = v.pImpl->data;
                     }
-                    else if constexpr (std::is_same_v<T, LongVec> || std::is_same_v<T, DoubleVec>) {
-                        data[key] = json(v);
+                    else if constexpr (std::is_same_v<T, IntVec> || std::is_same_v<T, DoubleVec>) {
+                        data[key] = ordered_json(v);
                     }
                     else if constexpr (std::is_same_v<T, ParamsVec>) {
-                        json jsonArray;
+                        ordered_json jsonArray;
                         for (const auto& p : v) {
                             jsonArray.push_back(p.pImpl->data);
                         }
@@ -84,54 +85,50 @@ namespace DynaPlex {
        }
     }
 
-    Params& Params::Add(std::string s, int val) {
-        pImpl->Add(s, static_cast<long>(val));
-        return *this;
+    void Params::Add(std::string s, int val) {
+        pImpl->Add(s, static_cast<int64_t>(val));
     }
 
-    Params& Params::Add(std::string s, long val) {
+    void Params::Add(std::string s, int64_t val) {
         pImpl->Add(s, val);
-        return *this;
     }
-
-    Params& Params::Add(std::string s, std::string val) {
+    void Params::Add(std::string s, bool val) {
         pImpl->Add(s, val);
-        return *this;
     }
-
-    Params& Params::Add(std::string s, double val) {
+    void Params::Add(std::string s, nullptr_t val) {
         pImpl->Add(s, val);
-        return *this;
     }
 
-    Params& Params::Add(std::string s, LongVec vec) {
-        pImpl->Add(s, vec);
-        return *this;
+    void Params::Add(std::string s, std::string val) {
+        pImpl->Add(s, val);
     }
 
-    Params& Params::Add(std::string s, DoubleVec vec) {
-        pImpl->Add(s, vec);
-        return *this;
+    void Params::Add(std::string s, double val) {
+        pImpl->Add(s, val);
     }
 
-    Params& Params::Add(std::string s, Params vec) {
+    void Params::Add(std::string s, IntVec vec) {
         pImpl->Add(s, vec);
-        return *this;
+    }
+
+    void Params::Add(std::string s, DoubleVec vec) {
+        pImpl->Add(s, vec);
+    }
+
+    void Params::Add(std::string s, Params vec) {
+        pImpl->Add(s, vec);
     }
 
 
-    Params& Params::Add(std::string s, ParamsVec vec) {
+    void Params::Add(std::string s, ParamsVec vec) {
         pImpl->Add(s, vec);
-        return *this;
     }
 
     void Params::Print() {
-      //  std::cout << pImpl->data.dump(4) << std::endl;
-    }
-
-    void Params::PrintAbbrv() {
         pImpl->PrintAbbrv(pImpl->data, std::cout);
         std::cout << std::endl;
+        //Classic dump - not always very readable. 
+        // std::cout << pImpl->data.dump(4) << std::endl;
     }
 
     void Params::SaveToFile(const std::string& filename) const {
@@ -143,18 +140,87 @@ namespace DynaPlex {
         file.close();
     }
 
-    Params Params::LoadFromFile(const std::string& filename) {
-        std::ifstream file(Utilities::GetOutputLocation( filename));
-        if (!file.is_open()) {
-            throw std::runtime_error("Failed to open file for reading: " + filename);
-        }
-        json data;
-        file >> data;
-        file.close();
+    bool is_supported_type(const ordered_json& element, bool inside_array, const std::string& path);
 
-        Params params;
-        params.pImpl->data = std::move(data);
-        return params;
+    bool is_homogeneous_array(const ordered_json& j, const std::string& path) {
+        if (!j.is_array() || j.empty()) {
+            return true;
+        }
+
+        const auto& first_element = *j.begin();
+        if (!is_supported_type(first_element, true, path)) {
+            return false;
+        }
+
+        for (const auto& element : j) {
+            if (first_element.type() != element.type() || !is_supported_type(element, true, path)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool is_supported_type(const ordered_json& element, bool inside_array, const std::string& path) {
+        if (element.is_number_integer() || element.is_number_float() ||
+            (!inside_array && (element.is_string() ||element.is_null() || element.is_boolean() ))) {
+            return true;
+        }
+        else if (element.is_object()) {
+            for (const auto& [key,value] : element.items()) {
+                if (!is_supported_type(value, false, path + "." + key)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else if (element.is_array()) {
+            return is_homogeneous_array(element, path);
+        }
+        throw DynaPlex::Error("Invalid type found in JSON at path: " + path);
+    }
+
+
+
+    void check_if_valid(const ordered_json& j, const std::string& path) {
+        for (const auto& item : j.items()) {
+            const auto& key = item.key();
+            const auto& value = item.value();
+            if (value.is_array()) {
+                if (!is_homogeneous_array(value, path + "." + key)) {
+                    throw DynaPlex::Error("Invalid or heterogeneous array found in JSON at path: " + path + "." + key);
+                }
+            }
+            else if (value.is_object()) {
+                check_if_valid(value, path + "." + key);
+            }
+            else if (!is_supported_type(value, false, path + "." + key)) {
+                throw DynaPlex::Error("Invalid type found in JSON at path: " + path + "." + key);
+            }
+        }
+    }
+
+    Params Params::LoadFromFile(const std::string& filename) {
+        std::ifstream file(DynaPlex::Utilities::GetOutputLocation( filename));
+        if (file.is_open()) {
+            ordered_json j;
+            try {
+                file >> j;
+            }
+            catch (const nlohmann::json::parse_error& e) {
+                throw DynaPlex::Error("Failed to parse JSON file: " + filename + " - " + e.what());
+            }
+            file.close();
+
+            // Check if the loaded JSON adheres to the homogeneity rule for arrays
+            check_if_valid(j, "");
+
+            Params params;
+            params.pImpl->data = std::move(j);
+            return params;
+        }
+        else {
+            throw DynaPlex::Error("Unable to open file for reading: " + filename);
+        }
     }
 
 
