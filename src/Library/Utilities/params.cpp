@@ -77,13 +77,37 @@ namespace DynaPlex {
         }
     };
 
-    Params::Params() : pImpl(std::make_shared<Impl>()) {}
+    Params::Params() : pImpl(std::make_unique<Impl>()) {}
 
     Params::Params(TupleList list) : Params() {
-        for (const auto& t : list) {
-           pImpl->Add(std::get<0>(t), std::get<1>(t));
+        for (const auto& [first,second] : list) {
+           pImpl->Add(first, second);
        }
     }
+
+
+    Params::Params(const Params& other) : pImpl(std::make_unique<Impl>(*other.pImpl)) {}
+
+    Params& Params::operator=(const Params& other) {
+        if (this != &other) {
+            pImpl = std::make_unique<Impl>(*other.pImpl);
+        }
+        return *this;
+    }
+
+    Params::~Params() = default;
+
+    Params::Params(Params&& other) noexcept
+        : pImpl(std::move(other.pImpl)) {}
+
+    Params& Params::operator=(Params&& other) noexcept {
+        if (this != &other) {
+            pImpl = std::move(other.pImpl);
+        }
+        return *this;
+    }
+
+   
 
     void Params::Add(std::string s, int val) {
         pImpl->Add(s, static_cast<int64_t>(val));
@@ -98,29 +122,22 @@ namespace DynaPlex {
     void Params::Add(std::string s, nullptr_t val) {
         pImpl->Add(s, val);
     }
-
     void Params::Add(std::string s, std::string val) {
         pImpl->Add(s, val);
     }
-
     void Params::Add(std::string s, double val) {
         pImpl->Add(s, val);
     }
-
-    void Params::Add(std::string s, IntVec vec) {
+    void Params::Add(std::string s,const IntVec& vec) {
         pImpl->Add(s, vec);
     }
-
-    void Params::Add(std::string s, DoubleVec vec) {
+    void Params::Add(std::string s,const DoubleVec& vec) {
         pImpl->Add(s, vec);
     }
-
-    void Params::Add(std::string s, Params vec) {
+    void Params::Add(std::string s,const Params& vec) {
         pImpl->Add(s, vec);
     }
-
-
-    void Params::Add(std::string s, ParamsVec vec) {
+    void Params::Add(std::string s,const ParamsVec& vec) {
         pImpl->Add(s, vec);
     }
 
@@ -140,67 +157,79 @@ namespace DynaPlex {
         file.close();
     }
 
-    bool is_supported_type(const ordered_json& element, bool inside_array, const std::string& path);
+    bool check_homogeneity(const ordered_json& j, const std::string& path) {
+        if (j.is_array()) {
+            // Check if the array is homogeneous
+            ordered_json::value_t array_type;
+            bool first = true;
 
-    bool is_homogeneous_array(const ordered_json& j, const std::string& path) {
-        if (!j.is_array() || j.empty()) {
-            return true;
-        }
+            for (const auto& element : j) {
+                if (first) {
+                    if (element.is_number_integer() || element.is_number_unsigned()) {
+                        array_type = ordered_json::value_t::number_integer;
+                    }
+                    else {
+                        array_type = element.type();
+                    }
 
-        const auto& first_element = *j.begin();
-        if (!is_supported_type(first_element, true, path)) {
-            return false;
-        }
+                    if (element.is_boolean())
+                    {
+                        throw DynaPlex::Error("Boolean value not allowed in array: " + path);
+                    }
+                    if (element.is_array())
+                    {
+                        throw DynaPlex::Error("Direct nesting of array inside array not supported: " + path);
+                    }
+                    first = false;
+                }
+                else {
+                    ordered_json::value_t element_type;
+                    if (element.is_number_integer() || element.is_number_unsigned()) {
+                        element_type = ordered_json::value_t::number_integer;
+                    }
+                    else {
+                        element_type = element.type();
+                    }
 
-        for (const auto& element : j) {
-            if (first_element.type() != element.type() || !is_supported_type(element, true, path)) {
-                return false;
+                    if (array_type != element_type) {
+                        throw DynaPlex::Error("Inhomogeneous array at path: " + path);
+                    }
+                }
             }
-        }
-        return true;
-    }
 
-    bool is_supported_type(const ordered_json& element, bool inside_array, const std::string& path) {
-        if (element.is_number_integer() || element.is_number_float() ||
-            (!inside_array && (element.is_string() ||element.is_null() || element.is_boolean() ))) {
-            return true;
-        }
-        else if (element.is_object()) {
-            for (const auto& [key,value] : element.items()) {
-                if (!is_supported_type(value, false, path + "." + key)) {
+            // Check if the array elements are either primitive or structured
+            for (const auto& element : j) {
+                if (!check_homogeneity(element, path)) {
                     return false;
                 }
             }
-            return true;
         }
-        else if (element.is_array()) {
-            return is_homogeneous_array(element, path);
-        }
-        throw DynaPlex::Error("Invalid type found in JSON at path: " + path);
-    }
-
-
-
-    void check_if_valid(const ordered_json& j, const std::string& path) {
-        for (const auto& item : j.items()) {
-            const auto& key = item.key();
-            const auto& value = item.value();
-            if (value.is_array()) {
-                if (!is_homogeneous_array(value, path + "." + key)) {
-                    throw DynaPlex::Error("Invalid or heterogeneous array found in JSON at path: " + path + "." + key);
+        else if (j.is_object()) {
+            for (const auto& [key, value] : j.items()) {
+                std::string child_path = path.empty() ? key : (path + "." + key);
+                if (!check_homogeneity(value, child_path)) {
+                    return false;
                 }
             }
-            else if (value.is_object()) {
-                check_if_valid(value, path + "." + key);
+        }
+        else
+        {
+            if (j.is_binary())
+            {
+                throw DynaPlex::Error("Binary values not allowed");
             }
-            else if (!is_supported_type(value, false, path + "." + key)) {
-                throw DynaPlex::Error("Invalid type found in JSON at path: " + path + "." + key);
+            if (j.is_discarded())
+            {
+                throw DynaPlex::Error("Discarded values not allowed");
             }
         }
+
+        return true;
     }
 
     Params Params::LoadFromFile(const std::string& filename) {
-        std::ifstream file(DynaPlex::Utilities::GetOutputLocation( filename));
+        auto loc = DynaPlex::Utilities::GetOutputLocation(filename);
+        std::ifstream file(loc);
         if (file.is_open()) {
             ordered_json j;
             try {
@@ -212,8 +241,13 @@ namespace DynaPlex {
             file.close();
 
             // Check if the loaded JSON adheres to the homogeneity rule for arrays
-            check_if_valid(j, "");
-
+            try {
+                check_homogeneity(j, "");
+            }
+            catch (const DynaPlex::Error& e)
+            {
+                throw DynaPlex::Error(std::string("Error in loaded JSON data from ") + loc + ". Detail "+ e.what());
+            }
             Params params;
             params.pImpl->data = std::move(j);
             return params;

@@ -4,23 +4,6 @@
 int main()
 {
 	
-	DynaPlex::Params pars;
-	DynaPlex::Params pars2;
-
-	DynaPlex::Params pars3 = pars;
-
-	pars.Add("asd", 1);
-
-	pars2.Add("tes", 112);
-
-	pars.Add("as", pars2);
-
-	pars2.Add("asdf", nullptr);
-	//pars.Print();
-
-	pars3.Print();
-
-	return 0;
 
 	DynaPlex::Params distprops{
 			{"type","geom"},
@@ -42,7 +25,7 @@ int main()
 	DynaPlex::Params retlast({
 		{"name","retailer 10"},
 		{"dist", distprops},
-		{"leadtime",DynaPlex::Params::DoubleVec{1.4,2,1,1,1,1,1,1,1,1,1,1,1,1,1}}
+		{"leadtime",DynaPlex::Params::IntVec{1,2,-1,1,1,1,1,1,1,1,1,1,1,1,1}}
 		});
 
 	
@@ -57,12 +40,8 @@ int main()
 		{ "warehouse",DynaPlex::Params{{"dist", distprops}}
 		} }
 	);
-
-	retlast.Add("test", params);
-
-	std::cout << "printing" << std::endl;
 	params.Print();
-//	return 0;
+
 	params.SaveToFile("test.txt");
 
 	try
