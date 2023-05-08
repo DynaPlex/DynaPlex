@@ -3,8 +3,6 @@
 #include <dynaplex/utilities.h>
 int main()
 {
-	
-
 	DynaPlex::Params distprops{
 			{"type","geom"},
 		{"mean",5} };
@@ -12,7 +10,8 @@ int main()
 	DynaPlex::Params ret1{
 		{"name","retailer 1"},
 		{"aa",nullptr},
-		{"asfd", false},
+		{"aasda",nullptr},
+		{"asfd", DynaPlex::Params::StringVec{"asdf","asdf"}},
 		{"dist", distprops}
 	};
 
@@ -41,8 +40,8 @@ int main()
 		} }
 	);
 	params.Print();
-
-	params.SaveToFile("test.txt");
+	return 0;
+	//params.SaveToFile("test.txt");
 
 	try
 	{

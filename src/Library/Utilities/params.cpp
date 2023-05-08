@@ -62,7 +62,7 @@ namespace DynaPlex {
                     else if constexpr (std::is_same_v<T, Params>) {
                         data[key] = v.pImpl->data;
                     }
-                    else if constexpr (std::is_same_v<T, IntVec> || std::is_same_v<T, DoubleVec>) {
+                    else if constexpr (std::is_same_v<T, IntVec> || std::is_same_v<T, DoubleVec> || std::is_same_v<T, StringVec> ) {
                         data[key] = ordered_json(v);
                     }
                     else if constexpr (std::is_same_v<T, ParamsVec>) {
@@ -71,6 +71,10 @@ namespace DynaPlex {
                             jsonArray.push_back(p.pImpl->data);
                         }
                         data[key] = jsonArray;
+                    }
+                    else
+                    {
+                        throw DynaPlex::Error("Unhandled case in Params implementation.");
                     }
                 },
                 value);
@@ -134,6 +138,9 @@ namespace DynaPlex {
     void Params::Add(std::string s,const DoubleVec& vec) {
         pImpl->Add(s, vec);
     }
+    void Params::Add(std::string s, const StringVec& vec) {
+        pImpl->Add(s, vec);
+    }
     void Params::Add(std::string s,const Params& vec) {
         pImpl->Add(s, vec);
     }
@@ -174,11 +181,11 @@ namespace DynaPlex {
 
                     if (element.is_boolean())
                     {
-                        throw DynaPlex::Error("Boolean value not allowed in array: " + path);
+                        throw DynaPlex::Error("Boolean value not allowed in array, at path: " + path);
                     }
                     if (element.is_array())
                     {
-                        throw DynaPlex::Error("Direct nesting of array inside array not supported: " + path);
+                        throw DynaPlex::Error("Direct nesting of array inside array not supported, at path: " + path);
                     }
                     first = false;
                 }
@@ -198,8 +205,11 @@ namespace DynaPlex {
             }
 
             // Check if the array elements are either primitive or structured
+            int i{ 0 };
             for (const auto& element : j) {
-                if (!check_homogeneity(element, path)) {
+                std::string key = "[" + std::to_string((i++)) + "]";   
+                std::string child_path = path+key;
+                if (!check_homogeneity(element, child_path)) {
                     return false;
                 }
             }
@@ -246,7 +256,7 @@ namespace DynaPlex {
             }
             catch (const DynaPlex::Error& e)
             {
-                throw DynaPlex::Error(std::string("Error in loaded JSON data from ") + loc + ". Detail "+ e.what());
+                throw DynaPlex::Error(std::string("Error in loaded JSON data from ") + loc + ":\n  "+ e.what());
             }
             Params params;
             params.pImpl->data = std::move(j);
