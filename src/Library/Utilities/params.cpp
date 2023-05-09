@@ -33,9 +33,11 @@ namespace DynaPlex {
             else if (obj.is_array()) {
                 os << "[";
                 if (obj.size() > 5) {
-                    PrintAbbrv(obj[0], os);
-                    os << ", ... (" << obj.size() - 2 << " omitted) ..., ";
-                    PrintAbbrv(obj[obj.size() - 1], os);
+                    PrintAbbrv(obj[0], os,indent+4);
+                    os << ", ";
+                    PrintAbbrv(obj[1], os, indent + 4);
+                    os << ", ... (" << obj.size() - 3 << " omitted) ..., ";
+                    PrintAbbrv(obj[obj.size() - 1], os,indent+4);
                 }
                 else {
                     for (auto it = obj.begin(); it != obj.end();) {

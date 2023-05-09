@@ -12,13 +12,4 @@ namespace DynaPlex {
 		auto converted = std::static_pointer_cast<DynaPlex::MDPInterface>(shared);
 		return converted;
 	}
-
-	//template <class t_MDP>
-	//DynaPlex::MDP AsDynaPlexMDP( arguments )
-	//User perfect forwarding to forward to constructor of dynaplex MDP
-	
-
-	//DynaPlex::MDP AsDynaPlexMDP( arguments )
-	//perfect forwarding to GetInstance of that MDP. 
-
 }//namespace DynaPlex

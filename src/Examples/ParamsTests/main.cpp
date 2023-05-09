@@ -29,7 +29,7 @@ int main()
 
 	
 	DynaPlex::Params::ParamsVec rets{
-		ret1,ret2,retlast
+		ret1,ret2,ret2,ret2,ret2,ret2,retlast
 	};
 
 
