@@ -4,7 +4,11 @@
 #include <variant>
 #include <vector>
 
-
+//forward declaration
+namespace pybind11 {
+	class dict;
+}
+ 
 namespace DynaPlex {
 	
 
@@ -21,6 +25,10 @@ namespace DynaPlex {
 	
 	public:
 		Params();
+
+		Params(pybind11::dict& dict);
+		pybind11::dict ToDict();
+		
 		Params(const Params& other);
 		Params& operator=(const Params& other);
 		~Params();

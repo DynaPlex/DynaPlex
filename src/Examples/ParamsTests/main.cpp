@@ -27,9 +27,11 @@ int main()
 		{"leadtime",DynaPlex::Params::IntVec{1,2,-1,1,1,1,1,1,1,1,1,1,1,1,1}}
 		});
 
+
+
 	
 	DynaPlex::Params::ParamsVec rets{
-		ret1,ret2,ret2,ret2,ret2,ret2,retlast
+		ret1,ret2,retlast
 	};
 
 
@@ -39,6 +41,7 @@ int main()
 		{ "warehouse",DynaPlex::Params{{"dist", distprops}}
 		} }
 	);
+	params.Add("test", std::vector<double>{1.0, 2.1, 123.1});
 	params.Print();
 	return 0;
 	//params.SaveToFile("test.txt");

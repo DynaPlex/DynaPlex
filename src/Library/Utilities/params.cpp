@@ -1,13 +1,19 @@
 #include "dynaplex/utilities.h"
 #include "dynaplex/Params.h"
-#include "json.hpp"
+#include "json.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include "dynaplex/utilities.h"
 #include "dynaplex/errors.h"
 
-using ordered_json = nlohmann::ordered_json;
+#if pybind11_support
+#include <pybind11/pybind11.h>
+#include "pybind11_json.h"
+namespace py = pybind11;
+#endif
+
+using ordered_json = nlohmann::json;
 
 namespace DynaPlex {
 
@@ -55,7 +61,7 @@ namespace DynaPlex {
         }
 
         void Add(const std::string& key, const DataType& value) {
-            std::visit(
+             std::visit(
                 [this, &key](auto&& v) {
                     using T = std::decay_t<decltype(v)>;
                     if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, int64_t> || std::is_same_v<T, double>|| std::is_same_v<T, std::nullptr_t>|| std::is_same_v<T, bool>) {
@@ -84,6 +90,7 @@ namespace DynaPlex {
     };
 
     Params::Params() : pImpl(std::make_unique<Impl>()) {}
+
 
     Params::Params(TupleList list) : Params() {
         for (const auto& [first,second] : list) {
@@ -152,9 +159,7 @@ namespace DynaPlex {
 
     void Params::Print() {
         pImpl->PrintAbbrv(pImpl->data, std::cout);
-        std::cout << std::endl;
-        //Classic dump - not always very readable. 
-        // std::cout << pImpl->data.dump(4) << std::endl;
+        std::cout << std::endl;       
     }
 
     void Params::SaveToFile(const std::string& filename) const {
@@ -162,7 +167,7 @@ namespace DynaPlex {
         if (!file.is_open()) {
             throw std::runtime_error("Failed to open file for writing: " + filename);
         }
-        file << pImpl->data.dump(4); // You can change the number '4' to adjust the indentation in the output file
+        file << pImpl->data.dump(4); 
         file.close();
     }
 
@@ -239,6 +244,15 @@ namespace DynaPlex {
         return true;
     }
 
+    bool check_validity(const ordered_json& j)
+    {
+        if (!j.is_object())
+        {
+            throw DynaPlex::Error("Root node is not an object/dict.");
+        }
+        check_homogeneity(j, "");
+    }
+
     Params Params::LoadFromFile(const std::string& filename) {
         auto loc = DynaPlex::Utilities::GetOutputLocation(filename);
         std::ifstream file(loc);
@@ -254,7 +268,7 @@ namespace DynaPlex {
 
             // Check if the loaded JSON adheres to the homogeneity rule for arrays
             try {
-                check_homogeneity(j, "");
+                check_validity(j);
             }
             catch (const DynaPlex::Error& e)
             {
@@ -269,5 +283,27 @@ namespace DynaPlex {
         }
     }
 
+
+    Params::Params(pybind11::dict& dict) : pImpl(std::make_unique<Impl>()) {
+#if pybind11_support
+        // Check if the loaded JSON adheres to the homogeneity rule for arrays
+        ordered_json j;
+        try {
+            j = dict;
+            check_validity(j);
+        }
+        catch (const DynaPlex::Error& e)
+        {
+            throw DynaPlex::Error(std::string("Error in dictionary/kwargs passed from python:\n") + e.what());
+        }
+        catch (const std::exception& e)
+        {
+            throw DynaPlex::Error("Error while converting from pybind11::dict to Params");
+        }
+        pImpl->data = std::move(j);
+#else
+        throw DynaPlex::Error("Pybind11 support disabled, cannot convert from pybind11::dict to params");
+#endif
+    }
 
 }  // namespace DynaPlex

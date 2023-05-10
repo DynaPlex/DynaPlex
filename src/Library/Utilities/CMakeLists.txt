@@ -30,6 +30,9 @@ $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::MDP_Interfaces)
 
+
+
+
 if(${dynaplex_all_warnings})
 target_compile_options(DynaPlex_${targetname} PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
@@ -40,6 +43,11 @@ endif()
  
 
 if(${dynaplex_enable_pythonbindings})
+target_link_libraries(DynaPlex_${targetname} PRIVATE pybind11::module)
+
+target_compile_definitions(DynaPlex_${targetname} PRIVATE pybind11_support=true) 
+
+
 #copy library (including .pyd) to subdirectory of python, so that the python scripts can find it
 add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_directory
