@@ -9,6 +9,8 @@
 #ifndef PYBIND11_JSON_HPP
 #define PYBIND11_JSON_HPP
 
+#if pybind11_support
+namespace test = pybind11;
 #include <string>
 #include <vector>
 
@@ -21,7 +23,7 @@ namespace nl = nlohmann;
 
 namespace pyjson
 {
-    inline py::object from_json(const nl::json& j)
+    inline py::object from_json(const nl::ordered_json& j)
     {
         if (j.is_null())
         {
@@ -33,11 +35,11 @@ namespace pyjson
         }
         else if (j.is_number_unsigned())
         {
-            return py::int_(j.get<nl::json::number_unsigned_t>());
+            return py::int_(j.get<nl::ordered_json::number_unsigned_t>());
         }
         else if (j.is_number_integer())
         {
-            return py::int_(j.get<nl::json::number_integer_t>());
+            return py::int_(j.get<nl::ordered_json::number_integer_t>());
         }
         else if (j.is_number_float())
         {
@@ -59,7 +61,7 @@ namespace pyjson
         else // Object
         {
             py::dict obj;
-            for (nl::json::const_iterator it = j.cbegin(); it != j.cend(); ++it)
+            for (nl::ordered_json::const_iterator it = j.cbegin(); it != j.cend(); ++it)
             {
                 obj[py::str(it.key())] = from_json(it.value());
             }
@@ -67,7 +69,7 @@ namespace pyjson
         }
     }
 
-    inline nl::json to_json(const py::handle& obj)
+    inline nl::ordered_json to_json(const py::handle& obj)
     {
         if (obj.ptr() == nullptr || obj.is_none())
         {
@@ -81,7 +83,7 @@ namespace pyjson
         {
             try
             {
-                nl::json::number_integer_t s = obj.cast<nl::json::number_integer_t>();
+                nl::ordered_json::number_integer_t s = obj.cast<nl::ordered_json::number_integer_t>();
                 if (py::int_(s).equal(obj))
                 {
                     return s;
@@ -92,7 +94,7 @@ namespace pyjson
             }
             try
             {
-                nl::json::number_unsigned_t u = obj.cast<nl::json::number_unsigned_t>();
+                nl::ordered_json::number_unsigned_t u = obj.cast<nl::ordered_json::number_unsigned_t>();
                 if (py::int_(u).equal(obj))
                 {
                     return u;
@@ -118,7 +120,7 @@ namespace pyjson
         }
         if (py::isinstance<py::tuple>(obj) || py::isinstance<py::list>(obj))
         {
-            auto out = nl::json::array();
+            auto out = nl::ordered_json::array();
             for (const py::handle value : obj)
             {
                 out.push_back(to_json(value));
@@ -127,7 +129,7 @@ namespace pyjson
         }
         if (py::isinstance<py::dict>(obj))
         {
-            auto out = nl::json::object();
+            auto out = nl::ordered_json::object();
             for (const py::handle key : obj)
             {
                 out[py::str(key).cast<std::string>()] = to_json(obj[key]);
@@ -145,12 +147,12 @@ namespace nlohmann
     template <>                                            \
     struct adl_serializer<T>                               \
     {                                                      \
-        inline static void to_json(json& j, const T& obj)  \
+        inline static void to_json(ordered_json& j, const T& obj)  \
         {                                                  \
             j = pyjson::to_json(obj);                      \
         }                                                  \
                                                            \
-        inline static T from_json(const json& j)           \
+        inline static T from_json(const ordered_json& j)           \
         {                                                  \
             return pyjson::from_json(j);                   \
         }                                                  \
@@ -160,7 +162,7 @@ namespace nlohmann
     template <>                                            \
     struct adl_serializer<T>                               \
     {                                                      \
-        inline static void to_json(json& j, const T& obj)  \
+        inline static void to_json(ordered_json& j, const T& obj)  \
         {                                                  \
             j = pyjson::to_json(obj);                      \
         }                                                  \
@@ -194,10 +196,10 @@ namespace pybind11
 {
     namespace detail
     {
-        template <> struct type_caster<nl::json>
+        template <> struct type_caster<nl::ordered_json>
         {
         public:
-            PYBIND11_TYPE_CASTER(nl::json, _("json"));
+            PYBIND11_TYPE_CASTER(nl::ordered_json, _("json"));
 
             bool load(handle src, bool)
             {
@@ -221,4 +223,5 @@ namespace pybind11
     }
 }
 
+#endif
 #endif

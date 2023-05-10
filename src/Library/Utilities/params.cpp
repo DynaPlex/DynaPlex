@@ -13,7 +13,7 @@
 namespace py = pybind11;
 #endif
 
-using ordered_json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
 
 namespace DynaPlex {
 
