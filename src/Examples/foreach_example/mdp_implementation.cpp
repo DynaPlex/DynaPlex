@@ -1,6 +1,6 @@
 #include <iostream>
 #include "mdp_implementation.h"
-#include <dynaplex/utilities.h>
+#include <dynaplex/errors.h>
 
 std::string MDP_Implementation::Identifier()
 {
@@ -22,7 +22,7 @@ MDP_Implementation::Action MDP_Implementation::ActionTraverser::begin()
 			return Action(this, initvalue);
 		}
 	}
-	DynaPlex::Utilities::Fail("fatal error in MDP_Implementation::ActionTraverser::begin()");
+	throw DynaPlex::Error("fatal error in MDP_Implementation::ActionTraverser::begin()");
 	//to avoid no return warning.
 	return Action(this, 0);
 }

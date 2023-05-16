@@ -6,11 +6,6 @@
 namespace fs = std::filesystem;
 
 
-void DynaPlex::Utilities::Fail(std::string message)
-{
-	std::cout << message << std::endl;
-	throw std::runtime_error(message);
-}
 
 std::string DynaPlex::Utilities::GetOutputLocation(const std::string filename)
 {

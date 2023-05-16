@@ -4,7 +4,7 @@ import sys
 print("Current version of Python is ", sys.version)
 #Feature: Version warning system before import!
 
-from lib import DynaPlex as dp
+from libs import DynaPlex as dp
 
 kong = [1,2,3]
 settings = { "ape": 1, "donkey": 0.5, "longsetting": -120000231,
@@ -12,7 +12,8 @@ settings = { "ape": 1, "donkey": 0.5, "longsetting": -120000231,
            "names":({"name": "bill"}, {"name2": "bill"})
             }
 #dp.process(settings)
-dp.process(test=["asdf","asdf","asef"],ace='asdf')
+dp.process(test=['asdf','asdf','asef'],ace='asdf')
+
 #dp.process({"envi":'lostsales',"hiddenlayers":[100,200,200]})
 
 #dp.process({'kort':[1,2,3],'lang':(1,2,3),

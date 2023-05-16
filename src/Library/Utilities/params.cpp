@@ -165,7 +165,7 @@ namespace DynaPlex {
     void Params::SaveToFile(const std::string& filename) const {
         std::ofstream file(Utilities::GetOutputLocation(filename));
         if (!file.is_open()) {
-            throw std::runtime_error("Failed to open file for writing: " + filename);
+            throw DynaPlex::Error("Failed to open file for writing: " + filename);
         }
         file << pImpl->data.dump(4); 
         file.close();
