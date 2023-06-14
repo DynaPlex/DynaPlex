@@ -1,17 +1,15 @@
 #include <pybind11/pybind11.h>
-#include <iostream>
-#include <variant>
-#include <dynaplex/params.h>
+#include "dynaplex/pythonparams.h"
 #include "dynaplex/errors.h"
+
 
 namespace py = pybind11;
 
 void process(py::dict dict)
 {
     try {
-        DynaPlex::Params pars = DynaPlex::Params(dict);
-        // auto pars = converter.ToDynaPlexParams(dict);
-        pars.Print();
+        auto pars = DynaPlex::PythonParams(dict);
+         pars.Print();
 
     }
     catch (const DynaPlex::Error& e)

@@ -5,12 +5,10 @@
 *                                                                          *
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
-
+/*Willem van Jaarsveld: Minor adaptations made to ensure proper working with ordered_json*/
 #ifndef PYBIND11_JSON_HPP
 #define PYBIND11_JSON_HPP
 
-#if pybind11_support
-namespace test = pybind11;
 #include <string>
 #include <vector>
 
@@ -223,5 +221,4 @@ namespace pybind11
     }
 }
 
-#endif
 #endif

@@ -7,12 +7,6 @@
 #include "dynaplex/utilities.h"
 #include "dynaplex/errors.h"
 
-#if pybind11_support
-#include <pybind11/pybind11.h>
-#include "pybind11_json.h"
-namespace py = pybind11;
-#endif
-
 using ordered_json = nlohmann::ordered_json;
 
 namespace DynaPlex {
@@ -284,13 +278,10 @@ namespace DynaPlex {
     }
 
 
-    Params::Params(pybind11::dict& dict) : pImpl(std::make_unique<Impl>()) {
-#if pybind11_support
+    Params::Params(ordered_json json) : pImpl(std::make_unique<Impl>()) {
         // Check if the loaded JSON adheres to the homogeneity rule for arrays
-        ordered_json j;
         try {
-            j = dict;
-            check_validity(j);
+            check_validity(json);
         }
         catch (const DynaPlex::Error& e)
         {
@@ -300,10 +291,12 @@ namespace DynaPlex {
         {
             throw DynaPlex::Error("Error while converting from pybind11::dict to Params");
         }
-        pImpl->data = std::move(j);
-#else
-        throw DynaPlex::Error("Pybind11 support disabled, cannot convert from pybind11::dict to params");
-#endif
+        pImpl->data = json;     
+    }
+
+    ordered_json Params::ToJson()
+    {
+        return pImpl->data;
     }
 
 }  // namespace DynaPlex

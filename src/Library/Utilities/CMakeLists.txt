@@ -43,11 +43,6 @@ endif()
  
 
 if(${dynaplex_enable_pythonbindings})
-target_link_libraries(DynaPlex_${targetname} PUBLIC pybind11::embed)
-
-target_compile_definitions(DynaPlex_${targetname} PRIVATE pybind11_support=true) 
-
-
 #copy library (including .pyd) to subdirectory of python, so that the python scripts can find it
 add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_directory

@@ -3,11 +3,8 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include "json_fwd.h"
 
-//forward declaration
-namespace pybind11 {
-	class dict;
-}
  
 namespace DynaPlex {
 	
@@ -53,9 +50,9 @@ namespace DynaPlex {
 
 		void Print();
 
-	public:
-		Params(pybind11::dict& dict);
-		pybind11::dict ToDict();
+	protected:
+		Params(nlohmann::ordered_json json);
+		nlohmann::ordered_json ToJson();
 
 	private:
 		struct Impl;
