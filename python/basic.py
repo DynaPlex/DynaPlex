@@ -11,8 +11,11 @@ settings = { "ape": 1, "donkey": 0.5, "longsetting": -120000231,
             "test" : {"test": [1.0,2.0,3.0]} ,
            "names":({"name": "bill"}, {"name2": "bill"})
             }
-#dp.process(settings)
-dp.process(test=['asdf','asdf','asef'],ace='asdf')
+dp.process(settings)
+#dp.process(test=['asdf','asdf','asef'],ace='asdf')
+
+#x = dp.get();
+#print(x)
 
 #dp.process({"envi":'lostsales',"hiddenlayers":[100,200,200]})
 
@@ -20,7 +23,5 @@ dp.process(test=['asdf','asdf','asef'],ace='asdf')
 #            'moeilijk':[{'a':[1,2,1,3,1,2,1,1,3,1,12,13,1,13,13,1,3,1]},{'b':2}],
 #           'last':1000
 #           })
-
-input("press enter to finish")
 
 

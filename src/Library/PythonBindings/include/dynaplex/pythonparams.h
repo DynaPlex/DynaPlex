@@ -7,9 +7,9 @@ namespace DynaPlex {
 class PythonParams : public DynaPlex::Params
 {
 public:
-    PythonParams(pybind11::dict& dict);
-
-   // pybind11::dict ToDict()
+    PythonParams(pybind11::dict dict);
+    operator pybind11::dict() const;
+    PythonParams(Params& params);
 };
 
 }  // namespace DynaPlex

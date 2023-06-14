@@ -52,7 +52,7 @@ namespace DynaPlex {
 
 	protected:
 		Params(nlohmann::ordered_json json);
-		nlohmann::ordered_json ToJson();
+		nlohmann::ordered_json ToJson() const;
 
 	private:
 		struct Impl;

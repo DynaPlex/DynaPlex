@@ -6,10 +6,43 @@
 
 namespace DynaPlex
 {
-	PythonParams::PythonParams(pybind11::dict& dict)
-		:Params(dict)
+
+	nlohmann::ordered_json ConvertToJson(pybind11::dict& dict)
+	{
+		try
+		{
+			nlohmann::ordered_json json = dict;
+			return json;
+		}
+		catch (const std::exception& e)
+		{
+			throw DynaPlex::Error(std::string("Could not convert dictionary to ordered json:\n  ") + e.what());
+		}
+	}
+
+	PythonParams::PythonParams(pybind11::dict dict)	
+		:Params( ConvertToJson(dict) )
 	{		
 	}
+
+	PythonParams::operator pybind11::dict() const
+	{
+		try
+		{
+			pybind11::dict dict = ToJson();
+			return dict;
+		}
+		catch (const std::exception& e)
+		{
+			throw DynaPlex::Error(std::string("Could not convert json to dictionary:\n  ") + e.what());
+		}
+	}	
+
+	PythonParams::PythonParams(Params& params)
+		:Params(params)
+	{
+	}
+
 
 	
 

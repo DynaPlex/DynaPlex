@@ -294,7 +294,7 @@ namespace DynaPlex {
         pImpl->data = json;     
     }
 
-    ordered_json Params::ToJson()
+    ordered_json Params::ToJson() const
     {
         return pImpl->data;
     }
