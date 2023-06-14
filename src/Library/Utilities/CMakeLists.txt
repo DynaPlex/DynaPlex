@@ -43,7 +43,7 @@ endif()
  
 
 if(${dynaplex_enable_pythonbindings})
-target_link_libraries(DynaPlex_${targetname} PRIVATE pybind11::module)
+target_link_libraries(DynaPlex_${targetname} PUBLIC pybind11::embed)
 
 target_compile_definitions(DynaPlex_${targetname} PRIVATE pybind11_support=true) 
 
@@ -52,11 +52,11 @@ target_compile_definitions(DynaPlex_${targetname} PRIVATE pybind11_support=true)
 add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_directory
        "${PROJECT_BINARY_DIR}/lib"
-       "${PROJECT_SOURCE_DIR}/python/lib/")
+       "${PROJECT_SOURCE_DIR}/python/libs/")
        	   
 #added to resolve issues when importing .pyd when also using pytorch.
  add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_directory
        "${PROJECT_BINARY_DIR}/bin"
-       "${PROJECT_SOURCE_DIR}/python/lib/")
+       "${PROJECT_SOURCE_DIR}/python/libs/")
 endif()

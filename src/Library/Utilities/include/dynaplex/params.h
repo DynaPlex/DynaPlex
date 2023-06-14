@@ -22,12 +22,8 @@ namespace DynaPlex {
 		using DataType = std::variant<bool,std::nullptr_t, int64_t, double, std::string,DynaPlex::Params, IntVec,DoubleVec,StringVec,ParamsVec>;
 		using TupleList = std::initializer_list< std::tuple<std::string, DataType>>;
 	    
-	
-	public:
-		Params();
+	    Params();
 
-		Params(pybind11::dict& dict);
-		pybind11::dict ToDict();
 		
 		Params(const Params& other);
 		Params& operator=(const Params& other);
@@ -56,6 +52,11 @@ namespace DynaPlex {
 
 
 		void Print();
+
+	public:
+		Params(pybind11::dict& dict);
+		pybind11::dict ToDict();
+
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> pImpl;

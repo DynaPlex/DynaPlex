@@ -10,6 +10,7 @@ file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 pybind11_add_module(DynaPlex_${targetname})
 
 
+
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_EXTENSIONS off)
@@ -34,11 +35,11 @@ target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::AllComponents)
 add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_directory
        "${PROJECT_BINARY_DIR}/lib"
-       "${PROJECT_SOURCE_DIR}/python/lib/")
+       "${PROJECT_SOURCE_DIR}/python/libs/")
        	   
 #added to resolve issues when importing .pyd when also using pytorch.
  add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_directory
        "${PROJECT_BINARY_DIR}/bin"
-       "${PROJECT_SOURCE_DIR}/python/lib/")
+       "${PROJECT_SOURCE_DIR}/python/libs/")
 
