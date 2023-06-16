@@ -64,7 +64,7 @@ namespace DynaPlex {
                     else if constexpr (std::is_same_v<T, Params>) {
                         data[key] = v.pImpl->data;
                     }
-                    else if constexpr (std::is_same_v<T, IntVec> || std::is_same_v<T, DoubleVec> || std::is_same_v<T, StringVec> ) {
+                    else if constexpr (std::is_same_v<T, Int64Vec> || std::is_same_v<T, DoubleVec> || std::is_same_v<T, StringVec> ) {
                         data[key] = ordered_json(v);
                     }
                     else if constexpr (std::is_same_v<T, ParamsVec>) {
@@ -80,6 +80,51 @@ namespace DynaPlex {
                     }
                 },
                 value);
+        }
+
+        template<typename T>
+        void GetValueHelper(const std::string& key, T& out_val) const {
+            if (!data.contains(key)) {
+                throw std::runtime_error("Key " + key + " not found in Params.");
+            }
+
+            if (!data[key].is_null()) {
+                try {
+                    out_val = data[key].get<T>();
+                }
+                catch (nlohmann::json::exception& e) {
+                    throw std::runtime_error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
+                }
+            }
+            else {
+                out_val = T{};
+            }
+        }
+
+        void GetParamsVec(const std::string& key, Params::ParamsVec& out_val) {
+            if (!data.contains(key)) {
+                throw std::runtime_error("Key " + key + " not found in Params.");
+            }
+
+            if (data[key].is_array()) {
+                try {
+                    for (const auto& item : data[key]) {
+                        if (item.is_object()) {
+                            Params p(item);
+                            out_val.push_back(p);
+                        }
+                        else {
+                            throw DynaPlex::Error("Key " + key + " is not of the correct type in Params.");
+                        }
+                    }
+                }
+                catch (nlohmann::json::exception& e) {
+                    throw std::runtime_error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
+                }
+            }
+            else {
+                throw std::runtime_error("Key " + key + " must be of type array in Params.");
+            }
         }
     };
 
@@ -126,16 +171,15 @@ namespace DynaPlex {
     void Params::Add(std::string s, bool val) {
         pImpl->Add(s, val);
     }
-    void Params::Add(std::string s, nullptr_t val) {
-        pImpl->Add(s, val);
-    }
+
+
     void Params::Add(std::string s, std::string val) {
         pImpl->Add(s, val);
     }
     void Params::Add(std::string s, double val) {
         pImpl->Add(s, val);
     }
-    void Params::Add(std::string s,const IntVec& vec) {
+    void Params::Add(std::string s,const Int64Vec& vec) {
         pImpl->Add(s, vec);
     }
     void Params::Add(std::string s,const DoubleVec& vec) {
@@ -150,8 +194,75 @@ namespace DynaPlex {
     void Params::Add(std::string s,const ParamsVec& vec) {
         pImpl->Add(s, vec);
     }
+    void Params::GetValue(const std::string& key, int64_t& out_val) const {
+        pImpl->GetValueHelper(key, out_val);
+    }
+    void Params::GetValue(const std::string& key, std::string& out_val) const {
+        pImpl->GetValueHelper(key, out_val);
+    }
 
-    void Params::Print() {
+    void Params::GetValue(const std::string& key, int& out_val) const {
+        int64_t int64;
+        pImpl->GetValueHelper(key, int64);
+
+        if (int64 < INT_MIN || int64 > INT_MAX) {
+            throw DynaPlex::Error("int64_t value out of range for conversion to int");
+        }
+        out_val = static_cast<int>(int64);
+    }
+   
+    void Params::GetValue(const std::string& key, bool& out_val) const {
+        pImpl->GetValueHelper(key, out_val);
+    }
+
+    void Params::GetValue(const std::string& key, double& out_val)const {
+        pImpl->GetValueHelper(key, out_val);
+    }
+
+    void Params::GetValue(const std::string& key, Params::Int64Vec& out_val)const {
+        pImpl->GetValueHelper(key, out_val);
+    }
+
+    void Params::GetValue(const std::string& key, Params::StringVec& out_val)const {
+        pImpl->GetValueHelper(key, out_val);
+    }
+
+    void Params::GetValue(const std::string& key, Params::DoubleVec& out_val)const {
+        pImpl->GetValueHelper(key, out_val);
+    }
+
+    void Params::GetValue(const std::string& key, Params::ParamsVec& out_val)const {
+        pImpl->GetParamsVec(key, out_val);
+    }
+
+    void Params::GetValue(const std::string& key, std::vector<int>& out_val) const {
+        std::vector<int64_t> tmp;
+        pImpl->GetValueHelper(key, tmp);
+
+
+        out_val.clear();
+        for (const auto& val : tmp) {
+            if (val < std::numeric_limits<int>::min() || val > std::numeric_limits<int>::max()) {
+                throw DynaPlex::Error("Cannot convert to std::vector<int>. Value " + std::to_string(val) + " for key " + key + " cannot be represented as int.");
+            }
+            out_val.push_back(static_cast<int>(val));
+        }
+    }
+
+
+    Params Params::GetNestedParams(const std::string& key) {
+        if (!pImpl->data.contains(key)) {
+            throw std::runtime_error("Key " + key + " not found in Params.");
+        }
+
+        if (!pImpl->data[key].is_object()) {
+            throw std::runtime_error("Expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
+        }
+
+        return Params(pImpl->data[key]);
+    }
+
+    void Params::Print() const {
         pImpl->PrintAbbrv(pImpl->data, std::cout);
         std::cout << std::endl;       
     }
@@ -298,5 +409,8 @@ namespace DynaPlex {
     {
         return pImpl->data;
     }
+        
+
+
 
 }  // namespace DynaPlex

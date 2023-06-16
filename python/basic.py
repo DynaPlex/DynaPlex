@@ -11,11 +11,13 @@ settings = { "ape": 1, "donkey": 0.5, "longsetting": -120000231,
             "test" : {"test": [1.0,2.0,3.0]} ,
            "names":({"name": "bill"}, {"name2": "bill"})
             }
-dp.process(settings)
+#dp.process(settings)
+
+
 #dp.process(test=['asdf','asdf','asef'],ace='asdf')
 
-#x = dp.get();
-#print(x)
+x = dp.get();
+print(x)
 
 #dp.process({"envi":'lostsales',"hiddenlayers":[100,200,200]})
 

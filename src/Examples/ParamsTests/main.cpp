@@ -1,38 +1,59 @@
 ﻿#include <iostream>
 #include <dynaplex/params.h>
 #include <dynaplex/utilities.h>
+#include "SomeClass.h"
 int main()
 {
 	DynaPlex::Params distprops{
-			{"type","geom"},
-		{"mean",5} };
+		{"type","geom"},
+	{"mean",5} };
 
 	DynaPlex::Params ret1{
-		{"name","retailer 1"},
-		{"aa",nullptr},
-		{"aasda",nullptr},
-		{"asfd", DynaPlex::Params::StringVec{"asdf","asdf"}},
-		{"dist", distprops}
+	{"myString","retailer 1"},
+		{"myInt",42},
+		{"myVector",DynaPlex::Params::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+		{"pars",nullptr}
 	};
 
 
 	DynaPlex::Params ret2({
-		{"name","retailer 2"},
-		{"dist", distprops},
-		{"leadtime",DynaPlex::Params::DoubleVec{1.4,2,1,1,1,1,1,1,1,1,1,1,1,1,1}}
-	});
+		{"myString","retailer 2"},
+		{"myInt",42},
+		{"myVector",DynaPlex::Params::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+		{"pars",nullptr}
+		});
 	DynaPlex::Params retlast({
-		{"name","retailer 10"},
-		{"dist", distprops},
-		{"leadtime",DynaPlex::Params::IntVec{1,2,-1,1,1,1,1,1,1,1,1,1,1,1,1}}
+		{"myString","retailer 10"},
+		{"myInt",42},
+		{"myVector",DynaPlex::Params::Int64Vec{1,2,-1,1,1,1,1,1,1,1,1,1,1,1,1}},
+		{"pars",nullptr}
 		});
 
 
 
-	
+
 	DynaPlex::Params::ParamsVec rets{
 		ret1,ret2,retlast
 	};
+
+
+
+	DynaPlex::Params parts({ 
+		{"myString","string"},
+		{"myInt",42},
+		{"myVector",DynaPlex::Params::Int64Vec({1,2,3,4})},
+		{"pars",rets},
+		{"ret", ret1}
+	
+	});
+
+
+	SomeClass someClass(parts);
+
+	someClass.Print();
+	return 0;
+
+
 
 
 	auto params= DynaPlex::Params(

@@ -5,40 +5,32 @@
 
 namespace py = pybind11;
 
-void process(py::dict dict)
+void process(py::object& obj)
 {
-    try {
-        auto pars = DynaPlex::PythonParams(dict);
-         pars.Print();
-
-    }
-    catch (const DynaPlex::Error& e)
-    {
-        throw std::runtime_error(e.what());
-    }    
+	auto pars = DynaPlex::PythonParams(obj);
+	pars.Print();
+}
+void process(py::kwargs& kwargs)
+{
+	auto& obj = static_cast<py::object&>(kwargs);
+	process(obj);
 }
 
-void process(py::kwargs kwargs)
-{
-    auto dict = static_cast<py::dict>(kwargs);
-
-    process(dict);
-}
 
 py::dict get()
 {
 	DynaPlex::Params distprops{
 			{"type","geom"},
-		{"mean",5} };	
+		{"mean",5} };
 
-    return DynaPlex::PythonParams(distprops);
- }
+	return DynaPlex::PythonParams(std::move(distprops));
+}
 
 
 PYBIND11_MODULE(DynaPlex, m) {
-    m.doc() = "pybind11 example plugin"; // optional module docstring
-    m.def("get", &get, "gets some parameters");
-    m.def("process",py::overload_cast<py::kwargs>(&process), "Processes kwargs");
-    m.def("process", py::overload_cast<py::dict>(&process), "Processes dict");
-   
+	m.doc() = "pybind11 example plugin"; // optional module docstring
+	m.def("get", &get, "gets some parameters");
+	m.def("process", py::overload_cast<py::kwargs&>(&process), "Processes kwargs");
+	m.def("process", py::overload_cast<py::object&>(&process), "Processes dict");
+
 }
