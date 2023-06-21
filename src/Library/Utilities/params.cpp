@@ -11,6 +11,8 @@ using ordered_json = nlohmann::ordered_json;
 
 namespace DynaPlex {
 
+
+    
     class Params::Impl {
     public:
         ordered_json data;
@@ -83,7 +85,7 @@ namespace DynaPlex {
         }
 
         template<typename T>
-        void GetValueHelper(const std::string& key, T& out_val) const {
+        void GetIntoHelper(const std::string& key, T& out_val) const {
             if (!data.contains(key)) {
                 throw std::runtime_error("Key " + key + " not found in Params.");
             }
@@ -194,16 +196,16 @@ namespace DynaPlex {
     void Params::Add(std::string s,const ParamsVec& vec) {
         pImpl->Add(s, vec);
     }
-    void Params::GetValue(const std::string& key, int64_t& out_val) const {
-        pImpl->GetValueHelper(key, out_val);
+    void Params::GetInto(const std::string& key, int64_t& out_val) const {
+        pImpl->GetIntoHelper(key, out_val);
     }
-    void Params::GetValue(const std::string& key, std::string& out_val) const {
-        pImpl->GetValueHelper(key, out_val);
+    void Params::GetInto(const std::string& key, std::string& out_val) const {
+        pImpl->GetIntoHelper(key, out_val);
     }
 
-    void Params::GetValue(const std::string& key, int& out_val) const {
+    void Params::GetInto(const std::string& key, int& out_val) const {
         int64_t int64;
-        pImpl->GetValueHelper(key, int64);
+        pImpl->GetIntoHelper(key, int64);
 
         if (int64 < INT_MIN || int64 > INT_MAX) {
             throw DynaPlex::Error("int64_t value out of range for conversion to int");
@@ -211,33 +213,33 @@ namespace DynaPlex {
         out_val = static_cast<int>(int64);
     }
    
-    void Params::GetValue(const std::string& key, bool& out_val) const {
-        pImpl->GetValueHelper(key, out_val);
+    void Params::GetInto(const std::string& key, bool& out_val) const {
+        pImpl->GetIntoHelper(key, out_val);
     }
 
-    void Params::GetValue(const std::string& key, double& out_val)const {
-        pImpl->GetValueHelper(key, out_val);
+    void Params::GetInto(const std::string& key, double& out_val)const {
+        pImpl->GetIntoHelper(key, out_val);
     }
 
-    void Params::GetValue(const std::string& key, Params::Int64Vec& out_val)const {
-        pImpl->GetValueHelper(key, out_val);
+    void Params::GetInto(const std::string& key, Params::Int64Vec& out_val)const {
+        pImpl->GetIntoHelper(key, out_val);
     }
 
-    void Params::GetValue(const std::string& key, Params::StringVec& out_val)const {
-        pImpl->GetValueHelper(key, out_val);
+    void Params::GetInto(const std::string& key, Params::StringVec& out_val)const {
+        pImpl->GetIntoHelper(key, out_val);
     }
 
-    void Params::GetValue(const std::string& key, Params::DoubleVec& out_val)const {
-        pImpl->GetValueHelper(key, out_val);
+    void Params::GetInto(const std::string& key, Params::DoubleVec& out_val)const {
+        pImpl->GetIntoHelper(key, out_val);
     }
 
-    void Params::GetValue(const std::string& key, Params::ParamsVec& out_val)const {
+    void Params::GetInto(const std::string& key, Params::ParamsVec& out_val)const {
         pImpl->GetParamsVec(key, out_val);
     }
 
-    void Params::GetValue(const std::string& key, std::vector<int>& out_val) const {
+    void Params::GetInto(const std::string& key, std::vector<int>& out_val) const {
         std::vector<int64_t> tmp;
-        pImpl->GetValueHelper(key, tmp);
+        pImpl->GetIntoHelper(key, tmp);
 
 
         out_val.clear();
@@ -250,16 +252,16 @@ namespace DynaPlex {
     }
 
 
-    Params Params::GetNestedParams(const std::string& key) {
+    void Params::GetInto(const std::string& key, Params& params) const {
         if (!pImpl->data.contains(key)) {
-            throw std::runtime_error("Key " + key + " not found in Params.");
+            throw std::runtime_error("key " + key + " not found in params.");
         }
 
         if (!pImpl->data[key].is_object()) {
-            throw std::runtime_error("Expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
+            throw std::runtime_error("expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
         }
 
-        return Params(pImpl->data[key]);
+        params = Params(pImpl->data[key]);
     }
 
     void Params::Print() const {
@@ -355,7 +357,7 @@ namespace DynaPlex {
         {
             throw DynaPlex::Error("Root node is not an object/dict.");
         }
-        check_homogeneity(j, "");
+        return check_homogeneity(j, "");
     }
 
     Params Params::LoadFromFile(const std::string& filename) {

@@ -2,12 +2,12 @@
 #include "NestedClass.h"
 #include <iostream>
 
-
 NestedClass::NestedClass(DynaPlex::Params& params)
 {
-    params.GetValue("Id", Id);
-    params.GetValue("Size", Size);
+    params.GetInto("Id", Id);
+    params.GetInto("Size", Size);
 }
+
 
 void NestedClass::Print() const {
     std::cout << "Id: " << Id << std::endl;

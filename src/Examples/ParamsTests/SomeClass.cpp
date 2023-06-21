@@ -3,11 +3,12 @@
 
 SomeClass::SomeClass(const DynaPlex::Params& params) {
     
-    params.GetValue("myString", myString);
-    params.GetValue("myInt", myInt);
-    params.GetValue("myVector", myVector);
+    params.GetInto("myString", myString);
+    params.GetInto("myInt", myInt);
+    params.GetInto("myVector", myVector);
 
-   //params.GetValue("nestedClass", nestedClass);
+    params.GetInto("nestedClass", nestedClass);
+//    params.GetInto<std::vector<NestedClass>>("myNestedVector", myNestedVector);
 
 }
 
@@ -19,6 +20,8 @@ void SomeClass::Print() const {
         std::cout << num << " ";
     }
     std::cout << std::endl;
+    std::cout << "nestedClass: " << std::endl;
+    nestedClass.Print();
 
     std::cout << "myNestedVector: " << std::endl;
     for (const auto& nestedObj : myNestedVector) {

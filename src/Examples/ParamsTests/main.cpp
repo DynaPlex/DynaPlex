@@ -36,6 +36,7 @@ int main()
 		ret1,ret2,retlast
 	};
 
+	auto nested = DynaPlex::Params({ {"Id","tset"},{"Size",1.0} });
 
 
 	DynaPlex::Params parts({ 
@@ -43,7 +44,9 @@ int main()
 		{"myInt",42},
 		{"myVector",DynaPlex::Params::Int64Vec({1,2,3,4})},
 		{"pars",rets},
-		{"ret", ret1}
+		{"ret", ret1},
+		{ "nestedClass",nested},
+		{"myNestedVector",DynaPlex::Params::ParamsVec{nested,nested}}
 	
 	});
 

@@ -10,10 +10,16 @@ namespace DynaPlex {
 	class Params;
 
 	template<typename T>
-	concept ConvertibleFromParams = requires(Params p) {
+	concept ConvertibleFromParams = requires(Params& p) {
 		{ T(p) };
 	};
 
+	template<typename T>
+	concept ConvertibleFromParamsVec = requires(T a, Params& p) {
+		{ T() };
+		requires ConvertibleFromParams<typename T::value_type>;
+		{ a.push_back(T(p)) };
+	};
 
 	class Params
 	{
@@ -52,22 +58,38 @@ namespace DynaPlex {
 
 
 
-		Params GetNestedParams(const std::string& key);
-
-		void GetValue(const std::string& key, int64_t& out_val) const;
-		void GetValue(const std::string& key, std::string& out_val) const;
-		void GetValue(const std::string& key, int& out_val) const;
-		void GetValue(const std::string& key, bool& out_val) const;
-		void GetValue(const std::string& key, double& out_val) const;
-		void GetValue(const std::string& key, Int64Vec& out_val) const;
-		void GetValue(const std::string& key, StringVec& out_val) const;
-		void GetValue(const std::string& key, DoubleVec& out_val) const;
-		void GetValue(const std::string& key, ParamsVec& out_val) const;
-		void GetValue(const std::string& key, std::vector<int>& out_val) const;
-
+		void GetInto(const std::string& key, Params& params) const;
+		void GetInto(const std::string& key, int64_t& out_val) const;
+		void GetInto(const std::string& key, std::string& out_val) const;
+		void GetInto(const std::string& key, int& out_val) const;
+		void GetInto(const std::string& key, bool& out_val) const;
+		void GetInto(const std::string& key, double& out_val) const;
+		void GetInto(const std::string& key, Int64Vec& out_val) const;
+		void GetInto(const std::string& key, StringVec& out_val) const;
+		void GetInto(const std::string& key, DoubleVec& out_val) const;
+		void GetInto(const std::string& key, ParamsVec& out_val) const;
+		void GetInto(const std::string& key, std::vector<int>& out_val) const;
+		
+		
 		template<ConvertibleFromParams T>
-		void GetValue(const std::string& key, T& out_val) {
-			out_val = T(GetNestedParams(key));
+		void GetInto(const std::string& key, T& out_val) const {
+			Params params;
+			GetInto(key, params);
+			out_val = T(params);
+		}
+
+
+
+		template<ConvertibleFromParamsVec T>
+		void GetInto(const std::string& key, T& out_val) {
+			out_val.clear();
+
+			ParamsVec paramsVec;
+			GetInto(key, paramsVec);
+
+			for (Params& p : paramsVec) {
+				out_val.push_back(typename T::value_type(p));
+			}
 		}
 
 		void SaveToFile(const std::string &filename) const;

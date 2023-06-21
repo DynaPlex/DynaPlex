@@ -22,12 +22,12 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 
 if(${dynaplex_all_warnings})
 target_compile_options(DynaPlex_${targetname} PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
 )
 endif()
 
-
+ 
 
 target_include_directories(DynaPlex_${targetname} PUBLIC include)
 
