@@ -15,10 +15,11 @@ namespace DynaPlex {
 	};
 
 	template<typename T>
-	concept ConvertibleFromParamsVec = requires(T a, Params& p) {
+	concept ConvertibleFromParamsVec = requires(T a, typename T::value_type val) {
+		typename T::value_type;
 		{ T() };
-		requires ConvertibleFromParams<typename T::value_type>;
-		{ a.push_back(T(p)) };
+        requires ConvertibleFromParams<typename T::value_type>;
+		a.push_back(val);
 	};
 
 	class Params
@@ -81,7 +82,7 @@ namespace DynaPlex {
 
 
 		template<ConvertibleFromParamsVec T>
-		void GetInto(const std::string& key, T& out_val) {
+		void GetInto(const std::string& key, T& out_val) const {
 			out_val.clear();
 
 			ParamsVec paramsVec;

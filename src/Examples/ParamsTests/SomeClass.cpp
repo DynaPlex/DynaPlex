@@ -1,14 +1,14 @@
 #include "SomeClass.h"
 #include <iostream>
 
-SomeClass::SomeClass(const DynaPlex::Params& params) {
+SomeClass::SomeClass(DynaPlex::Params& params) {
     
     params.GetInto("myString", myString);
     params.GetInto("myInt", myInt);
     params.GetInto("myVector", myVector);
 
     params.GetInto("nestedClass", nestedClass);
-//    params.GetInto<std::vector<NestedClass>>("myNestedVector", myNestedVector);
+    params.GetInto("myNestedVector", myNestedVector);
 
 }
 

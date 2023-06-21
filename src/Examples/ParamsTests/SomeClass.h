@@ -8,7 +8,7 @@
 
 class SomeClass {
 public:
-    SomeClass(const DynaPlex::Params& params);
+    SomeClass(DynaPlex::Params& params);
 
     void Print() const;
 
