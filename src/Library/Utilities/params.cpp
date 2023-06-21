@@ -66,7 +66,7 @@ namespace DynaPlex {
                     else if constexpr (std::is_same_v<T, Params>) {
                         data[key] = v.pImpl->data;
                     }
-                    else if constexpr (std::is_same_v<T, Int64Vec> || std::is_same_v<T, DoubleVec> || std::is_same_v<T, StringVec> ) {
+                    else if constexpr (std::is_same_v<T, Int64Vec> || std::is_same_v<T, DoubleVec> || std::is_same_v<T, StringVec>) {
                         data[key] = ordered_json(v);
                     }
                     else if constexpr (std::is_same_v<T, ParamsVec>) {
@@ -180,6 +180,10 @@ namespace DynaPlex {
     }
     void Params::Add(std::string s, double val) {
         pImpl->Add(s, val);
+    }
+    void Params::Add(std::string s, const std::vector<int>& vec) {
+        std::vector<int64_t> vec64(vec.begin(), vec.end());
+        pImpl->Add(s, vec64);
     }
     void Params::Add(std::string s,const Int64Vec& vec) {
         pImpl->Add(s, vec);

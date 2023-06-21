@@ -5,6 +5,10 @@
 #include <vector>
 #include "json_fwd.h"
 #include <concepts>
+
+//namespace nlohmann {
+//	class ordered_json;
+//}
  
 namespace DynaPlex {
 	class Params;
@@ -24,8 +28,6 @@ namespace DynaPlex {
 
 	class Params
 	{
-
-
 	public:
 		using Int64Vec = std::vector<int64_t>;
 		using DoubleVec = std::vector<double>;
@@ -33,7 +35,8 @@ namespace DynaPlex {
 		using ParamsVec = std::vector<Params>;
 		using DataType = std::variant<bool,std::nullptr_t, int64_t, double, std::string,DynaPlex::Params, Int64Vec,DoubleVec,StringVec,ParamsVec>;
 		using TupleList = std::initializer_list< std::tuple<std::string, DataType>>;
-	    
+
+		Params(TupleList list);
 		
 	    Params();		
 		Params(const Params& other);
@@ -42,8 +45,6 @@ namespace DynaPlex {
 		Params(Params&& other) noexcept;
 		Params& operator=(Params&& other) noexcept;
 
-
-		Params(TupleList list);
 		
 
 		void Add(std::string s, const Params& vec);
@@ -53,6 +54,7 @@ namespace DynaPlex {
 		void Add(std::string s, std::string val);
 		void Add(std::string s, double val);
 		void Add(std::string s, const Int64Vec& vec);
+		void Add(std::string s, const std::vector<int>& vec);
 		void Add(std::string s, const StringVec& vec);
 		void Add(std::string s, const DoubleVec& vec);
 		void Add(std::string s, const ParamsVec& vec);

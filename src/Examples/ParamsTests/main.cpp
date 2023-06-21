@@ -38,17 +38,22 @@ int main()
 
 	auto nested = DynaPlex::Params({ {"Id","tset"},{"Size",1.0} });
 
+	auto nested2 = DynaPlex::Params({ {"Id","tset"},{"Size",2.0} });
+
+
 
 	DynaPlex::Params parts({ 
 		{"myString","string"},
 		{"myInt",42},
-		{"myVector",DynaPlex::Params::Int64Vec({1,2,3,4})},
 		{"pars",rets},
 		{"ret", ret1},
 		{ "nestedClass",nested},
-		{"myNestedVector",DynaPlex::Params::ParamsVec{nested,nested}}
+		{"myNestedVector",DynaPlex::Params::ParamsVec{nested,nested2}}
 	
 	});
+
+	parts.Add(
+		"myVector", std::vector<int>({ 1,2,4 }));
 
 
 	SomeClass someClass(parts);
