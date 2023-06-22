@@ -71,9 +71,9 @@ add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
        	   
 #added to resolve issues when importing .pyd when also using pytorch.
 if(Torch_FOUND)
- add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E copy_directory
-       "${PROJECT_BINARY_DIR}/bin"
-       "${PROJECT_SOURCE_DIR}/python/libs/")
+# add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E copy_directory
+#       "${PROJECT_BINARY_DIR}/bin"
+#       "${PROJECT_SOURCE_DIR}/python/libs/")
 endif()
 endif()

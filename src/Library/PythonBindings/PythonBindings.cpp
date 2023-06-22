@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include "dynaplex/pythonparams.h"
 #include "dynaplex/errors.h"
-
+#include "dynaplex/neuralnetworktrainer.h"
 
 namespace py = pybind11;
 
@@ -16,6 +16,11 @@ void process(py::kwargs& kwargs)
 	process(obj);
 }
 
+void testPytorch()
+{
+	DynaPlex::NeuralNetworkTrainer trainer{};
+	trainer.writeidentifier();
+}
 
 py::dict get()
 {
@@ -32,5 +37,6 @@ PYBIND11_MODULE(DynaPlex, m) {
 	m.def("get", &get, "gets some parameters");
 	m.def("process", py::overload_cast<py::kwargs&>(&process), "Processes kwargs");
 	m.def("process", py::overload_cast<py::object&>(&process), "Processes dict");
+	m.def("testPyTorch", &testPytorch, "tests pytorch availability");
 
 }

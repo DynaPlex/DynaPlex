@@ -20,8 +20,6 @@ int main()
 	{
 		std::cout << a << std::endl;
 	}
-	std::string s;
-	std::cin >> s;
 
 	return 0;
 

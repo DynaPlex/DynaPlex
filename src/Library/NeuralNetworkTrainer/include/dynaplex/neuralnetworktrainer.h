@@ -9,7 +9,8 @@ namespace DynaPlex {
 	public:
 		void writeidentifier();
 
-
+		NeuralNetworkTrainer():mdp{nullptr}
+		{};
 		NeuralNetworkTrainer(DynaPlex::MDP mdp);
 	};
 }//namespace DynaPlex
