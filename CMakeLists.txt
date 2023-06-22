@@ -15,10 +15,11 @@ include(cmake/dependencies.cmake)
 include(dynaplex_settings)
 
 # MAIN TARGETS
-add_subdirectory(src/Library)
+add_subdirectory(src/lib)
 #include examples unless this project is included as part of bigger project.
 if(${PROJECT_IS_TOP_LEVEL})
-add_subdirectory(src/Executable_Tests)
+add_subdirectory(src/tests)
+add_subdirectory(src/examples)
 endif()
 
 #glob directories

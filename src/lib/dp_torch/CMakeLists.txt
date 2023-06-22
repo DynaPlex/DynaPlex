@@ -1,20 +1,21 @@
 
 cmake_minimum_required (VERSION 3.21)
 
-set(targetname Core)
+set(targetname DP_Torch)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
 file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 
 
+
 add_library (DynaPlex_${targetname} STATIC)
 add_library (DynaPlex::${targetname} ALIAS DynaPlex_${targetname})
 
-set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
+##use CC_17 to avoid issues with PyTorch.
+set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 17)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_EXTENSIONS off)
-
 
 set_target_properties(DynaPlex_${targetname} PROPERTIES 
 	OUTPUT_NAME DynaPlex${targetname}
@@ -29,7 +30,7 @@ $<INSTALL_INTERFACE:include>
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-
+target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::Core)
 
 
 if(${dynaplex_all_warnings})
@@ -40,3 +41,10 @@ target_compile_options(DynaPlex_${targetname} PRIVATE
 endif()
 
  
+
+ 
+#Logic for including PyTorch Privately
+if(Torch_FOUND)
+   target_compile_definitions(DynaPlex_${targetname} PRIVATE Torch_available=1)
+   target_link_libraries(DynaPlex_${targetname} PUBLIC "${TORCH_LIBRARIES}")
+endif()
