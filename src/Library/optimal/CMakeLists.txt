@@ -8,7 +8,7 @@ file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
 file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 
 
-add_library (DynaPlex_${targetname} SHARED)
+add_library (DynaPlex_${targetname} STATIC)
 add_library (DynaPlex::${targetname} ALIAS DynaPlex_${targetname})
 
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
@@ -27,7 +27,7 @@ PUBLIC
 $<INSTALL_INTERFACE:include>
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::MDP_Interfaces)
+target_link_libraries(DynaPlex_${targetname} PUBLIC DynaPlex::Core)
 
 
 if(${dynaplex_all_warnings})

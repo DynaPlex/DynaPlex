@@ -1,10 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.21)
 
-
-add_subdirectory("DynaPlexInterfaces")
 add_subdirectory("NeuralNetworkTrainer")
 add_subdirectory("Optimal")
-add_subdirectory("Utilities")
+add_subdirectory("Core")
 
 add_subdirectory("AllComponents")
 

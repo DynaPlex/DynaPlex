@@ -7,11 +7,11 @@
 #include "dynaplex/utilities.h"
 #include "dynaplex/errors.h"
 
-using ordered_json = nlohmann::ordered_json;
-
 namespace DynaPlex {
 
 
+
+    using ordered_json = nlohmann::ordered_json;
     
     class Params::Impl {
     public:

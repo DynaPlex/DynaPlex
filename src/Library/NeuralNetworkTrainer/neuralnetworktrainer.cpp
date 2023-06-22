@@ -12,7 +12,8 @@ namespace DynaPlex {
 		std::cout << eye << std::endl;
 
 		std::cout << torch::cuda::is_available() << std::endl;
-
+#else
+		std::cout << "torch not available" << std::endl;
 #endif
 		std::cout << mdp->Identifier() << std::endl;
 	}

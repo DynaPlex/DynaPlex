@@ -5,9 +5,14 @@
 #include <iostream>
 int main()
 {
+
+	
 	MDP_Implementation mdp_impl(2);
 	MDP_Implementation::State state{ 4 };
 
+	auto mdp = DynaPlex::Convert(mdp_impl);
+	DynaPlex::NeuralNetworkTrainer trainer(mdp);
+	trainer.writeidentifier();
 
 	auto list = mdp_impl.AllowedActions(state);
 
@@ -19,10 +24,9 @@ int main()
 	std::cin >> s;
 
 	return 0;
-	auto mdp = DynaPlex::Convert(mdp_impl);
 
-	DynaPlex::NeuralNetworkTrainer trainer(mdp);
-	trainer.writeidentifier();
+
+
 	//DynaPlex::LibraryComponent comp{mdp};
 
 	//trainer.writeidentifier();
