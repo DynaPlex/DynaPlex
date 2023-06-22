@@ -1,6 +1,6 @@
 ﻿#PREAMBLE
 cmake_minimum_required (VERSION 3.21)
-project ("DynaPlex" CXX)
+project ("DynaPlexSuite" CXX)
 
 # PROJECT WIDE SETUP
 
@@ -18,7 +18,7 @@ include(dynaplex_settings)
 add_subdirectory(src/Library)
 #include examples unless this project is included as part of bigger project.
 if(${PROJECT_IS_TOP_LEVEL})
-add_subdirectory(src/Examples)
+add_subdirectory(src/Executable_Tests)
 endif()
 
 #glob directories

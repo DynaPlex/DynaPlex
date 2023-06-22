@@ -1,11 +1,12 @@
 ﻿cmake_minimum_required (VERSION 3.21)
 
-add_subdirectory("NeuralNetworkTrainer")
-add_subdirectory("Optimal")
-add_subdirectory("Core")
 
-add_subdirectory("AllComponents")
+add_subdirectory("DP_Core")
+add_subdirectory("DP_Torch")
+add_subdirectory("DP_Optimal")
+
+add_subdirectory("DP")
 
 if(${dynaplex_enable_pythonbindings})
-add_subdirectory("PythonBindings")
+add_subdirectory("DP_Bindings")
 endif()

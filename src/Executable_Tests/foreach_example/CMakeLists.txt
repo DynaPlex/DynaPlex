@@ -28,11 +28,6 @@ target_compile_options(DynaPlex_${targetname} PRIVATE
 )
 endif()
 
- 
-
-
-
 target_include_directories(DynaPlex_${targetname} PUBLIC include)
-
-target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::AllComponents)
+target_link_libraries(DynaPlex_${targetname} PRIVATE DynaPlex::DynaPlex)
 

@@ -9,7 +9,7 @@ print("Current version of Python is ", sys.version)
 
 #seems better to first import torch, and then pytorch. 
 import torch
-from libs import DynaPlex as dp
+from libs import DP_Bindings as dp
 
 
 

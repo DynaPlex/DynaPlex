@@ -32,7 +32,7 @@ py::dict get()
 }
 
 
-PYBIND11_MODULE(DynaPlex, m) {
+PYBIND11_MODULE(DP_Bindings, m) {
 	m.doc() = "pybind11 example plugin"; // optional module docstring
 	m.def("get", &get, "gets some parameters");
 	m.def("process", py::overload_cast<py::kwargs&>(&process), "Processes kwargs");
