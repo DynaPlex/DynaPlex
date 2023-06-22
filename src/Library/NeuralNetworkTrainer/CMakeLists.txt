@@ -59,21 +59,3 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4819 /
 set_target_properties(DynaPlex_${targetname} PROPERTIES COMPILE_FLAGS "/wd4702")
 endif (MSVC)
 endif()
-
-
-
-if(${dynaplex_enable_pythonbindings})
-#copy library (including .pyd) to subdirectory of python, so that the python scripts can find it
-add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E copy_directory
-       "${PROJECT_BINARY_DIR}/lib"
-       "${PROJECT_SOURCE_DIR}/python/libs/")
-       	   
-#added to resolve issues when importing .pyd when also using pytorch.
-if(Torch_FOUND)
-# add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E copy_directory
-#       "${PROJECT_BINARY_DIR}/bin"
-#       "${PROJECT_SOURCE_DIR}/python/libs/")
-endif()
-endif()

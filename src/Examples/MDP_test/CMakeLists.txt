@@ -11,7 +11,7 @@ add_executable (DynaPlex_${targetname} ${sources})
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD 20)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DynaPlex_${targetname} PROPERTY CXX_EXTENSIONS off)
-
+set_property(TARGET DynaPlex_${targetname} PROPERTY EXCLUDE_FROM_ALL TRUE)
 
 
 

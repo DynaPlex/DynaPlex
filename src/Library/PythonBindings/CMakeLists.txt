@@ -37,17 +37,11 @@ target_compile_options(DynaPlex_${targetname} PRIVATE
 )
 endif()
 
- 
 
-#copy library (including .pyd) to subdirectory of python, so that the python scripts can find it
-add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E copy_directory
-       "${PROJECT_BINARY_DIR}/lib"
-       "${PROJECT_SOURCE_DIR}/python/libs/")
-       	   
-#added to resolve issues when importing .pyd when also using pytorch.
+
+
  add_custom_command(TARGET DynaPlex_${targetname} POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E copy_directory
-       "${PROJECT_BINARY_DIR}/bin"
-       "${PROJECT_SOURCE_DIR}/python/libs/")
-
+                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/libs/"
+                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:DynaPlex_${targetname}>
+                   ${PROJECT_SOURCE_DIR}/python/libs/
+                   COMMENT "Copying python extension to python/libs/")
