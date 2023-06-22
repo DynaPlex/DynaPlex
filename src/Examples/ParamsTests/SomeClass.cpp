@@ -3,12 +3,12 @@
 
 SomeClass::SomeClass(DynaPlex::Params& params) {
     
-    params.GetInto("myString", myString);
-    params.GetInto("myInt", myInt);
-    params.GetInto("myVector", myVector);
+    params.Get_Into("myString", myString);
+    params.Get_Into("myInt", myInt);
+    params.Get_Into("myVector", myVector);
 
-    params.GetInto("nestedClass", nestedClass);
-    params.GetInto("myNestedVector", myNestedVector);
+    params.Get_Into("nestedClass", nestedClass);
+    params.Get_Into("myNestedVector", myNestedVector);
 
 }
 

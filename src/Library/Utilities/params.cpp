@@ -85,9 +85,9 @@ namespace DynaPlex {
         }
 
         template<typename T>
-        void GetIntoHelper(const std::string& key, T& out_val) const {
+        void Get_IntoHelper(const std::string& key, T& out_val) const {
             if (!data.contains(key)) {
-                throw std::runtime_error("Key " + key + " not found in Params.");
+                throw DynaPlex::Error("Key \"" + key + "\" not found in Params.");
             }
 
             if (!data[key].is_null()) {
@@ -95,7 +95,7 @@ namespace DynaPlex {
                     out_val = data[key].get<T>();
                 }
                 catch (nlohmann::json::exception& e) {
-                    throw std::runtime_error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
+                    throw DynaPlex::Error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
                 }
             }
             else {
@@ -105,7 +105,7 @@ namespace DynaPlex {
 
         void GetParamsVec(const std::string& key, Params::ParamsVec& out_val) {
             if (!data.contains(key)) {
-                throw std::runtime_error("Key " + key + " not found in Params.");
+                throw DynaPlex::Error("Key \"" + key + "\" not found in Params.");
             }
 
             if (data[key].is_array()) {
@@ -121,11 +121,11 @@ namespace DynaPlex {
                     }
                 }
                 catch (nlohmann::json::exception& e) {
-                    throw std::runtime_error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
+                    throw DynaPlex::Error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
                 }
             }
             else {
-                throw std::runtime_error("Key " + key + " must be of type array in Params.");
+                throw DynaPlex::Error("Key " + key + " must be of type array in Params.");
             }
         }
     };
@@ -200,16 +200,16 @@ namespace DynaPlex {
     void Params::Add(std::string s,const ParamsVec& vec) {
         pImpl->Add(s, vec);
     }
-    void Params::GetInto(const std::string& key, int64_t& out_val) const {
-        pImpl->GetIntoHelper(key, out_val);
+    void Params::Get_Into(const std::string& key, int64_t& out_val) const {
+        pImpl->Get_IntoHelper(key, out_val);
     }
-    void Params::GetInto(const std::string& key, std::string& out_val) const {
-        pImpl->GetIntoHelper(key, out_val);
+    void Params::Get_Into(const std::string& key, std::string& out_val) const {
+        pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::GetInto(const std::string& key, int& out_val) const {
+    void Params::Get_Into(const std::string& key, int& out_val) const {
         int64_t int64;
-        pImpl->GetIntoHelper(key, int64);
+        pImpl->Get_IntoHelper(key, int64);
 
         if (int64 < INT_MIN || int64 > INT_MAX) {
             throw DynaPlex::Error("int64_t value out of range for conversion to int");
@@ -217,33 +217,33 @@ namespace DynaPlex {
         out_val = static_cast<int>(int64);
     }
    
-    void Params::GetInto(const std::string& key, bool& out_val) const {
-        pImpl->GetIntoHelper(key, out_val);
+    void Params::Get_Into(const std::string& key, bool& out_val) const {
+        pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::GetInto(const std::string& key, double& out_val)const {
-        pImpl->GetIntoHelper(key, out_val);
+    void Params::Get_Into(const std::string& key, double& out_val)const {
+        pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::GetInto(const std::string& key, Params::Int64Vec& out_val)const {
-        pImpl->GetIntoHelper(key, out_val);
+    void Params::Get_Into(const std::string& key, Params::Int64Vec& out_val)const {
+        pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::GetInto(const std::string& key, Params::StringVec& out_val)const {
-        pImpl->GetIntoHelper(key, out_val);
+    void Params::Get_Into(const std::string& key, Params::StringVec& out_val)const {
+        pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::GetInto(const std::string& key, Params::DoubleVec& out_val)const {
-        pImpl->GetIntoHelper(key, out_val);
+    void Params::Get_Into(const std::string& key, Params::DoubleVec& out_val)const {
+        pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::GetInto(const std::string& key, Params::ParamsVec& out_val)const {
+    void Params::Get_Into(const std::string& key, Params::ParamsVec& out_val)const {
         pImpl->GetParamsVec(key, out_val);
     }
 
-    void Params::GetInto(const std::string& key, std::vector<int>& out_val) const {
+    void Params::Get_Into(const std::string& key, std::vector<int>& out_val) const {
         std::vector<int64_t> tmp;
-        pImpl->GetIntoHelper(key, tmp);
+        pImpl->Get_IntoHelper(key, tmp);
 
 
         out_val.clear();
@@ -256,7 +256,7 @@ namespace DynaPlex {
     }
 
 
-    void Params::GetInto(const std::string& key, Params& params) const {
+    void Params::Get_Into(const std::string& key, Params& params) const {
         if (!pImpl->data.contains(key)) {
             throw std::runtime_error("key " + key + " not found in params.");
         }

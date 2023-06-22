@@ -2,6 +2,8 @@
 #include <string>
 #include <functional>
 #include <iostream>
+#include "dynaplex/params.h"
+
 class lostsalesMDP
 {
 public:
@@ -9,5 +11,5 @@ public:
 
 	std::string Identifier();
 
-	MDP_Implementation(int j);
+	lostsalesMDP(const DynaPlex::Params& params);
 };

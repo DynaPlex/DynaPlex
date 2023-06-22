@@ -61,34 +61,34 @@ namespace DynaPlex {
 
 
 
-		void GetInto(const std::string& key, Params& params) const;
-		void GetInto(const std::string& key, int64_t& out_val) const;
-		void GetInto(const std::string& key, std::string& out_val) const;
-		void GetInto(const std::string& key, int& out_val) const;
-		void GetInto(const std::string& key, bool& out_val) const;
-		void GetInto(const std::string& key, double& out_val) const;
-		void GetInto(const std::string& key, Int64Vec& out_val) const;
-		void GetInto(const std::string& key, StringVec& out_val) const;
-		void GetInto(const std::string& key, DoubleVec& out_val) const;
-		void GetInto(const std::string& key, ParamsVec& out_val) const;
-		void GetInto(const std::string& key, std::vector<int>& out_val) const;
+		void Get_Into(const std::string& key, Params& params) const;
+		void Get_Into(const std::string& key, int64_t& out_val) const;
+		void Get_Into(const std::string& key, std::string& out_val) const;
+		void Get_Into(const std::string& key, int& out_val) const;
+		void Get_Into(const std::string& key, bool& out_val) const;
+		void Get_Into(const std::string& key, double& out_val) const;
+		void Get_Into(const std::string& key, Int64Vec& out_val) const;
+		void Get_Into(const std::string& key, StringVec& out_val) const;
+		void Get_Into(const std::string& key, DoubleVec& out_val) const;
+		void Get_Into(const std::string& key, ParamsVec& out_val) const;
+		void Get_Into(const std::string& key, std::vector<int>& out_val) const;
 		
 		
 		template<ConvertibleFromParams T>
-		void GetInto(const std::string& key, T& out_val) const {
+		void Get_Into(const std::string& key, T& out_val) const {
 			Params params;
-			GetInto(key, params);
+			Get_Into(key, params);
 			out_val = T(params);
 		}
 
 
 
 		template<ConvertibleFromParamsVec T>
-		void GetInto(const std::string& key, T& out_val) const {
+		void Get_Into(const std::string& key, T& out_val) const {
 			out_val.clear();
 
 			ParamsVec paramsVec;
-			GetInto(key, paramsVec);
+			Get_Into(key, paramsVec);
 
 			for (Params& p : paramsVec) {
 				out_val.push_back(typename T::value_type(p));

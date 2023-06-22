@@ -4,8 +4,8 @@
 
 NestedClass::NestedClass(DynaPlex::Params& params)
 {
-    params.GetInto("Id", Id);
-    params.GetInto("Size", Size);
+    params.Get_Into("Id", Id);
+    params.Get_Into("Size", Size);
 }
 
 

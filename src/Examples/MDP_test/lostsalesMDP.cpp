@@ -5,9 +5,10 @@
 std::string lostsalesMDP::Identifier()
 {
 
-	return "implementation "+ std::to_string(j);
+	return "lost sales "+ std::to_string(j);
 }
 
-lostsalesMDP::MDP_Implementation(int j):j{j}
+lostsalesMDP::lostsalesMDP(const DynaPlex::Params& params)
 {
+	params.Get_Into("j", j);
 }
