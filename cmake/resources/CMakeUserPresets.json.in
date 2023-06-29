@@ -14,25 +14,29 @@
       "inherits": [ "x64-release" , "base-settings"],
       "cacheVariables": {
         //Location of PyTorch release library:
-        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
+        //seems to work when running c++ only executable; libtorch location.
+        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
+        //seems to work when building pytorch extension; anaconda version, e.g. (where environment name is "pybind" here): 
+        //"dynaplex_pytorch_path": "C:/Users/<user>/Anaconda3/envs/pybind/lib/site-packages/torch/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": false,
         "dynaplex_gurobi_path": "",
-        "dynaplex_pybind_path": "",
-        "dynaplex_python_path": ""
+        //
+        "dynaplex_pybind_path": "C:/Users/<user>/Anaconda3/envs/pybind/Lib/site-packages/pybind11/share/cmake/pybind11",
+        "dynaplex_python_path": "C:/Users/<user>/Anaconda3/envs/pybind"
       }
     },
     {
       "name": "WinDebug",
       "inherits": [ "x64-debug", "base-settings" ],
       "cacheVariables": {
-        //Location of PyTorch debug library:
+        //Location of PyTorch debug library of pytorch/libtorch:
         "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake",
         "dynaplex_enable_pytorch": true,
+        //Note: debug does not work with pythonbindings since python interpreter is build in 
+        //release mode. 
         "dynaplex_enable_pythonbindings": false,
-        "dynaplex_gurobi_path": "",
-        "dynaplex_pybind_path": "",
-        "dynaplex_python_path": ""
+        "dynaplex_gurobi_path": ""
       }
     },
     {
@@ -40,7 +44,7 @@
       "inherits": [ "snellius-base", "base-settings" ],
       "cacheVariables": {
         //Location of PyTorch library on snellius:
-        "dynaplex_pytorch_path": "/home/<username>/<libtorch>/share/cmake",
+        "dynaplex_pytorch_path": "/home/<user>/libtorch/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": true,
         "dynaplex_gurobi_path": "",
@@ -53,7 +57,7 @@
       "inherits": [ "snellius-base", "base-settings" ],
       "cacheVariables": {
         //Location of PyTorch library with GPU support on snellius:
-        "dynaplex_pytorch_path": "/home/<username>/<libtorchcu117>/share/cmake",
+        "dynaplex_pytorch_path": "/home/<user>/libtorchcu117/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": true,
         "dynaplex_gurobi_path": "",
