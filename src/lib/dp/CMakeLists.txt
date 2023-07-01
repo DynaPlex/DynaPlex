@@ -51,7 +51,6 @@ if(${dynaplex_enable_pythonbindings})
                    COMMENT "Copying DynaPlex shared library to python/libs/")
 endif()
 
-#Logic for including PyTorch Privately
 if(Torch_FOUND)
  if (MSVC)
   file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")

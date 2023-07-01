@@ -20,7 +20,7 @@ set_target_properties(DynaPlex_${targetname} PROPERTIES
 	OUTPUT_NAME DynaPlex${targetname}
 	EXPORT_NAME ${targetname}
 )
-target_sources(DynaPlex_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
+target_sources(DynaPlex_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources} )
 
 
 target_include_directories(DynaPlex_${targetname} 

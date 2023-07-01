@@ -11,6 +11,7 @@ namespace DynaPlex {
 
 	class Params;
 
+
 	template<typename T>
 	concept ConvertibleFromParams = requires(Params& p) {
 		{ T(p) };
@@ -95,6 +96,8 @@ namespace DynaPlex {
 
 		void SaveToFile(const std::string &filename) const;
 		static Params LoadFromFile(const std::string &filename);
+
+		std::string Hash();
 
 
 		void Print() const;

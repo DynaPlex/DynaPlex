@@ -1,18 +1,116 @@
 #include "dynaplex/utilities.h"
-#include "dynaplex/Params.h"
+#include "dynaplex/params.h"
 #include "json.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include "dynaplex/utilities.h"
 #include "dynaplex/errors.h"
-
+#include "picosha2.h"
 namespace DynaPlex {
 
-
-
     using ordered_json = nlohmann::ordered_json;
-    
+
+
+    static const std::string base64_chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789-_";
+
+    std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
+        std::string ret;
+        int i = 0;
+        int j = 0;
+        unsigned char char_array_3[3];
+        unsigned char char_array_4[4];
+
+        while (in_len--) {
+            char_array_3[i++] = *(bytes_to_encode++);
+            if (i == 3) {
+                char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+                char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+                char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+                char_array_4[3] = char_array_3[2] & 0x3f;
+
+                for (i = 0; (i < 4); i++)
+                    ret += base64_chars[char_array_4[i]];
+                i = 0;
+            }
+        }
+
+        if (i)
+        {
+            for (j = i; j < 3; j++)
+                char_array_3[j] = '\0';
+
+            char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+            char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+            char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+
+            for (j = 0; (j < i + 1); j++)
+                ret += base64_chars[char_array_4[j]];
+
+           // while ((i++ < 3))
+            //    ret += '=';
+        }
+
+        return ret;
+    }
+
+
+    std::string hash_string(const std::string& str) {
+        std::vector<unsigned char> hash(picosha2::k_digest_size);
+        picosha2::hash256(str.begin(), str.end(), hash.begin(), hash.end());
+        return base64_encode(hash.data(), hash.size());
+    }  
+
+
+    // Function to sort an ordered_json object
+    ordered_json sort_json(const ordered_json& j) {
+        ordered_json ordered_j;
+
+        // Check if the input is an object
+        if (j.is_object()) {
+            std::map<std::string, ordered_json> sorted_map;
+
+            // Sort the keys of the object
+            for (auto& element : j.items()) {
+                sorted_map[element.key()] = element.value();
+            }
+
+            // Recursively sort object values
+            for (auto& element : sorted_map) {
+                ordered_j[element.first] = sort_json(element.second);
+            }
+        }
+        // Check if the input is an array
+        else if (j.is_array()) {
+            for (auto& element : j) {
+                ordered_j.push_back(sort_json(element));
+            }
+        }
+        // If the input is not an object or array, simply assign its value
+        else {
+            ordered_j = j;
+        }
+
+        return ordered_j;
+    }
+
+
+
+    // Function to hash a sorted ordered_json object
+    std::string hash_json(const ordered_json& j) {
+        // Sort the JSON object
+        ordered_json sorted_j = sort_json(j);
+
+        // Serialize the sorted object to a string
+        std::string serialized = sorted_j.dump();
+
+        return hash_string(serialized);
+    }
+
+
     class Params::Impl {
     public:
         ordered_json data;
@@ -415,8 +513,13 @@ namespace DynaPlex {
     {
         return pImpl->data;
     }
-        
 
+    std::string Params::Hash()
+    {
+        return hash_json(pImpl->data);
+    }
+        
+    
 
 
 }  // namespace DynaPlex
