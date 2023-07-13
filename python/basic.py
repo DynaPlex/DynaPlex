@@ -13,24 +13,24 @@ from libs import DP_Bindings as dp
 
 
 
-def test_torch():
-    print(f"PyTorch version: {torch.__version__}")
+#def test_torch():
+#    print(f"PyTorch version: {torch.__version__}")
 
     # Create a tensor
-    x = torch.rand(5, 3)
-    print(f"Random Tensor:\n{x}")
+#    x = torch.rand(5, 3)
+#    print(f"Random Tensor:\n{x}")
 
     # Test a simple operation
-    y = torch.rand(5, 3)
-    z = x + y
-    print(f"Sum of two Tensors:\n{z}")
+#    y = torch.rand(5, 3)
+#    z = x + y
+#    print(f"Sum of two Tensors:\n{z}")
 
-try:
-    test_torch()
-except ImportError:
-    print("PyTorch is not installed.")
-except Exception as e:
-    print(f"An error occurred: {e}")
+#try:
+    #test_torch()
+#except ImportError:
+#    print("PyTorch is not installed.")
+#except Exception as e:
+#    print(f"An error occurred: {e}")
 
 
 

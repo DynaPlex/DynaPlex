@@ -1,14 +1,21 @@
 command on linux:
 
-module load 2022
-module load CMake/3.23.1-GCCcore-11.3.0
+cd bash
+source loadmodules.sh
 
 
-build a specific preset - i.e. one in cmake presets:
-cmake --preset=linCPU
+
+build a specific preset - i.e. one in cmake user presets, e.g. LinRelease:
+
+cmake --preset=LinRelease
 compile:
-cmake --build out/linCPU
+cmake --build out/LinRelease -- -j8
 
 compile specific (test)  target:
 
-cmake --build out/linCPU --target 
+cmake --build out/LinRelease --target 
+
+
+for setting up conda environment for pybind:
+
+conda env create -f environment.yml

@@ -2,6 +2,25 @@
 #include <dynaplex/params.h>
 #include <dynaplex/utilities.h>
 #include "SomeClass.h"
+#include <iostream>
+#include <deque>
+#include <vector>
+
+
+
+int main_() {
+	const int numDeques = 10000;
+	
+	std::vector<std::deque<int64_t>> deques(numDeques);
+	for (auto& myDeque : deques) {
+		for (int i = 0; i < 10; ++i) {
+			myDeque.push_back(i);
+		}
+	}
+
+	return 0;
+}
+
 int main()
 {
 
@@ -109,5 +128,5 @@ int main()
 	{
 		std::cout << e.what() << std::endl;
 	}
-
+	return 0; 
 }

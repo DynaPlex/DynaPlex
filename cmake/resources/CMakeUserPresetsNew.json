@@ -1,0 +1,56 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base-settings",
+      "hidden": true,
+      "cacheVariables": {
+        "dynaplex_all_warnings": false
+      }
+    },
+    {
+      "name": "WinBindings",
+      "inherits": [ "x64-release", "base-settings" ],
+      "cacheVariables": {
+        //For creating python bindings, linking to a anaconda version of pytorch appears most stable, e.g. 
+        "dynaplex_pytorch_path": "C:/Users/wjaarsveld/Anaconda3/envs/pybind/lib/site-packages/torch/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_pythonbindings": true,
+        "dynaplex_pybind_path": "C:/Users/wjaarsveld/Anaconda3/envs/pybind/Lib/site-packages/pybind11/share/cmake/pybind11",
+        "dynaplex_python_path": "C:/Users/wjaarsveld/Anaconda3/envs/pybind",
+        "dynaplex_enable_gurobi": false,
+        "dynaplex_gurobi_path": ""
+      }
+    },
+    {
+      "name": "WinRelease",
+      "inherits": [ "x64-release", "base-settings" ],
+      "cacheVariables": {
+        //Location of PyTorch/LibTorch release library, e.g.:
+        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": true
+      }
+    },
+    {
+      "name": "WinDebug",
+      "inherits": [ "x64-debug", "base-settings" ],
+      "cacheVariables": {
+        //Location of PyTorch/Libtorch debug library, e.g.:
+        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": false,
+        //Note that python bindings can only be built in release, since python.exe is a release build.
+        "dynaplex_enable_pythonbindings": false
+      }
+    },
+    {
+      "name": "LinRelease",
+      "inherits": [ "snellius-base", "base-settings" ],
+      "cacheVariables": {
+        //Location of PyTorch library on snellius:
+        "dynaplex_pytorch_path": "/home/willemvj/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_pythonbindings": false
+      }
+    }
+  ]
+}

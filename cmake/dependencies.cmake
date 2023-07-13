@@ -22,16 +22,23 @@ message("dynaplex_enable_pythonbindings: ${dynaplex_enable_pythonbindings}")
 
 if(${dynaplex_enable_pytorch})
 message("dynaplex_pytorch_path: ${dynaplex_pytorch_path}")
+else()
+unset(${dynaplex_pytorch_path} CACHE)
 endif()
-if(${dynaplex_enable_gurobi})
-message("dynaplex_gurobi_path: ${dynaplex_gurobi_path}")
-endif()
+
 if(${dynaplex_enable_pythonbindings})
 message("dynaplex_pybind_path: ${dynaplex_pybind_path}")
 message("dynaplex_python_path : ${dynaplex_python_path}")
+else()
+unset(${dynaplex_pybind_path} CACHE)
+unset(${dynaplex_python_path} CACHE)
 endif()
 
-
+if(${dynaplex_enable_gurobi})
+message("dynaplex_gurobi_path: ${dynaplex_gurobi_path}")
+else()
+unset(${dynaplex_gurobi_path} CACHE)
+endif()
 
 if(${dynaplex_enable_pytorch})	
 list(APPEND CMAKE_PREFIX_PATH ${dynaplex_pytorch_path})
@@ -66,5 +73,4 @@ else()
  message(STATUS "(*) this file should be located in the DynaPlex folder, but might be invisible in some IDEs")
  find_package(pybind11 CONFIG REQUIRED)
 endif()
-
 endif()
