@@ -16,7 +16,7 @@ set_property(TARGET DP_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DP_${targetname} PROPERTY CXX_EXTENSIONS off)
 
 set_target_properties(DP_${targetname} PROPERTIES 
-	OUTPUT_NAME DP_Bindings
+	OUTPUT_NAME DP_${targetname}
 	EXPORT_NAME ${targetname}
 )
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
@@ -41,7 +41,7 @@ endif()
 
 
  add_custom_command(TARGET DP_${targetname} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/libs/"
+                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/dp_lib/libs/"
                    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:DP_${targetname}>
-                   ${PROJECT_SOURCE_DIR}/python/libs/
-                   COMMENT "Copying python extension to python/libs/")
+                   ${PROJECT_SOURCE_DIR}/python/dp_lib/libs/
+                   COMMENT "Copying python extension to python/libs/dp_lib/")

@@ -46,10 +46,10 @@ endif()
 
 if(${dynaplex_enable_pythonbindings})
  add_custom_command(TARGET DP_${targetname} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/libs/"
+                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/dp_lib/libs/"
                    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:DP_${targetname}>
-                   ${PROJECT_SOURCE_DIR}/python/libs/
-                   COMMENT "Copying DynaPlex shared library to python/libs/")
+                   ${PROJECT_SOURCE_DIR}/python/dp_lib/libs/
+                   COMMENT "Copying DynaPlex shared library to python/dp_lib/libs/")
 endif()
 
 if(Torch_FOUND)
