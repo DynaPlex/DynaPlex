@@ -37,6 +37,12 @@ int main()
 			{"myVector",DynaPlex::Params::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
 			{"pars",nullptr}
 		};
+		DynaPlex::Params ret1extra{
+		{"myString","retailer 1"},
+			{"myInt",42},
+			{"myVector",DynaPlex::Params::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+			{"pars",nullptr}
+		};
 
 
 		DynaPlex::Params ret2({
@@ -78,6 +84,8 @@ int main()
 
 		DynaPlex::Params parts2 = parts;
 
+		std::cout << ret1.Hash() << std::endl;
+		std::cout << ret1extra.Hash() << std::endl;
 
 
 

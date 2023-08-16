@@ -6,10 +6,10 @@
 ###############################################################################
 # Ensure that .scr and .job files always have linux line endings
 ###############################################################################
-*.scr text eol=lf
-*.job text eol=lf
-*.scr.in text eol=lf
-*.job.in text eol=lf
+*.sh text eol=lf
+*.slurm text eol=lf
+*.sh.in text eol=lf
+*.slurm.in text eol=lf
 
 
 ###############################################################################

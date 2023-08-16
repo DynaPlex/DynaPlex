@@ -29,10 +29,10 @@ target_compile_options(DP_${targetname} PRIVATE
 endif()
 
  
-
-
-
-target_include_directories(DP_${targetname} PUBLIC include)
-
+target_include_directories(DP_${targetname} 
+PUBLIC 
+$<INSTALL_INTERFACE:include>
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 target_link_libraries(DP_${targetname} PRIVATE DynaPlex::DynaPlex)
 

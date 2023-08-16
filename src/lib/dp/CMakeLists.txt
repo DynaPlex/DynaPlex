@@ -17,6 +17,11 @@ set_property(TARGET DP_${targetname} PROPERTY CXX_STANDARD 20)
 set_property(TARGET DP_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DP_${targetname} PROPERTY CXX_EXTENSIONS off)
 
+set_property(TARGET DP_${targetname} PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+set_property(TARGET DP_${targetname} PROPERTY CXX_VISIBILITY_PRESET default)
+set_property(TARGET DP_${targetname} PROPERTY VISIBILITY_INLINES_HIDDEN 0)
+
 set_target_properties(DP_${targetname} PROPERTIES 
 	OUTPUT_NAME DynaPlex	
     #OUTPUT_NAME DynaPlex${targetname}
@@ -31,10 +36,7 @@ PUBLIC
 $<INSTALL_INTERFACE:include>
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core)
-target_link_libraries(DP_${targetname} PUBLIC DynaPlex::DP_Torch)
-target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Optimal)
-
+target_link_libraries(DP_${targetname} PUBLIC DynaPlex::NN DynaPlex::Core)# DynaPlex::Optimal)
 
 
 if(${dynaplex_all_warnings})

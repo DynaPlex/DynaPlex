@@ -8,12 +8,16 @@ file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
 file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 
 
-add_library (DP_${targetname} STATIC)
+add_library (DP_${targetname} OBJECT)
 add_library (DynaPlex::${targetname} ALIAS DP_${targetname})
 
 set_property(TARGET DP_${targetname} PROPERTY CXX_STANDARD 20)
 set_property(TARGET DP_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DP_${targetname} PROPERTY CXX_EXTENSIONS off)
+
+set_property(TARGET DP_${targetname} PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET DP_${targetname} PROPERTY CXX_VISIBILITY_PRESET default)
+set_property(TARGET DP_${targetname} PROPERTY VISIBILITY_INLINES_HIDDEN 0)
 
 set_target_properties(DP_${targetname} PROPERTIES 
 	OUTPUT_NAME DynaPlex${targetname}

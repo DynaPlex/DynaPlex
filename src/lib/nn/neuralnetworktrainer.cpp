@@ -8,7 +8,10 @@ namespace DynaPlex {
 	void NeuralNetworkTrainer::writeidentifier()
 	{
 #if Torch_available
-		std::cout << "DynaPlex: Pytorch available" << std::endl;
+		std::cout << "DynaPlex: Pytorch available, Version ";
+		std::cout << TORCH_VERSION_MAJOR << ".";
+		std::cout << TORCH_VERSION_MINOR << ".";
+		std::cout << TORCH_VERSION_PATCH << std::endl;
 		torch::Tensor eye = torch::eye(2);
 		std::cout << eye << std::endl;
 		std::cout << torch::cuda::is_available() << std::endl;

@@ -1,7 +1,6 @@
 #include "NestedClass.h"
-#include "NestedClass.h"
 #include <iostream>
-
+#include "dynaplex/params.h"
 NestedClass::NestedClass(DynaPlex::Params& params)
 {
     params.Get_Into("Id", Id);

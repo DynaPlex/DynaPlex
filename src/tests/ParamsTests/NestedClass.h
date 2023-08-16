@@ -1,5 +1,4 @@
-#ifndef NESTEDCLASS_H
-#define NESTEDCLASS_H
+#pragma once
 
 #include <string>
 #include "dynaplex/params.h"
@@ -15,4 +14,3 @@ private:
     double Size;
 };
 
-#endif  // NESTEDCLASS_H

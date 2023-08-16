@@ -1,6 +1,8 @@
 
 #for succesfully linking DLL on windows.
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+#to enable linking static libs into shared libraries
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #for succesfully linking on linux to desired paths. 
 #set(CMAKE_SKIP_RPATH TRUE)
 if(MSVC)
