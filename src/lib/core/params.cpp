@@ -1,11 +1,11 @@
 #include "dynaplex/utilities.h"
 #include "dynaplex/params.h"
-#include "dynaplex/json.h"
+#include "nlohmann/json.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include "dynaplex/errors.h"
-#include "dynaplex/picosha2.h"
+#include "picosha2.h"
 namespace DynaPlex {
 
     using ordered_json = nlohmann::ordered_json;

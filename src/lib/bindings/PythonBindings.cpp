@@ -3,7 +3,7 @@
 //#include "dynaplex/pythonparams.h"
 //#include "dynaplex/errors.h"
 //#include "dynaplex/simple.h"
-//#include "dynaplex/neuralnetworktrainer.h"
+#include "dynaplex/neuralnetworktrainer.h"
 //#include "dynaplex/utilities.h"
 #include <torch/torch.h>
 
@@ -22,20 +22,8 @@ void process(py::kwargs& kwargs)
 
 void testPytorch()
 {
-#if Torch_available
-	std::cout << "DynaPlex: Pytorch available, Version ";
-	std::cout << TORCH_VERSION_MAJOR << ".";
-	std::cout << TORCH_VERSION_MINOR << ".";
-	std::cout << TORCH_VERSION_PATCH << std::endl;
-	torch::Tensor eye = torch::eye(2);
-	std::cout << eye << std::endl;
-	std::cout << torch::cuda::is_available() << std::endl;
-#else
-	std::cout << "torch not available" << std::endl;
-#endif
-
-	//DynaPlex::NeuralNetworkTrainer trainer{};
-	//trainer.writeidentifier();
+	DynaPlex::NeuralNetworkTrainer trainer{};
+	trainer.writeidentifier();
 	DynaPlex::Params pars({ {"as",123} });
 	pars.Print();
 }

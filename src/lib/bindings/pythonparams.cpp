@@ -1,6 +1,6 @@
 #include "dynaplex/pythonparams.h"
-#include "dynaplex/pybind11_json.h"
-#include "dynaplex/json.h"
+#include "pybind11_json/pybind11_json.h"
+#include "nlohmann/json.h"
 #include "pybind11/pybind11.h"
 #include "dynaplex/errors.h"
 

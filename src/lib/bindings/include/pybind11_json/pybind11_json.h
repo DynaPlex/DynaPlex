@@ -5,14 +5,16 @@
 *                                                                          *
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
-/*Willem van Jaarsveld: Minor adaptations made to ensure proper working with and within dynaplex ordered_json*/
+/*Willem van Jaarsveld: Minor adaptations made to ensure proper working    *
+* with and within nlohmann::ordered_json                                   *
+***************************************************************************/
 #ifndef PYBIND11_JSON_HPP
 #define PYBIND11_JSON_HPP
 
 #include <string>
 #include <vector>
 
-#include "dynaplex/json.h"
+#include "nlohmann/json.h"
 
 #include <pybind11/pybind11.h>
 

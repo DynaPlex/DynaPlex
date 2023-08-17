@@ -16,8 +16,9 @@ bld/
 [Ll]ogs/
 [Bb]uild/
 
-[Pp]ython/dp_lib/libs
+[Pp]ython/dp/libs
 [Pp]ython/.idea
+.idea
 **/__pycache__/
 .vs/
 

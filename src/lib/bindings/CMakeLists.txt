@@ -48,7 +48,7 @@ if(Torch_FOUND)
 endif()
 
  add_custom_command(TARGET DP_${targetname} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/dp_lib/libs/"
+                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/dp/libs/"
                    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:DP_${targetname}>
-                   ${PROJECT_SOURCE_DIR}/python/dp_lib/libs/
-                   COMMENT "Copying python extension to python/dp_lib/libs/")
+                   ${PROJECT_SOURCE_DIR}/python/dp/libs/
+                   COMMENT "Copying python extension to python/dp/libs/")
