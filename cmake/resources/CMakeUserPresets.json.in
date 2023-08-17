@@ -1,68 +1,70 @@
-﻿ {
+﻿{
   "version": 3,
   "configurePresets": [
     {
       "name": "base-settings",
       "hidden": true,
       "cacheVariables": {
-        "dynaplex_all_warnings": false,
-        "dynaplex_enable_gurobi": false
+        "dynaplex_all_warnings": false
       }
     },
     {
-      "name": "WinRelease",
-      "inherits": [ "x64-release" , "base-settings"],
+      "name": "WinBind",
+      "inherits": [ "x64-release", "base-settings" ],
       "cacheVariables": {
-        //Location of PyTorch release library:
-        //seems to work when running c++ only executable; libtorch location.
-        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
-        //seems to work when building pytorch extension; anaconda version, e.g. (where environment name is "pybind" here): 
-        //"dynaplex_pytorch_path": "C:/Users/<user>/Anaconda3/envs/pybind/lib/site-packages/torch/share/cmake",
+        //For creating python bindings, linking to a anaconda version of pytorch appears most stable, e.g. something like (when using environment.yml to configure)
+        "dynaplex_pytorch_path": "C:/Users/<user>/Anaconda3/envs/envDP/Lib/site-packages/torch/share/cmake",
         "dynaplex_enable_pytorch": true,
-        "dynaplex_enable_pythonbindings": false,
-        "dynaplex_gurobi_path": "",
-        //
-        "dynaplex_pybind_path": "C:/Users/<user>/Anaconda3/envs/pybind/Lib/site-packages/pybind11/share/cmake/pybind11",
-        "dynaplex_python_path": "C:/Users/<user>/Anaconda3/envs/pybind"
-      }
-    },
-    {
-      "name": "WinDebug",
-      "inherits": [ "x64-debug", "base-settings" ],
-      "cacheVariables": {
-        //Location of PyTorch debug library of pytorch/libtorch:
-        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake",
-        "dynaplex_enable_pytorch": true,
-        //Note: debug does not work with pythonbindings since python interpreter is build in 
-        //release mode. 
-        "dynaplex_enable_pythonbindings": false,
+        "dynaplex_enable_pythonbindings": true,
+        "dynaplex_pybind_path": "C:/Users/<user>/Anaconda3/envs/envDP/Lib/site-packages/pybind11/share/cmake/pybind11",
+        "dynaplex_python_path": "C:/Users/<user>/Anaconda3/envs/envDP",
+        "dynaplex_enable_gurobi": false,
         "dynaplex_gurobi_path": ""
       }
     },
     {
-      "name": "linCPU",
+      "name": "WinRel",
+      "inherits": [ "x64-release", "base-settings" ],
+      "cacheVariables": {
+        //Location of PyTorch/LibTorch release library, e.g.:
+        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": true
+      }
+    },
+    {
+      "name": "WinDeb",
+      "inherits": [ "x64-debug", "base-settings" ],
+      "cacheVariables": {
+        //Location of PyTorch/Libtorch debug library, e.g.:
+        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": false,
+        //Note that python bindings can only be built in release, since python.exe is a release build.
+        "dynaplex_enable_pythonbindings": false
+      }
+    },
+    {
+      "name": "LinRel",
       "inherits": [ "snellius-base", "base-settings" ],
       "cacheVariables": {
         //Location of PyTorch library on snellius:
         "dynaplex_pytorch_path": "/home/<user>/libtorch/share/cmake",
         "dynaplex_enable_pytorch": true,
-        "dynaplex_enable_pythonbindings": true,
-        "dynaplex_gurobi_path": "",
-        "dynaplex_pybind_path": "",
-        "dynaplex_python_path": ""
+        "dynaplex_enable_pythonbindings": false
       }
     },
     {
-      "name": "linGPU",
+      "name": "LinBind",
       "inherits": [ "snellius-base", "base-settings" ],
       "cacheVariables": {
-        //Location of PyTorch library with GPU support on snellius:
-        "dynaplex_pytorch_path": "/home/<user>/libtorchcu117/share/cmake",
+        //For creating python bindings, linking to a anaconda version of pytorch appears most stable, e.g. something like (when using environment.yml to configure)
+        //Note that paths to TorchConfig.cmake and pybind11Config.cmake are needed. 
+        "dynaplex_pytorch_path": "/home/<user>/.conda/envs/envDP/lib/python3.11/site-packages/torch/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": true,
-        "dynaplex_gurobi_path": "",
-        "dynaplex_pybind_path": "",
-        "dynaplex_python_path": ""
+        "dynaplex_pybind_path": "/home/<user>/.conda/envs/envDP/lib/python3.11/site-packages/pybind11/share/cmake/pybind11",
+        "dynaplex_python_path": "/home/<user>/.conda/envs/envDP",
+        "dynaplex_enable_gurobi": false,
+        "dynaplex_gurobi_path": ""
       }
     }
   ]

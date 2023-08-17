@@ -1,23 +1,22 @@
 #include <pybind11/pybind11.h>
 #include "dynaplex/params.h"
-//#include "dynaplex/pythonparams.h"
-//#include "dynaplex/errors.h"
-//#include "dynaplex/simple.h"
+#include "dynaplex/pythonparams.h"
+#include "dynaplex/errors.h"
 #include "dynaplex/neuralnetworktrainer.h"
-//#include "dynaplex/utilities.h"
+#include "dynaplex/utilities.h"
 #include <torch/torch.h>
 
 namespace py = pybind11;
 
 void process(py::object& obj)
 {
-//	auto pars = DynaPlex::PythonParams(obj);
-//	pars.Print();
+	auto pars = DynaPlex::PythonParams(obj);
+	pars.Print();
 }
 void process(py::kwargs& kwargs)
 {
-//	auto& obj = static_cast<py::object&>(kwargs);
-//	process(obj);
+	auto& obj = static_cast<py::object&>(kwargs);
+	process(obj);
 }
 
 void testPytorch()
@@ -30,14 +29,11 @@ void testPytorch()
 
 py::dict get()
 {
+	DynaPlex::Params distprops{
+			{"type","geom"},
+		{"mean",5} };
 
-//	DynaPlex::Params distprops{
-//			{"type","geom"},
-//		{"mean",5} };
-
-//	return DynaPlex::PythonParams(std::move(distprops));
-	return py::dict{};
-
+	return DynaPlex::PythonParams(std::move(distprops));
 }
 
 

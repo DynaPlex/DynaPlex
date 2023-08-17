@@ -47,7 +47,7 @@
         "inherits": [ "snellius-base", "base-settings" ],
         "cacheVariables": {
           //Location of PyTorch library on snellius:
-          "dynaplex_pytorch_path": "/home/willemvj/libtorchcu117/share/cmake",
+          "dynaplex_pytorch_path": "/home/willemvj/libtorch/share/cmake",
           "dynaplex_enable_pytorch": true,
           "dynaplex_enable_pythonbindings": false
         }

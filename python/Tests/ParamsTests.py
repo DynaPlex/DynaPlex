@@ -1,11 +1,9 @@
 import os
 import sys
-#get absolute path to current file.
-current_directory = os.path.dirname(os.path.abspath(__file__))
-parent_directory = os.path.dirname(current_directory)
-#add parent directory (which contains dp directory) to path to enable importing DynaPlex. 
-sys.path.append(parent_directory)
 
+parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#load DynaPlex from ../dp/loader.py
+sys.path.append(parent_directory)
 from dp.loader import DynaPlex as dp
 
 settings = { "ape": 1, "donkey": 0.5, "longsetting": -120000231,
