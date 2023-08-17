@@ -11,11 +11,14 @@ file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 
 
 add_library (DP_${targetname} SHARED)
+
+target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
 add_library (DynaPlex::${targetname} ALIAS DP_${targetname})
 
 set_property(TARGET DP_${targetname} PROPERTY CXX_STANDARD 20)
 set_property(TARGET DP_${targetname} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET DP_${targetname} PROPERTY CXX_EXTENSIONS off)
+
 
 set_property(TARGET DP_${targetname} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
@@ -27,7 +30,6 @@ set_target_properties(DP_${targetname} PROPERTIES
     #OUTPUT_NAME DynaPlex${targetname}
 	EXPORT_NAME ${targetname}
 )
-target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
 
 
 
@@ -36,7 +38,7 @@ PUBLIC
 $<INSTALL_INTERFACE:include>
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(DP_${targetname} PUBLIC DynaPlex::NN DynaPlex::Core)# DynaPlex::Optimal)
+target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core)#DynaPlex::NN  DynaPlex::Optimal)
 
 
 if(${dynaplex_all_warnings})

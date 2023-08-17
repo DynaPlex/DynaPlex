@@ -9,7 +9,6 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 #add parent directory to path to enable importing from the /libs subdirectory. 
 sys.path.append(current_directory)
 
-
 import torch
 
 try:
@@ -36,5 +35,5 @@ except ImportError as e:
 
 
 if __name__ == "__main__":
-    print("version (python):  " +torch.__version__)
+    #print("version (python):  " +torch.__version__)
     DynaPlex.testPyTorch()

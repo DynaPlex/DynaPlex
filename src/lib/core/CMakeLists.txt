@@ -7,7 +7,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
 file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
 
-
+message(STATUS "Source: ${sources}")
 
 add_library (DP_${targetname} OBJECT)
 add_library (DynaPlex::${targetname} ALIAS DP_${targetname})
@@ -27,7 +27,15 @@ set_target_properties(DP_${targetname} PROPERTIES
 	OUTPUT_NAME DynaPlex${targetname}
 	EXPORT_NAME ${targetname}
 )
+
+
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources} )
+
+
+if(${dynaplex_enable_pythonbindings})
+target_sources(DP_Bindings PUBLIC ${headers} PRIVATE ${private_headers} ${sources} )
+target_include_directories(DP_Bindings PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
+endif()
 
 
 target_include_directories(DP_${targetname} 

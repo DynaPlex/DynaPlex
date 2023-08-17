@@ -1,11 +1,34 @@
 #include "dynaplex/utilities.h"
+#include "dynaplex/errors.h"
 #include <iostream>
+#include <filesystem>
 
-int DynaPlex::Utilities::mult_(int a, int b) {
-    return a * b;
-}
+
+namespace fs = std::filesystem;
 
 std::string DynaPlex::Utilities::GetOutputLocation(const std::string filename)
-{   
-    return std::string(filename);
+{
+#ifdef _WIN32
+    const char* desktopFolder = getenv("USERPROFILE");
+
+
+    if (desktopFolder) {
+        fs::path desktopPath(desktopFolder);
+        desktopPath /= "Desktop";
+        fs::path addedpath = desktopPath / "DynaPlex";
+        fs::create_directory(addedpath);
+        addedpath /= filename;
+        return addedpath.string();
+    }
+#else
+    const char* desktopFolder = getenv("HOME");
+    if (desktopFolder) {
+        fs::path desktopPath(desktopFolder);
+        desktopPath.append("Desktop");
+        return desktopPath.string();
+    }
+#endif
+
+    throw DynaPlex::Error("could not resolve output location");
+    return std::string();
 }

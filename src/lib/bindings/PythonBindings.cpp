@@ -1,5 +1,5 @@
 #include <pybind11/pybind11.h>
-//#include "dynaplex/params.h"
+#include "dynaplex/params.h"
 //#include "dynaplex/pythonparams.h"
 //#include "dynaplex/errors.h"
 //#include "dynaplex/simple.h"
@@ -36,8 +36,8 @@ void testPytorch()
 
 	//DynaPlex::NeuralNetworkTrainer trainer{};
 	//trainer.writeidentifier();
-//	DynaPlex::Params pars({ {"as",123} });
-//	pars.Print();
+	DynaPlex::Params pars({ {"as",123} });
+	pars.Print();
 }
 
 py::dict get()

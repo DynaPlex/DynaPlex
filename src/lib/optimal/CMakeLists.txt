@@ -26,6 +26,12 @@ set_target_properties(DP_${targetname} PROPERTIES
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
 
 
+if(${dynaplex_enable_pythonbindings})
+target_sources(DP_Bindings PUBLIC ${headers} PRIVATE ${private_headers} ${sources} )
+target_include_directories(DP_Bindings PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
+endif()
+
+
 target_include_directories(DP_${targetname} 
 PUBLIC 
 $<INSTALL_INTERFACE:include>
