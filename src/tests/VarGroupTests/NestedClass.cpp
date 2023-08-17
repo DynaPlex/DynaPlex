@@ -1,10 +1,10 @@
 #include "NestedClass.h"
 #include <iostream>
-#include "dynaplex/params.h"
-NestedClass::NestedClass(DynaPlex::Params& params)
+#include "dynaplex/vargroup.h"
+NestedClass::NestedClass(DynaPlex::VarGroup& vars)
 {
-    params.Get_Into("Id", Id);
-    params.Get_Into("Size", Size);
+    vars.Get_Into("Id", Id);
+    vars.Get_Into("Size", Size);
 }
 
 

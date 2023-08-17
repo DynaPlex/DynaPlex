@@ -4,11 +4,11 @@
 #include <string>
 #include <vector>
 #include "NestedClass.h"
-#include "dynaplex/params.h"
+#include "dynaplex/vargroup.h"
 
 class SomeClass {
 public:
-    SomeClass(DynaPlex::Params& params);
+    SomeClass(DynaPlex::VarGroup& vars);
 
     void Print() const;
 

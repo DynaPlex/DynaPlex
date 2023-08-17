@@ -1,10 +1,10 @@
 ﻿
 cmake_minimum_required (VERSION 3.20)
 
-set(targetname ParamsTests)
+set(targetname VarGroupTests)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
-file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
+file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
 
 add_executable (DP_${targetname})
 add_executable (DynaPlex::${targetname} ALIAS DP_${targetname})
@@ -15,7 +15,7 @@ else()
 set_property(TARGET DP_${targetname} PROPERTY EXCLUDE_FROM_ALL FALSE)
 endif()
 
-target_sources(DP_${targetname} PRIVATE ${private_headers} ${sources})
+target_sources(DP_${targetname} PRIVATE ${headers} ${sources})
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
 
 target_link_libraries(DP_${targetname} PRIVATE DynaPlex::DynaPlex)

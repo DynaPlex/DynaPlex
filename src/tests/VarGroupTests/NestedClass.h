@@ -1,11 +1,11 @@
 #pragma once
 
 #include <string>
-#include "dynaplex/params.h"
+#include "dynaplex/vargroup.h"
 
 class NestedClass {
 public:
-    NestedClass(DynaPlex::Params& params);
+    NestedClass(DynaPlex::VarGroup& vars);
     NestedClass() {}
     void Print() const;
 

@@ -9,58 +9,62 @@
  
 namespace DynaPlex {
 
-	class Params;
+	class VarGroup;
 
 
 	template<typename T>
-	concept ConvertibleFromParams = requires(Params& p) {
+	concept ConvertibleFromVarGroup = requires(VarGroup& p) {
 		{ T(p) };
 	};
 
 	template<typename T>
-	concept ConvertibleFromParamsVec = requires(T a, typename T::value_type val) {
+	concept ConvertibleFromVarGroupVec = requires(T a, typename T::value_type val) {
 		typename T::value_type;
 		{ T() };
-        requires ConvertibleFromParams<typename T::value_type>;
+        requires ConvertibleFromVarGroup<typename T::value_type>;
 		a.push_back(val);
 	};
 
-	class Params
+	class VarGroup
 	{
 	public:
 		using Int64Vec = std::vector<int64_t>;
 		using DoubleVec = std::vector<double>;
 		using StringVec = std::vector<std::string>;
-		using ParamsVec = std::vector<Params>;
-		using DataType = std::variant<bool,std::nullptr_t, int64_t, double, std::string,DynaPlex::Params, Int64Vec,DoubleVec,StringVec,ParamsVec>;
+		using VarGroupVec = std::vector<VarGroup>;
+		using DataType = std::variant<bool,std::nullptr_t, int64_t, double, std::string,DynaPlex::VarGroup, Int64Vec,DoubleVec,StringVec,VarGroupVec>;
 		using TupleList = std::initializer_list< std::tuple<std::string, DataType>>;
 
-		Params(TupleList list);
+		VarGroup(TupleList list);
+		VarGroup(const std::string& rawJson);
 		
-	    Params();		
-		Params(const Params& other);
-		Params& operator=(const Params& other);
-		~Params();
-		Params(Params&& other) noexcept;
-		Params& operator=(Params&& other) noexcept;
+	    VarGroup();		
+		VarGroup(const VarGroup& other);
+		VarGroup& operator=(const VarGroup& other);
+		~VarGroup();
+		VarGroup(VarGroup&& other) noexcept;
+		VarGroup& operator=(VarGroup&& other) noexcept;
 
-		
+		bool operator==(const VarGroup& other) const;
+		bool operator!=(const VarGroup& other) const;
 
-		void Add(std::string s, const Params& vec);
+		void Add(std::string s, const VarGroup& vec);
 		void Add(std::string s, int val);
 		void Add(std::string s, int64_t val);
 		void Add(std::string s, bool val);
 		void Add(std::string s, std::string val);
+		void Add(std::string s, const char* val);
+
 		void Add(std::string s, double val);
 		void Add(std::string s, const Int64Vec& vec);
 		void Add(std::string s, const std::vector<int>& vec);
 		void Add(std::string s, const StringVec& vec);
 		void Add(std::string s, const DoubleVec& vec);
-		void Add(std::string s, const ParamsVec& vec);
+		void Add(std::string s, const VarGroupVec& vec);
 
 
 
-		void Get_Into(const std::string& key, Params& params) const;
+		void Get_Into(const std::string& key, VarGroup& out_val) const;
 		void Get_Into(const std::string& key, int64_t& out_val) const;
 		void Get_Into(const std::string& key, std::string& out_val) const;
 		void Get_Into(const std::string& key, int& out_val) const;
@@ -69,33 +73,33 @@ namespace DynaPlex {
 		void Get_Into(const std::string& key, Int64Vec& out_val) const;
 		void Get_Into(const std::string& key, StringVec& out_val) const;
 		void Get_Into(const std::string& key, DoubleVec& out_val) const;
-		void Get_Into(const std::string& key, ParamsVec& out_val) const;
+		void Get_Into(const std::string& key, VarGroupVec& out_val) const;
 		void Get_Into(const std::string& key, std::vector<int>& out_val) const;
 		
 		
-		template<ConvertibleFromParams T>
+		template<ConvertibleFromVarGroup T>
 		void Get_Into(const std::string& key, T& out_val) const {
-			Params params;
-			Get_Into(key, params);
-			out_val = T(params);
+			VarGroup vars;
+			Get_Into(key, vars);
+			out_val = T(vars);
 		}
 
 
 
-		template<ConvertibleFromParamsVec T>
+		template<ConvertibleFromVarGroupVec T>
 		void Get_Into(const std::string& key, T& out_val) const {
 			out_val.clear();
 
-			ParamsVec paramsVec;
-			Get_Into(key, paramsVec);
+			VarGroupVec varsVec;
+			Get_Into(key, varsVec);
 
-			for (Params& p : paramsVec) {
+			for (VarGroup& p : varsVec) {
 				out_val.push_back(typename T::value_type(p));
 			}
 		}
 
 		void SaveToFile(const std::string &filename) const;
-		static Params LoadFromFile(const std::string &filename);
+		static VarGroup LoadFromFile(const std::string &filename);
 
 		std::string Hash();
 
@@ -103,7 +107,7 @@ namespace DynaPlex {
 		void Print() const;
 
 	protected:
-		Params(nlohmann::ordered_json json);
+		VarGroup(nlohmann::ordered_json json);
 		nlohmann::ordered_json ToJson() const;
 
 	private:

@@ -1,14 +1,14 @@
 #include "SomeClass.h"
 #include <iostream>
 
-SomeClass::SomeClass(DynaPlex::Params& params) {
+SomeClass::SomeClass(DynaPlex::VarGroup& vars) {
     
-    params.Get_Into("myString", myString);
-    params.Get_Into("myInt", myInt);
-    params.Get_Into("myVector", myVector);
+    vars.Get_Into("myString", myString);
+    vars.Get_Into("myInt", myInt);
+    vars.Get_Into("myVector", myVector);
 
-    params.Get_Into("nestedClass", nestedClass);
-    params.Get_Into("myNestedVector", myNestedVector);
+    vars.Get_Into("nestedClass", nestedClass);
+    vars.Get_Into("myNestedVector", myNestedVector);
 
 }
 

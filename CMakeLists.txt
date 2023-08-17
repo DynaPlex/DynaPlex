@@ -18,7 +18,14 @@ include(dynaplex_settings)
 add_subdirectory(src/lib)
 #include examples unless this project is included as part of bigger project.
 if(${PROJECT_IS_TOP_LEVEL})
-add_subdirectory(src/tests)
 add_subdirectory(src/examples)
-endif()
 
+
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+
+if(DEFINED dynaplex_enable_tests AND dynaplex_enable_tests)
+message(STATUS "addings tests")
+add_subdirectory(src/extern/googletest)
+add_subdirectory(src/tests)
+endif()
+endif()

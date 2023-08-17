@@ -2,15 +2,14 @@ cmake_minimum_required (VERSION 3.21)
 set(targetname Bindings)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
-file(GLOB_RECURSE headers CONFIGURE_DEPENDS "include/dynaplex/*.h")
-file(GLOB_RECURSE private_headers CONFIGURE_DEPENDS "*.h")
+file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
 
 pybind11_add_module(DP_${targetname})
 
 set_target_properties(DP_${targetname} PROPERTIES 
 	OUTPUT_NAME DP_${targetname}
 )
-target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${private_headers} ${sources})
+target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE  ${sources})
 
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 

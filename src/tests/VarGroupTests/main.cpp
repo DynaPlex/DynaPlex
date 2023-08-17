@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include <dynaplex/params.h>
+#include <dynaplex/vargroup.h>
 #include <dynaplex/utilities.h>
 #include "SomeClass.h"
 #include <iostream>
@@ -27,62 +27,62 @@ int main()
 	try {
 
 
-		DynaPlex::Params distprops{
+		DynaPlex::VarGroup distprops{
 			{"type","geom"},
 		{"mean",5} };
 
-		DynaPlex::Params ret1{
+		DynaPlex::VarGroup ret1{
 		{"myString","retailer 1"},
 			{"myInt",42},
-			{"myVector",DynaPlex::Params::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+			{"myVector",DynaPlex::VarGroup::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
 			{"pars",nullptr}
 		};
-		DynaPlex::Params ret1extra{
+		DynaPlex::VarGroup ret1extra{
 		{"myString","retailer 1"},
 			{"myInt",42},
-			{"myVector",DynaPlex::Params::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+			{"myVector",DynaPlex::VarGroup::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
 			{"pars",nullptr}
 		};
 
 
-		DynaPlex::Params ret2({
+		DynaPlex::VarGroup ret2({
 			{"myString","retailer 2"},
 			{"myInt",42},
-			{"myVector",DynaPlex::Params::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+			{"myVector",DynaPlex::VarGroup::Int64Vec{14,2,1,1,1,1,1,1,1,1,1,1,1,1,1}},
 			{"pars",nullptr}
 			});
-		DynaPlex::Params retlast({
+		DynaPlex::VarGroup retlast({
 			{"myString","retailer 10"},
 			{"myInt",42},
-			{"myVector",DynaPlex::Params::Int64Vec{1,2,-1,1,1,1,1,1,1,1,1,1,1,1,1}},
+			{"myVector",DynaPlex::VarGroup::Int64Vec{1,2,-1,1,1,1,1,1,1,1,1,1,1,1,1}},
 			{"pars",nullptr}
 			});
 
 
 
 
-		DynaPlex::Params::ParamsVec rets{
+		DynaPlex::VarGroup::VarGroupVec rets{
 			ret1,ret2,retlast
 		};
 
-		auto nested = DynaPlex::Params({ {"Id","tset"},{"Size",1.0} });
+		auto nested = DynaPlex::VarGroup({ {"Id","tset"},{"Size",1.0} });
 
-		auto nested2 = DynaPlex::Params({ {"Id","tset"},{"Size",2.0} });
+		auto nested2 = DynaPlex::VarGroup({ {"Id","tset"},{"Size",2.0} });
 
 
 
-		DynaPlex::Params parts({
+		DynaPlex::VarGroup parts({
 			{"myString","string"},
 			{"myInt",42},
 			{"pars",rets},
 			{"ret", ret1},
-			{"myVector", DynaPlex::Params::Int64Vec{123,123}},
+			{"myVector", DynaPlex::VarGroup::Int64Vec{123,123}},
 			{ "nestedClass",nested},
-			{"myNestedVector",DynaPlex::Params::ParamsVec{nested,nested2}}
+			{"myNestedVector",DynaPlex::VarGroup::VarGroupVec{nested,nested2}}
 
 			});
 
-		DynaPlex::Params parts2 = parts;
+		DynaPlex::VarGroup parts2 = parts;
 
 		std::cout << ret1.Hash() << std::endl;
 		std::cout << ret1extra.Hash() << std::endl;
@@ -107,20 +107,20 @@ int main()
 
 
 
-		auto params = DynaPlex::Params(
+		auto vars = DynaPlex::VarGroup(
 			{ { "env", "OWMR"},
 			{ "rets",rets },
-			{ "warehouse",DynaPlex::Params{{"dist", distprops}}
+			{ "warehouse",DynaPlex::VarGroup{{"dist", distprops}}
 			} }
 		);
-		params.Add("test", std::vector<double>{1.0, 2.1, 123.1});
-		params.Print();
+		vars.Add("test", std::vector<double>{1.0, 2.1, 123.1});
+		vars.Print();
 		return 0;
-		//params.SaveToFile("test.txt");
+		//vars.SaveToFile("test.txt");
 
 		try
 		{
-			auto pars = DynaPlex::Params::LoadFromFile("test.txt");
+			auto pars = DynaPlex::VarGroup::LoadFromFile("test.txt");
 
 			pars.Print();
 		}

@@ -2,7 +2,7 @@
 #include <string>
 #include <functional>
 #include <iostream>
-#include "dynaplex/params.h"
+#include "dynaplex/vargroup.h"
 
 class lostsalesMDP
 {
@@ -11,5 +11,5 @@ public:
 
 	std::string Identifier();
 
-	lostsalesMDP(const DynaPlex::Params& params);
+	lostsalesMDP(const DynaPlex::VarGroup& vars);
 };

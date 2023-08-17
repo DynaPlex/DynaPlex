@@ -1,4 +1,4 @@
-#include "dynaplex/pythonparams.h"
+#include "dynaplex/pythonvargroup.h"
 #include "pybind11_json/pybind11_json.h"
 #include "nlohmann/json.h"
 #include "pybind11/pybind11.h"
@@ -24,17 +24,17 @@ namespace DynaPlex
 		}
 	}
 
-	PythonParams::PythonParams(pybind11::object object)	
-		:Params(ConvertToJson(object))
+	PythonVarGroup::PythonVarGroup(pybind11::object object)	
+		:VarGroup(ConvertToJson(object))
 	{		
 		
 	}
 
-	PythonParams::operator pybind11::dict() const
+	PythonVarGroup::operator pybind11::dict() const
 	{
 		try
 		{
-			pybind11::dict dict= DynaPlex::Params::ToJson();
+			pybind11::dict dict= DynaPlex::VarGroup::ToJson();
 			return dict;
 		}
 		catch (const std::exception& e)
@@ -43,13 +43,13 @@ namespace DynaPlex
 		}
 	}	
 
-	PythonParams::PythonParams(Params& params)
-		:Params(params)
+	PythonVarGroup::PythonVarGroup(VarGroup& vars)
+		:VarGroup(vars)
 	{
 	}
 
-	PythonParams::PythonParams(Params&& other) noexcept
-		:Params(std::move(other))
+	PythonVarGroup::PythonVarGroup(VarGroup&& other) noexcept
+		:VarGroup(std::move(other))
 	{
 	}
 

@@ -8,7 +8,7 @@ std::string lostsalesMDP::Identifier()
 	return "lost sales "+ std::to_string(j);
 }
 
-lostsalesMDP::lostsalesMDP(const DynaPlex::Params& params)
+lostsalesMDP::lostsalesMDP(const DynaPlex::VarGroup& vars)
 {
-	params.Get_Into("j", j);
+	vars.Get_Into("j", j);
 }

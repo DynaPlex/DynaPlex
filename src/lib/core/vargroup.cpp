@@ -1,5 +1,5 @@
 #include "dynaplex/utilities.h"
-#include "dynaplex/params.h"
+#include "dynaplex/VarGroup.h"
 #include "nlohmann/json.h"
 #include <iostream>
 #include <fstream>
@@ -15,6 +15,8 @@ namespace DynaPlex {
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz"
         "0123456789-_";
+
+   
 
     std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
         std::string ret;
@@ -109,8 +111,9 @@ namespace DynaPlex {
         return hash_string(serialized);
     }
 
+ 
 
-    class Params::Impl {
+    class VarGroup::Impl {
     public:
         ordered_json data;
 
@@ -160,13 +163,13 @@ namespace DynaPlex {
                     if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, int64_t> || std::is_same_v<T, double>|| std::is_same_v<T, std::nullptr_t>|| std::is_same_v<T, bool>) {
                         data[key] = v;
                     }
-                    else if constexpr (std::is_same_v<T, Params>) {
+                    else if constexpr (std::is_same_v<T, VarGroup>) {
                         data[key] = v.pImpl->data;
                     }
                     else if constexpr (std::is_same_v<T, Int64Vec> || std::is_same_v<T, DoubleVec> || std::is_same_v<T, StringVec>) {
                         data[key] = ordered_json(v);
                     }
-                    else if constexpr (std::is_same_v<T, ParamsVec>) {
+                    else if constexpr (std::is_same_v<T, VarGroupVec>) {
                         ordered_json jsonArray;
                         for (const auto& p : v) {
                             jsonArray.push_back(p.pImpl->data);
@@ -175,7 +178,7 @@ namespace DynaPlex {
                     }
                     else
                     {
-                        throw DynaPlex::Error("Unhandled case in Params implementation.");
+                        throw DynaPlex::Error("Unhandled case in VarGroup implementation.");
                     }
                 },
                 value);
@@ -184,7 +187,7 @@ namespace DynaPlex {
         template<typename T>
         void Get_IntoHelper(const std::string& key, T& out_val) const {
             if (!data.contains(key)) {
-                throw DynaPlex::Error("Key \"" + key + "\" not found in Params.");
+                throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
             }
 
             if (!data[key].is_null()) {
@@ -192,7 +195,7 @@ namespace DynaPlex {
                     out_val = data[key].get<T>();
                 }
                 catch (nlohmann::json::exception& e) {
-                    throw DynaPlex::Error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
+                    throw DynaPlex::Error("Key " + key + " is not of the correct type in VarGroup. Error: " + e.what());
                 }
             }
             else {
@@ -200,58 +203,58 @@ namespace DynaPlex {
             }
         }
 
-        void GetParamsVec(const std::string& key, Params::ParamsVec& out_val) {
+        void GetVarGroupVec(const std::string& key, VarGroup::VarGroupVec& out_val) {
             if (!data.contains(key)) {
-                throw DynaPlex::Error("Key \"" + key + "\" not found in Params.");
+                throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
             }
 
             if (data[key].is_array()) {
                 try {
                     for (const auto& item : data[key]) {
                         if (item.is_object()) {
-                            Params p(item);
+                            VarGroup p(item);
                             out_val.push_back(p);
                         }
                         else {
-                            throw DynaPlex::Error("Key " + key + " is not of the correct type in Params.");
+                            throw DynaPlex::Error("Key " + key + " is not of the correct type in VarGroup.");
                         }
                     }
                 }
                 catch (nlohmann::json::exception& e) {
-                    throw DynaPlex::Error("Key " + key + " is not of the correct type in Params. Error: " + e.what());
+                    throw DynaPlex::Error("Key " + key + " is not of the correct type in VarGroup. Error: " + e.what());
                 }
             }
             else {
-                throw DynaPlex::Error("Key " + key + " must be of type array in Params.");
+                throw DynaPlex::Error("Key " + key + " must be of type array in VarGroup.");
             }
         }
     };
 
-    Params::Params() : pImpl(std::make_unique<Impl>()) {}
+    VarGroup::VarGroup() : pImpl(std::make_unique<Impl>()) {}
 
 
-    Params::Params(TupleList list) : Params() {
+    VarGroup::VarGroup(TupleList list) : VarGroup() {
         for (const auto& [first,second] : list) {
            pImpl->Add(first, second);
        }
     }
 
 
-    Params::Params(const Params& other) : pImpl(std::make_unique<Impl>(*other.pImpl)) {}
+    VarGroup::VarGroup(const VarGroup& other) : pImpl(std::make_unique<Impl>(*other.pImpl)) {}
 
-    Params& Params::operator=(const Params& other) {
+    VarGroup& VarGroup::operator=(const VarGroup& other) {
         if (this != &other) {
             pImpl = std::make_unique<Impl>(*other.pImpl);
         }
         return *this;
     }
 
-    Params::~Params() = default;
+    VarGroup::~VarGroup() = default;
 
-    Params::Params(Params&& other) noexcept
+    VarGroup::VarGroup(VarGroup&& other) noexcept
         : pImpl(std::move(other.pImpl)) {}
 
-    Params& Params::operator=(Params&& other) noexcept {
+    VarGroup& VarGroup::operator=(VarGroup&& other) noexcept {
         if (this != &other) {
             pImpl = std::move(other.pImpl);
         }
@@ -260,51 +263,56 @@ namespace DynaPlex {
 
    
 
-    void Params::Add(std::string s, int val) {
+    void VarGroup::Add(std::string s, int val) {
         pImpl->Add(s, static_cast<int64_t>(val));
     }
 
-    void Params::Add(std::string s, int64_t val) {
+    void VarGroup::Add(std::string s, int64_t val) {
         pImpl->Add(s, val);
     }
-    void Params::Add(std::string s, bool val) {
+    void VarGroup::Add(std::string s, bool val) {
         pImpl->Add(s, val);
     }
 
 
-    void Params::Add(std::string s, std::string val) {
+    void VarGroup::Add(std::string s, std::string val) {
         pImpl->Add(s, val);
     }
-    void Params::Add(std::string s, double val) {
+    void VarGroup::Add(std::string s, const char* val) {
+        std::string value = val;
+        pImpl->Add(s, value);
+    }
+
+    void VarGroup::Add(std::string s, double val) {
         pImpl->Add(s, val);
     }
-    void Params::Add(std::string s, const std::vector<int>& vec) {
+    void VarGroup::Add(std::string s, const std::vector<int>& vec) {
         std::vector<int64_t> vec64(vec.begin(), vec.end());
         pImpl->Add(s, vec64);
     }
-    void Params::Add(std::string s,const Int64Vec& vec) {
+    void VarGroup::Add(std::string s,const Int64Vec& vec) {
         pImpl->Add(s, vec);
     }
-    void Params::Add(std::string s,const DoubleVec& vec) {
+    void VarGroup::Add(std::string s,const DoubleVec& vec) {
         pImpl->Add(s, vec);
     }
-    void Params::Add(std::string s, const StringVec& vec) {
+    void VarGroup::Add(std::string s, const StringVec& vec) {
         pImpl->Add(s, vec);
     }
-    void Params::Add(std::string s,const Params& vec) {
+    void VarGroup::Add(std::string s,const VarGroup& vec) {
         pImpl->Add(s, vec);
     }
-    void Params::Add(std::string s,const ParamsVec& vec) {
+    void VarGroup::Add(std::string s,const VarGroupVec& vec) {
         pImpl->Add(s, vec);
     }
-    void Params::Get_Into(const std::string& key, int64_t& out_val) const {
+    void VarGroup::Get_Into(const std::string& key, int64_t& out_val) const {
         pImpl->Get_IntoHelper(key, out_val);
     }
-    void Params::Get_Into(const std::string& key, std::string& out_val) const {
+    void VarGroup::Get_Into(const std::string& key, std::string& out_val) const {
         pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::Get_Into(const std::string& key, int& out_val) const {
+    void VarGroup::Get_Into(const std::string& key, int& out_val) const {
         int64_t int64;
         pImpl->Get_IntoHelper(key, int64);
 
@@ -314,31 +322,31 @@ namespace DynaPlex {
         out_val = static_cast<int>(int64);
     }
    
-    void Params::Get_Into(const std::string& key, bool& out_val) const {
+    void VarGroup::Get_Into(const std::string& key, bool& out_val) const {
         pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::Get_Into(const std::string& key, double& out_val)const {
+    void VarGroup::Get_Into(const std::string& key, double& out_val)const {
         pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::Get_Into(const std::string& key, Params::Int64Vec& out_val)const {
+    void VarGroup::Get_Into(const std::string& key, VarGroup::Int64Vec& out_val)const {
         pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::Get_Into(const std::string& key, Params::StringVec& out_val)const {
+    void VarGroup::Get_Into(const std::string& key, VarGroup::StringVec& out_val)const {
         pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::Get_Into(const std::string& key, Params::DoubleVec& out_val)const {
+    void VarGroup::Get_Into(const std::string& key, VarGroup::DoubleVec& out_val)const {
         pImpl->Get_IntoHelper(key, out_val);
     }
 
-    void Params::Get_Into(const std::string& key, Params::ParamsVec& out_val)const {
-        pImpl->GetParamsVec(key, out_val);
+    void VarGroup::Get_Into(const std::string& key, VarGroup::VarGroupVec& out_val)const {
+        pImpl->GetVarGroupVec(key, out_val);
     }
 
-    void Params::Get_Into(const std::string& key, std::vector<int>& out_val) const {
+    void VarGroup::Get_Into(const std::string& key, std::vector<int>& out_val) const {
         std::vector<int64_t> tmp;
         pImpl->Get_IntoHelper(key, tmp);
 
@@ -353,24 +361,24 @@ namespace DynaPlex {
     }
 
 
-    void Params::Get_Into(const std::string& key, Params& params) const {
+    void VarGroup::Get_Into(const std::string& key, VarGroup& out_val) const {
         if (!pImpl->data.contains(key)) {
-            throw std::runtime_error("key " + key + " not found in params.");
+            throw std::runtime_error("key " + key + " not found in VarGroup.");
         }
 
         if (!pImpl->data[key].is_object()) {
             throw std::runtime_error("expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
         }
 
-        params = Params(pImpl->data[key]);
+        out_val = VarGroup(pImpl->data[key]);
     }
 
-    void Params::Print() const {
+    void VarGroup::Print() const {
         pImpl->PrintAbbrv(pImpl->data, std::cout);
         std::cout << std::endl;       
     }
 
-    void Params::SaveToFile(const std::string& filename) const {
+    void VarGroup::SaveToFile(const std::string& filename) const {
         std::ofstream file(Utilities::GetOutputLocation(filename));
         if (!file.is_open()) {
             throw DynaPlex::Error("Failed to open file for writing: " + filename);
@@ -461,7 +469,7 @@ namespace DynaPlex {
         return check_homogeneity(j, "");
     }
 
-    Params Params::LoadFromFile(const std::string& filename) {
+    VarGroup VarGroup::LoadFromFile(const std::string& filename) {
         auto loc = DynaPlex::Utilities::GetOutputLocation(filename);
         std::ifstream file(loc);
         if (file.is_open()) {
@@ -482,9 +490,9 @@ namespace DynaPlex {
             {
                 throw DynaPlex::Error(std::string("Error in loaded JSON data from ") + loc + ":\n  "+ e.what());
             }
-            Params params;
-            params.pImpl->data = std::move(j);
-            return params;
+            VarGroup VarGroup;
+            VarGroup.pImpl->data = std::move(j);
+            return VarGroup;
         }
         else {
             throw DynaPlex::Error("Unable to open file for reading: " + filename);
@@ -492,7 +500,7 @@ namespace DynaPlex {
     }
 
 
-    Params::Params(ordered_json json) : pImpl(std::make_unique<Impl>()) {
+    VarGroup::VarGroup(ordered_json json) : pImpl(std::make_unique<Impl>()) {
         // Check if the loaded JSON adheres to the homogeneity rule for arrays
         try {
             check_validity(json);
@@ -503,22 +511,39 @@ namespace DynaPlex {
         }
         catch (const std::exception& e)
         {
-            throw DynaPlex::Error("Error while converting from pybind11::dict to Params");
+            throw DynaPlex::Error("Error while converting from pybind11::dict to VarGroup");
         }
         pImpl->data = json;     
     }
 
-    ordered_json Params::ToJson() const
+    ordered_json VarGroup::ToJson() const
     {
         return pImpl->data;
     }
 
-    std::string Params::Hash()
+    std::string VarGroup::Hash()
     {
         return hash_json(pImpl->data);
     }
         
-    
+    VarGroup::VarGroup(const std::string& rawJson)
+        : pImpl(std::make_unique<Impl>())
+    {
+        try {
+            pImpl->data = nlohmann::ordered_json::parse(rawJson);
+        }
+        catch (const nlohmann::json::exception& ex) {
+            // Handle the exception appropriately, e.g., throw a custom exception or initialize with an empty JSON
+            throw std::runtime_error("Failed to parse JSON string: " + std::string(ex.what()));
+        }
+    }
 
+    bool VarGroup::operator==(const VarGroup& other) const {
+        return pImpl->data == other.pImpl->data;
+    }
+
+    bool VarGroup::operator!=(const VarGroup& other) const {
+        return !(this->operator==(other));
+    }
 
 }  // namespace DynaPlex

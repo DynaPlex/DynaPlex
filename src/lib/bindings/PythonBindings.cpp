@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
-#include "dynaplex/params.h"
-#include "dynaplex/pythonparams.h"
+#include "dynaplex/vargroup.h"
+#include "dynaplex/pythonvargroup.h"
 #include "dynaplex/errors.h"
 #include "dynaplex/neuralnetworktrainer.h"
 #include "dynaplex/utilities.h"
@@ -10,7 +10,7 @@ namespace py = pybind11;
 
 void process(py::object& obj)
 {
-	auto pars = DynaPlex::PythonParams(obj);
+	auto pars = DynaPlex::PythonVarGroup(obj);
 	pars.Print();
 }
 void process(py::kwargs& kwargs)
@@ -23,17 +23,17 @@ void testPytorch()
 {
 	DynaPlex::NeuralNetworkTrainer trainer{};
 	trainer.writeidentifier();
-	DynaPlex::Params pars({ {"as",123} });
+	DynaPlex::VarGroup pars({ {"as",123} });
 	pars.Print();
 }
 
 py::dict get()
 {
-	DynaPlex::Params distprops{
+	DynaPlex::VarGroup distprops{
 			{"type","geom"},
 		{"mean",5} };
 
-	return DynaPlex::PythonParams(std::move(distprops));
+	return DynaPlex::PythonVarGroup(std::move(distprops));
 }
 
 

@@ -9,5 +9,5 @@ endif()
 
 add_subdirectory("core")
 add_subdirectory("nn")
-add_subdirectory("optimal")
+add_subdirectory("factories")
 add_subdirectory("dp")
