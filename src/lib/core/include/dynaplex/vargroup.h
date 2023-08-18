@@ -110,7 +110,9 @@ namespace DynaPlex {
 
 
 		void Print() const;
-
+		
+		//sorts the top level of the VarGroup by key, in alphabetical order.
+		void SortTopLevel();
 		
 
 #if DP_PYBIND_SUPPORT

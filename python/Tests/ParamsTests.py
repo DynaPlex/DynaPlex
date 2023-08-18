@@ -13,6 +13,6 @@ settings = { "ape": 1, "donkey": 0.5, "longsetting": -120000231,
 
 
 dp.process(settings)
-dp.process(test=['asdf','asdf','asef'],ace='asdf')
+dp.process(test=['asdf','asdf','asf'],ace='asdf')
 x = dp.get()
 print(x)

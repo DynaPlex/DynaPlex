@@ -4,11 +4,11 @@
 
 namespace DynaPlex {
     namespace Models {
-        template<typename SpecificMDP, const char* modelName>
+        template<typename SpecificMDP>
         class MDPRegistrar {
         public:
-            MDPRegistrar() {
-                Registry::Register(modelName, &MDPRegistrar::CreateInstance);
+            MDPRegistrar(const std::string& modelName, const std::string& model_description="") {
+                Registry::Register(modelName, model_description, &MDPRegistrar::CreateInstance);
             }
 
             static DynaPlex::MDP CreateInstance(const VarGroup& vars) {

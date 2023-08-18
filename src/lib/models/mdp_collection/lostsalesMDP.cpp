@@ -1,11 +1,8 @@
-//lostsalesMDP.cpp
 #include <iostream>
 #include <string>
-#include <functional>
-#include "lostsalesMDP.h"
 #include "dynaplex/mdpregistrar.h"
 
-namespace DynaPlex::Models::MDP {
+namespace DynaPlex::Models {
 	namespace LostSales
 	{
 
@@ -22,16 +19,14 @@ namespace DynaPlex::Models::MDP {
 				vars.Get("p", p);
 				vars.Get("h", h);
 			}
-		};		
+		};
 
-		DynaPlex::MDP GetInstance(const DynaPlex::VarGroup& vars) {
-			return DynaPlex::Erasure::Convert(MDP(vars));
-		}
 
-		bool registerLostSales = [] {
-			DynaPlex::Models::Registry::Register("LostSales", DynaPlex::Models::MDP::LostSales::GetInstance);
-			return true;
-		}();
+		//The declaration of the static registrar ensures that the MDP that we just declared
+		//is registered in the central registry under an appropriate identifier.
+		//Adding a brief description is optional. 
+		static DynaPlex::Models::MDPRegistrar<DynaPlex::Models::LostSales::MDP> registrar("LostSales", "Canonical lost sales problem.");
+
 	}
 }
 

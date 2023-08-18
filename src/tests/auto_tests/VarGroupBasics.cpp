@@ -7,8 +7,64 @@
 
 TEST(DynaPlexTests, VarGroupBasics) {
 
-	DynaPlex::VarGroup vars({ {"p",2} , {"q",3.1} , { "s", "string"} });
 
+
+	DynaPlex::VarGroup vars({ {"p",2} , {"q",3.1} , { "s", "string"}, {"list", DynaPlex::VarGroup::DoubleVec{1.2,1.3}} });
+
+	//this corresponds to the folowing json (note that VarGroup supports a specific subset of JSON):
+	std::string json_string = R"(
+	{
+		"p": 2,
+		"q": 3.1,
+		"s": "string",
+		"list": [1.2, 1.3]
+	}
+	)";
+	//approach to construct from this string
+	auto vars_from_string = DynaPlex::VarGroup(json_string);
+
+
+	std::string valid_json_string = R"(
+	{
+		"list": [1.2, "asdf"]
+	}
+	)";
+
+	//VarGroup does not support inhomogeneous lists
+	EXPECT_THROW({
+		DynaPlex::VarGroup test = DynaPlex::VarGroup(valid_json_string);
+		}, DynaPlex::Error);
+
+	//VarGroup does not support top-level lists (or simple objects).
+	std::string list_string = R"(
+	[0,1,2]
+	)";
+	EXPECT_THROW({
+	DynaPlex::VarGroup test = DynaPlex::VarGroup(list_string);
+		}, DynaPlex::Error);
+
+	EXPECT_EQ(vars, vars_from_string);
+
+	//building up by adding elements one by one:
+	DynaPlex::VarGroup vars_alt = DynaPlex::VarGroup{};
+	vars_alt.Add("p", 2);
+	vars_alt.Add("q", 3.1);
+	vars_alt.Add("s", "string");
+	vars_alt.Add("list", DynaPlex::VarGroup::DoubleVec{ 1.2,1.3 });
+
+	EXPECT_EQ(vars, vars_alt);
+
+	
+
+
+	DynaPlex::VarGroup different_order = DynaPlex::VarGroup{};
+	different_order.Add("p", 2);
+	different_order.Add("q", 3.1);
+	different_order.Add("list", DynaPlex::VarGroup::DoubleVec{ 1.2,1.3 });
+	different_order.Add("s", "string");
+	//note that if vars are added in different order, they are no longer considered equal. 
+	EXPECT_NE(vars_alt, different_order);
+	
 
 	vars.Add("listD", DynaPlex::VarGroup::DoubleVec{ 1.9,2.3 });
 
