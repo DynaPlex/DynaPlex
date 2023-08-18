@@ -1,22 +1,16 @@
 ﻿#include <iostream>
 #include "dynaplex/vargroup.h"
-#include "dynaplex/errors.h"
+#include "dynaplex/error.h"
 #include <gtest/gtest.h>
 
 
-// Sample function to test
-int sum(int a, int b) {
-	return a + b;
-}
 
-TEST(FactoryTest, VarGroup) {
+TEST(DynaPlexTests, VarGroup) {
 
 	DynaPlex::VarGroup vars({ {"p",2} , {"q",3.1} , { "s", "string"} });
 
 
 	vars.Add("listD", DynaPlex::VarGroup::DoubleVec{ 1.9,2.3 });
-
-
 
 	int p;
 	vars.Get_Into("p", p);
@@ -56,7 +50,7 @@ TEST(FactoryTest, VarGroup) {
 	);
 
 	auto vars2 = vars;
-		
+
 	std::string string = "test";
 	vars.Add("new key", "value");
 
@@ -70,12 +64,5 @@ TEST(FactoryTest, VarGroup) {
 	EXPECT_THROW({
 		vars2.Get_Into("new key", s);
 		}, DynaPlex::Error);
-
-}
-
-
-
-TEST(FactoryTest, VarGroupThrow) {
-
 
 }

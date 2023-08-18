@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
-#include "dynaplex/errors.h"
+#include "dynaplex/error.h"
 #include "picosha2.h"
 namespace DynaPlex {
 
@@ -378,6 +378,8 @@ namespace DynaPlex {
         std::cout << std::endl;       
     }
 
+   
+
     void VarGroup::SaveToFile(const std::string& filename) const {
         std::ofstream file(Utilities::GetOutputLocation(filename));
         if (!file.is_open()) {
@@ -545,5 +547,16 @@ namespace DynaPlex {
     bool VarGroup::operator!=(const VarGroup& other) const {
         return !(this->operator==(other));
     }
+
+#if DP_BINDING_SUPPORT
+    std::unique_ptr<pybind11::dict> VarGroup::toPyDict() const
+    {
+        throw;
+    }
+
+    VarGroup::VarGroup(const pybind11::dict&)
+    {
+    }
+#endif
 
 }  // namespace DynaPlex

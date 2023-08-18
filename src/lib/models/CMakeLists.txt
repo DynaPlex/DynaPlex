@@ -1,10 +1,12 @@
 
 cmake_minimum_required (VERSION 3.21)
 
-set(targetname Factories)
+set(targetname Models)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
+
+message(STATUS ${headers})
 
 add_library (DP_${targetname} OBJECT)
 add_library (DynaPlex::${targetname} ALIAS DP_${targetname})

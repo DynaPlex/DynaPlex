@@ -11,6 +11,8 @@ set_target_properties(DP_${targetname} PROPERTIES
 )
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE  ${sources})
 
+target_compile_definitions(DP_${targetname} PRIVATE DP_BINDING_SUPPORT=1)
+
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
 if(${dynaplex_all_warnings})
@@ -18,7 +20,7 @@ target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3>  
 endif()
 
 if(Torch_FOUND)
-   target_compile_definitions(DP_${targetname} PRIVATE Torch_available=1)
+   target_compile_definitions(DP_${targetname} PRIVATE DP_TORCH_AVAILABLE=1)
    target_link_libraries(DP_${targetname} PUBLIC "${TORCH_LIBRARIES}")
 endif()
 

@@ -1,13 +1,13 @@
 #include "dynaplex/neuralnetworktrainer.h"
 #include <iostream>
-#if Torch_available
+#if DP_TORCH_AVAILABLE
 #include <torch/torch.h>
 #endif
 
 namespace DynaPlex {
 	void NeuralNetworkTrainer::writeidentifier()
 	{
-#if Torch_available
+#if DP_TORCH_AVAILABLE
 		std::cout << "DynaPlex: Pytorch available, Version ";
 		std::cout << TORCH_VERSION_MAJOR << ".";
 		std::cout << TORCH_VERSION_MINOR << ".";

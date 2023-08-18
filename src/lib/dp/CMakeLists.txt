@@ -17,7 +17,7 @@ set_target_properties(DP_${targetname} PROPERTIES
 )
 
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
-target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core DynaPlex::NN  DynaPlex::Factories)
+target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core DynaPlex::NN  DynaPlex::Models)
 
 
 if(${dynaplex_all_warnings})

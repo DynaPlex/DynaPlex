@@ -1,5 +1,5 @@
 #include "dynaplex/utilities.h"
-#include "dynaplex/errors.h"
+#include "dynaplex/error.h"
 #include <iostream>
 #include <filesystem>
 

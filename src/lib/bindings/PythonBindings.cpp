@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include "dynaplex/vargroup.h"
 #include "dynaplex/pythonvargroup.h"
-#include "dynaplex/errors.h"
+#include "dynaplex/error.h"
 #include "dynaplex/neuralnetworktrainer.h"
 #include "dynaplex/utilities.h"
 #include <torch/torch.h>

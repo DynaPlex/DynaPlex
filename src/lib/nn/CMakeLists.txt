@@ -26,6 +26,6 @@ endif()
  
 #Logic for including PyTorch Privately
 if(Torch_FOUND)
-   target_compile_definitions(DP_${targetname} PRIVATE Torch_available=1)
+   target_compile_definitions(DP_${targetname} PRIVATE DP_TORCH_AVAILABLE=1)
    target_link_libraries(DP_${targetname} PUBLIC "${TORCH_LIBRARIES}")
 endif()
