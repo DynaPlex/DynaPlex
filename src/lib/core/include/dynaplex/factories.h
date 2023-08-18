@@ -1,4 +1,3 @@
-//<something.h>
 #pragma once
 #include "dynaplex/mdp.h"
 #include "dynaplex/vargroup.h"

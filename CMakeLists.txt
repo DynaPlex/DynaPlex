@@ -14,10 +14,13 @@ include(cmake/dependencies.cmake)
 # SETTINGS
 include(dynaplex_settings)
 
+
+
+
 # MAIN TARGETS
 add_subdirectory(src/lib)
 #include examples unless this project is included as part of bigger project.
-if(${PROJECT_IS_TOP_LEVEL})
+if(${PROJECT_IS_TOP_LEVEL} AND NOT dynaplex_enable_pythonbindings)
 add_subdirectory(src/examples)
 
 

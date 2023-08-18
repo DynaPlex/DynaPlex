@@ -3,13 +3,12 @@
 #include "dynaplex/mdpinterface.h"
 #include "dynaplex/mdp.h"
 
-namespace DynaPlex {
+//Erases the specific type of the argument passed, and returns a generic DynaPlex::MDP
+namespace DynaPlex::Erasure {
 
 	template <class t_MDP>
 	DynaPlex::MDP Convert(t_MDP mdp_impl)
 	{
-		auto shared = std::make_shared<DynaPlex::MDPAdapter<t_MDP>>(mdp_impl);
-		auto converted = std::static_pointer_cast<DynaPlex::MDPInterface>(shared);
-		return converted;
+		return std::make_shared<MDPAdapter<t_MDP>>(mdp_impl);
 	}
 }//namespace DynaPlex

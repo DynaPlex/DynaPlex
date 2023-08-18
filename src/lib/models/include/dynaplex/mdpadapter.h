@@ -1,7 +1,9 @@
 #pragma once
 #include "dynaplex/mdpinterface.h"
 
-namespace DynaPlex
+
+//This adapts any MDP to the MDPInterface, which is related to DynaPlex::MDP =std::shared_pointer<MDPInterface>
+namespace DynaPlex::Erasure
 {
 	template<class t_MDP>
 	class MDPAdapter : public MDPInterface

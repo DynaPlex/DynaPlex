@@ -11,7 +11,7 @@ set_target_properties(DP_${targetname} PROPERTIES
 )
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE  ${sources})
 
-target_compile_definitions(DP_${targetname} PRIVATE DP_BINDING_SUPPORT=1)
+target_compile_definitions(DP_${targetname} PRIVATE DP_PYBIND_SUPPORT=1)
 
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 

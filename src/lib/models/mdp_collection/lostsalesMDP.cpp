@@ -3,10 +3,9 @@
 #include <string>
 #include <functional>
 #include "lostsalesMDP.h"
-#include "dynaplex/mdpregistry.h"
-#include "dynaplex/convert.h"
+#include "dynaplex/mdpregistrar.h"
 
-namespace DynaPlex::Collections::MDP {
+namespace DynaPlex::Models::MDP {
 	namespace LostSales
 	{
 
@@ -26,11 +25,11 @@ namespace DynaPlex::Collections::MDP {
 		};		
 
 		DynaPlex::MDP GetInstance(const DynaPlex::VarGroup& vars) {
-			return DynaPlex::Convert(MDP(vars));
+			return DynaPlex::Erasure::Convert(MDP(vars));
 		}
 
 		bool registerLostSales = [] {
-			DynaPlex::Collections::MDPRegistry::Register("LostSales", DynaPlex::Collections::MDP::LostSales::GetInstance);
+			DynaPlex::Models::Registry::Register("LostSales", DynaPlex::Models::MDP::LostSales::GetInstance);
 			return true;
 		}();
 	}

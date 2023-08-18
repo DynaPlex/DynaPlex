@@ -5,11 +5,11 @@
 #include "dynaplex/vargroup.h"
 #include "dynaplex/mdp.h"
 
-namespace DynaPlex::Collections {
+namespace DynaPlex::Models {
 
     using MDPFactoryFunction = std::function<DynaPlex::MDP(const DynaPlex::VarGroup&)>;
 
-    class MDPRegistry {
+    class Registry {
     public:
         static void Register(const std::string& identifier, MDPFactoryFunction func);
 

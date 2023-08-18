@@ -1,6 +1,5 @@
 #include <pybind11/pybind11.h>
 #include "dynaplex/vargroup.h"
-#include "dynaplex/pythonvargroup.h"
 #include "dynaplex/error.h"
 #include "dynaplex/neuralnetworktrainer.h"
 #include "dynaplex/utilities.h"
@@ -10,7 +9,7 @@ namespace py = pybind11;
 
 void process(py::object& obj)
 {
-	auto pars = DynaPlex::PythonVarGroup(obj);
+	auto pars = DynaPlex::VarGroup(obj);
 	pars.Print();
 }
 void process(py::kwargs& kwargs)
@@ -33,7 +32,7 @@ py::dict get()
 			{"type","geom"},
 		{"mean",5} };
 
-	return DynaPlex::PythonVarGroup(std::move(distprops));
+	return *distprops.toPybind11Dict();
 }
 
 

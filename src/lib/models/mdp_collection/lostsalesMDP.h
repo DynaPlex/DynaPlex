@@ -1,7 +1,7 @@
 #pragma once
 #include "dynaplex/vargroup.h"
 
-namespace DynaPlex::Collections::MDP {
+namespace DynaPlex::Models::MDP {
 	namespace LostSales
 	{
 		

@@ -3,12 +3,12 @@
 #include <string>
 #include <variant>
 #include <vector>
-#include "nlohmann/json_fwd.h"
 #include <concepts>
 
-#if DP_BINDING_SUPPORT 
+#if DP_PYBIND_SUPPORT 
 namespace pybind11 {
 	class dict;
+	class object;
 }
 #endif
 
@@ -110,14 +110,12 @@ namespace DynaPlex {
 
 
 		void Print() const;
-	protected:
-		VarGroup(nlohmann::ordered_json json);
-		nlohmann::ordered_json ToJson() const;
+
 		
 
-#if DP_BINDING_SUPPORT
-		std::unique_ptr<pybind11::dict> toPyDict() const;
-		VarGroup(const pybind11::dict&);
+#if DP_PYBIND_SUPPORT
+		std::unique_ptr<pybind11::dict> toPybind11Dict() const;
+		VarGroup(const pybind11::object&);
 #endif
 
 	private:

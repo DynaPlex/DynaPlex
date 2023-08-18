@@ -1,12 +1,12 @@
-#include "dynaplex/mdpregistry.h"
+#include "dynaplex/registry.h"
 #include "dynaplex/error.h"
-namespace DynaPlex::Collections {
+namespace DynaPlex::Models {
 
-    void MDPRegistry::Register(const std::string& identifier, MDPFactoryFunction func) {
+    void Registry::Register(const std::string& identifier, MDPFactoryFunction func) {
         GetRegistry()[identifier] = func;
     }
 
-    DynaPlex::MDP MDPRegistry::GetMDP(const DynaPlex::VarGroup& vars) {
+    DynaPlex::MDP Registry::GetMDP(const DynaPlex::VarGroup& vars) {
         std::string id;
         vars.Get_Into("id", id); 
 
@@ -17,7 +17,7 @@ namespace DynaPlex::Collections {
         throw DynaPlex::Error("Unknown identifier: " + id);
     }
 
-    std::unordered_map<std::string, MDPFactoryFunction>& MDPRegistry::GetRegistry() {
+    std::unordered_map<std::string, MDPFactoryFunction>& Registry::GetRegistry() {
         static std::unordered_map<std::string, MDPFactoryFunction> registry;
         return registry;
     }

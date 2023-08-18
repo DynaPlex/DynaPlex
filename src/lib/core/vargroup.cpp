@@ -6,6 +6,11 @@
 #include <stdexcept>
 #include "dynaplex/error.h"
 #include "picosha2.h"
+#if DP_PYBIND_SUPPORT
+#include "pybind11/pybind11.h"
+#include "pybind11_json/pybind11_json.h"
+#endif
+
 namespace DynaPlex {
 
     using ordered_json = nlohmann::ordered_json;
@@ -16,6 +21,9 @@ namespace DynaPlex {
         "abcdefghijklmnopqrstuvwxyz"
         "0123456789-_";
 
+
+    bool check_validity(const ordered_json& j);
+ 
    
 
     std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
@@ -115,6 +123,8 @@ namespace DynaPlex {
 
     class VarGroup::Impl {
     public:
+
+    
         ordered_json data;
 
         void PrintAbbrv(ordered_json& obj, std::ostream& os, int indent = 0) {
@@ -203,6 +213,9 @@ namespace DynaPlex {
             }
         }
 
+
+
+
         void GetVarGroupVec(const std::string& key, VarGroup::VarGroupVec& out_val) {
             if (!data.contains(key)) {
                 throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
@@ -212,8 +225,8 @@ namespace DynaPlex {
                 try {
                     for (const auto& item : data[key]) {
                         if (item.is_object()) {
-                            VarGroup p(item);
-                            out_val.push_back(p);
+                            VarGroup varGroup = Impl::ToVarGroup(item);
+                            out_val.push_back(varGroup);
                         }
                         else {
                             throw DynaPlex::Error("Key " + key + " is not of the correct type in VarGroup.");
@@ -227,6 +240,27 @@ namespace DynaPlex {
             else {
                 throw DynaPlex::Error("Key " + key + " must be of type array in VarGroup.");
             }
+        }
+
+     
+
+        static VarGroup ToVarGroup(ordered_json json) {
+
+            // Check if the loaded JSON adheres to the homogeneity rule for arrays
+            try {
+                DynaPlex::check_validity(json);
+            }
+            catch (const DynaPlex::Error& e)
+            {
+                throw DynaPlex::Error(std::string("Error in dictionary/kwargs passed from python:\n") + e.what());
+            }
+            catch (const std::exception& e)
+            {
+                throw DynaPlex::Error("Error while converting from pybind11::dict to VarGroup");
+            }
+            VarGroup varGroup{};
+            varGroup.pImpl->data = json;
+            return varGroup;
         }
     };
 
@@ -370,7 +404,7 @@ namespace DynaPlex {
             throw std::runtime_error("expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
         }
 
-        out_val = VarGroup(pImpl->data[key]);
+        out_val = Impl::ToVarGroup(pImpl->data[key]);
     }
 
     void VarGroup::Print() const {
@@ -471,6 +505,8 @@ namespace DynaPlex {
         return check_homogeneity(j, "");
     }
 
+    
+
     VarGroup VarGroup::LoadFromFile(const std::string& filename) {
         auto loc = DynaPlex::Utilities::GetOutputLocation(filename);
         std::ifstream file(loc);
@@ -502,26 +538,7 @@ namespace DynaPlex {
     }
 
 
-    VarGroup::VarGroup(ordered_json json) : pImpl(std::make_unique<Impl>()) {
-        // Check if the loaded JSON adheres to the homogeneity rule for arrays
-        try {
-            check_validity(json);
-        }
-        catch (const DynaPlex::Error& e)
-        {
-            throw DynaPlex::Error(std::string("Error in dictionary/kwargs passed from python:\n") + e.what());
-        }
-        catch (const std::exception& e)
-        {
-            throw DynaPlex::Error("Error while converting from pybind11::dict to VarGroup");
-        }
-        pImpl->data = json;     
-    }
-
-    ordered_json VarGroup::ToJson() const
-    {
-        return pImpl->data;
-    }
+  
 
     std::string VarGroup::Hash()
     {
@@ -548,15 +565,65 @@ namespace DynaPlex {
         return !(this->operator==(other));
     }
 
-#if DP_BINDING_SUPPORT
-    std::unique_ptr<pybind11::dict> VarGroup::toPyDict() const
+ 
+
+
+#if DP_PYBIND_SUPPORT
+    //We return a unique pointer here (instead of pybind11::dict outright), so that the header does not need to include pybind11 (and can use forward declare).
+    // This to avoid longer compilation times as VarGroup.h is needed in many places.  
+	std::unique_ptr<pybind11::dict> VarGroup::toPybind11Dict() const
+	{
+		if (this->pImpl->data.is_object())
+		{
+			try
+			{
+				return std::make_unique<pybind11::dict>(pyjson::from_json(this->pImpl->data));
+			}
+			catch (const std::exception& e)
+			{
+				throw DynaPlex::Error(std::string("Could not convert json to dictionary:\n  ") + e.what());
+			}
+		}
+		else
+		{
+			throw DynaPlex::Error("Cannot convert VarGroup to pybind11::dict.");
+		}
+	}
+    nlohmann::ordered_json ConvertToJson(const pybind11::object& obj)
     {
-        throw;
+        try
+        {
+            py::dict dict = obj.cast<pybind11::dict>();
+            nlohmann::ordered_json json = dict;
+            return json;
+        }
+        catch (const pybind11::error_already_set& e) {
+            throw DynaPlex::Error(std::string("Invalid Argument: DynaPlex accepts as arguments either a single dictionary or a list of named arguments. The provided argument could not be converted. ") + e.what());
+        }
+        catch (const std::exception& e)
+        {
+            throw DynaPlex::Error(std::string("Error while converting argument passed from python to DynaPlex. ") + e.what());
+        }
     }
 
-    VarGroup::VarGroup(const pybind11::dict&)
-    {
-    }
+
+	VarGroup::VarGroup(const pybind11::object& obj):pImpl(std::make_unique<Impl>())
+	{
+        auto json = ConvertToJson(obj);
+        // Check if the loaded JSON adheres to the homogeneity rule for arrays
+        try {
+            check_validity(json);
+        }
+        catch (const DynaPlex::Error& e)
+        {
+            throw DynaPlex::Error(std::string("Error in dictionary/kwargs passed from python:\n") + e.what());
+        }
+        catch (const std::exception& e)
+        {
+            throw DynaPlex::Error("Error while converting from pybind11::dict to VarGroup");
+        }
+        pImpl->data = json;
+	}
 #endif
 
 }  // namespace DynaPlex
