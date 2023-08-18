@@ -19,8 +19,8 @@ namespace DynaPlex::Models::MDP {
 			}
 			MDP(const DynaPlex::VarGroup& vars)
 			{
-				vars.Get_Into("p", p);
-				vars.Get_Into("h", h);
+				vars.Get("p", p);
+				vars.Get("h", h);
 			}
 		};		
 

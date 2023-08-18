@@ -195,7 +195,7 @@ namespace DynaPlex {
         }
 
         template<typename T>
-        void Get_IntoHelper(const std::string& key, T& out_val) const {
+        void GetHelper(const std::string& key, T& out_val) const {
             if (!data.contains(key)) {
                 throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
             }
@@ -339,16 +339,16 @@ namespace DynaPlex {
     void VarGroup::Add(std::string s,const VarGroupVec& vec) {
         pImpl->Add(s, vec);
     }
-    void VarGroup::Get_Into(const std::string& key, int64_t& out_val) const {
-        pImpl->Get_IntoHelper(key, out_val);
+    void VarGroup::Get(const std::string& key, int64_t& out_val) const {
+        pImpl->GetHelper(key, out_val);
     }
-    void VarGroup::Get_Into(const std::string& key, std::string& out_val) const {
-        pImpl->Get_IntoHelper(key, out_val);
+    void VarGroup::Get(const std::string& key, std::string& out_val) const {
+        pImpl->GetHelper(key, out_val);
     }
 
-    void VarGroup::Get_Into(const std::string& key, int& out_val) const {
+    void VarGroup::Get(const std::string& key, int& out_val) const {
         int64_t int64;
-        pImpl->Get_IntoHelper(key, int64);
+        pImpl->GetHelper(key, int64);
 
         if (int64 < INT_MIN || int64 > INT_MAX) {
             throw DynaPlex::Error("int64_t value out of range for conversion to int");
@@ -356,33 +356,33 @@ namespace DynaPlex {
         out_val = static_cast<int>(int64);
     }
    
-    void VarGroup::Get_Into(const std::string& key, bool& out_val) const {
-        pImpl->Get_IntoHelper(key, out_val);
+    void VarGroup::Get(const std::string& key, bool& out_val) const {
+        pImpl->GetHelper(key, out_val);
     }
 
-    void VarGroup::Get_Into(const std::string& key, double& out_val)const {
-        pImpl->Get_IntoHelper(key, out_val);
+    void VarGroup::Get(const std::string& key, double& out_val)const {
+        pImpl->GetHelper(key, out_val);
     }
 
-    void VarGroup::Get_Into(const std::string& key, VarGroup::Int64Vec& out_val)const {
-        pImpl->Get_IntoHelper(key, out_val);
+    void VarGroup::Get(const std::string& key, VarGroup::Int64Vec& out_val)const {
+        pImpl->GetHelper(key, out_val);
     }
 
-    void VarGroup::Get_Into(const std::string& key, VarGroup::StringVec& out_val)const {
-        pImpl->Get_IntoHelper(key, out_val);
+    void VarGroup::Get(const std::string& key, VarGroup::StringVec& out_val)const {
+        pImpl->GetHelper(key, out_val);
     }
 
-    void VarGroup::Get_Into(const std::string& key, VarGroup::DoubleVec& out_val)const {
-        pImpl->Get_IntoHelper(key, out_val);
+    void VarGroup::Get(const std::string& key, VarGroup::DoubleVec& out_val)const {
+        pImpl->GetHelper(key, out_val);
     }
 
-    void VarGroup::Get_Into(const std::string& key, VarGroup::VarGroupVec& out_val)const {
+    void VarGroup::Get(const std::string& key, VarGroup::VarGroupVec& out_val)const {
         pImpl->GetVarGroupVec(key, out_val);
     }
 
-    void VarGroup::Get_Into(const std::string& key, std::vector<int>& out_val) const {
+    void VarGroup::Get(const std::string& key, std::vector<int>& out_val) const {
         std::vector<int64_t> tmp;
-        pImpl->Get_IntoHelper(key, tmp);
+        pImpl->GetHelper(key, tmp);
 
 
         out_val.clear();
@@ -395,7 +395,7 @@ namespace DynaPlex {
     }
 
 
-    void VarGroup::Get_Into(const std::string& key, VarGroup& out_val) const {
+    void VarGroup::Get(const std::string& key, VarGroup& out_val) const {
         if (!pImpl->data.contains(key)) {
             throw std::runtime_error("key " + key + " not found in VarGroup.");
         }

@@ -8,7 +8,7 @@ namespace DynaPlex::Models {
 
     DynaPlex::MDP Registry::GetMDP(const DynaPlex::VarGroup& vars) {
         std::string id;
-        vars.Get_Into("id", id); 
+        vars.Get("id", id); 
 
         auto it = GetRegistry().find(id);
         if (it != GetRegistry().end()) {

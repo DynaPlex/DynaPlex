@@ -3,12 +3,11 @@
 
 SomeClass::SomeClass(DynaPlex::VarGroup& vars) {
     
-    vars.Get_Into("myString", myString);
-    vars.Get_Into("myInt", myInt);
-    vars.Get_Into("myVector", myVector);
-
-    vars.Get_Into("nestedClass", nestedClass);
-    vars.Get_Into("myNestedVector", myNestedVector);
+    vars.Get("myString", myString);
+    vars.Get("myInt", myInt);
+    vars.Get("myVector", myVector);
+    vars.Get("nestedClass", nestedClass);
+    vars.Get("myNestedVector", myNestedVector);
 
 }
 

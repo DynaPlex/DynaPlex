@@ -9,7 +9,6 @@ public:
     NestedClass() {}
     void Print() const;
 
-private:
     std::string Id;
     double Size;
 };

@@ -69,34 +69,34 @@ namespace DynaPlex {
 
 
 
-		void Get_Into(const std::string& key, VarGroup& out_val) const;
-		void Get_Into(const std::string& key, int64_t& out_val) const;
-		void Get_Into(const std::string& key, std::string& out_val) const;
-		void Get_Into(const std::string& key, int& out_val) const;
-		void Get_Into(const std::string& key, bool& out_val) const;
-		void Get_Into(const std::string& key, double& out_val) const;
-		void Get_Into(const std::string& key, Int64Vec& out_val) const;
-		void Get_Into(const std::string& key, StringVec& out_val) const;
-		void Get_Into(const std::string& key, DoubleVec& out_val) const;
-		void Get_Into(const std::string& key, VarGroupVec& out_val) const;
-		void Get_Into(const std::string& key, std::vector<int>& out_val) const;
+		void Get(const std::string& key, VarGroup& out_val) const;
+		void Get(const std::string& key, int64_t& out_val) const;
+		void Get(const std::string& key, std::string& out_val) const;
+		void Get(const std::string& key, int& out_val) const;
+		void Get(const std::string& key, bool& out_val) const;
+		void Get(const std::string& key, double& out_val) const;
+		void Get(const std::string& key, Int64Vec& out_val) const;
+		void Get(const std::string& key, StringVec& out_val) const;
+		void Get(const std::string& key, DoubleVec& out_val) const;
+		void Get(const std::string& key, VarGroupVec& out_val) const;
+		void Get(const std::string& key, std::vector<int>& out_val) const;
 		
 		
 		template<ConvertibleFromVarGroup T>
-		void Get_Into(const std::string& key, T& out_val) const {
+		void Get(const std::string& key, T& out_val) const {
 			VarGroup vars;
-			Get_Into(key, vars);
+			Get(key, vars);
 			out_val = T(vars);
 		}
 
 
 
 		template<ConvertibleFromVarGroupVec T>
-		void Get_Into(const std::string& key, T& out_val) const {
+		void Get(const std::string& key, T& out_val) const {
 			out_val.clear();
 
 			VarGroupVec varsVec;
-			Get_Into(key, varsVec);
+			Get(key, varsVec);
 
 			for (VarGroup& p : varsVec) {
 				out_val.push_back(typename T::value_type(p));

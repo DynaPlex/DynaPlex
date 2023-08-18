@@ -12,7 +12,7 @@ public:
 
     void Print() const;
 
-private:
+public:
     std::string myString;
     int myInt;
     std::vector<int> myVector;
