@@ -21,3 +21,37 @@ TEST(ModelFactory, SimpleGet) {
 	EXPECT_EQ(model->Identifier(), "lost sales 9.000000");
 
 }
+
+
+TEST(ModelFactory, AnotherSimpleGet) {
+	DynaPlex::VarGroup vars;
+
+
+
+	vars.Add("id", "SomeMDP");
+	DynaPlex::MDP model;
+
+	ASSERT_NO_THROW(
+		model = DynaPlex::GetMDP(vars);
+	);
+
+	EXPECT_EQ(model->Identifier(), "CRAZY");
+
+}
+
+TEST(ModelFactory, FailGet) {
+	DynaPlex::VarGroup vars;
+
+
+
+	vars.Add("id", "LostTypoSales");
+	vars.Add("p", 9.0);
+	vars.Add("h", 1.0);
+
+	DynaPlex::MDP model;
+
+	ASSERT_THROW(
+		model = DynaPlex::GetMDP(vars) , DynaPlex::Error
+	);
+
+}

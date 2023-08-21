@@ -1,16 +1,10 @@
 #pragma once
-#include "dynaplex/mdp.h"
-
+#include <string>
 namespace DynaPlex {
 	class NeuralNetworkTrainer
 	{
-
-		DynaPlex::MDP mdp;
 	public:
-		void writeidentifier();
-
-		NeuralNetworkTrainer():mdp{nullptr}
-		{};
-		NeuralNetworkTrainer(DynaPlex::MDP mdp);
+		std::string TorchAvailability();
+		NeuralNetworkTrainer();
 	};
 }//namespace DynaPlex

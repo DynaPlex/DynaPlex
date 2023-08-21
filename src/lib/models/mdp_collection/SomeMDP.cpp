@@ -3,27 +3,24 @@
 #include "dynaplex/mdpregistrar.h"
 
 namespace DynaPlex::Models {
-	namespace LostSales /*keep this in line with id below*/
+	namespace SomeMDP /*keep this in line with id below*/
 	{
 
 		class MDP
 		{
 			const DynaPlex::VarGroup vars;
-			double p, h;
 		public:
 			std::string Identifier()
 			{
-				return "lost sales " + std::to_string(p);
+				return "CRAZY";
 			}
 			MDP(const DynaPlex::VarGroup& vars)
 				:vars{ vars }
 			{
-				vars.Get("p", p);
-				vars.Get("h", h);
 			}
 		};
 	}
 	//The declaration of the static registrar registers the MDP in the central registry, such that DynaPlex::GetMDP can locate it 
-	static MDPRegistrar<LostSales::MDP> registrar(/*id*/"LostSales",/*optional brief description*/ "Canonical lost sales problem.");
+	static MDPRegistrar<SomeMDP::MDP> registrar(/*id*/"SomeMDP",/*optional brief description*/ "Some crazy MDP");
 }
 

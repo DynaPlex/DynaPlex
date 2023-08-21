@@ -29,10 +29,10 @@ std::string TestParam(py::kwargs& kwargs)
 	return TestParam(vars );
 }
 
-void TestPytorch()
+void TestTorch()
 {
 	DynaPlex::NeuralNetworkTrainer trainer{};
-	trainer.writeidentifier();
+	std::cout << trainer.TorchAvailability() << std::endl;
 }
 
 DynaPlex::VarGroup GetVarGroup()
@@ -47,8 +47,8 @@ DynaPlex::VarGroup GetVarGroup()
 
 PYBIND11_MODULE(DP_Bindings, m) {
 	m.doc() = "DynaPlex extension for Python";
-	m.def("GetVarGroup", &GetVarGroup, "gets some parameters");
-	m.def("TestPytorch", &TestPytorch, "tests pytorch availability");
+	m.def("get_var_group", &GetVarGroup, "gets some parameters");
+	m.def("test_torch", &TestTorch, "tests pytorch availability");
 	// Expose the MDPInterface
 	py::class_<DynaPlex::MDPInterface,DynaPlex::MDP>(m, "MDP")
 		.def("identifier", &DynaPlex::MDPInterface::Identifier);

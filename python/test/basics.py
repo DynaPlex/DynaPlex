@@ -29,6 +29,14 @@ def test_model_factory_tests():
         pytest.fail(f"Unexpected error: {e}")
     assert model.identifier() == "lost sales 9.000000"
 
+
+def test_model_factory_tests():
+    try:
+        model = dp.get_mdp(id='SomeMDP')
+    except Exception as e:
+        pytest.fail(f"Unexpected error: {e}")
+    assert model.identifier() == "CRAZY"
+
 def test_model_factory_tests_named_args():
     try:
         model = dp.get_mdp(id='LostSales',p=9.0,h=1.0)
@@ -73,5 +81,5 @@ def test_convert_to_string_with_test_params():
 
 def test_get_var_group():
     expected_output = {'type': 'geom', 'mean': 5}
-    result = dp.GetVarGroup()
+    result = dp.get_var_group()
     assert result == expected_output, f"Expected {expected_output}, but got {result}"

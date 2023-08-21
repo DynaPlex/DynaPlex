@@ -5,27 +5,23 @@
 #endif
 
 namespace DynaPlex {
-	void NeuralNetworkTrainer::writeidentifier()
-	{
+    std::string NeuralNetworkTrainer::TorchAvailability()
+    {
+        std::string result;
+
 #if DP_TORCH_AVAILABLE
-		std::cout << "DynaPlex: Pytorch available, Version ";
-		std::cout << TORCH_VERSION_MAJOR << ".";
-		std::cout << TORCH_VERSION_MINOR << ".";
-		std::cout << TORCH_VERSION_PATCH << std::endl;
-		torch::Tensor eye = torch::eye(2);
-		std::cout << eye << std::endl;
-		std::cout << torch::cuda::is_available() << std::endl;
+        result = "DynaPlex: torch available, Version ";
+        result += std::to_string(TORCH_VERSION_MAJOR) + ".";
+        result += std::to_string(TORCH_VERSION_MINOR) + ".";
+        result += std::to_string(TORCH_VERSION_PATCH) + "\n";
+        result += "CUDA AVAILABILITY: " + std::to_string(torch::cuda::is_available()) + "\n";
 #else
-		std::cout << "torch not available" << std::endl;
-#endif
-		if (mdp)
-		{
-			std::cout << mdp->Identifier() << std::endl;
-		}
-	}
+        result = "torch not available\n";
+#endif	
 
+        return result;
+    }
 
-	NeuralNetworkTrainer::NeuralNetworkTrainer(DynaPlex::MDP mdp) :
-		mdp{ mdp }
+	NeuralNetworkTrainer::NeuralNetworkTrainer()
 	{}
 }
