@@ -1,6 +1,5 @@
 #pragma once
 #include "dynaplex/mdpadapter.h"
-#include "dynaplex/mdpinterface.h"
 #include "dynaplex/mdp.h"
 
 //Erases the specific type of the argument passed, and returns a generic DynaPlex::MDP

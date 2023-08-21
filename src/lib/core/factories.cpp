@@ -1,10 +1,10 @@
-#include "DynaPlex/Factories.h"
+#include "dynaplex/factories.h"
 #include "dynaplex/registry.h"
 namespace DynaPlex {
 	DynaPlex::MDP GetMDP(const DynaPlex::VarGroup& vars) {
 		return DynaPlex::Models::Registry::GetMDP(vars);
 	}
-	DynaPlex::VarGroup GetListOfMDPs() {
-		return DynaPlex::Models::Registry::MDPList();
+	DynaPlex::VarGroup ListMDPs() {
+		return DynaPlex::Models::Registry::ListMDPs();
 	}
 }

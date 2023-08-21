@@ -1,14 +1,14 @@
+#include "dynaplex/vargroup.h"
 #include "dynaplex/utilities.h"
-#include "dynaplex/VarGroup.h"
-#include "nlohmann/json.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include "dynaplex/error.h"
-#include "vargroup_helpers.h"//hash_json and check_validity
+#include "vargroup/nlohmann/json.h"
+#include "vargroup/vargroup_helpers.h"//hash_json and check_validity
 #if DP_PYBIND_SUPPORT
 #include "pybind11/pybind11.h"
-#include "pybind11_json/pybind11_json.h"
+#include "vargroup/pybind11_json.h"
 #endif
 
 namespace DynaPlex {
@@ -20,14 +20,15 @@ namespace DynaPlex {
 
 		ordered_json data;
 
-		void PrintAbbrv(ordered_json& obj, std::ostream& os, int indent = 0) {
+		std::string PrintAbbrv(const ordered_json& obj, int indent = 0) const {
+			std::ostringstream os;
 			const std::string indentStr(indent, ' ');
 
 			if (obj.is_object()) {
 				os << "{\n";
 				for (auto it = obj.begin(); it != obj.end();) {
 					os << indentStr << "    \"" << it.key() << "\": ";
-					PrintAbbrv(it.value(), os, indent + 4);
+					os << PrintAbbrv(it.value(), indent + 4);
 					if (++it != obj.end()) {
 						os << ",";
 					}
@@ -38,15 +39,15 @@ namespace DynaPlex {
 			else if (obj.is_array()) {
 				os << "[";
 				if (obj.size() > 5) {
-					PrintAbbrv(obj[0], os, indent + 4);
+					os << PrintAbbrv(obj[0], indent + 4);
 					os << ", ";
-					PrintAbbrv(obj[1], os, indent + 4);
+					os << PrintAbbrv(obj[1], indent + 4);
 					os << ", ... (" << obj.size() - 3 << " omitted) ..., ";
-					PrintAbbrv(obj[obj.size() - 1], os, indent + 4);
+					os << PrintAbbrv(obj[obj.size() - 1], indent + 4);
 				}
 				else {
 					for (auto it = obj.begin(); it != obj.end();) {
-						PrintAbbrv(*it, os, indent + 4);
+						os << PrintAbbrv(*it, indent + 4);
 						if (++it != obj.end()) {
 							os << ", ";
 						}
@@ -57,6 +58,8 @@ namespace DynaPlex {
 			else {
 				os << obj.dump();
 			}
+
+			return os.str();
 		}
 
 		void Add(const std::string& key, const DataType& value) {
@@ -296,9 +299,8 @@ namespace DynaPlex {
 		out_val = Impl::ToVarGroup(pImpl->data[key]);
 	}
 
-	void VarGroup::Print() const {
-		pImpl->PrintAbbrv(pImpl->data, std::cout);
-		std::cout << std::endl;
+	std::string VarGroup::ToAbbrvString() const {
+		return pImpl->PrintAbbrv(pImpl->data);
 	}
 
 	void VarGroup::SaveToFile(const std::string& filename) const {
@@ -340,7 +342,7 @@ namespace DynaPlex {
 		}
 	}
 
-	std::string VarGroup::Hash()
+	std::string VarGroup::Hash() const
 	{
 		return DynaPlex::VarGroupHelpers::hash_json(pImpl->data);
 	}
@@ -370,7 +372,7 @@ namespace DynaPlex {
 
 	void VarGroup::SortTopLevel()
 	{
-
+		VarGroupHelpers::SortOrderedJson(pImpl->data);
 	}
 
 
@@ -378,7 +380,7 @@ namespace DynaPlex {
 #if DP_PYBIND_SUPPORT
 	//We return a unique pointer here (instead of pybind11::dict outright), so that the header does not need to include pybind11 (and can use forward declare).
 	// This to avoid longer compilation times as VarGroup.h is needed in many places.  
-	std::unique_ptr<pybind11::dict> VarGroup::toPybind11Dict() const
+	std::unique_ptr<pybind11::dict> VarGroup::ToPybind11Dict() const
 	{
 		if (this->pImpl->data.is_object())
 		{

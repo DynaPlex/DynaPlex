@@ -10,3 +10,4 @@ dependencies:
 #If you want to make use of GPU, change - cpuonly to - cudatoolkit=11.8 or similar
   - cpuonly
   - pybind11
+  - pytest

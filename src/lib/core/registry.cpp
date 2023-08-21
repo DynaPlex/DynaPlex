@@ -24,12 +24,12 @@ namespace DynaPlex::Models {
         if (it != GetRegistry().end()) {
             return it->second.function(vars);
         }
-        throw DynaPlex::Error("No MDP available with identifier \"" + id + "\". Use GetMDPString() to see available MDPs.");
+        throw DynaPlex::Error("No MDP available with identifier \"" + id + "\". Use ListMDPs() / list_mdps() to obtain available MDPs.");
 
     }
 
 
-    DynaPlex::VarGroup Registry::MDPList() {
+    DynaPlex::VarGroup Registry::ListMDPs() {
         DynaPlex::VarGroup vars{};
 
         for (const auto& pair : GetRegistry()) {

@@ -1,7 +1,7 @@
 ﻿
 cmake_minimum_required (VERSION 3.20)
 
-set(targetname auto_tests)
+set(targetname tests)
 
 
 add_executable (DP_${targetname})
@@ -13,7 +13,7 @@ file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
 
 message(STATUS ${headers})
 
-add_test(NAME DynaPlexTests COMMAND DynaPlexTests)
+add_test(NAME DP_tests COMMAND DP_tests)
 
 
 target_sources(DP_${targetname} PRIVATE ${sources} ${headers})

@@ -1,46 +1,61 @@
 #include <pybind11/pybind11.h>
 #include "dynaplex/vargroup.h"
+#include "vargroupcaster.h"
 #include "dynaplex/error.h"
 #include "dynaplex/neuralnetworktrainer.h"
 #include "dynaplex/utilities.h"
 #include <torch/torch.h>
+#include <dynaplex/mdp.h>
+#include <dynaplex/factories.h>
 
 namespace py = pybind11;
 
-void process(py::object& obj)
-{
-	auto pars = DynaPlex::VarGroup(obj);
-	pars.Print();
-}
-void process(py::kwargs& kwargs)
-{
-	auto& obj = static_cast<py::object&>(kwargs);
-	process(obj);
+namespace DynaPlex {
+	DynaPlex::MDP GetMDP(py::kwargs& kwargs)
+	{
+		auto vars = DynaPlex::VarGroup(kwargs);
+		return DynaPlex::GetMDP(vars);
+	}
 }
 
-void testPytorch()
+std::string TestParam(DynaPlex::VarGroup& vars)
+{
+	return vars.ToAbbrvString();
+}
+
+std::string TestParam(py::kwargs& kwargs)
+{
+	auto vars = DynaPlex::VarGroup(kwargs);
+	return TestParam(vars );
+}
+
+void TestPytorch()
 {
 	DynaPlex::NeuralNetworkTrainer trainer{};
 	trainer.writeidentifier();
-	DynaPlex::VarGroup pars({ {"as",123} });
-	pars.Print();
 }
 
-py::dict get()
+DynaPlex::VarGroup GetVarGroup()
 {
 	DynaPlex::VarGroup distprops{
 			{"type","geom"},
 		{"mean",5} };
 
-	return *distprops.toPybind11Dict();
+	return distprops;
 }
 
 
 PYBIND11_MODULE(DP_Bindings, m) {
 	m.doc() = "DynaPlex extension for Python";
-	m.def("get", &get, "gets some parameters");
-	m.def("process", py::overload_cast<py::kwargs&>(&process), "Processes kwargs");
-	m.def("process", py::overload_cast<py::object&>(&process), "Processes dict");
-	m.def("testPyTorch", &testPytorch, "tests pytorch availability");
+	m.def("GetVarGroup", &GetVarGroup, "gets some parameters");
+	m.def("TestPytorch", &TestPytorch, "tests pytorch availability");
+	// Expose the MDPInterface
+	py::class_<DynaPlex::MDPInterface,DynaPlex::MDP>(m, "MDP")
+		.def("identifier", &DynaPlex::MDPInterface::Identifier);
+
+	m.def("test_param", py::overload_cast<py::kwargs&>(&TestParam), "simply prints param. ");
+	m.def("test_param", py::overload_cast<DynaPlex::VarGroup&>(&TestParam), "simply prints param. ");
+	m.def("get_mdp", py::overload_cast<py::kwargs&>(&DynaPlex::GetMDP), "Gets MDP based on dictionary.");
+	m.def("get_mdp", py::overload_cast<const DynaPlex::VarGroup&>(&DynaPlex::GetMDP), "Gets MDP based on dictionary.");
 
 }

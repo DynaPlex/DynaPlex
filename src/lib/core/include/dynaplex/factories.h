@@ -3,6 +3,6 @@
 #include "dynaplex/vargroup.h"
 namespace DynaPlex {
 	DynaPlex::MDP GetMDP(const DynaPlex::VarGroup& vars);
-	DynaPlex::VarGroup GetListOfMDPs();
+	DynaPlex::VarGroup ListMDPs();
 
 }//namespace DynaPlex

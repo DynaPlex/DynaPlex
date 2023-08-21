@@ -26,8 +26,8 @@ add_subdirectory(src/examples)
 
 set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 
-if(DEFINED dynaplex_enable_tests AND dynaplex_enable_tests)
-message(STATUS "addings tests")
+if(dynaplex_enable_tests)
+enable_testing()
 add_subdirectory(src/extern/googletest)
 add_subdirectory(src/tests)
 endif()

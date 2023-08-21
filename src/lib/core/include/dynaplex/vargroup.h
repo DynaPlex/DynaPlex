@@ -44,6 +44,7 @@ namespace DynaPlex {
 		VarGroup(const std::string& rawJson);
 		
 	    VarGroup();		
+		
 		VarGroup(const VarGroup& other);
 		VarGroup& operator=(const VarGroup& other);
 		~VarGroup();
@@ -106,17 +107,16 @@ namespace DynaPlex {
 		void SaveToFile(const std::string &filename) const;
 		static VarGroup LoadFromFile(const std::string &filename);
 
-		std::string Hash();
+		std::string Hash() const;
+		std::string ToAbbrvString() const;
 
-
-		void Print() const;
 		
 		//sorts the top level of the VarGroup by key, in alphabetical order.
 		void SortTopLevel();
 		
 
 #if DP_PYBIND_SUPPORT
-		std::unique_ptr<pybind11::dict> toPybind11Dict() const;
+		std::unique_ptr<pybind11::dict> ToPybind11Dict() const;
 		VarGroup(const pybind11::object&);
 #endif
 

@@ -21,7 +21,7 @@ namespace DynaPlex::Models {
 
         static DynaPlex::MDP GetMDP(const DynaPlex::VarGroup& vars);
 
-        static DynaPlex::VarGroup MDPList();
+        static DynaPlex::VarGroup ListMDPs();
 
     private:
         struct MDPInfo {

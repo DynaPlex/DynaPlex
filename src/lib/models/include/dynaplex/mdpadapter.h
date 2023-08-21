@@ -1,5 +1,5 @@
 #pragma once
-#include "dynaplex/mdpinterface.h"
+#include "dynaplex/mdp.h"
 
 
 //This adapts any MDP to the MDPInterface, which is related to DynaPlex::MDP =std::shared_pointer<MDPInterface>
