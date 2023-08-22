@@ -1,3 +1,4 @@
+#pragma once
 #include "dynaplex/makegeneric.h"          
 #include "dynaplex/registry.h"         
 #include "dynaplex/vargroup.h"        

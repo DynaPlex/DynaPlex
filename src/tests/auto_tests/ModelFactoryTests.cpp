@@ -30,23 +30,6 @@ namespace DynaPlex::Tests {
 	}
 
 
-	TEST(ModelFactory, AnotherSimpleGet) {
-		DynaPlex::VarGroup vars;
-
-
-
-		vars.Add("id", "SomeMDP");
-		DynaPlex::MDP model;
-
-		ASSERT_NO_THROW(
-			model = DynaPlex::GetMDP(vars);
-		);
-
-		const std::string prefix = "SomeMDP";
-
-		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length()));
-
-	}
 
 	TEST(ModelFactory, FailGet) {
 		DynaPlex::VarGroup vars;

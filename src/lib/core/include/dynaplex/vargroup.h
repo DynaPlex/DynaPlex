@@ -127,6 +127,7 @@ namespace DynaPlex {
 		static VarGroup LoadFromFile(const std::string &filename);
 
 		std::string Hash() const;
+		int64_t Int64Hash() const;
 		std::string ToAbbrvString() const;
 
 

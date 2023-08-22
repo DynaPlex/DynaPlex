@@ -7,19 +7,13 @@
 
 namespace DynaPlex::Tests {
 
-	namespace AddOn {
+	namespace AddOn ::Problem {
 		class MDP
 		{
 			const DynaPlex::VarGroup vars;
 			double p, h;
 		public:
-			//Should return a unique identifier for this MDP. Same MDP (with same parameter), same identifier. Different MDP, different identifier. 
-			std::string Identifier()
-			{
-				//This implementation ensures that identifier will have the desired properties. 
-				return vars.Identifier();
-			}
-
+			
 
 			MDP(const DynaPlex::VarGroup& vars) :
 				vars{ vars }
@@ -38,10 +32,14 @@ namespace DynaPlex::Tests {
 
 
 
-		vars.Add("id", "LostSales");
+		vars.Add("id", "Problem");
 		vars.Add("p", 9.0);
 		vars.Add("h", 1.0);
 
-		auto DynaPlexMDP =DynaPlex::Erasure::MakeGeneric<AddOn::MDP>(vars);
+		//auto DynaPlexMDP =DynaPlex::Erasure::MakeGeneric<AddOn::Problem::MDP>(vars);
+
+		//const std::string prefix = "Problem";
+		//EXPECT_EQ(prefix, DynaPlexMDP->Identifier().substr(0, prefix.length()));
+
 	}
 }

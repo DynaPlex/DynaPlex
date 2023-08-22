@@ -351,8 +351,14 @@ namespace DynaPlex {
 
 	std::string VarGroup::Hash() const
 	{
-		return DynaPlex::VarGroupHelpers::hash_json(pImpl->data);
+		return DynaPlex::VarGroupHelpers::hash_json_string(pImpl->data);
 	}
+
+	int64_t VarGroup::Int64Hash() const
+	{
+		return DynaPlex::VarGroupHelpers::hash_json_int64(pImpl->data);
+	}
+
 
 	VarGroup::VarGroup(const std::string& rawJson)
 		: pImpl(std::make_unique<Impl>())

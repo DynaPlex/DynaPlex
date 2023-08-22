@@ -56,6 +56,25 @@ namespace DynaPlex::VarGroupHelpers {
     }
 
 
+    int64_t hash_to_int64(const std::string& str) {
+        std::vector<unsigned char> hash(picosha2::k_digest_size);
+        picosha2::hash256(str.begin(), str.end(), hash.begin(), hash.end());
+
+        int64_t segment1 = 0;
+        int64_t segment2 = 0;
+        int64_t segment3 = 0;
+        int64_t segment4 = 0;
+
+        for (int i = 0; i < 8; ++i) {
+            segment1 = (segment1 << 8) | hash[i];
+            segment2 = (segment2 << 8) | hash[i + 8];
+            segment3 = (segment3 << 8) | hash[i + 16];
+            segment4 = (segment4 << 8) | hash[i + 24];
+        }
+
+        return segment1 ^ segment2 ^ segment3 ^ segment4;
+    }
+
     std::string hash_string(const std::string& str) {
         std::vector<unsigned char> hash(picosha2::k_digest_size);
         picosha2::hash256(str.begin(), str.end(), hash.begin(), hash.end());
@@ -96,7 +115,7 @@ namespace DynaPlex::VarGroupHelpers {
     }
 
     // Function to hash a sorted ordered_json object
-    std::string hash_json(const ordered_json& j) {
+    std::string hash_json_string(const ordered_json& j) {
         // Sort the JSON object
         ordered_json sorted_j = sort_json(j);
 
@@ -106,6 +125,17 @@ namespace DynaPlex::VarGroupHelpers {
         return hash_string(serialized);
     }
 
+
+    // Function to hash a sorted ordered_json object
+    int64_t hash_json_int64(const ordered_json& j) {
+        // Sort the JSON object
+        ordered_json sorted_j = sort_json(j);
+
+        // Serialize the sorted object to a string
+        std::string serialized = sorted_j.dump();
+
+        return hash_to_int64(serialized);
+    }
 
     //stuff related to check_validity
 
