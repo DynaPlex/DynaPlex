@@ -31,5 +31,9 @@ namespace DynaPlex::Tests {
 		ASSERT_EQ(someclass.myVector.size(), 2);
 		ASSERT_EQ(someclass.nestedClass.Size, 1.0);
 		ASSERT_EQ(someclass.myNestedVector[1].Id, "2");
+
+
+		auto vars = someclass.ToVarGroup();
+		ASSERT_EQ(vars, varGroup);
 	}
 }

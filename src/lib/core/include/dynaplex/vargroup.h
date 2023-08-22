@@ -16,6 +16,18 @@ namespace DynaPlex {
 
 	class VarGroup;
 
+	template<typename T>
+	concept ConvertibleToVarGroup = requires(const T & t) {
+		{ t.ToVarGroup() } -> std::same_as<VarGroup>;
+	};
+
+	template<typename T>
+	concept ConvertibleToVarGroupVec = requires(T a) {
+		typename T::value_type;
+		{ a.begin() } -> std::forward_iterator;
+		{ a.end() } -> std::forward_iterator;
+			requires ConvertibleToVarGroup<typename T::value_type>;
+	};
 
 	template<typename T>
 	concept ConvertibleFromVarGroup = requires(VarGroup& p) {
@@ -70,11 +82,27 @@ namespace DynaPlex {
 
 		template <typename T>
 			requires std::is_enum_v<T>
-		void Add(const std::string& key, T e) {
+		void Add(const std::string& key, T val) {
 			using UnderlyingType = std::underlying_type_t<T>;
 			static_assert(std::is_same_v<UnderlyingType, int64_t> || std::is_same_v<UnderlyingType, int>,
 				"VarGroup: Supported enum class underlying types are int and int64_t only");
-			Add(key, static_cast<int64_t>(e));
+			Add(key, static_cast<int64_t>(val));
+		}
+
+		template <ConvertibleToVarGroup T>
+		void Add(const std::string& key, T val)
+		{
+			Add(key, val.ToVarGroup());
+		}
+
+		template <ConvertibleToVarGroupVec T>
+		void Add(const std::string& key, T val)
+		{
+			VarGroupVec vec;
+			for (const auto& item : val) {
+				vec.push_back(item.ToVarGroup());
+			}
+			Add(key, vec);
 		}
 
 
@@ -93,7 +121,7 @@ namespace DynaPlex {
 
 		template <typename T>
 			requires std::is_enum_v<T>
-		void Get(const std::string& key, T& out_val) {
+		void Get(const std::string& key, T& out_val) const {
 			using UnderlyingType = std::underlying_type_t<T>;
 			static_assert(std::is_same_v<UnderlyingType, int64_t> || std::is_same_v<UnderlyingType, int>,
 				"VarGroup: Supported enum class underlying types are int and int64_t only");
@@ -101,6 +129,8 @@ namespace DynaPlex {
 			Get(key, tmpVal);
 			out_val = static_cast<T>(tmpVal);
 		}
+
+
 		
 		template<ConvertibleFromVarGroup T>
 		void Get(const std::string& key, T& out_val) const {

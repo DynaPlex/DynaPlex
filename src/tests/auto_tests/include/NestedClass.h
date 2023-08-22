@@ -5,7 +5,9 @@
 
 class NestedClass {
 public:
-    NestedClass(DynaPlex::VarGroup& vars);
+    explicit NestedClass(const DynaPlex::VarGroup& vars);
+    DynaPlex::VarGroup ToVarGroup() const;
+
     NestedClass() {}
     void Print() const;
 

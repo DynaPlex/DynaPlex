@@ -8,20 +8,28 @@ namespace DynaPlex::Models {
 
 		class MDP
 		{
-			struct State {
-				int64_t state;
-			};
-
 			const DynaPlex::VarGroup vars;
 			double p, h;
 		public:
+			struct State {
+				int64_t state;
+				DynaPlex::VarGroup ToVarGroup() const
+				{
+					DynaPlex::VarGroup vars;
+					vars.Add("state", state);
+					return vars;
+				}
+			};
+
+
+	
 			
-			State GetInitialState()
+			State GetInitialState() const
 			{
 				return State{ 123 };
 			}
 
-			MDP(const DynaPlex::VarGroup& vars):
+			explicit MDP(const DynaPlex::VarGroup& vars) :
 				vars{ vars }
 			{
 				vars.Get("p", p);

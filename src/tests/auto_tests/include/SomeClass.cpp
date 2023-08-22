@@ -1,7 +1,7 @@
 #include "SomeClass.h"
 #include <iostream>
 
-SomeClass::SomeClass(DynaPlex::VarGroup& vars) {
+SomeClass::SomeClass(const DynaPlex::VarGroup& vars) {
     vars.Get("testEnumClass", testEnumClass);
     vars.Get("myString", myString);
     vars.Get("myInt", myInt);
@@ -10,6 +10,22 @@ SomeClass::SomeClass(DynaPlex::VarGroup& vars) {
     vars.Get("myNestedVector", myNestedVector);
 
 }
+
+DynaPlex::VarGroup SomeClass::ToVarGroup() const
+{
+    DynaPlex::VarGroup vars;
+    vars.Add("testEnumClass", testEnumClass);
+    vars.Add("myString", myString);
+    vars.Add("myInt", myInt);
+    vars.Add("myVector", myVector);
+    vars.Add("nestedClass", nestedClass);
+    vars.Add("myNestedVector", myNestedVector);
+    return vars;
+}
+
+
+
+
 
 void SomeClass::Print() const {
     std::cout << "testEnumClass: " << static_cast<int>( testEnumClass) << std::endl;

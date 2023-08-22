@@ -8,7 +8,9 @@
 
 class SomeClass {
 public:
-    SomeClass(DynaPlex::VarGroup& vars);
+    explicit SomeClass(const DynaPlex::VarGroup& vars);
+
+    DynaPlex::VarGroup ToVarGroup() const;
 
     void Print() const;
 
