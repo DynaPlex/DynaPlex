@@ -30,14 +30,14 @@ def test_model_factory_tests():
     assert model.identifier() == "lost sales 9.000000"
 
 
-def test_model_factory_tests():
+def test_model_factory():
     try:
         model = dp.get_mdp(id='SomeMDP')
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")
     assert model.identifier() == "CRAZY"
 
-def test_model_factory_tests_named_args():
+def test_model_factory_named_args():
     try:
         model = dp.get_mdp(id='LostSales',p=9.0,h=1.0)
     except Exception as e:
@@ -49,7 +49,7 @@ def test_convert_to_string_with_settings():
         "ape": 1,
         "donkey": 0.5,
         "long_setting": -120000231,
-        "test": {"test": list(range(100))},
+        "test": {"test": list(range(100000))},
         "names": ({"name": "bill"}, {"name2": "bill"})
     }
 
@@ -58,7 +58,7 @@ def test_convert_to_string_with_settings():
     "donkey": 0.5,
     "long_setting": -120000231,
     "test": {
-        "test": [0, 1, ... (97 omitted) ..., 99]
+        "test": [0, 1, ... (99997 omitted) ..., 99999]
     },
     "names": [{
             "name": "bill"
@@ -70,7 +70,7 @@ def test_convert_to_string_with_settings():
     assert result == expected_output, f"Expected:\n{expected_output}\n\nGot:\n{result}"
 
 
-def test_convert_to_string_with_test_params():
+def test_convert_to_string_with_params():
     expected_output = """{
     "test": ["asdf", "asdf", "asf"],
     "ace": "asdf"

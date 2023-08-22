@@ -12,7 +12,7 @@ namespace DynaPlex::Models {
 		public:
 			std::string Identifier()
 			{
-				return "CRAZY";
+				return "SomeMDP";
 			}
 			MDP(const DynaPlex::VarGroup& vars)
 				:vars{ vars }

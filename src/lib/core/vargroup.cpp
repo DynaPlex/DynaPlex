@@ -2,7 +2,6 @@
 #include "dynaplex/utilities.h"
 #include <iostream>
 #include <fstream>
-#include <stdexcept>
 #include "dynaplex/error.h"
 #include "vargroup/nlohmann/json.h"
 #include "vargroup/vargroup_helpers.h"//hash_json and check_validity
@@ -90,12 +89,17 @@ namespace DynaPlex {
 				value);
 		}
 
-		template<typename T>
-		void GetHelper(const std::string& key, T& out_val) const {
-			if (!data.contains(key)) {
+		void AssertKeyExistence(std::string key) const
+		{
+			if (!data.contains(key)) {				
 				throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
 			}
+		}
 
+		template<typename T>
+		void GetHelper(const std::string& key, T& out_val) const {
+			
+			AssertKeyExistence(key);
 			if (!data[key].is_null()) {
 				try {
 					out_val = data[key].get<T>();
@@ -110,9 +114,7 @@ namespace DynaPlex {
 		}
 
 		void GetVarGroupVec(const std::string& key, VarGroup::VarGroupVec& out_val) {
-			if (!data.contains(key)) {
-				throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
-			}
+			AssertKeyExistence(key);
 
 			if (data[key].is_array()) {
 				try {
@@ -288,12 +290,10 @@ namespace DynaPlex {
 
 
 	void VarGroup::Get(const std::string& key, VarGroup& out_val) const {
-		if (!pImpl->data.contains(key)) {
-			throw std::runtime_error("key " + key + " not found in VarGroup.");
-		}
+		pImpl->AssertKeyExistence(key);
 
 		if (!pImpl->data[key].is_object()) {
-			throw std::runtime_error("expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
+			throw DynaPlex::Error("expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
 		}
 
 		out_val = Impl::ToVarGroup(pImpl->data[key]);
@@ -301,6 +301,13 @@ namespace DynaPlex {
 
 	std::string VarGroup::ToAbbrvString() const {
 		return pImpl->PrintAbbrv(pImpl->data);
+	}
+
+	std::string VarGroup::Identifier() const
+	{
+		std::string id;
+		Get("id", id);
+		return id+"_"+this->Hash();
 	}
 
 	void VarGroup::SaveToFile(const std::string& filename) const {

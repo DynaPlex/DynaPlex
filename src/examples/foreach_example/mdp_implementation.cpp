@@ -1,6 +1,6 @@
 #include <iostream>
 #include "mdp_implementation.h"
-#include <dynaplex/errors.h>
+#include <dynaplex/error.h>
 
 std::string MDP_Implementation::Identifier()
 {

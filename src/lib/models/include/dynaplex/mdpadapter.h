@@ -1,6 +1,6 @@
 #pragma once
 #include "dynaplex/mdp.h"
-
+#include "dynaplex/vargroup.h"
 
 //This adapts any MDP to the MDPInterface, which is related to DynaPlex::MDP =std::shared_pointer<MDPInterface>
 namespace DynaPlex::Erasure
@@ -9,17 +9,17 @@ namespace DynaPlex::Erasure
 	class MDPAdapter : public MDPInterface
 	{
 
+		std::string id;
+		t_MDP model;
 	public:
-		MDPAdapter(t_MDP model) :
-			model{ model }
+		MDPAdapter(DynaPlex::VarGroup vars) :
+			model{ vars }, id{vars.Identifier()}
 		{
-
 		}
 		std::string Identifier() override
 		{
-			return model.Identifier();
+			return model.Identifier();//id
 		}
 		
-		t_MDP model;
 	};
 }//namespace DynaPlex

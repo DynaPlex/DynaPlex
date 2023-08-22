@@ -11,15 +11,20 @@ namespace DynaPlex::Models {
 			const DynaPlex::VarGroup vars;
 			double p, h;
 		public:
+			//Should return a unique identifier for this MDP. Same MDP (with same parameter), same identifier. Different MDP, different identifier. 
 			std::string Identifier()
 			{
-				return "lost sales " + std::to_string(p);
+				//This implementation ensures that identifier will have the desired properties. 
+				return vars.Identifier();
 			}
-			MDP(const DynaPlex::VarGroup& vars)
-				:vars{ vars }
+
+
+			MDP(const DynaPlex::VarGroup& vars):
+				vars{ vars }
 			{
 				vars.Get("p", p);
 				vars.Get("h", h);
+
 			}
 		};
 	}

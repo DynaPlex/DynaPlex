@@ -53,7 +53,7 @@ PYBIND11_MODULE(DP_Bindings, m) {
 	py::class_<DynaPlex::MDPInterface,DynaPlex::MDP>(m, "MDP")
 		.def("identifier", &DynaPlex::MDPInterface::Identifier);
 
-	m.def("test_param", py::overload_cast<py::kwargs&>(&TestParam), "simply prints param. ");
+	m.def("test_param", py::overload_cast<py::kwargs&>(&TestParam), "simply prints the named params. ");
 	m.def("test_param", py::overload_cast<DynaPlex::VarGroup&>(&TestParam), "simply prints param. ");
 	m.def("get_mdp", py::overload_cast<py::kwargs&>(&DynaPlex::GetMDP), "Gets MDP based on dictionary.");
 	m.def("get_mdp", py::overload_cast<const DynaPlex::VarGroup&>(&DynaPlex::GetMDP), "Gets MDP based on dictionary.");

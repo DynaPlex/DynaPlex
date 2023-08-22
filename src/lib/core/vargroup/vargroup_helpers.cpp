@@ -10,10 +10,13 @@ namespace DynaPlex::VarGroupHelpers {
     static const std::string base64_chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz"
-        "0123456789-_";       
+        "0123456789-=";       
 
     std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
         std::string ret;
+        int len = ((in_len + 2) / 3) * 4+1;
+        ret.reserve(len);
+
         int i = 0;
         int j = 0;
         unsigned char char_array_3[3];
@@ -46,9 +49,9 @@ namespace DynaPlex::VarGroupHelpers {
                 ret += base64_chars[char_array_4[j]];
 
             while ((i++ < 3))
-                 ret += '=';
+                 ret += '_';
+            ret += '_';
         }
-
         return ret;
     }
 

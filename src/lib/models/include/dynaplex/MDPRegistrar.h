@@ -1,6 +1,7 @@
-#include "dynaplex/convert.h"          
+#include "dynaplex/makegeneric.h"          
 #include "dynaplex/registry.h"         
-#include "dynaplex/vargroup.h"         
+#include "dynaplex/vargroup.h"        
+#include "dynaplex/mdpadapter.h"
 
 namespace DynaPlex {
     namespace Models {
@@ -12,7 +13,7 @@ namespace DynaPlex {
             }
 
             static DynaPlex::MDP CreateInstance(const VarGroup& vars) {
-                return Erasure::Convert(SpecificMDP(vars));
+                return DynaPlex::Erasure::MakeGeneric<SpecificMDP>(vars);
             }
         };
     }

@@ -2,7 +2,7 @@
 #include <iostream>
 
 SomeClass::SomeClass(DynaPlex::VarGroup& vars) {
-    
+    vars.Get("testEnumClass", testEnumClass);
     vars.Get("myString", myString);
     vars.Get("myInt", myInt);
     vars.Get("myVector", myVector);
@@ -12,6 +12,7 @@ SomeClass::SomeClass(DynaPlex::VarGroup& vars) {
 }
 
 void SomeClass::Print() const {
+    std::cout << "testEnumClass: " << static_cast<int>( testEnumClass) << std::endl;
     std::cout << "myString: " << myString << std::endl;
     std::cout << "myInt: " << myInt << std::endl;
     std::cout << "myVector: ";

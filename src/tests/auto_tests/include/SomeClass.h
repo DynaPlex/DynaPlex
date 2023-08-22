@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "NestedClass.h"
+#include "nestedclass.h"
 #include "dynaplex/vargroup.h"
 
 class SomeClass {
@@ -13,6 +13,8 @@ public:
     void Print() const;
 
 public:
+    enum class Test {option = 3,decline = 5};
+    Test testEnumClass;
     std::string myString;
     int myInt;
     std::vector<int> myVector;

@@ -68,6 +68,14 @@ namespace DynaPlex {
 		void Add(std::string s, const DoubleVec& vec);
 		void Add(std::string s, const VarGroupVec& vec);
 
+		template <typename T>
+			requires std::is_enum_v<T>
+		void Add(const std::string& key, T e) {
+			using UnderlyingType = std::underlying_type_t<T>;
+			static_assert(std::is_same_v<UnderlyingType, int64_t> || std::is_same_v<UnderlyingType, int>,
+				"VarGroup: Supported enum class underlying types are int and int64_t only");
+			Add(key, static_cast<int64_t>(e));
+		}
 
 
 		void Get(const std::string& key, VarGroup& out_val) const;
@@ -82,6 +90,17 @@ namespace DynaPlex {
 		void Get(const std::string& key, VarGroupVec& out_val) const;
 		void Get(const std::string& key, std::vector<int>& out_val) const;
 		
+
+		template <typename T>
+			requires std::is_enum_v<T>
+		void Get(const std::string& key, T& out_val) {
+			using UnderlyingType = std::underlying_type_t<T>;
+			static_assert(std::is_same_v<UnderlyingType, int64_t> || std::is_same_v<UnderlyingType, int>,
+				"VarGroup: Supported enum class underlying types are int and int64_t only");
+			int64_t tmpVal;
+			Get(key, tmpVal);
+			out_val = static_cast<T>(tmpVal);
+		}
 		
 		template<ConvertibleFromVarGroup T>
 		void Get(const std::string& key, T& out_val) const {
@@ -110,6 +129,8 @@ namespace DynaPlex {
 		std::string Hash() const;
 		std::string ToAbbrvString() const;
 
+
+		std::string Identifier() const;
 		
 		//sorts the top level of the VarGroup by key, in alphabetical order.
 		void SortTopLevel();

@@ -3,55 +3,65 @@
 #include <gtest/gtest.h>
 #include "dynaplex/factories.h"
 #include "dynaplex/registry.h"
-TEST(ModelFactory, SimpleGet) {
-	DynaPlex::VarGroup vars;
+
+
+namespace DynaPlex::Tests {
+	
+
+	TEST(ModelFactory, SimpleGet) {
+		DynaPlex::VarGroup vars;
 
 
 
-	vars.Add("id", "LostSales");
-	vars.Add("p", 9.0);
-	vars.Add("h", 1.0);
+		vars.Add("id", "LostSales");
+		vars.Add("p", 9.0);
+		vars.Add("h", 1.0);
 
-	DynaPlex::MDP model;
-
-	ASSERT_NO_THROW(
-		 model = DynaPlex::GetMDP(vars); 
-	);
-		
-	EXPECT_EQ(model->Identifier(), "lost sales 9.000000");
-
-}
+		DynaPlex::MDP model;
 
 
-TEST(ModelFactory, AnotherSimpleGet) {
-	DynaPlex::VarGroup vars;
+		ASSERT_NO_THROW(
+			model = DynaPlex::GetMDP(vars);
+		);
+		const std::string prefix = "LostSales";
+
+		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length())) ;
+
+	}
 
 
-
-	vars.Add("id", "SomeMDP");
-	DynaPlex::MDP model;
-
-	ASSERT_NO_THROW(
-		model = DynaPlex::GetMDP(vars);
-	);
-
-	EXPECT_EQ(model->Identifier(), "CRAZY");
-
-}
-
-TEST(ModelFactory, FailGet) {
-	DynaPlex::VarGroup vars;
+	TEST(ModelFactory, AnotherSimpleGet) {
+		DynaPlex::VarGroup vars;
 
 
 
-	vars.Add("id", "LostTypoSales");
-	vars.Add("p", 9.0);
-	vars.Add("h", 1.0);
+		vars.Add("id", "SomeMDP");
+		DynaPlex::MDP model;
 
-	DynaPlex::MDP model;
+		ASSERT_NO_THROW(
+			model = DynaPlex::GetMDP(vars);
+		);
 
-	ASSERT_THROW(
-		model = DynaPlex::GetMDP(vars) , DynaPlex::Error
-	);
+		const std::string prefix = "SomeMDP";
 
+		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length()));
+
+	}
+
+	TEST(ModelFactory, FailGet) {
+		DynaPlex::VarGroup vars;
+
+
+
+		vars.Add("id", "LostTypoSales");
+		vars.Add("p", 9.0);
+		vars.Add("h", 1.0);
+
+		DynaPlex::MDP model;
+
+		ASSERT_THROW(
+			model = DynaPlex::GetMDP(vars), DynaPlex::Error
+		);
+
+	}
 }
