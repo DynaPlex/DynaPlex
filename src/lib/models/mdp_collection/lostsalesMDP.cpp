@@ -21,7 +21,11 @@ namespace DynaPlex::Models {
 				}
 			};
 
-
+			double ModifyStateWithAction(State& state,int64_t action) const
+			{
+				state.state += 1;
+				return 0.0;	
+			}
 	
 			
 			State GetInitialState() const

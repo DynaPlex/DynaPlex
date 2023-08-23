@@ -24,5 +24,8 @@ namespace DynaPlex::Erasure
         const std::vector<t_state>& get() const {
             return data;
         }
+        std::vector<t_state>& get(){
+            return data;
+        }
     };
 }
