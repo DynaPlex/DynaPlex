@@ -79,7 +79,7 @@ namespace DynaPlex::Erasure
 			auto& statesVec = ToVector(states);
 			for (auto& state : statesVec)
 			{
-				model.ModifyState(state);
+				model.ModifyStateWithAction(state,1);
 			}			
 		}
 

@@ -24,7 +24,7 @@ namespace DynaPlex::Tests {
 			}
 		};
 	}
-	TEST(ModelFactory, ManualRegistration) {
+	TEST(UseUnregisteredMDP, UseUnregisteredMDP) {
 
 		
 

@@ -1,14 +1,18 @@
 #include "SomeClass.h"
+#include "dynaplex/vargroup_helpers.h"
 #include <iostream>
 
-SomeClass::SomeClass(const DynaPlex::VarGroup& vars) {
+
+
+
+SomeClass::SomeClass(const DynaPlex::VarGroup& vars)
+{
     vars.Get("testEnumClass", testEnumClass);
     vars.Get("myString", myString);
     vars.Get("myInt", myInt);
     vars.Get("myVector", myVector);
     vars.Get("nestedClass", nestedClass);
     vars.Get("myNestedVector", myNestedVector);
-
 }
 
 DynaPlex::VarGroup SomeClass::ToVarGroup() const

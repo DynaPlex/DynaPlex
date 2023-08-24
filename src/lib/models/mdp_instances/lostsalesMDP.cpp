@@ -23,7 +23,7 @@ namespace DynaPlex::Models {
 
 			double ModifyStateWithAction(State& state,int64_t action) const
 			{
-				state.state += 1;
+				state.state += action;
 				return 0.0;	
 			}
 	
@@ -42,7 +42,7 @@ namespace DynaPlex::Models {
 			}
 		};
 	}
-	//The declaration of the static registrar registers the MDP in the central registry, such that DynaPlex::GetMDP can locate it 
+	//int64_the declaration of the static registrar registers the MDP in the central registry, such that DynaPlex::GetMDP can locate it 
 	static MDPRegistrar<LostSales::MDP> registrar(/*id*/"LostSales",/*optional brief description*/ "Canonical lost sales problem.");
 }
 

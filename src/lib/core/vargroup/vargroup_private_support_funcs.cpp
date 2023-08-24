@@ -1,4 +1,4 @@
-#include "vargroup_helpers.h"
+#include "vargroup_private_support_funcs.h"
 #include "dynaplex/error.h"
 #include "picosha2.h"
 

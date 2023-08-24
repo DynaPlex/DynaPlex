@@ -20,7 +20,7 @@ target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> 
 target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core DynaPlex::NN  DynaPlex::Models)
 
 
-if(${dynaplex_all_warnings})
+if(dynaplex_all_warnings)
 target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3>  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra> )
 endif()
 

@@ -6,7 +6,7 @@
 
 namespace DynaPlex::Tests {
 
-	TEST(VarGroup, InitiateClassWithVarGroup) {
+	TEST(InitiateClassWithVarGroup, VarGroup) {
 
 		auto nested = DynaPlex::VarGroup({ {"Id","1"},{"Size",1.0} });
 

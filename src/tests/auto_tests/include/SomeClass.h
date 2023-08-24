@@ -8,9 +8,10 @@
 
 class SomeClass {
 public:
-    explicit SomeClass(const DynaPlex::VarGroup& vars);
-
+    explicit SomeClass(const DynaPlex::VarGroup& vars);    
     DynaPlex::VarGroup ToVarGroup() const;
+
+
 
     void Print() const;
 
@@ -22,6 +23,7 @@ public:
     std::vector<int> myVector;
     NestedClass nestedClass;
     std::vector<NestedClass> myNestedVector;
+    SomeClass();
 };
 
 #endif  // SOMECLASS_H

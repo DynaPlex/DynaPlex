@@ -4,7 +4,7 @@
 #include <fstream>
 #include "dynaplex/error.h"
 #include "vargroup/nlohmann/json.h"
-#include "vargroup/vargroup_helpers.h"//hash_json and check_validity
+#include "vargroup/vargroup_private_support_funcs.h"//hash_json and check_validity
 #if DP_PYBIND_SUPPORT
 #include "pybind11/pybind11.h"
 #include "vargroup/pybind11_json.h"
