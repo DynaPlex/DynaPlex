@@ -4,7 +4,8 @@
 #include <fstream>
 #include "dynaplex/error.h"
 #include "vargroup/nlohmann/json.h"
-#include "vargroup/vargroup_private_support_funcs.h"//hash_json and check_validity
+#include "vargroup/vargroup_private_support_funcs.h"//hash_json and check_validity and levenshteinDist
+#include <algorithm>
 #if DP_PYBIND_SUPPORT
 #include "pybind11/pybind11.h"
 #include "vargroup/pybind11_json.h"
@@ -18,6 +19,84 @@ namespace DynaPlex {
 
 
 		ordered_json data;
+
+		// Convert a string to lowercase
+		std::string toLower(const std::string& s) const{
+			std::string result = s;
+			std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+			return result;
+		}
+
+		// This function generates a warning if a similar key is found and returns the similar key (empty if none found).
+		std::string FindSimilarKey(const std::string& key) const {
+			std::size_t key_length = key.size();
+
+
+
+			for (const auto& item : data.items()) {
+				const std::string& current_key = item.key();
+				if (toLower(current_key) == toLower(key))
+				{
+					return current_key;
+				}
+			}
+
+			if (key_length <= 1) {
+				return "";  // No warning for single or zero-character keys
+			}
+
+			// Set threshold based on key length
+			std::size_t similarity_threshold;
+			if (key_length <= 6) {
+				similarity_threshold = 1;
+			}
+			else {
+				similarity_threshold = 2;
+			}
+
+			std::size_t min_distance = std::numeric_limits<std::size_t>::max();
+			std::string similar_key;
+
+			// Find the most similar key
+			for (const auto& item : data.items()) {
+				const std::string& current_key = item.key();
+				std::size_t distance = VarGroupHelpers::levenshteinDist(key, current_key);
+				if (distance < min_distance && distance <= similarity_threshold) {
+					min_distance = distance;
+					similar_key = current_key;
+				}
+			}
+			return similar_key;
+		}
+
+		bool HasKey(const std::string& key, bool warn_if_similar) const {
+			// Check if the key exists directly
+			if (data.find(key) != data.end()) {
+				return true;
+			}
+			
+			if (warn_if_similar)
+			{
+				std::string similar_key = FindSimilarKey(key);
+				if (!similar_key.empty()) {
+					std::cout << "Warning: Key \"" << key << "\" not found in VarGroup. (A similar key was provided: \"" << similar_key << "\")" << std::endl;					
+				}
+			}
+			return false;
+		}
+
+		void AssertKeyExistence(std::string key) const
+		{
+			if (!data.contains(key)) {
+				std::string suggestedKey = FindSimilarKey(key);
+				if (suggestedKey.empty()) {
+					throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
+				}
+				else {
+					throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup. (A similar key was provided: \"" + suggestedKey + "\")");
+				}
+			}
+		}
 
 		std::string PrintAbbrv(const ordered_json& obj, int indent = 0) const {
 			std::ostringstream os;
@@ -62,6 +141,11 @@ namespace DynaPlex {
 		}
 
 		void Add(const std::string& key, const DataType& value) {
+			// Check if the key already exists in the data
+			if (data.find(key) != data.end()) {
+				throw DynaPlex::Error("Attempted to add a duplicate key: " + key);
+			}
+
 			std::visit(
 				[this, &key](auto&& v) {
 					using T = std::decay_t<decltype(v)>;
@@ -89,12 +173,7 @@ namespace DynaPlex {
 				value);
 		}
 
-		void AssertKeyExistence(std::string key) const
-		{
-			if (!data.contains(key)) {				
-				throw DynaPlex::Error("Key \"" + key + "\" not found in VarGroup.");
-			}
-		}
+		
 
 		template<typename T>
 		void GetHelper(const std::string& key, T& out_val) const {
@@ -257,6 +336,11 @@ namespace DynaPlex {
 
 	void VarGroup::Get(const std::string& key, VarGroup::VarGroupVec& out_val)const {
 		pImpl->GetVarGroupVec(key, out_val);
+	}
+
+	bool VarGroup::HasKey(const std::string& key, bool warn) const
+	{
+		return pImpl->HasKey(key,warn);
 	}
 
 	void VarGroup::Get(const std::string& key, VarGroup& out_val) const {

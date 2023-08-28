@@ -1,9 +1,35 @@
 #include "vargroup_private_support_funcs.h"
 #include "dynaplex/error.h"
 #include "picosha2.h"
-
 //only called from vargroup implementation file. To break that file up. 
 namespace DynaPlex::VarGroupHelpers {
+
+
+    int64_t levenshteinDist(const std::string& word1, const std::string& word2) {
+        int size1 = word1.size();
+        int size2 = word2.size();
+
+        // Create a 2D vector for the dynamic programming table.
+        std::vector<std::vector<int64_t>> verif(size1 + 1, std::vector<int64_t>(size2 + 1, 0));
+
+        // Initialization
+        for (int i = 0; i <= size1; i++)
+            verif[i][0] = i;
+        for (int j = 0; j <= size2; j++)
+            verif[0][j] = j;
+
+        // Fill the table using a dynamic programming approach.
+        for (int i = 1; i <= size1; i++) {
+            for (int j = 1; j <= size2; j++) {
+                int64_t cost = (word1[i - 1] == word2[j - 1]) ? 0 : 1;
+                verif[i][j] = std::min({ verif[i - 1][j] + 1, verif[i][j - 1] + 1, verif[i - 1][j - 1] + cost });
+            }
+        }
+
+        return verif[size1][size2];
+    }
+
+
 
     //Stuff related to hash_json
 

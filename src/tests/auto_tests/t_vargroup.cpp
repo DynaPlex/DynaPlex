@@ -4,6 +4,47 @@
 #include <gtest/gtest.h>
 namespace DynaPlex::Tests {
 
+	TEST(VarGroup, AddTwice) {
+		DynaPlex::VarGroup vars{};
+		vars.Add("as", 1);
+		EXPECT_THROW({
+			vars.Add("as", 2);
+			}, DynaPlex::Error);
+
+
+	}
+
+	TEST(VarGroup, SimilarKey)
+	{
+		DynaPlex::VarGroup vars{};
+		vars.Add("SomeKey", 1);
+
+
+
+
+		int64_t someKey;
+		EXPECT_THROW({
+			vars.Get("someKey", someKey);
+			}, DynaPlex::Error);
+
+
+
+		for (std::string& s : std::vector<std::string> { "SOMEKEY","Some-Key","FfmeKey"})
+		{
+
+			try {
+				vars.Get(s, someKey);
+
+			}
+			catch (DynaPlex::Error& e) {
+				std::string error = "DynaPlex: Key \"" + s + "\" not found in VarGroup. (A similar key was provided: \"SomeKey\")";
+				EXPECT_EQ(e.what(), error);
+			}
+		}
+
+	}
+
+
 	TEST(VarGroup, Basics) {
 
 

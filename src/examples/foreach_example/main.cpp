@@ -15,8 +15,8 @@ size_t getMemoryUsage() {
 }
 
 int main() {
-    const size_t num = 100000;
-    const size_t elements = 10;
+    const size_t num = 50000;
+    const size_t elements = 20;
 
     // Measure memory usage for deque
     size_t startDequeMem = getMemoryUsage();
@@ -38,7 +38,7 @@ int main() {
     std::vector<DynaPlex::Queue<int64_t>> Queues;
     Queues.reserve(num);
     for (size_t i = 0; i < num; i++) {
-        Queues.push_back(DynaPlex::Queue{ elements });
+        Queues.push_back(DynaPlex::Queue<int64_t>( elements ));
         for (size_t j = 0; j < elements; j++)
         {
             Queues.back().push_back(0);

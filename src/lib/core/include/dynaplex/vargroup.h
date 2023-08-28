@@ -151,6 +151,7 @@ namespace DynaPlex {
 			Add(key, vec);
 		}
 
+		bool HasKey(const std::string& key, bool warn_if_similar=true) const;
 
 		void Get(const std::string& key, VarGroup& out_val) const;
 		void Get(const std::string& key, int64_t& out_val) const;
