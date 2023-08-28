@@ -18,7 +18,7 @@ namespace DynaPlex::Erasure
             : StatesInterface(id), data(std::move(vec)) {}
 
         std::unique_ptr<StatesInterface> clone() const override {
-            return std::make_unique<StatesAdapter<t_state>>(data, mdp_identifier);
+            return std::make_unique<StatesAdapter<t_state>>(data, mdp_int_hash);
         }
 
         const std::vector<t_state>& get() const {

@@ -5,38 +5,59 @@
 #include "dynaplex/error.h"
 #include "statesadapter.h"
 #include <type_traits>
+
+namespace DynaPlex::Concepts
+{
+	template<typename T>
+	concept HasState = requires{
+		typename T::State;
+	};
+
+	template<typename T>
+	concept HasStateConvertibleToVarGroup = requires{
+		HasState<T>;
+		{ DynaPlex::Concepts::ConvertibleToVarGroup<typename T::State> };
+	};
+
+	template<typename T>
+	concept HasModifyStateWithAction = requires(const T& mdp, typename T::State & state, int64_t action ){
+			{ mdp.ModifyStateWithAction(state, action) };
+	};
+
+	template <typename T>
+	concept HasGetInitialState = requires(const T & mdp)
+	{
+		{ mdp.GetInitialState() } -> std::same_as<typename T::State>;
+	};
+	
+}
+
 namespace DynaPlex::Erasure
 {
-	namespace MDP_Concepts
-	{
-
-		template<typename T>
-		concept ConformingMDPImplementation = requires(const T t) {
-			typename T::State; // Ensure a nested type or using declaration for state
-			{ t.GetInitialState() } -> std::same_as<typename T::State>; // Ensure the return type matches the nested type
-			{ DynaPlex::ConvertibleToVarGroup<typename T::State> }; 
-		};
-	}
+	
 
 
-
-	template<MDP_Concepts::ConformingMDPImplementation t_MDP>
+	template<typename t_MDP>
 	class MDPAdapter : public MDPInterface
 	{
+		static_assert(DynaPlex::Concepts::HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
+		static_assert(DynaPlex::Concepts::ConvertibleFromVarGroup<t_MDP>, "MDP must define public constructor with const VarGroup& parameter");
 		using State = typename t_MDP::State;
-		std::string string_id;
-		int64_t mdp_identifier;
+
+		std::string unique_id;
+		int64_t mdp_int_hash;
 		t_MDP model;
+		std::string mdp_id;
 	public:
 		MDPAdapter(DynaPlex::VarGroup vars) :
-			model{ vars }, string_id{ vars.Identifier() }, mdp_identifier{ vars.Int64Hash() }
+			model{ vars }, unique_id{ vars.UniqueIdentifier() }, mdp_int_hash{ vars.Int64Hash() }, mdp_id{ vars.Identifier() }
 		{
 		}
 
 		const std::vector<typename t_MDP::State>& ToVector(const DynaPlex::States& states) const
 		{
 			// Check that the states belong to this MDP
-			if (states->mdp_identifier != mdp_identifier)
+			if (states->mdp_int_hash != mdp_int_hash)
 			{
 				throw DynaPlex::Error("Error in MDP->ToVector: It seems you tried to call with states not created by this MDP");
 			}
@@ -48,7 +69,7 @@ namespace DynaPlex::Erasure
 		std::vector<typename t_MDP::State>& ToVector(DynaPlex::States& states) const
 		{
 			// Check that the states belong to this MDP
-			if (states->mdp_identifier != mdp_identifier)
+			if (states->mdp_int_hash != mdp_int_hash)
 			{
 				throw DynaPlex::Error("Error in MDP->ToVector: It seems you tried to call with states not created by this MDP");
 			}
@@ -59,28 +80,51 @@ namespace DynaPlex::Erasure
 
 		std::string Identifier() const override
 		{
-			return string_id;
+			return unique_id;
 		}
 
 		DynaPlex::States GetInitialStateVec(size_t NumStates) const override 
 		{
-			auto state = model.GetInitialState();		
-			std::vector<State> statesVec(NumStates, state);
-			 //adding hash to facilitates identifying this vector as coming from current MDP later on. 			
-			return std::make_unique<StatesAdapter<State>>(std::move(statesVec), mdp_identifier);
+			if constexpr (DynaPlex::Concepts::HasGetInitialState<t_MDP>)
+			{
+				auto state = model.GetInitialState();
+				std::vector<State> statesVec(NumStates, state);
+				//adding hash to facilitates identifying this vector as coming from current MDP later on. 			
+				return std::make_unique<StatesAdapter<State>>(std::move(statesVec), mdp_int_hash);
+			}
+			else
+			{
+				throw DynaPlex::Error("MDP.GetInitialStateVec in MDP: " + mdp_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
+			}
+
 		}
 		DynaPlex::VarGroup ToVarGroup(const DynaPlex::States& dp_states, size_t index) const override
 		{
-			auto& states = ToVector(dp_states);
-			return states[index].ToVarGroup();
+			if constexpr (DynaPlex::Concepts::ConvertibleToVarGroup<State>)
+			{
+				auto& states = ToVector(dp_states);
+				return states[index].ToVarGroup();
+			}
+			else 
+			{
+				throw DynaPlex::Error("MDP.ToVarGroup(StateVec,...) in MDP: " + mdp_id + "\nState is not ConvertibleToVarGroup.");
+			}
 		}
 		void IncorporateActions(DynaPlex::States& states) const override
 		{
-			auto& statesVec = ToVector(states);
-			for (auto& state : statesVec)
+			if constexpr (DynaPlex::Concepts::HasModifyStateWithAction<t_MDP>)
 			{
-				model.ModifyStateWithAction(state,1);
-			}			
+				auto& statesVec = ToVector(states);
+				for (auto& state : statesVec)
+				{
+					int64_t action = 123;
+					model.ModifyStateWithAction(state, action);
+				}
+			}
+			else
+			{
+				throw DynaPlex::Error("MDP.IncorporateActions in MDP: "+ mdp_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
+			}
 		}
 
 	};

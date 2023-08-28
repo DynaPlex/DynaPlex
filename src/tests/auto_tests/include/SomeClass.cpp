@@ -1,5 +1,4 @@
 #include "SomeClass.h"
-#include "dynaplex/vargroup_helpers.h"
 #include <iostream>
 
 
@@ -13,6 +12,9 @@ SomeClass::SomeClass(const DynaPlex::VarGroup& vars)
     vars.Get("myVector", myVector);
     vars.Get("nestedClass", nestedClass);
     vars.Get("myNestedVector", myNestedVector);
+    static_assert(DynaPlex::Concepts::AppendableBasicContainer<DynaPlex::Queue<int64_t>>," Queue is not appendable");
+
+    vars.Get("myQueue", myQueue);
 }
 
 DynaPlex::VarGroup SomeClass::ToVarGroup() const
@@ -24,28 +26,10 @@ DynaPlex::VarGroup SomeClass::ToVarGroup() const
     vars.Add("myVector", myVector);
     vars.Add("nestedClass", nestedClass);
     vars.Add("myNestedVector", myNestedVector);
+
+    static_assert(DynaPlex::Concepts::ReadableBasicContainer<DynaPlex::Queue<int64_t>>, "");
+
+
+    vars.Add("myQueue", myQueue);
     return vars;
-}
-
-
-
-
-
-void SomeClass::Print() const {
-    std::cout << "testEnumClass: " << static_cast<int>( testEnumClass) << std::endl;
-    std::cout << "myString: " << myString << std::endl;
-    std::cout << "myInt: " << myInt << std::endl;
-    std::cout << "myVector: ";
-    for (const auto& num : myVector) {
-        std::cout << num << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "nestedClass: " << std::endl;
-    nestedClass.Print();
-
-    std::cout << "myNestedVector: " << std::endl;
-    for (const auto& nestedObj : myNestedVector) {
-        nestedObj.Print();
-        std::cout << std::endl;
-    }
 }

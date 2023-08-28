@@ -5,7 +5,7 @@
 #include <vector>
 #include "nestedclass.h"
 #include "dynaplex/vargroup.h"
-
+#include "dynaplex/modelling_helpers/queue.h"
 class SomeClass {
 public:
     explicit SomeClass(const DynaPlex::VarGroup& vars);    
@@ -13,16 +13,16 @@ public:
 
 
 
-    void Print() const;
-
 public:
     enum class Test {option = 3,decline = 5};
     Test testEnumClass;
     std::string myString;
-    int myInt;
-    std::vector<int> myVector;
+    int64_t myInt;
+    std::vector<int64_t> myVector;
+    DynaPlex::Queue<int64_t> myQueue;
+    
     NestedClass nestedClass;
-    std::vector<NestedClass> myNestedVector;
+    DynaPlex::Queue<NestedClass> myNestedVector;
     SomeClass();
 };
 

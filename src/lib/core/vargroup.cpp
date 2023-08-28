@@ -189,11 +189,10 @@ namespace DynaPlex {
 		return *this;
 	}
 
-
-
 	void VarGroup::Add(std::string s, int val) {
 		pImpl->Add(s, static_cast<int64_t>(val));
 	}
+
 
 	void VarGroup::Add(std::string s, int64_t val) {
 		pImpl->Add(s, val);
@@ -213,11 +212,7 @@ namespace DynaPlex {
 
 	void VarGroup::Add(std::string s, double val) {
 		pImpl->Add(s, val);
-	}
-	void VarGroup::Add(std::string s, const std::vector<int>& vec) {
-		std::vector<int64_t> vec64(vec.begin(), vec.end());
-		pImpl->Add(s, vec64);
-	}
+	}	
 	void VarGroup::Add(std::string s, const Int64Vec& vec) {
 		pImpl->Add(s, vec);
 	}
@@ -238,16 +233,6 @@ namespace DynaPlex {
 	}
 	void VarGroup::Get(const std::string& key, std::string& out_val) const {
 		pImpl->GetHelper(key, out_val);
-	}
-
-	void VarGroup::Get(const std::string& key, int& out_val) const {
-		int64_t int64;
-		pImpl->GetHelper(key, int64);
-
-		if (int64 < INT_MIN || int64 > INT_MAX) {
-			throw DynaPlex::Error("int64_t value out of range for conversion to int");
-		}
-		out_val = static_cast<int>(int64);
 	}
 
 	void VarGroup::Get(const std::string& key, bool& out_val) const {
@@ -274,21 +259,6 @@ namespace DynaPlex {
 		pImpl->GetVarGroupVec(key, out_val);
 	}
 
-	void VarGroup::Get(const std::string& key, std::vector<int>& out_val) const {
-		std::vector<int64_t> tmp;
-		pImpl->GetHelper(key, tmp);
-
-
-		out_val.clear();
-		for (const auto& val : tmp) {
-			if (val < std::numeric_limits<int>::min() || val > std::numeric_limits<int>::max()) {
-				throw DynaPlex::Error("Cannot convert to std::vector<int>. Value " + std::to_string(val) + " for key " + key + " cannot be represented as int.");
-			}
-			out_val.push_back(static_cast<int>(val));
-		}
-	}
-
-
 	void VarGroup::Get(const std::string& key, VarGroup& out_val) const {
 		pImpl->AssertKeyExistence(key);
 
@@ -303,11 +273,22 @@ namespace DynaPlex {
 		return pImpl->PrintAbbrv(pImpl->data);
 	}
 
+	std::string VarGroup::Dump(const int indent) const {
+		return pImpl->data.dump(indent);
+	}
+
+
+
+	std::string VarGroup::UniqueIdentifier() const
+	{
+		return this->Identifier() + "_" + this->Hash();
+	}
+
 	std::string VarGroup::Identifier() const
 	{
 		std::string id;
 		Get("id", id);
-		return id+"_"+this->Hash();
+		return id;
 	}
 
 	void VarGroup::SaveToFile(const std::string& filename) const {

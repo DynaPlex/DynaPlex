@@ -18,7 +18,10 @@ namespace DynaPlex::Tests {
 			{"myInt",42},
 			{"myVector", DynaPlex::VarGroup::Int64Vec{123,123}},
 			{ "nestedClass",nested},
-			{"myNestedVector",DynaPlex::VarGroup::VarGroupVec{nested,nested2}} });
+			{"myNestedVector",DynaPlex::VarGroup::VarGroupVec{nested,nested2} },
+			{ "myQueue",DynaPlex::VarGroup::Int64Vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14} } ,{ "as", "as"} });
+
+
 
 
 		//Initiate someclass with the varGroup
@@ -30,10 +33,23 @@ namespace DynaPlex::Tests {
 		ASSERT_EQ(someclass.myString, "string");
 		ASSERT_EQ(someclass.myVector.size(), 2);
 		ASSERT_EQ(someclass.nestedClass.Size, 1.0);
-		ASSERT_EQ(someclass.myNestedVector[1].Id, "2");
+		ASSERT_EQ(someclass.myQueue.back(), 14);
+		ASSERT_EQ(someclass.myNestedVector.back().Id, "2");
 
 
 		auto vars = someclass.ToVarGroup();
-		ASSERT_EQ(vars, varGroup);
+
+		SomeClass someclass2(vars);
+		auto vars2 = someclass2.ToVarGroup();
+
+		EXPECT_EQ(vars, vars2);
+
+		if (vars != vars2)
+		{
+			{
+				std::cout << vars.ToAbbrvString() << std::endl;
+				std::cout << vars2.ToAbbrvString() << std::endl;
+			}
+		}
 	}
 }

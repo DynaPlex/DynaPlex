@@ -10,7 +10,7 @@ namespace DynaPlex::Tests {
 
 		DynaPlex::VarGroup vars({ {"p",2} , {"q",3.1} , { "s", "string"}, {"xlist", DynaPlex::VarGroup::DoubleVec{1.2,1.3}} });
 
-		//this corresponds to the folowing json (note that VarGroup supports a specific subset of JSON):
+		//this corresponds to the following json (note that VarGroup supports a specific subset of JSON):
 		std::string json_string = R"(
 	{
 		"p": 2,
@@ -70,7 +70,7 @@ namespace DynaPlex::Tests {
 
 		vars.Add("listD", DynaPlex::VarGroup::DoubleVec{ 1.9,2.3 });
 
-		int p;
+		int64_t p;
 		vars.Get("p", p);
 		EXPECT_EQ(p, 2);
 
@@ -83,7 +83,7 @@ namespace DynaPlex::Tests {
 		EXPECT_EQ(s, "string");
 
 		std::vector<double> listD;
-		std::vector<int> listI;
+		std::vector<int64_t> listI;
 		vars.Get("listD", listD);
 		EXPECT_EQ(listD[0], 1.9);
 

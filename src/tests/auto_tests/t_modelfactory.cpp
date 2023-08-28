@@ -23,15 +23,17 @@ namespace DynaPlex::Tests {
 		ASSERT_NO_THROW(
 			model = DynaPlex::GetMDP(vars);
 		);
-		const std::string prefix = "LostSales";
 
+		const std::string prefix = "LostSales";
 		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length())) ;
 
 		auto States = model->GetInitialStateVec(10);
 		//std::cout << model->ToVarGroup(States, 0).ToAbbrvString() << std::endl;
 
 		model->IncorporateActions(States);
-		//std::cout << model->ToVarGroup(States, 0).ToAbbrvString() << std::endl;
+		std::cout << model->ToVarGroup(States, 0).Dump() << std::endl;
+		model->IncorporateActions(States);
+		std::cout << model->ToVarGroup(States, 0).Dump() << std::endl;
 
 
 	}
