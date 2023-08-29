@@ -8,7 +8,7 @@
 
 
 
-namespace DynaPlex {
+namespace DynaPlex::Modelling {
     template<typename T>
 	class Queue
 	{

@@ -2,4 +2,4 @@
 cmake_minimum_required (VERSION 3.21)
 
 
-add_subdirectory(foreach_example)
+add_subdirectory(memory_checks)

@@ -79,7 +79,7 @@ namespace DynaPlex {
 			{
 				std::string similar_key = FindSimilarKey(key);
 				if (!similar_key.empty()) {
-					std::cout << "Warning: Key \"" << key << "\" not found in VarGroup. (A similar key was provided: \"" << similar_key << "\")" << std::endl;					
+					std::cerr << "Warning: Key \"" << key << "\" not found in VarGroup. (A similar key was provided: \"" << similar_key << "\")" << std::endl;					
 				}
 			}
 			return false;

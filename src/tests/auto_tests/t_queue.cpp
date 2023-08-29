@@ -4,10 +4,11 @@
 #include <vector>
 #include <iterator>
 
-#include "dynaplex/modelling_helpers/queue.h"
+#include "dynaplex/modelling/queue.h"
 
 namespace DynaPlex::Tests {
 
+	using namespace DynaPlex::Modelling;
 	TEST(queue, basics) {
 
 		// Construct an empty Queue

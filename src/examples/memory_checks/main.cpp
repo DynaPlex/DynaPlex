@@ -4,7 +4,8 @@
 #define NOMINMAX
 #include <windows.h>
 #include <psapi.h>
-#include "dynaplex/modelling_helpers/queue.h"
+#include "dynaplex/modelling/queue.h"
+#include "dynaplex/rng.h"
 
 size_t getMemoryUsage() {
     PROCESS_MEMORY_COUNTERS_EX pmc;
@@ -14,9 +15,10 @@ size_t getMemoryUsage() {
     return 0;  // Error
 }
 
-int main() {
+void CheckMemContainers()
+{
     const size_t num = 50000;
-    const size_t elements = 20;
+    const size_t elements = 40;
 
     // Measure memory usage for deque
     size_t startDequeMem = getMemoryUsage();
@@ -35,10 +37,10 @@ int main() {
     // Measure memory usage for Queue
     size_t startFIFOMem = getMemoryUsage();
 
-    std::vector<DynaPlex::Queue<int64_t>> Queues;
+    std::vector<DynaPlex::Modelling::Queue<int64_t>> Queues;
     Queues.reserve(num);
     for (size_t i = 0; i < num; i++) {
-        Queues.push_back(DynaPlex::Queue<int64_t>( elements ));
+        Queues.push_back(DynaPlex::Modelling::Queue<int64_t>(elements));
         for (size_t j = 0; j < elements; j++)
         {
             Queues.back().push_back(0);
@@ -65,5 +67,62 @@ int main() {
     std::cout << "Average memory used by a deque: " << 1.0 * (endDequeMem - startDequeMem) / elements / num << " bytes" << std::endl;
     std::cout << "Average memory used by a Queue: " << 1.0 * (endFIFOMem - startFIFOMem) / elements / num << " bytes" << std::endl;
     std::cout << "Average memory used by a vector: " << 1.0 * (endVectorMem - startVectorMem) / elements / num << " bytes" << std::endl;
-    return 0;
+}
+
+void CheckMemRNG()
+{
+    const size_t num = 50000;
+
+    // Measure memory usage for mt19937
+    size_t startmtMem = getMemoryUsage();
+
+    std::vector<std::mt19937> mt;
+    mt.reserve(num);
+    for (size_t i = 0; i < num; i++) {
+        std::seed_seq seq{ i };
+        mt.push_back(std::mt19937(seq));
+    }
+    size_t endmtMem = getMemoryUsage();
+
+    // Measure memory usage for pcg64
+    size_t startpcgMem = getMemoryUsage();
+
+    std::vector<pcg_engines::pcg64> pcg;
+    pcg.reserve(num);
+    for (size_t i = 0; i < num; i++) {
+		std::seed_seq seq{ i };
+		pcg.push_back(pcg_engines::pcg64(seq));
+	}
+    size_t endpcgMem = getMemoryUsage();
+
+    // measure memory usage for ranlux48
+    size_t startranluxMem = getMemoryUsage();
+
+    std::vector<std::ranlux48> ranlux;
+    ranlux.reserve(num);
+    for (size_t i = 0; i < num; i++) {
+		std::seed_seq seq{ i };
+		ranlux.push_back(std::ranlux48(seq));
+	}
+    size_t endranluxMem = getMemoryUsage();
+
+
+  
+
+    // Report memory usage for the random generators
+
+
+    std::cout << "Average memory used by a mt19937: " << 1.0 * (endmtMem - startmtMem) / num << " bytes" << std::endl;
+    std::cout << "Average memory used by a pcg64: " << 1.0 * (endpcgMem - startpcgMem) / num << " bytes" << std::endl;
+    std::cout << "Average memory used by a ranlux48: " << 1.0 * (endranluxMem - startranluxMem) / num << " bytes" << std::endl;
+
+}
+
+int main() {
+    CheckMemContainers();
+
+    CheckMemRNG();
+
+
+
 }
