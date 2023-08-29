@@ -1,13 +1,12 @@
 #pragma once
-#include <random>
 #include <initializer_list>
 #include "pcg_random/pcg_random.hpp"
-
+#include <random>
 namespace DynaPlex {
 
     class RNG {
     public:
-        using type = pcg_engines::pcg64;       
+        using type = pcg::pcg64;       
         explicit RNG(std::initializer_list<std::uint32_t> seed_data) {
             seed_generator(seed_data);
         }

@@ -1863,7 +1863,7 @@ using ext_setseq_xsl_rr_128_64 =
 
 } // namespace pcg_engines
 
-namespace pcg_engines {
+namespace pcg {
 
     typedef pcg_engines::setseq_xsh_rr_64_32        pcg32;
     typedef pcg_engines::oneseq_xsh_rr_64_32        pcg32_oneseq;
@@ -1945,9 +1945,9 @@ namespace pcg_engines {
 
     typedef pcg_engines::ext_setseq_xsh_rr_64_32<14, 16, true>    pcg32_k16384;
     typedef pcg_engines::ext_oneseq_xsh_rs_64_32<14, 32, true>    pcg32_k16384_fast;
-
+}
 #ifdef _MSC_VER
 #pragma warning(default:4146)
 #endif
-}
+
 #endif // PCG_RAND_HPP_INCLUDED

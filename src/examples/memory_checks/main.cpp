@@ -71,11 +71,11 @@ void CheckMemContainers()
 
 void CheckMemRNG()
 {
-    const size_t num = 50000;
+    const size_t num = 100000;
 
     // Measure memory usage for mt19937
     size_t startmtMem = getMemoryUsage();
-
+    
     std::vector<std::mt19937> mt;
     mt.reserve(num);
     for (size_t i = 0; i < num; i++) {
@@ -87,11 +87,11 @@ void CheckMemRNG()
     // Measure memory usage for pcg64
     size_t startpcgMem = getMemoryUsage();
 
-    std::vector<pcg_engines::pcg64> pcg;
+    std::vector<pcg::pcg64> pcg;
     pcg.reserve(num);
     for (size_t i = 0; i < num; i++) {
-		std::seed_seq seq{ i };
-		pcg.push_back(pcg_engines::pcg64(seq));
+		std::seed_seq seq{ i,i+1,i+123 };
+		pcg.push_back(pcg::pcg64(seq));
 	}
     size_t endpcgMem = getMemoryUsage();
 
