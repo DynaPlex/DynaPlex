@@ -8,7 +8,7 @@
 
 namespace DynaPlex::Tests {
 
-	using namespace DynaPlex::Modelling;
+	using namespace DynaPlex;
 	TEST(queue, basics) {
 
 		// Construct an empty Queue

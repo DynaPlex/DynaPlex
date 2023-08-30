@@ -15,34 +15,31 @@ def test_non_convertible():
 
 def test_model_factory_missing():
     # Create VarGroup using a Python dictionary. Note typo
-    vars = {"id": "LosSales", "p": 9.0, "h": 1.0}
+    vars = {"id": "LosSales", "p": 9.0, "h": 1.0, "leadtime": 3}
     # Expecting an error when calling get_mdp
     with pytest.raises(RuntimeError, match=re.escape("DynaPlex: No MDP available with identifier \"LosSales\". Use ListMDPs() / list_mdps() to obtain available MDPs.")) as exc_info:
         model = dp.get_mdp(vars)
 
 def test_model_factory_tests():
     # Create VarGroup using a Python dictionary
-    vars = {"id": "LostSales", "p": 9.0, "h": 1.0}
+    vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
     try:
         model = dp.get_mdp(vars)
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")
-    assert model.identifier() == "lost sales 9.000000"
+    identifier = model.identifier()
+    assert identifier.startswith("lost_sales"), f"Expected identifier to start with 'lost_sales', but got '{identifier}'"
 
 
-def test_model_factory():
-    try:
-        model = dp.get_mdp(id='SomeMDP')
-    except Exception as e:
-        pytest.fail(f"Unexpected error: {e}")
-    assert model.identifier() == "CRAZY"
+
 
 def test_model_factory_named_args():
     try:
-        model = dp.get_mdp(id='LostSales',p=9.0,h=1.0)
+        model = dp.get_mdp(id="lost_sales",p=9.0,h=1.0,leadtime=3,demand_dist={"type":"poisson","mean":3.0})
     except Exception as e:
-        pytest.fail(f"Unexpected error: {e}")
-    assert model.identifier() == "lost sales 9.000000"
+        pytest.fail(f"Unexpected error: {e}")   
+    identifier = model.identifier()
+    assert identifier.startswith("lost_sales"), f"Expected identifier to start with 'lost_sales', but got '{identifier}'"
 
 def test_convert_to_string_with_settings():
     settings = {

@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 
-namespace DynaPlex::Modelling
+namespace DynaPlex
 {
 	
 	enum class DistType {
@@ -63,8 +63,9 @@ namespace DynaPlex::Modelling
 		case DistType::CUSTOM:
 		{
 			std::vector<double> probs;
-			int64_t offset;
 			vars.Get("probs", probs);
+			
+			int64_t offset;
 			if (vars.HasKey("offset"))
 			{
 				vars.Get("offset", offset);
@@ -90,6 +91,10 @@ namespace DynaPlex::Modelling
 			throw DynaPlex::Error("DiscreteDist: Unknown type: " + type + ". " + availableTypes);
 		}
 		}
+	}
+
+	DiscreteDist::DiscreteDist() : min(0), translatedPMF({ 1.0 })
+	{
 	}
 
 	static double PI = ::std::atan(1.0) * 4;
@@ -391,6 +396,8 @@ namespace DynaPlex::Modelling
 		}
 		return entropy;
 	}
+
+	
 
 	double DiscreteDist::StandardDeviation() const {
 		return std::sqrt(Variance());

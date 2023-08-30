@@ -10,7 +10,7 @@
 
 namespace DynaPlex::Tests {
 
-	using namespace DynaPlex::Modelling;
+	using namespace DynaPlex;
 
 	std::map<int64_t, size_t> GatherBucketedSampleMeans(DiscreteDist& dist, size_t numSamples, size_t numMeans) {
 		DynaPlex::RNG rng{ 26071983 ,1234}; // Using a fixed seed for reproducibility
@@ -221,7 +221,7 @@ namespace DynaPlex::Tests {
 		}
 	}
 
-	TEST(DiscreteDist, VarGroupConstructor) {
+	TEST(discretedist, VarGroupConstructor) {
 
 	
 		// Test Constant Distribution

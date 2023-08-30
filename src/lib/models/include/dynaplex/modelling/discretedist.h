@@ -3,7 +3,7 @@
 #include <dynaplex/vargroup.h>
 #include <dynaplex/rng.h>
 
-namespace DynaPlex::Modelling
+namespace DynaPlex
 {
 	class DiscreteDist
 	{
@@ -114,6 +114,7 @@ namespace DynaPlex::Modelling
 		double StandardDeviation() const;
 		double Entropy() const;
 
+		DiscreteDist();
 
 		DiscreteDist(const DynaPlex::VarGroup& vars);
 

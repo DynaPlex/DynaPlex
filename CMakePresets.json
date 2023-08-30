@@ -1,4 +1,5 @@
 ﻿{
+  //Further configurations may de defined in cmakeuserpresets.json
   "version": 3,
   "configurePresets": [
     {
@@ -29,25 +30,25 @@
         "rhs": "Windows"
       }
     },
-      {
-        "name": "x64-debug",
-        "hidden": true,
-        "inherits": "windows-base",
-        "architecture": {
-          "value": "x64",
-          "strategy": "external"
-        },
-        "cacheVariables": {
-          "CMAKE_BUILD_TYPE": "Debug"
-        }
+    {
+      "name": "x64-debug",
+      "hidden": true,
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
       },
-      {
-        "name": "x64-release",
-        "hidden": true,
-        "inherits": "x64-debug",
-        "cacheVariables": {
-          "CMAKE_BUILD_TYPE": "Release"
-        }
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
       }
-    ]
+    },
+    {
+      "name": "x64-release",
+      "hidden": true,
+      "inherits": "x64-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ]
 }

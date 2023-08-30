@@ -1863,7 +1863,7 @@ using ext_setseq_xsl_rr_128_64 =
 
 } // namespace pcg_engines
 
-namespace pcg {
+namespace pcg_cpp {
 
     typedef pcg_engines::setseq_xsh_rr_64_32        pcg32;
     typedef pcg_engines::oneseq_xsh_rr_64_32        pcg32_oneseq;

@@ -20,6 +20,11 @@ namespace DynaPlex::Concepts
 	};
 
 	template<typename T>
+	concept HasGetStaticInfo = requires(const T& mdp){
+		{ mdp.GetStaticInfo() } -> std::same_as<DynaPlex::VarGroup>;
+	};
+
+	template<typename T>
 	concept HasModifyStateWithAction = requires(const T& mdp, typename T::State & state, int64_t action ){
 			{ mdp.ModifyStateWithAction(state, action) };
 	};
@@ -81,6 +86,18 @@ namespace DynaPlex::Erasure
 		std::string Identifier() const override
 		{
 			return unique_id;
+		}
+
+		DynaPlex::VarGroup GetStaticInfo() const override
+		{
+			if constexpr (DynaPlex::Concepts::HasGetStaticInfo<t_MDP>)
+			{
+				return model.GetStaticInfo();
+			}
+			else
+			{
+				throw DynaPlex::Error("MDP.GetStaticInfo in MDP: " + mdp_id + "\nMDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
+			}
 		}
 
 		DynaPlex::States GetInitialStateVec(size_t NumStates) const override 

@@ -37,10 +37,10 @@ void CheckMemContainers()
     // Measure memory usage for Queue
     size_t startFIFOMem = getMemoryUsage();
 
-    std::vector<DynaPlex::Modelling::Queue<int64_t>> Queues;
+    std::vector<DynaPlex::Queue<int64_t>> Queues;
     Queues.reserve(num);
     for (size_t i = 0; i < num; i++) {
-        Queues.push_back(DynaPlex::Modelling::Queue<int64_t>(elements));
+        Queues.push_back(DynaPlex::Queue<int64_t>(elements));
         for (size_t j = 0; j < elements; j++)
         {
             Queues.back().push_back(0);
@@ -87,11 +87,11 @@ void CheckMemRNG()
     // Measure memory usage for pcg64
     size_t startpcgMem = getMemoryUsage();
 
-    std::vector<pcg::pcg64> pcg;
+    std::vector<pcg_cpp::pcg64> pcg;
     pcg.reserve(num);
     for (size_t i = 0; i < num; i++) {
 		std::seed_seq seq{ i,i+1,i+123 };
-		pcg.push_back(pcg::pcg64(seq));
+		pcg.push_back(pcg_cpp::pcg64(seq));
 	}
     size_t endpcgMem = getMemoryUsage();
 

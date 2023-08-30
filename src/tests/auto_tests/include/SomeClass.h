@@ -19,10 +19,10 @@ public:
     std::string myString;
     int64_t myInt;
     std::vector<int64_t> myVector;
-    DynaPlex::Modelling::Queue<int64_t> myQueue;
+    DynaPlex::Queue<int64_t> myQueue;
     
     NestedClass nestedClass;
-    DynaPlex::Modelling::Queue<NestedClass> myNestedVector;
+    DynaPlex::Queue<NestedClass> myNestedVector;
     SomeClass();
 };
 

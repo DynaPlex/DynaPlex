@@ -12,7 +12,7 @@ SomeClass::SomeClass(const DynaPlex::VarGroup& vars)
     vars.Get("myVector", myVector);
     vars.Get("nestedClass", nestedClass);
     vars.Get("myNestedVector", myNestedVector);
-    static_assert(DynaPlex::Concepts::AppendableBasicContainer<DynaPlex::Modelling::Queue<int64_t>>," Queue is not appendable");
+    static_assert(DynaPlex::Concepts::AppendableBasicContainer<DynaPlex::Queue<int64_t>>," Queue is not appendable");
 
     vars.Get("myQueue", myQueue);
 }
@@ -27,7 +27,7 @@ DynaPlex::VarGroup SomeClass::ToVarGroup() const
     vars.Add("nestedClass", nestedClass);
     vars.Add("myNestedVector", myNestedVector);
 
-    static_assert(DynaPlex::Concepts::ReadableBasicContainer<DynaPlex::Modelling::Queue<int64_t>>, "");
+    static_assert(DynaPlex::Concepts::ReadableBasicContainer<DynaPlex::Queue<int64_t>>, "");
 
 
     vars.Add("myQueue", myQueue);

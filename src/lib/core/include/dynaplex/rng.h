@@ -6,7 +6,7 @@ namespace DynaPlex {
 
     class RNG {
     public:
-        using type = pcg::pcg64;       
+        using type = pcg_cpp::pcg64;       
         explicit RNG(std::initializer_list<std::uint32_t> seed_data) {
             seed_generator(seed_data);
         }
