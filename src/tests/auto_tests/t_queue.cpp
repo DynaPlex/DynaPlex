@@ -3,10 +3,99 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <iterator>
-
+#include "smallclass.h"
 #include "dynaplex/modelling/queue.h"
 
 namespace DynaPlex::Tests {
+
+
+	TEST(queue, SmallClassBasics) {
+		// Construct an empty Queue for SmallClass
+		Queue<SmallClass> queue;
+
+		// Initialize VarGroup for SmallClass
+		VarGroup vars1;
+		vars1.Add("Id", "ID_1");
+		vars1.Add("Size", 1.0);
+
+		// Initialize a SmallClass instance
+		SmallClass instance1(vars1);
+
+		// Test push_back and front
+		queue.push_back(instance1);
+		EXPECT_EQ(queue.front().ToVarGroup(), instance1.ToVarGroup());
+
+		// Create another VarGroup for a different SmallClass instance
+		VarGroup vars2;
+		vars2.Add("Id", "ID_2");
+		vars2.Add("Size", 2.0);
+		SmallClass instance2(vars2);
+		queue.push_back(instance2);
+
+		// Test back method
+		EXPECT_EQ(queue.back().ToVarGroup(), instance2.ToVarGroup());
+
+		// Test pop_front
+		SmallClass poppedValue = queue.pop_front();
+		EXPECT_EQ(poppedValue.ToVarGroup(), instance1.ToVarGroup());
+		EXPECT_EQ(queue.front().ToVarGroup(), instance2.ToVarGroup());
+
+		// Check for equality using ToVarGroup()
+		queue.push_back(instance1);
+		EXPECT_EQ(queue.back().ToVarGroup(), instance1.ToVarGroup());
+
+	}
+
+	TEST(queue, doubleBasics) {
+		// Construct an empty Queue
+		Queue<double> queue;
+
+		// Test push_back and front
+		queue.push_back(1.5);
+		EXPECT_EQ(queue.front(), 1.5);
+
+		// Test push_back and back
+		queue.push_back(2.5);
+		EXPECT_EQ(queue.back(), 2.5);
+
+
+		EXPECT_EQ(queue.sum(), 4.0);
+		// Test pop_front
+		double poppedValue = queue.pop_front();
+		EXPECT_EQ(poppedValue, 1.5);
+	}
+
+	TEST(queue, stringBasics) {
+		// Construct an empty Queue
+		Queue<std::string> queue;
+
+		// Test push_back and front
+		queue.push_back("apple");
+		EXPECT_EQ(queue.front(), "apple");
+
+		// Test push_back and back
+		queue.push_back("banana");
+		EXPECT_EQ(queue.back(), "banana");
+
+		// Test size
+		EXPECT_EQ(queue.front(), "apple");
+
+		// Test pop_front
+		std::string poppedValue = queue.pop_front();
+		EXPECT_EQ(poppedValue, "apple");
+		EXPECT_EQ(queue.front(), "banana");
+
+		// Test initializer list constructor
+		Queue<std::string> q1 = { "grape", "mango" };
+		EXPECT_EQ(q1.back(), "mango");
+
+		// Test iterators
+		std::string combined = "";
+		for (const auto& val : q1) {
+			combined += val;
+		}
+		EXPECT_EQ(combined, "grapemango");
+	}
 
 	using namespace DynaPlex;
 	TEST(queue, basics) {

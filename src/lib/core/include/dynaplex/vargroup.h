@@ -33,9 +33,8 @@ namespace DynaPlex {
 			{ T(p) };
 		};
 
-
 		/// <summary>
-		/// T is VarGroupConvertible it if is both ConvertibleToVarGroup and ConvertibleFromVarGroup
+		/// T is VarGroupConvertible it it is both ConvertibleToVarGroup and ConvertibleFromVarGroup
 		/// </summary>
 		template<typename T>
 		concept VarGroupConvertible = ConvertibleToVarGroup<T> && ConvertibleFromVarGroup<T>;

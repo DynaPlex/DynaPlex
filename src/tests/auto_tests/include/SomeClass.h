@@ -1,9 +1,8 @@
-#ifndef SOMECLASS_H
-#define SOMECLASS_H
+#pragma once
 
 #include <string>
 #include <vector>
-#include "nestedclass.h"
+#include "smallclass.h"
 #include "dynaplex/vargroup.h"
 #include "dynaplex/modelling/queue.h"
 class SomeClass {
@@ -21,9 +20,7 @@ public:
     std::vector<int64_t> myVector;
     DynaPlex::Queue<int64_t> myQueue;
     
-    NestedClass nestedClass;
-    DynaPlex::Queue<NestedClass> myNestedVector;
-    SomeClass();
+    SmallClass nestedClass;
+    DynaPlex::Queue<SmallClass> myNestedVector;
 };
 
-#endif  // SOMECLASS_H

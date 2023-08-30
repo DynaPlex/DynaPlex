@@ -58,13 +58,19 @@ namespace DynaPlex {
 			const_iterator(size_t current, const Queue* queue_ptr)
 				: current(current), queue_ptr(queue_ptr) {}
 
-			bool operator!=(const_iterator& rhs) { return current != rhs.current; }
-			bool operator==(const_iterator& rhs) const { return current == rhs.current && queue_ptr == rhs.queue_ptr; }
+			bool operator!=(const const_iterator& rhs) const { return current != rhs.current; }
+			bool operator==(const const_iterator& rhs) const { return current == rhs.current && queue_ptr == rhs.queue_ptr; }
 			const T& operator*() {
 				return queue_ptr->items[queue_ptr->GetVectorIndex(current)];
 			}
-			void operator++() {
+			const_iterator& operator++() {
 				++current;
+				return *this;
+			}
+			const_iterator operator++(int) {
+				const_iterator tmp = *this;
+				++(*this);
+				return tmp;
 			}
 		};
 
@@ -97,12 +103,12 @@ namespace DynaPlex {
 			: first_item{ other.first_item }, num_items{ other.num_items }, items(std::move(other.items)) {
 			other.num_items = 0;
 		}
-		void push_back(T item) {
 
-			if (num_items == items.size()) {
-				//Expand the vector
-				size_t new_capacity = (items.size() == 0) ? 4 : items.size() * 2;
-				std::vector<T> new_items(new_capacity);
+		void reserve(size_t capacity)
+		{
+			if (capacity > items.size())
+			{
+				std::vector<T> new_items(capacity);
 				int i = 0;
 				auto stop = end();
 				for (auto it = begin(); it != stop; ++it) {
@@ -110,6 +116,16 @@ namespace DynaPlex {
 				}
 				first_item = 0;
 				items = std::move(new_items);
+			}
+		}
+
+		void push_back(T item) {
+
+			if (num_items == items.size()) {
+				//Expand the vector
+				size_t new_capacity = (items.size() == 0) ? 4 : items.size() * 2;
+				reserve(new_capacity);
+				
 			}
 			items[GetVectorIndex(first_item + num_items++)] = item;
 		}
@@ -137,7 +153,7 @@ namespace DynaPlex {
 				throw DynaPlex::Error("Queue: queue is empty");
 			}
 			T front = items[first_item];
-			items[first_item++] = 0;
+			items[first_item++] = T{};
 			num_items--;
 			if (first_item == items.size()) {
 				first_item = 0;
@@ -159,16 +175,18 @@ namespace DynaPlex {
 			return items[first_item];
 		}
 
+		
 		T sum()
 		{
-			T sum = 0;
+			static_assert(std::is_same_v<T, double> || std::is_same_v<T, int64_t>, "dynaplex::queue::sum can only be called when T is double or int64_t");
+
+			T total = 0;
 			auto stop = end();
 			for (auto it = begin(); it != stop; ++it) {
-				sum += *it;
+				total += *it;
 			}
-			return sum;
+			return total;
 		}
-
 		void clear()
 		{
 			items.clear();
@@ -180,17 +198,7 @@ namespace DynaPlex {
 			if (lhs.num_items != rhs.num_items) {
 				return false;
 			}
-			auto lhsIter = lhs.begin();
-			auto rhsIter = rhs.begin();
-			auto lhsEnd = lhs.end();
-			while (lhsIter != lhsEnd) {
-				if (*(lhsIter) != *(rhsIter)) {
-					return false;
-				}
-				++lhsIter;
-				++rhsIter;
-			}
-			return true;
+			return std::equal(lhs.begin(), lhs.end(), rhs.begin());
 		}
 
 		friend bool operator!=(const Queue<T>& lhs, const Queue<T>& rhs) {
