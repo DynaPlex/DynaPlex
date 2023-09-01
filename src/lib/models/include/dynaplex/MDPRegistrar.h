@@ -14,7 +14,7 @@ namespace DynaPlex {
             }
 
             static DynaPlex::MDP CreateInstance(const VarGroup& vars) {
-                return DynaPlex::Erasure::MakeGeneric<SpecificMDP>(vars);
+                return DynaPlex::Erasure::MakeGenericMDP<SpecificMDP>(vars);
             }
         };
     }

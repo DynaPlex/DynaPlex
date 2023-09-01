@@ -38,7 +38,7 @@ namespace DynaPlex::Tests {
 		vars.Add("p", 9.0);
 		vars.Add("h", 1.0);
 
-		auto DynaPlexMDP =DynaPlex::Erasure::MakeGeneric<AddOn::Problem::MDP>(vars);
+		auto DynaPlexMDP =DynaPlex::Erasure::MakeGenericMDP<AddOn::Problem::MDP>(vars);
 
 		//Note that Problem::MDP does not yet support GetInitialStateVec
 		EXPECT_THROW(DynaPlexMDP->GetInitialStateVec(10), DynaPlex::Error);

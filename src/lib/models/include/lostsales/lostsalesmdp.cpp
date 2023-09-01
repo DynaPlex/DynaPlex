@@ -1,5 +1,6 @@
 #include "lostsalesmdp.h"
 #include "dynaplex/mdpregistrar.h"
+#include "lostsalespolicies.h"
 
 namespace DynaPlex::Models {
 	using namespace DynaPlex;
@@ -86,10 +87,23 @@ namespace DynaPlex::Models {
 			}
 		}
 
+
+		BaseStockPolicy MDP::GetPolicy(const VarGroup& vars,std::shared_ptr<const MDP> mdp)
+		{
+			return BaseStockPolicy(mdp, vars);
+		}
+
+		void MDP::GetFeatures(const State&, Features&) const
+		{
+			return;
+		}
+
+
 		DynaPlex::StateType MDP::GetStateType(const State& state) const
 		{
 			return state.state_type;
 		}
+
 		bool MDP::IsAllowedAction(const State& state, int64_t action) const {
 			if (state.total_inv + action <= MaxSystemInv)
 			{

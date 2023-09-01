@@ -7,7 +7,7 @@ namespace DynaPlex {
     class RNG {
     public:
         using type = pcg_cpp::pcg64;       
-        explicit RNG(std::initializer_list<std::uint32_t> seed_data) {
+        explicit RNG(std::initializer_list<std::int64_t> seed_data) {
             seed_generator(seed_data);
         }
 
@@ -25,7 +25,7 @@ namespace DynaPlex {
         std::uniform_real_distribution<double> uniformDist{ 0.0, 1.0 };
 
         // Utility function to create a seed_seq from seed data and seed the generator
-        void seed_generator(std::initializer_list<std::uint32_t> seed_data) {
+        void seed_generator(std::initializer_list<std::int64_t> seed_data) {
             std::seed_seq seq(seed_data.begin(), seed_data.end());
             generator_.seed(seq);
         }

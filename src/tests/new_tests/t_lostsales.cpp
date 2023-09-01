@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include "dynaplex/factories.h"
 #include "dynaplex/registry.h"
-
+#include "lostsales/lostsalesmdp.h"
 
 namespace DynaPlex::Tests {
 	
@@ -12,16 +12,20 @@ namespace DynaPlex::Tests {
 		DynaPlex::VarGroup vars;
 
 
-
 		vars.Add("id", "lost_sales");
 		vars.Add("p", 9.0);
 		vars.Add("h", 1.0);
 		vars.Add("leadtime", 3);
 
+
 		vars.Add("demand_dist", DynaPlex::VarGroup({
 			{"type", "poisson"},
 			{"mean", 4.0}
 		}));
+
+
+		DynaPlex::Models::LostSales::MDP mdp(vars);
+
 
 		DynaPlex::MDP model;
 
