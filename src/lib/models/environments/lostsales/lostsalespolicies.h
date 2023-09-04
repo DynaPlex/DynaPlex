@@ -5,7 +5,7 @@
 #include <memory>
 
 namespace DynaPlex::Models {
-	namespace LostSales /*keep this namespace name in line with the name space in which the mdp corresponding to this agent is defined*/
+	namespace LostSales /*keep this namespace name in line with the name space in which the mdp corresponding to this policy is defined*/
 	{
 		// Forward declarations
 		class MDP;

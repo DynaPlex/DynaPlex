@@ -2,7 +2,7 @@
 #include "lostsalesmdp.h"
 #include "dynaplex/error.h"
 namespace DynaPlex::Models {
-	namespace LostSales /*keep this namespace name in line with the name space in which the mdp corresponding to this agent is defined*/
+	namespace LostSales /*keep this namespace name in line with the name space in which the mdp corresponding to this policy is defined*/
 	{
 
 		//MDP and State refer to the specific ones defined in current namespace

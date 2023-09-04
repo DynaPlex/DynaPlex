@@ -3,7 +3,7 @@
 #include "dynaplex/makegeneric.h"
 #include "dynaplex/error.h"
 #include <gtest/gtest.h>
-
+#include "dynaplex/policy.h"
 
 namespace DynaPlex::Tests {
 
@@ -18,6 +18,16 @@ namespace DynaPlex::Tests {
 			double p, h;
 		public:
 			
+			DynaPlex::VarGroup GetStaticInfo() const
+			{
+				return DynaPlex::VarGroup{};
+			}
+
+			DynaPlex::Policy GetPolicy(std::shared_ptr<const MDP>, const DynaPlex::VarGroup& vars) const
+			{
+
+				throw "";
+			}
 
 			MDP(const DynaPlex::VarGroup& vars) 
 			{
@@ -42,8 +52,6 @@ namespace DynaPlex::Tests {
 
 		//Note that Problem::MDP does not yet support GetInitialStateVec
 		EXPECT_THROW(DynaPlexMDP->GetInitialStateVec(10), DynaPlex::Error);
-
-	  //  EXPECT_THROW(DynaPlexMDP->)
 
 		const std::string prefix = "Problem";
 		EXPECT_EQ(prefix, DynaPlexMDP->Identifier().substr(0, prefix.length()));

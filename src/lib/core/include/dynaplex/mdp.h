@@ -3,6 +3,7 @@
 #include <string>
 #include "dynaplex/states.h"
 #include "vargroup.h"
+#include "policy.h"
 namespace DynaPlex
 {
 	class MDPInterface
@@ -14,6 +15,9 @@ namespace DynaPlex
 
 		virtual DynaPlex::VarGroup ToVarGroup(const DynaPlex::States&,size_t index=0) const= 0;
 		virtual void IncorporateActions(DynaPlex::States&) const = 0;
+
+		virtual DynaPlex::Policy GetPolicy(const DynaPlex::VarGroup& vars) const =0;
+		virtual DynaPlex::Policy GetPolicy(const std::string& id) const = 0;
 	};
 	using MDP = std::shared_ptr<MDPInterface>;
 }//namespace DynaPlex

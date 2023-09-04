@@ -9,13 +9,12 @@
 namespace DynaPlex::Models {
 
     using MDPFactoryFunction = std::function<DynaPlex::MDP(const DynaPlex::VarGroup&)>;
-
+    struct MDPEntry {
+        std::string identifier;
+        std::string description;
+    };
     class Registry {
     public:
-        struct MDPEntry {
-            std::string identifier;
-            std::string description;
-        };
 
         static void Register(const std::string& identifier, const std::string& description, MDPFactoryFunction func);
 

@@ -10,7 +10,7 @@ namespace DynaPlex::Models {
     void Registry::Register(const std::string& identifier, const std::string& description, MDPFactoryFunction func) {
         auto& registry = GetRegistry();
         if (registry.find(identifier) != registry.end()) {
-            // Log the error
+            // Log the error. Throw is bad here as this will be during startup. 
             std::cerr << "DYNAPLEX WARNING: An MDP with id \"" + identifier + "\" is already registered. Overwriting previous registration.\n";
         }
         registry[identifier] = { func, description };

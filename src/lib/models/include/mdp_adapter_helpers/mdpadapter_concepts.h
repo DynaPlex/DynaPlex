@@ -1,10 +1,18 @@
 #pragma once
 #include <type_traits>
+
+#include "dynaplex/vargroup.h"
+#include "dynaplex/policyregistry.h"
 namespace DynaPlex::Concepts
 {
 	template<typename T>
 	concept HasState = requires{
 		typename T::State;
+	};
+
+	template <typename T>
+	concept HasRegisterPolicies = requires(T t, PolicyRegistry<T>&registry) {
+		{ t.RegisterPolicies(registry) } -> std::same_as<void>;
 	};
 
 	template<typename T>

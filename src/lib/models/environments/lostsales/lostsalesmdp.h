@@ -2,18 +2,21 @@
 #include "dynaplex/modelling/discretedist.h"
 #include "dynaplex/modelling/queue.h"
 #include "dynaplex/rng.h"
-#include "dynaplex/statetype.h"
+#include "dynaplex/statecategory.h"
 #include "dynaplex/features.h"
+
+namespace DynaPlex {
+	template <typename MDPType>
+	class PolicyRegistry; // Forward declaration
+} // namespace DynaPlex
 
 namespace DynaPlex::Models {
 	namespace LostSales /*keep this in line with id below*/
-	{
-		//forward declaration
-		class BaseStockPolicy;
-		
+	{		
 		class MDP
 		{			
-			friend class DynaPlex::Models::LostSales::BaseStockPolicy;
+			//to give this access to private members:
+			friend class BaseStockPolicy;
 			const DynaPlex::VarGroup varGroup;
 
 			double p, h;
@@ -26,14 +29,14 @@ namespace DynaPlex::Models {
 
 			using Event = int64_t;
 			struct State {
-				DynaPlex::StateType state_type;
+				DynaPlex::StateCategory cat;
 				Queue<int64_t> state_vector;
 				int64_t total_inv;			
 
 				DynaPlex::VarGroup ToVarGroup() const
 				{
 					DynaPlex::VarGroup vars;
-					vars.Add("state_type", state_type);
+					vars.Add("cat", cat);
 					vars.Add("state_vector", state_vector);		
 					vars.Add("total_inv", total_inv);
 					return vars;
@@ -41,7 +44,7 @@ namespace DynaPlex::Models {
 			};
 			DynaPlex::VarGroup GetStaticInfo() const;
 
-			DynaPlex::StateType GetStateType(const State&) const;
+			DynaPlex::StateCategory GetStateCategory(const State&) const;
 			bool IsAllowedAction(const State& state, int64_t action) const;
 
 
@@ -49,11 +52,11 @@ namespace DynaPlex::Models {
 			double ModifyStateWithEvent(State&, const Event&) const;
 			Event GetEvent(DynaPlex::RNG& rng) const;
 
-			//something to extract features. 
+			void GetFeatures(State&,DynaPlex::Features&);
 
 			State GetInitialState() const;
 
-			static BaseStockPolicy GetPolicy(const VarGroup&, std::shared_ptr<const MDP>);
+			void RegisterPolicies(PolicyRegistry<MDP>& registry) const;
 
 			void GetFeatures(const State&, Features&) const;
 

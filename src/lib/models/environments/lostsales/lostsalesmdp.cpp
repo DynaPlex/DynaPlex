@@ -1,5 +1,6 @@
 #include "lostsalesmdp.h"
 #include "dynaplex/mdpregistrar.h"
+#include "dynaplex/policyregistry.h"
 #include "lostsalespolicies.h"
 
 namespace DynaPlex::Models {
@@ -26,7 +27,7 @@ namespace DynaPlex::Models {
 		{
 			state.state_vector.push_back(action);
 			state.total_inv += action;
-			state.state_type = StateType::AwaitEvent;
+			state.cat = StateCategory::AwaitEvent();
 			return 0.0;
 		}
 
@@ -40,7 +41,7 @@ namespace DynaPlex::Models {
 			{
 				queue.push_back(0);
 			}
-			return State{ StateType::AwaitEvent,queue,queue.sum() };
+			return State{ StateCategory::AwaitEvent(),queue,queue.sum()};
 		}
 
 		MDP::MDP(const VarGroup& varGroup) :
@@ -69,7 +70,7 @@ namespace DynaPlex::Models {
 
 		double MDP::ModifyStateWithEvent(State& state, const MDP::Event& event) const
 		{
-			state.state_type= StateType::AwaitAction;
+			state.cat= StateCategory::AwaitAction();
 
 			auto onHand = state.state_vector.pop_front();//Length is L again.
 
@@ -87,11 +88,20 @@ namespace DynaPlex::Models {
 			}
 		}
 
-
-		BaseStockPolicy MDP::GetPolicy(const VarGroup& vars,std::shared_ptr<const MDP> mdp)
-		{
-			return BaseStockPolicy(mdp, vars);
+		void MDP::GetFeatures(State&, DynaPlex::Features&) {
+			throw "";
 		}
+		
+
+		void MDP::RegisterPolicies(DynaPlex::PolicyRegistry<MDP>& registry) const
+		{//Here, we register any custom heuristics we want to provide for this MDP.	
+		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
+		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
+		 //to the corresponding id given below.
+			registry.Register<BaseStockPolicy>("basestock");
+		}
+
+	
 
 		void MDP::GetFeatures(const State&, Features&) const
 		{
@@ -99,9 +109,9 @@ namespace DynaPlex::Models {
 		}
 
 
-		DynaPlex::StateType MDP::GetStateType(const State& state) const
+		DynaPlex::StateCategory MDP::GetStateCategory(const State& state) const
 		{
-			return state.state_type;
+			return state.cat;
 		}
 
 		bool MDP::IsAllowedAction(const State& state, int64_t action) const {
@@ -113,7 +123,7 @@ namespace DynaPlex::Models {
 		}
 	}
 
-	//static registrar (only in .cpp file): includes MDP in the central registry, such that DynaPlex::GetMDP can locate it 
+	//static registrar (only in .cpp file): includes (a generic version of this) MDP in the central registry, such that DynaPlex::GetMDP can locate it 
 	static MDPRegistrar<LostSales::MDP> registrar(/*id*/"lost_sales",/*optional brief description*/ "Canonical lost sales problem.");
 }
 

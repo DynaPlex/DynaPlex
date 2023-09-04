@@ -1,11 +1,14 @@
 #pragma once
 #include "dynaplex/mdp.h"
 #include "dynaplex/states.h"
-#include "dynaplex/vargroup.h"
 #include "dynaplex/error.h"
 #include "statesadapter.h"
+#include "dynaplex/policy.h"
 #include "mdp_adapter_helpers/mdpadapter_concepts.h"
-
+#include "policyregistry.h"
+#include "dynaplex/rng.h"
+#include "dynaplex/vargroup.h"
+#include "mdp_adapter_helpers/actioniterator.h"
 
 namespace DynaPlex::Erasure
 {
@@ -14,42 +17,46 @@ namespace DynaPlex::Erasure
 	{
 		static_assert(DynaPlex::Concepts::HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
 		static_assert(DynaPlex::Concepts::ConvertibleFromVarGroup<t_MDP>, "MDP must define public constructor with const VarGroup& parameter");
+		static_assert(DynaPlex::Concepts::HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
 		using State = typename t_MDP::State;
 
+
+		
 		std::string unique_id;
 		int64_t mdp_int_hash;
-		std::shared_ptr<const t_MDP> model;
+		std::shared_ptr<const t_MDP> mdp;
 		std::string mdp_id;
+		PolicyRegistry<t_MDP> policy_registry;
 	public:
 		MDPAdapter(const DynaPlex::VarGroup& vars) :
-			model{ std::make_shared<const t_MDP>(vars) },
+			mdp{ std::make_shared<const t_MDP>(vars) },
 			unique_id{ vars.UniqueIdentifier() },
 			mdp_int_hash{ vars.Int64Hash() },
-			mdp_id{ vars.Identifier() } {
+			mdp_id{ vars.Identifier() } ,
+			policy_registry{}
+		{
+			auto info = GetStaticInfo();
+
+			RegisterPolicies();
 		}
 
-		const std::vector<typename t_MDP::State>& ToVector(const DynaPlex::States& states) const
+		void RegisterPolicies()
 		{
-			// Check that the states belong to this MDP
-			if (states->mdp_int_hash != mdp_int_hash)
-			{
-				throw DynaPlex::Error("Error in MDP->ToVector: It seems you tried to call with states not created by this MDP");
+			//add any generic policies like random. 
+			//ensure that when the client registers additional policies,
+			//they do not have a clash with the generic ones- give a custom warning.
+			if constexpr (DynaPlex::Concepts::HasRegisterPolicies<t_MDP>) {
+				mdp->RegisterPolicies(policy_registry);
 			}
-
-			// Cast to the specific StatesAdapter type and access the underlying data
-			const StatesAdapter<typename t_MDP::State>* statesAdapter = static_cast<const StatesAdapter<typename t_MDP::State>*>(states.get());
-			return statesAdapter->get();
 		}
-		std::vector<typename t_MDP::State>& ToVector(DynaPlex::States& states) const
+
+		//Defined in mdpadapter_tovector.h included below
+		const std::vector<State>& ToVector(const DynaPlex::States& states) const;		
+		std::vector<typename t_MDP::State>& ToVector(DynaPlex::States& states) const;
+
+		int64_t RandomAction(DynaPlex::RNG& rng) const
 		{
-			// Check that the states belong to this MDP
-			if (states->mdp_int_hash != mdp_int_hash)
-			{
-				throw DynaPlex::Error("Error in MDP->ToVector: It seems you tried to call with states not created by this MDP");
-			}
-			// Cast to the specific StatesAdapter type and access the underlying data
-			StatesAdapter<typename t_MDP::State>* statesAdapter = static_cast<StatesAdapter<typename t_MDP::State>*>(states.get());
-			return statesAdapter->get();
+			throw "not yet implemented";
 		}
 
 		std::string Identifier() const override
@@ -59,19 +66,14 @@ namespace DynaPlex::Erasure
 
 		DynaPlex::VarGroup GetStaticInfo() const override
 		{
-			if constexpr (DynaPlex::Concepts::HasGetStaticInfo<t_MDP>)
-			{
-				return model->GetStaticInfo();
-			}
-			else
-				throw DynaPlex::Error("MDP.GetStaticInfo in MDP: " + mdp_id + "\nMDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
+			return mdp->GetStaticInfo();
 		}
 
 		DynaPlex::States GetInitialStateVec(size_t NumStates) const override
 		{
 			if constexpr (DynaPlex::Concepts::HasGetInitialState<t_MDP>)
 			{
-				auto state = model->GetInitialState();
+				auto state = mdp->GetInitialState();
 				std::vector<State> statesVec(NumStates, state);
 				//adding hash to facilitates identifying this vector as coming from current MDP later on. 			
 				return std::make_unique<StatesAdapter<State>>(std::move(statesVec), mdp_int_hash);
@@ -97,14 +99,30 @@ namespace DynaPlex::Erasure
 				for (auto& state : statesVec)
 				{
 					int64_t action = 123;
-					model->ModifyStateWithAction(state, action);
+					mdp->ModifyStateWithAction(state, action);
 				}
 			}
 			else
 				throw DynaPlex::Error("MDP.IncorporateActions in MDP: " + mdp_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
 		}
 
+		DynaPlex::Policy GetPolicy(const std::string& id) const override
+		{
+			DynaPlex::VarGroup vars{};
+			vars.Add("id", id);
+			return GetPolicy(vars);
+		}
+
+		DynaPlex::Policy GetPolicy(const DynaPlex::VarGroup& varGroup) const override
+		{
+			return policy_registry.GetPolicy(mdp,varGroup,mdp_int_hash);
+		}
+
 	};
+
+
+#include "mdp_adapter_helpers/mdpadapter_tovector.h"
+
 
 }
 	

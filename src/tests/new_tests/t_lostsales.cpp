@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include "dynaplex/factories.h"
 #include "dynaplex/registry.h"
-#include "lostsales/lostsalesmdp.h"
 
 namespace DynaPlex::Tests {
 	
@@ -24,20 +23,25 @@ namespace DynaPlex::Tests {
 		}));
 
 
-		DynaPlex::Models::LostSales::MDP mdp(vars);
-
 
 		DynaPlex::MDP model;
-
+		DynaPlex::Policy policy;
 
 		ASSERT_NO_THROW(
 			model = DynaPlex::GetMDP(vars);
+		    policy = model->GetPolicy("basestock");
 		);
+
+
+
+		//auto policy2= model->GetPolicy("random");
+
 
 		const std::string prefix = "lost_sales";
 		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length())) ;
 
-		auto States = model->GetInitialStateVec(10);
+		auto States = model->GetInitialStateVec(1);
+
 
 		std::cout << model->ToVarGroup(States, 0).Dump() << std::endl;
 
