@@ -5,10 +5,11 @@
 #include "statesadapter.h"
 #include "dynaplex/policy.h"
 #include "mdp_adapter_helpers/mdpadapter_concepts.h"
+#include "mdp_adapter_helpers/randompolicy.h"
+
 #include "policyregistry.h"
 #include "dynaplex/rng.h"
 #include "dynaplex/vargroup.h"
-#include "mdp_adapter_helpers/actioniterator.h"
 
 namespace DynaPlex::Erasure
 {
@@ -45,6 +46,7 @@ namespace DynaPlex::Erasure
 			//add any generic policies like random. 
 			//ensure that when the client registers additional policies,
 			//they do not have a clash with the generic ones- give a custom warning.
+			policy_registry.Register<Helpers::RandomPolicy<t_MDP>>("random", "makes a random choice between the allowed actions");
 			if constexpr (DynaPlex::Concepts::HasRegisterPolicies<t_MDP>) {
 				mdp->RegisterPolicies(policy_registry);
 			}
