@@ -20,11 +20,34 @@ namespace DynaPlex {
         explicit StateCategory(uint64_t state) : state(state) {}
 
     public:
-        // Static constructors
-        static StateCategory AwaitAction() {
-            return StateCategory(AWAIT_ACTION);
-        }
 
+            static StateCategory AwaitAction() {
+                return StateCategory(AWAIT_ACTION);
+            }
+
+            static StateCategory AwaitAction(int64_t index) {
+                if (index < 0)
+                {
+                    throw DynaPlex::Error("StateCategory: Negative index not allowed");
+                }
+                return StateCategory(AWAIT_ACTION | index);
+            }
+
+            static StateCategory AwaitEvent(int64_t index) {
+                if (index < 0)
+                {
+                    throw DynaPlex::Error("StateCategory: Negative index not allowed");
+                }
+                return StateCategory(AWAIT_EVENT | index);
+            }
+            static StateCategory AwaitEvent() {
+                return StateCategory(AWAIT_EVENT);
+            }
+
+            static StateCategory Final() {
+                return StateCategory(FINAL);
+            }
+       
 
         VarGroup ToVarGroup() const {
             VarGroup vg{};
@@ -66,30 +89,6 @@ namespace DynaPlex {
         }
 
 
-        static StateCategory AwaitAction(int64_t index) {
-            if (index < 0)
-            {
-                throw DynaPlex::Error("StateCategory: Negative index not allowed");
-            }
-            return StateCategory(AWAIT_ACTION | index);
-        }
-
-        static StateCategory AwaitEvent(int64_t index) {
-            if (index < 0)
-            {
-                throw DynaPlex::Error("StateCategory: Negative index not allowed");
-            }
-            return StateCategory(AWAIT_EVENT | index);
-        }
-        static StateCategory AwaitEvent() {
-            return StateCategory(AWAIT_EVENT);
-        }
-
-        static StateCategory Final() {
-            return StateCategory(FINAL);
-        }
-
-        // Queries
         bool IsAwaitAction() const {
             return (state & (0x3ULL << 60)) == AWAIT_ACTION;
         }

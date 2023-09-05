@@ -4,7 +4,7 @@
 #include "dynaplex/rng.h"
 #include "dynaplex/statecategory.h"
 #include "dynaplex/features.h"
-
+#include "dynaplex/policyregistry.h"
 namespace DynaPlex {
 	template <typename MDPType>
 	class PolicyRegistry; // Forward declaration

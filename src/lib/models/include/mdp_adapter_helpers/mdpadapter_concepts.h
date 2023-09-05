@@ -1,10 +1,21 @@
 #pragma once
 #include <type_traits>
-
 #include "dynaplex/vargroup.h"
 #include "dynaplex/policyregistry.h"
+#include "dynaplex/statecategory.h"
 namespace DynaPlex::Concepts
 {
+	template <typename T>
+	concept HasIsAllowedAction = requires(const T mdp, const typename T::State state, int64_t action)
+	{
+		{ mdp.IsAllowedAction(state, action) } -> std::same_as<bool>;
+	};
+
+	template <typename T>
+	concept HasGetStateCategory = requires(const T mdp, const typename T::State state) {
+		{ mdp.GetStateCategory(state) } -> std::same_as<StateCategory>;
+	};
+
 	template<typename T>
 	concept HasState = requires{
 		typename T::State;

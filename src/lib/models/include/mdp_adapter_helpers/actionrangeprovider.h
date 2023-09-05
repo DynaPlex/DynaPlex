@@ -1,28 +1,39 @@
 #pragma once
+#include <concepts>
+#include "dynaplex/error.h"
+#include "mdpadapter_concepts.h"
+#include "dynaplex/statecategory.h"
+
 namespace DynaPlex::Erasure::Helpers
 {
-    template <typename T>
-    concept HasIsAllowedAction = requires(const T mdp, const typename T::State state, int64_t action)
-    {
-        { mdp.IsAllowedAction(state, action) } -> std::same_as<bool>;
-    };
+
 
     template<typename t_MDP>
-    class ActionRange;  // Forward declaration of ActionRange
+    inline bool IsAllowedAction(const t_MDP& mdp, const typename t_MDP::State& state, int64_t action)
+    {
+        if constexpr (DynaPlex::Concepts::HasIsAllowedAction<t_MDP>)
+        {
+            return mdp.IsAllowedAction(state, action);
+        }
+        return true;
+    }
+
+    template<typename t_MDP>
+    class ActionRange;  // Forward declaration
 
     template<typename t_MDP>
     class ActionIterator
     {
-        friend class ActionRange<t_MDP>;  // Allow ActionRange to directly access private members of ActionIterator
+        friend class ActionRange<t_MDP>;  
         using State = typename t_MDP::State;
-        const t_MDP& mdp_;
-        const State& state_;
+        const t_MDP& mdp;
+        const State& state;
         int64_t current_action;
         int64_t max_action;
 
     public:
         ActionIterator(const t_MDP& mdp, const State& state, int64_t current, int64_t max)
-            : mdp_(mdp), state_(state), current_action(current), max_action(max)
+            : mdp(mdp),state(state), current_action(current), max_action(max)
         {}
 
         int64_t operator*() const
@@ -35,23 +46,13 @@ namespace DynaPlex::Erasure::Helpers
             do
             {
                 ++current_action;
-            } while (current_action < max_action && !IsAllowedAction(current_action));
+            } while (current_action < max_action && !IsAllowedAction<t_MDP>(mdp,state,current_action));
             return *this;
         }
 
         bool operator!=(const ActionIterator& other) const
         {
             return current_action != other.current_action;
-        }
-
-    private:
-        bool IsAllowedAction(int64_t action) const
-        {
-            if constexpr (HasIsAllowedAction<t_MDP>)
-            {
-                return mdp_.IsAllowedAction(state_, action);
-            }
-            return true;
         }
     };
 
@@ -61,43 +62,71 @@ namespace DynaPlex::Erasure::Helpers
     public:
         using State = typename t_MDP::State;
 
-        ActionRange(const t_MDP& mdp, const State& state, int64_t max_action)
-            : mdp_(mdp), state_(state), max_action_(max_action)
-        {}
+        ActionRange(const t_MDP& mdp, const State& state,int64_t min_action, int64_t max_action)
+            : mdp(mdp), state(state), max_action(max_action)
+        {
+            first_action = min_action;
+            while (!IsAllowedAction<t_MDP>(mdp, state, first_action))
+            {
+                ++first_action;
+                if (first_action == max_action)
+                {
+                    std::string extra{};
+                    if constexpr (DynaPlex::Concepts::HasGetStateCategory<t_MDP>)
+                    {
+                        DynaPlex::StateCategory cat=mdp.GetStateCategory(state);
+                        if (!cat.IsAwaitAction())
+                        {
+                            extra += "\nNOTE: State is not AwaitAction.";
+                        }
+                    }
+                    
+                    throw DynaPlex::Error("ActionRange: State does not have a single valid action."+extra);
+                }
+            }        
+        }
 
         ActionIterator<t_MDP> begin() const
         {
-            return { mdp_, state_, 0, max_action_ };
+
+            return { mdp, state, first_action, max_action };
         }
 
         ActionIterator<t_MDP> end() const
         {
-            return { mdp_, state_, max_action_, max_action_ };
+            return { mdp, state, max_action, max_action };
         }
 
     private:
-        const t_MDP& mdp_;
-        const State& state_;
-        int64_t max_action_;
+        const t_MDP& mdp;
+        const State& state;
+        int64_t max_action;
+        int64_t first_action;
     };
 
     template<typename t_MDP>
     class ActionRangeProvider
     {
     public:
-        ActionRangeProvider(const t_MDP& mdp, const DynaPlex::VarGroup& vars)
-            : mdp_(mdp)
+        //takes a _non-owning_ reference to the mdp. 
+        ActionRangeProvider(const t_MDP& mdp)
+            : mdp(mdp)
         {
-            vars.Get("num_valid_actions", max_action_);
+            auto vars = mdp.GetStaticInfo();
+            //may become non-zero later
+            min_action = 0;
+            vars.Get("valid_actions", max_action);
         }
 
         ActionRange<t_MDP> operator()(const typename t_MDP::State& state) const
         {
-            return ActionRange<t_MDP>{ mdp_, state, max_action_ };
+            return ActionRange<t_MDP>{ mdp, state, min_action, max_action };
         }
 
     private:
-        const t_MDP& mdp_;
-        int64_t max_action_;
+        const t_MDP& mdp;
+
+        int64_t min_action;
+        int64_t max_action;
     };
 }

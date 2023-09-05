@@ -6,7 +6,6 @@
 #include "dynaplex/policy.h"
 #include "mdp_adapter_helpers/mdpadapter_concepts.h"
 #include "mdp_adapter_helpers/randompolicy.h"
-
 #include "policyregistry.h"
 #include "dynaplex/rng.h"
 #include "dynaplex/vargroup.h"
@@ -28,15 +27,16 @@ namespace DynaPlex::Erasure
 		std::shared_ptr<const t_MDP> mdp;
 		std::string mdp_id;
 		PolicyRegistry<t_MDP> policy_registry;
+		DynaPlex::Erasure::Helpers::ActionRangeProvider<t_MDP> provider;
 	public:
 		MDPAdapter(const DynaPlex::VarGroup& vars) :
 			mdp{ std::make_shared<const t_MDP>(vars) },
 			unique_id{ vars.UniqueIdentifier() },
 			mdp_int_hash{ vars.Int64Hash() },
 			mdp_id{ vars.Identifier() } ,
-			policy_registry{}
+			policy_registry{},
+			provider{*mdp.get() }
 		{
-			auto info = GetStaticInfo();
 
 			RegisterPolicies();
 		}
@@ -56,11 +56,23 @@ namespace DynaPlex::Erasure
 		const std::vector<State>& ToVector(const DynaPlex::States& states) const;		
 		std::vector<typename t_MDP::State>& ToVector(DynaPlex::States& states) const;
 
-		int64_t RandomAction(DynaPlex::RNG& rng) const
+		std::vector<int64_t> AllowedActions(const DynaPlex::States& dp_states, size_t index) const override
 		{
-			throw "not yet implemented";
+			auto& state = (ToVector(dp_states))[index];
+			int64_t count{ 0 };
+			for (int64_t action : provider(state))
+			{
+				count++;
+			}
+			std::vector<int64_t> vec;
+			vec.reserve(count);
+			for (int64_t action : provider(state))
+			{
+				vec.push_back(action);
+			}
+			return vec;
 		}
-
+		
 		std::string Identifier() const override
 		{
 			return unique_id;

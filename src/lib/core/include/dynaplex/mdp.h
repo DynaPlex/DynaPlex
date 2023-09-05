@@ -13,6 +13,8 @@ namespace DynaPlex
 		virtual DynaPlex::States GetInitialStateVec(size_t) const = 0;
 		virtual DynaPlex::VarGroup GetStaticInfo() const = 0;
 
+		virtual std::vector<int64_t> AllowedActions(const DynaPlex::States&, size_t index=0)const = 0;
+
 		virtual DynaPlex::VarGroup ToVarGroup(const DynaPlex::States&,size_t index=0) const= 0;
 		virtual void IncorporateActions(DynaPlex::States&) const = 0;
 

@@ -1,6 +1,5 @@
 #include "lostsalesmdp.h"
 #include "dynaplex/mdpregistrar.h"
-#include "dynaplex/policyregistry.h"
 #include "lostsalespolicies.h"
 
 namespace DynaPlex::Models {
@@ -10,7 +9,7 @@ namespace DynaPlex::Models {
 		VarGroup MDP::GetStaticInfo() const
 		{
 			VarGroup vars;		
-			vars.Add("num_valid_actions", MaxOrderSize + 1);
+			vars.Add("valid_actions", MaxOrderSize + 1);
 			vars.Add("num_features", leadtime);
 
 			//potentially add any stuff that was computed for diagnostics purposes

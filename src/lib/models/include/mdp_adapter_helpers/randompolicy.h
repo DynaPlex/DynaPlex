@@ -1,9 +1,9 @@
 #pragma once
-#include "dynaplex/rng.h";
-#include "mdpadapter_concepts.h";
-#include "actionrangeprovider.h";
-#include "memory";
-#include "dynaplex/vargroup.h";
+#include "dynaplex/rng.h"
+#include "mdpadapter_concepts.h"
+#include "actionrangeprovider.h"
+#include "memory"
+#include "dynaplex/vargroup.h"
 
 namespace DynaPlex::Erasure::Helpers
 {
@@ -11,15 +11,14 @@ namespace DynaPlex::Erasure::Helpers
 	class RandomPolicy
 	{
 		static_assert(DynaPlex::Concepts::HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
-
-		//	DynaPlex::ActionRangeProvider<t_MDP> provider;
+		//This is needed as somebody needs to own the mdp, and provider is non-owning. 
 		std::shared_ptr<const t_MDP> mdp;
+		DynaPlex::Erasure::Helpers::ActionRangeProvider<t_MDP> provider;
 	public:
 
-		RandomPolicy(std::shared_ptr<const t_MDP> mdp, const DynaPlex::VarGroup& varGroup)
-			:mdp{ mdp }//,
-			//	provider{mdp.get(),varGroup},
-
+		RandomPolicy(std::shared_ptr<const t_MDP> mdp_, const DynaPlex::VarGroup& varGroup)
+			:mdp{ mdp_ },
+		     provider{*mdp.get()}
 		{
 
 		}
@@ -28,32 +27,25 @@ namespace DynaPlex::Erasure::Helpers
 
 		int64_t GetAction(const State& state, DynaPlex::RNG& rng) const
 		{
-			/*auto numActions = adapter.NumValidActions(state);
-			size_t numAllowedActions{ 0 };
-			for (size_t action = 0; action < numActions; action++)
-			{
-				if (adapter.IsAllowedAction(state, action))
-				{
-					numAllowedActions++;
-				}
+			int64_t numAllowedActions;
+			for (const int64_t action:_provider(state))
+			{				
+				numAllowedActions++;				
 			}
 			if (numAllowedActions == 0)
 			{
 				throw DynaPlex::Error("RandomPolicy: Not a single action allowed.");
 			}
 			double budget = rng.genUniform() * numAllowedActions;
-			for (size_t action = 0; action < numActions; action++)
-			{
-				if (adapter.IsAllowedAction(state, action))
+			for (const int64_t action : provider(state))
+			{			
+				budget--;
+				if (budget <= 0.0)
 				{
-					budget--;
-					if (budget <= 0.0)
-					{
-						return action;
-					}
-				}
+					return action;
+				}			
 			}
-			throw DynaPlex::Error("RandomPolicy: Error in logic.");*/
+			throw DynaPlex::Error("RandomPolicy: Error in logic.");
 		}
 	};
 }
