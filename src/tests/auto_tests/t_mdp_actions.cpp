@@ -8,6 +8,7 @@
 #include "dynaplex/features.h"
 #include "dynaplex/modelling/discretedist.h"
 #include "dynaplex/mdp.h"
+#include  "dynaplex/state.h"
 
 namespace DynaPlex::Tests {
 
@@ -87,15 +88,15 @@ namespace DynaPlex::Tests {
 			vars.Add("initial_i", init);
 
 			auto mdp = DynaPlex::Erasure::MakeGenericMDP<AddOn::TestProblem::MDP>(vars);
-			DynaPlex::States states{ mdp->GetInitialStateVec(10) };
+			DynaPlex::State state{ mdp->GetInitialState() };
 
 			if (init == 0)
 			{
-				EXPECT_THROW({ mdp->AllowedActions(states, 0); }, DynaPlex::Error);
+				EXPECT_THROW({ mdp->AllowedActions(state); }, DynaPlex::Error);
 			}
 			else
 			{
-				std::vector<int64_t> actions = mdp->AllowedActions(states, 0);
+				std::vector<int64_t> actions = mdp->AllowedActions(state);
 				std::vector<int64_t> expected = { 0,2,4 };
 				if (init == 1)
 				{

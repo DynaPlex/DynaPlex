@@ -1,8 +1,8 @@
 #pragma once
 #include "dynaplex/mdp.h"
-#include "dynaplex/states.h"
+#include "dynaplex/state.h"
 #include "dynaplex/error.h"
-#include "statesadapter.h"
+#include "stateadapter.h"
 #include "dynaplex/policy.h"
 #include "mdp_adapter_helpers/mdpadapter_concepts.h"
 #include "mdp_adapter_helpers/randompolicy.h"
@@ -53,12 +53,13 @@ namespace DynaPlex::Erasure
 		}
 
 		//Defined in mdpadapter_tovector.h included below
-		const std::vector<State>& ToVector(const DynaPlex::States& states) const;		
-		std::vector<typename t_MDP::State>& ToVector(DynaPlex::States& states) const;
+		const State& ToState(const DynaPlex::State& state) const;		
+		State& ToState(DynaPlex::State& state) const;
 
-		std::vector<int64_t> AllowedActions(const DynaPlex::States& dp_states, size_t index) const override
+		std::vector<int64_t> AllowedActions(const DynaPlex::State& dp_state) const override
 		{
-			auto& state = (ToVector(dp_states))[index];
+			auto& state = ToState(dp_states);
+
 			int64_t count{ 0 };
 			for (int64_t action : provider(state))
 			{
@@ -83,38 +84,33 @@ namespace DynaPlex::Erasure
 			return mdp->GetStaticInfo();
 		}
 
-		DynaPlex::States GetInitialStateVec(size_t NumStates) const override
+		DynaPlex::State GetInitialState() const override
 		{
 			if constexpr (DynaPlex::Concepts::HasGetInitialState<t_MDP>)
 			{
-				auto state = mdp->GetInitialState();
-				std::vector<State> statesVec(NumStates, state);
 				//adding hash to facilitates identifying this vector as coming from current MDP later on. 			
-				return std::make_unique<StatesAdapter<State>>(std::move(statesVec), mdp_int_hash);
+				return std::make_unique<StateAdapter<State>>(mdp_int_hash,mdp->GetInitialState());
 			}
 			else
 				throw DynaPlex::Error("MDP.GetInitialStateVec in MDP: " + mdp_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
 		}
-		DynaPlex::VarGroup ToVarGroup(const DynaPlex::States& dp_states, size_t index) const override
+		DynaPlex::VarGroup ToVarGroup(const DynaPlex::State& dp_state) const override
 		{
 			if constexpr (DynaPlex::Concepts::ConvertibleToVarGroup<State>)
 			{
-				auto& states = ToVector(dp_states);
-				return states[index].ToVarGroup();
+				auto& state = ToState(dp_states);
+				return state.ToVarGroup();
 			}
 			else
-				throw DynaPlex::Error("MDP.ToVarGroup(StateVec,...) in MDP: " + mdp_id + "\nState is not ConvertibleToVarGroup.");
+				throw DynaPlex::Error("MDP.ToVarGroup(DynaPlex::State) in MDP: " + mdp_id + "\nState is not ConvertibleToVarGroup.");
 		}
-		void IncorporateActions(DynaPlex::States& states) const override
+		void IncorporateActions(DynaPlex::State& states) const override
 		{
 			if constexpr (DynaPlex::Concepts::HasModifyStateWithAction<t_MDP>)
 			{
-				auto& statesVec = ToVector(states);
-				for (auto& state : statesVec)
-				{
-					int64_t action = 123;
-					mdp->ModifyStateWithAction(state, action);
-				}
+				auto& state = ToState(dp_states);
+				int64_t action = 123;
+				mdp->ModifyStateWithAction(state, action);
 			}
 			else
 				throw DynaPlex::Error("MDP.IncorporateActions in MDP: " + mdp_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
@@ -135,7 +131,7 @@ namespace DynaPlex::Erasure
 	};
 
 
-#include "mdp_adapter_helpers/mdpadapter_tovector.h"
+#include "mdp_adapter_helpers/mdpadapter_tostate.h"
 
 
 }
