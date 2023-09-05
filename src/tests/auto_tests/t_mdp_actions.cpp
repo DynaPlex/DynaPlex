@@ -88,7 +88,7 @@ namespace DynaPlex::Tests {
 			vars.Add("initial_i", init);
 
 			auto mdp = DynaPlex::Erasure::MakeGenericMDP<AddOn::TestProblem::MDP>(vars);
-			DynaPlex::State state{ mdp->GetInitialState() };
+			DynaPlex::dp_State state{ mdp->GetInitialState() };
 
 			if (init == 0)
 			{

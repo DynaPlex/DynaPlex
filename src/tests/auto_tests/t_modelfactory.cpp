@@ -32,7 +32,7 @@ namespace DynaPlex::Tests {
 		const std::string prefix = "lost_sales";
 		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length())) ;
 
-		auto States = model->GetInitialStateVec(10);
+		auto State = model->GetInitialState();
 
 		DynaPlex::VarGroup policyvars{ {"id","basestock"} };
 

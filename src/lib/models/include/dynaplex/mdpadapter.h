@@ -13,12 +13,12 @@
 namespace DynaPlex::Erasure
 {
 	template<typename t_MDP>
-	class MDPAdapter : public MDPInterface
+	class MDPAdapter final : public MDPInterface
 	{
 		static_assert(DynaPlex::Concepts::HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
 		static_assert(DynaPlex::Concepts::ConvertibleFromVarGroup<t_MDP>, "MDP must define public constructor with const VarGroup& parameter");
 		static_assert(DynaPlex::Concepts::HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
-		using State = typename t_MDP::State;
+		using t_State = typename t_MDP::State;
 
 
 		
@@ -53,12 +53,14 @@ namespace DynaPlex::Erasure
 		}
 
 		//Defined in mdpadapter_tovector.h included below
-		const State& ToState(const DynaPlex::State& state) const;		
-		State& ToState(DynaPlex::State& state) const;
+		//const t_State& ToState(const DynaPlex::dp_State& state) const;		
+		void ToState(const DynaPlex::dp_State& state) const;
 
-		std::vector<int64_t> AllowedActions(const DynaPlex::State& dp_state) const override
+		std::vector<int64_t> AllowedActions(const DynaPlex::dp_State& dp_state) const override
 		{
-			auto& state = ToState(dp_states);
+			//auto& state = ToState(dp_state);
+			t_State state = mdp->GetInitialState();
+
 
 			int64_t count{ 0 };
 			for (int64_t action : provider(state))
@@ -84,31 +86,35 @@ namespace DynaPlex::Erasure
 			return mdp->GetStaticInfo();
 		}
 
-		DynaPlex::State GetInitialState() const override
+		DynaPlex::dp_State GetInitialState() const override
 		{
 			if constexpr (DynaPlex::Concepts::HasGetInitialState<t_MDP>)
 			{
-				//adding hash to facilitates identifying this vector as coming from current MDP later on. 			
-				return std::make_unique<StateAdapter<State>>(mdp_int_hash,mdp->GetInitialState());
+				//adding hash to facilitates identifying this vector as coming from current MDP later on.
+				t_State state = mdp->GetInitialState();
+				return std::make_unique<StateAdapter<t_State>>(mdp_int_hash,state);
 			}
 			else
 				throw DynaPlex::Error("MDP.GetInitialStateVec in MDP: " + mdp_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
 		}
-		DynaPlex::VarGroup ToVarGroup(const DynaPlex::State& dp_state) const override
+		DynaPlex::VarGroup ToVarGroup(const DynaPlex::dp_State& dp_state) const override
 		{
-			if constexpr (DynaPlex::Concepts::ConvertibleToVarGroup<State>)
+			if constexpr (DynaPlex::Concepts::ConvertibleToVarGroup<t_State>)
 			{
-				auto& state = ToState(dp_states);
+				//auto& state = ToState(dp_state);
+				t_State state = mdp->GetInitialState();
 				return state.ToVarGroup();
 			}
 			else
 				throw DynaPlex::Error("MDP.ToVarGroup(DynaPlex::State) in MDP: " + mdp_id + "\nState is not ConvertibleToVarGroup.");
 		}
-		void IncorporateActions(DynaPlex::State& states) const override
+		void IncorporateAction(DynaPlex::dp_State& dp_state) const override
 		{
 			if constexpr (DynaPlex::Concepts::HasModifyStateWithAction<t_MDP>)
 			{
-				auto& state = ToState(dp_states);
+				//auto& state = ToState(dp_state);
+				t_State state = mdp->GetInitialState(); 
+
 				int64_t action = 123;
 				mdp->ModifyStateWithAction(state, action);
 			}

@@ -40,17 +40,17 @@ namespace DynaPlex::Tests {
 		const std::string prefix = "lost_sales";
 		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length())) ;
 
-		auto States = model->GetInitialStateVec(1);
+		auto State = model->GetInitialState();
 
 
-		std::cout << model->ToVarGroup(States, 0).Dump() << std::endl;
+		std::cout << model->ToVarGroup(State).Dump() << std::endl;
 
 
 
-		model->IncorporateActions(States);
-		std::cout << model->ToVarGroup(States, 0).Dump() << std::endl;
-		model->IncorporateActions(States);
-		std::cout << model->ToVarGroup(States, 0).Dump() << std::endl;
+		model->IncorporateAction(State);
+		std::cout << model->ToVarGroup(State).Dump() << std::endl;
+		model->IncorporateAction(State);
+		std::cout << model->ToVarGroup(State).Dump() << std::endl;
 		std::cout << model->GetStaticInfo().Dump() << std::endl;
 
 	}

@@ -2,16 +2,16 @@
 
 namespace DynaPlex::Erasure {
 
-    template <typename State>
+    template <typename t_State>
     class StateAdapter : public StateBase {
-
-        State state;
-        StateAdapter(int64_t hash_value, const State& s)
+    public:
+        t_State state;
+        StateAdapter(int64_t hash_value, const t_State& s)
             : StateBase(hash_value), 
             state(s) 
         {
         }      
-        virtual std::unique_ptr<StateBase> Clone() const override {
+        std::unique_ptr<StateBase> Clone() const override {
             return std::make_unique<StateAdapter>(*this);
         }
     };
