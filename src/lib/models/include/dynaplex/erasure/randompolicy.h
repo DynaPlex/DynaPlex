@@ -1,28 +1,27 @@
 #pragma once
-#include "dynaplex/rng.h"
-#include "mdpadapter_concepts.h"
-#include "actionrangeprovider.h"
 #include "memory"
+#include "dynaplex/rng.h"
 #include "dynaplex/vargroup.h"
+#include "erasure_concepts.h"
+#include "actionrangeprovider.h"
 
-namespace DynaPlex::Erasure::Helpers
+
+namespace DynaPlex::Erasure
 {
 	template <class t_MDP>
 	class RandomPolicy
 	{
-		static_assert(DynaPlex::Concepts::HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
+		static_assert(HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
 		//This is needed as somebody needs to own the mdp, and provider is non-owning. 
 		std::shared_ptr<const t_MDP> mdp;
-		DynaPlex::Erasure::Helpers::ActionRangeProvider<t_MDP> provider;
+		DynaPlex::Erasure::ActionRangeProvider<t_MDP> provider;
 	public:
 
 		RandomPolicy(std::shared_ptr<const t_MDP> mdp_, const DynaPlex::VarGroup& varGroup)
 			:mdp{ mdp_ },
 		     provider{*mdp.get()}
 		{
-
 		}
-
 		using State = t_MDP::State;
 
 		int64_t GetAction(const State& state, DynaPlex::RNG& rng) const

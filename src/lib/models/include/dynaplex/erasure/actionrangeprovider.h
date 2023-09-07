@@ -1,17 +1,17 @@
 #pragma once
 #include <concepts>
 #include "dynaplex/error.h"
-#include "mdpadapter_concepts.h"
 #include "dynaplex/statecategory.h"
+#include "erasure_concepts.h"
 
-namespace DynaPlex::Erasure::Helpers
+namespace DynaPlex::Erasure
 {
 
 
     template<typename t_MDP>
     inline bool IsAllowedAction(const t_MDP& mdp, const typename t_MDP::State& state, int64_t action)
     {
-        if constexpr (DynaPlex::Concepts::HasIsAllowedAction<t_MDP>)
+        if constexpr (HasIsAllowedAction<t_MDP>)
         {
             return mdp.IsAllowedAction(state, action);
         }
@@ -72,7 +72,7 @@ namespace DynaPlex::Erasure::Helpers
                 if (first_action == max_action)
                 {
                     std::string extra{};
-                    if constexpr (DynaPlex::Concepts::HasGetStateCategory<t_MDP>)
+                    if constexpr (HasGetStateCategory<t_MDP>)
                     {
                         DynaPlex::StateCategory cat=mdp.GetStateCategory(state);
                         if (!cat.IsAwaitAction())

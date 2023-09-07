@@ -1,31 +1,45 @@
 #pragma once
+#include "dynaplex/vargroup.h"
+#include "dynaplex/error.h"
+#include "dynaplex/rng.h"
 #include "dynaplex/mdp.h"
 #include "dynaplex/state.h"
-#include "dynaplex/error.h"
-#include "dynaplex/stateadapter.h"
 #include "dynaplex/policy.h"
-#include "dynaplex/mdp_adapter_helpers/mdpadapter_concepts.h"
-#include "dynaplex/mdp_adapter_helpers/randompolicy.h"
-#include "dynaplex/policyregistry.h"
-#include "dynaplex/rng.h"
-#include "dynaplex/vargroup.h"
+
+#include "erasure_concepts.h"
+#include "randompolicy.h"
+#include "policyregistry.h"
+#include "stateadapter.h"
+
 
 namespace DynaPlex::Erasure
 {
 	template<typename t_MDP>
 	class MDPAdapter final : public MDPInterface
 	{
-		static_assert(DynaPlex::Concepts::HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
 		static_assert(DynaPlex::Concepts::ConvertibleFromVarGroup<t_MDP>, "MDP must define public constructor with const VarGroup& parameter");
-		static_assert(DynaPlex::Concepts::HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
+		static_assert(HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
+		static_assert(HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
 		using t_State = typename t_MDP::State;
 
 		std::string unique_id;
 		int64_t mdp_int_hash;
 		std::shared_ptr<const t_MDP> mdp;
 		std::string mdp_id;
-		DynaPlex::PolicyRegistry<t_MDP> policy_registry;
-		DynaPlex::Erasure::Helpers::ActionRangeProvider<t_MDP> provider;
+		PolicyRegistry<t_MDP> policy_registry;
+		ActionRangeProvider<t_MDP> provider;
+
+		//Registers the policies with the internal registry:
+		void RegisterPolicies()
+		{
+			//Register built-in policies
+			policy_registry.Register<RandomPolicy<t_MDP>>("random", "makes a random choice between the allowed actions");
+			//register client-provided policies. 
+			if constexpr (HasRegisterPolicies<t_MDP, PolicyRegistry<t_MDP>>) {
+				mdp->RegisterPolicies(policy_registry);
+			}
+		}
+
 	public:
 		MDPAdapter(const DynaPlex::VarGroup& vars) :
 			mdp{ std::make_shared<const t_MDP>(vars) },
@@ -36,19 +50,7 @@ namespace DynaPlex::Erasure
 			provider{ *mdp.get() }
 		{
 			RegisterPolicies();
-		}
-
-
-		//Registers the policies with the internal registry:
-		void RegisterPolicies()
-		{
-			//Register built-in policies
-			policy_registry.Register<Helpers::RandomPolicy<t_MDP>>("random", "makes a random choice between the allowed actions");
-			//register client-provided policies. 
-//			if constexpr (DynaPlex::Concepts::HasRegisterPolicies<t_MDP>) {
-			//	mdp->RegisterPolicies(policy_registry);
-	//		}
-		}
+		}		
 
 		//Defined in mdpadapter_tostate.h included below
 		const t_State& ToState(const DynaPlex::dp_State& state) const;		
@@ -78,16 +80,16 @@ namespace DynaPlex::Erasure
 
 		DynaPlex::VarGroup GetStaticInfo() const override
 		{
-			//Note: Is guaranteed to exist by static_assert:
+			//guaranteed to exist by static_assert:
 			return mdp->GetStaticInfo();
 		}
 
 		DynaPlex::dp_State GetInitialState() const override
 		{
-			if constexpr (DynaPlex::Concepts::HasGetInitialState<t_MDP>)
+			if constexpr (HasGetInitialState<t_MDP>)
 			{
 				t_State state = mdp->GetInitialState();
-				//adding hash to facilitates identifying this vector as coming from current MDP later on.
+				//adding hash to facilitate identifying this state as coming from current MDP later on.
 				return std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state);
 			}
 			else
@@ -105,7 +107,7 @@ namespace DynaPlex::Erasure
 		}
 		void IncorporateAction(DynaPlex::dp_State& dp_state) const override
 		{
-			if constexpr (DynaPlex::Concepts::HasModifyStateWithAction<t_MDP>)
+			if constexpr (HasModifyStateWithAction<t_MDP>)
 			{
 				auto& state = ToState(dp_state);
 				int64_t action = 123;
@@ -115,6 +117,11 @@ namespace DynaPlex::Erasure
 				throw DynaPlex::Error("MDP.IncorporateActions in MDP: " + mdp_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
 		}
 
+
+		DynaPlex::VarGroup ListPolicies() const override
+		{
+			return policy_registry.ListPolicies();
+		}
 
 		DynaPlex::Policy GetPolicy(const std::string& id) const override
 		{
@@ -132,7 +139,7 @@ namespace DynaPlex::Erasure
 
 }
 
-#include "mdp_adapter_helpers/mdpadapter_tostate.h"
+#include "mdpadapter_tostate.h"
 
 
 

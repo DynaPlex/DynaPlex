@@ -51,6 +51,10 @@ namespace DynaPlex
 		 */
 		virtual DynaPlex::Policy GetPolicy(const std::string& id) const = 0;
 
+		/// Lists policies that can be obtained for this MDP
+		virtual DynaPlex::VarGroup ListPolicies() const = 0;
+
+
 		virtual ~MDPInterface() = default;
 	};
 	using MDP = std::shared_ptr<MDPInterface>;

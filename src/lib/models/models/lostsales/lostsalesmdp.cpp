@@ -1,5 +1,5 @@
 #include "lostsalesmdp.h"
-#include "dynaplex/mdpregistrar.h"
+#include "dynaplex/erasure/mdpregistrar.h"
 #include "lostsalespolicies.h"
 
 namespace DynaPlex::Models {
@@ -92,7 +92,7 @@ namespace DynaPlex::Models {
 		}
 		
 
-		void MDP::RegisterPolicies(DynaPlex::PolicyRegistry<MDP>& registry) const
+		void MDP::RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const
 		{//Here, we register any custom heuristics we want to provide for this MDP.	
 		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
 		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
@@ -108,7 +108,7 @@ namespace DynaPlex::Models {
 		}
 
 
-		DynaPlex::StateCategory MDP::GetStateCategory(const State& state) const
+		const DynaPlex::StateCategory& MDP::GetStateCategory(const State& state) const
 		{
 			return state.cat;
 		}
@@ -123,6 +123,6 @@ namespace DynaPlex::Models {
 	}
 
 	//static registrar (only in .cpp file): includes (a generic version of this) MDP in the central registry, such that DynaPlex::GetMDP can locate it 
-	static MDPRegistrar<LostSales::MDP> registrar(/*id*/"lost_sales",/*optional brief description*/ "Canonical lost sales problem.");
+	static DynaPlex::Erasure::MDPRegistrar<LostSales::MDP> registrar(/*id*/"lost_sales",/*optional brief description*/ "Canonical lost sales problem.");
 }
 

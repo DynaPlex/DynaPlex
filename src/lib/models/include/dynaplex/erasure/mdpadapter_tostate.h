@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
-#include "dynaplex/state.h"
-#include "dynaplex/stateadapter.h"
-#include "dynaplex/mdpadapter.h"
 #include "dynaplex/error.h"
+#include "dynaplex/state.h"
+#include "stateadapter.h"
+#include "mdpadapter.h"
 
 namespace DynaPlex::Erasure
 {

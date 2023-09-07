@@ -1,10 +1,9 @@
 #pragma once
 #include <type_traits>
 #include "dynaplex/vargroup.h"
-#include "dynaplex/policyregistry.h"
 #include "dynaplex/statecategory.h"
 #include "dynaplex/rng.h"
-namespace DynaPlex::Concepts
+namespace DynaPlex::Erasure
 {
 	template <typename T>
 	concept HasIsAllowedAction = requires(const T mdp, const typename T::State state, int64_t action)
@@ -12,9 +11,9 @@ namespace DynaPlex::Concepts
 		{ mdp.IsAllowedAction(state, action) } -> std::same_as<bool>;
 	};
 
-	template <typename T>
-	concept HasGetStateCategory = requires(const T mdp, const typename T::State state) {
-		{ mdp.GetStateCategory(state) } -> std::same_as<StateCategory>;
+	template<typename T>
+	concept HasGetStateCategory = requires(T a, const typename T::State & s) {
+		{ a.GetStateCategory(s) } -> std::same_as<const StateCategory&>;
 	};
 
 	template<typename T>
@@ -22,10 +21,10 @@ namespace DynaPlex::Concepts
 		typename T::State;
 	};
 
-//	template <typename T>
-//	concept HasRegisterPolicies = requires(T t, DynaPlex::PolicyRegistry<T>& registry) {
-//		{ t.RegisterPolicies(registry) } -> std::same_as<void>;
-//	};
+	template <typename T,typename Registry>
+	concept HasRegisterPolicies = requires(T t, Registry& registry) {
+		{ t.RegisterPolicies(registry) } -> std::same_as<void>;
+	};
 
 	template<typename T>
 	concept HasStateConvertibleToVarGroup = requires{

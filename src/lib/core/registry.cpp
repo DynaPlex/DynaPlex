@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <sstream>
 
-namespace DynaPlex::Models {
+namespace DynaPlex {
 
     void Registry::Register(const std::string& identifier, const std::string& description, MDPFactoryFunction func) {
         auto& registry = GetRegistry();

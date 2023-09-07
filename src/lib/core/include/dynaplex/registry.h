@@ -6,7 +6,7 @@
 #include "dynaplex/vargroup.h"
 #include "dynaplex/mdp.h"
 
-namespace DynaPlex::Models {
+namespace DynaPlex {
 
     using MDPFactoryFunction = std::function<DynaPlex::MDP(const DynaPlex::VarGroup&)>;
     struct MDPEntry {

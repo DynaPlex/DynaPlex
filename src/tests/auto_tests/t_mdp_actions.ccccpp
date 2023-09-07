@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include "dynaplex/vargroup.h"
-#include "dynaplex/makegeneric.h"
+#include "dynaplex/erasure/makegeneric.h"
 #include "dynaplex/error.h"
 #include <gtest/gtest.h>
 #include "dynaplex/rng.h"

@@ -4,11 +4,9 @@
 #include "dynaplex/rng.h"
 #include "dynaplex/statecategory.h"
 #include "dynaplex/features.h"
-#include "dynaplex/policyregistry.h"
-namespace DynaPlex {
-	template <typename MDPType>
-	class PolicyRegistry; // Forward declaration
-} // namespace DynaPlex
+//#include "dynaplex/policyregistry.h"
+
+namespace DynaPlex::Erasure { template <typename MDPType> class PolicyRegistry; }// Forward declaration 
 
 namespace DynaPlex::Models {
 	namespace LostSales /*keep this in line with id below*/
@@ -46,7 +44,7 @@ namespace DynaPlex::Models {
 
 			DynaPlex::VarGroup GetStaticInfo() const;
 
-			DynaPlex::StateCategory GetStateCategory(const State&) const;
+			const DynaPlex::StateCategory& GetStateCategory(const State&) const;
 			bool IsAllowedAction(const State& state, int64_t action) const;
 
 
@@ -56,7 +54,7 @@ namespace DynaPlex::Models {
 
 			State GetInitialState() const;
 
-			void RegisterPolicies(PolicyRegistry<MDP>& registry) const;
+			void RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const;
 
 			void GetFeatures(const State&, Features&) const;
 
