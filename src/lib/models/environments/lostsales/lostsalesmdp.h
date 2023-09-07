@@ -25,8 +25,6 @@ namespace DynaPlex::Models {
 			int64_t MaxSystemInv;
 			DynaPlex::DiscreteDist demand_dist;
 		public:
-		
-
 			using Event = int64_t;
 			struct State {
 				DynaPlex::StateCategory cat;
@@ -42,15 +40,17 @@ namespace DynaPlex::Models {
 					return vars;
 				}
 			};
+			double ModifyStateWithAction(State&, int64_t action) const;
+			double ModifyStateWithEvent(State&, const Event&) const;
+			Event GetEvent(DynaPlex::RNG& rng) const;
+
 			DynaPlex::VarGroup GetStaticInfo() const;
 
 			DynaPlex::StateCategory GetStateCategory(const State&) const;
 			bool IsAllowedAction(const State& state, int64_t action) const;
 
 
-			double ModifyStateWithAction(State&, int64_t action) const;
-			double ModifyStateWithEvent(State&, const Event&) const;
-			Event GetEvent(DynaPlex::RNG& rng) const;
+
 
 			void GetFeatures(State&,DynaPlex::Features&);
 

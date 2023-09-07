@@ -11,8 +11,6 @@ namespace DynaPlex::Tests {
 	TEST(ModelFactory, SimpleGet) {
 		DynaPlex::VarGroup vars;
 
-
-
 		vars.Add("id", "lost_sales");
 		vars.Add("p", 9.0);
 		vars.Add("h", 1.0);
@@ -40,6 +38,7 @@ namespace DynaPlex::Tests {
 		ASSERT_NO_THROW(
 			policy = model->GetPolicy(policyvars);
 		);
+
 		EXPECT_EQ(policy->Identifier(), "basestock");
 
 	}

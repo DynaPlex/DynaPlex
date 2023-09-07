@@ -1,5 +1,4 @@
 #pragma once
-#include "dynaplex/statecontext.h"
 #include <memory>
 
 namespace DynaPlex {

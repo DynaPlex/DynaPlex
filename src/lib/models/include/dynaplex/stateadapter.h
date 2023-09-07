@@ -1,9 +1,10 @@
+#pragma once
 #include "dynaplex/state.h"
 
 namespace DynaPlex::Erasure {
 
     template <typename t_State>
-    class StateAdapter : public StateBase {
+    class StateAdapter final : public StateBase {
     public:
         t_State state;
         StateAdapter(int64_t hash_value, const t_State& s)

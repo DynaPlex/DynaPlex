@@ -1,8 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "dynaplex/states.h"
-#include "dynaplex/statecontext.h"
+#include "dynaplex/trajectory.h"
 #include "vargroup.h"
 namespace DynaPlex
 {
@@ -11,7 +10,7 @@ namespace DynaPlex
 	public:
 		virtual std::string Identifier() const = 0;
 
-		virtual void SetActions(const DynaPlex::States& states, std::vector<StateContext>& context) const = 0;
+		virtual void SetActions(std::vector<Trajectory>&) const = 0;
 
 
 	};

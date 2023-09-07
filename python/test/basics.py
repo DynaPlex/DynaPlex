@@ -3,7 +3,6 @@ import sys
 import re
 import pytest
 
-# Same path modification as your code
 parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_directory)
 from dp.loader import DynaPlex as dp
