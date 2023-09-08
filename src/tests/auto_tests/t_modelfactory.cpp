@@ -1,14 +1,15 @@
 ﻿#include "dynaplex/vargroup.h"
 #include "dynaplex/error.h"
 #include <gtest/gtest.h>
-#include "dynaplex/factories.h"
-#include "dynaplex/registry.h"
-
+#include "dynaplex/provider.h"
 
 namespace DynaPlex::Tests {
 	
 
 	TEST(ModelFactory, SimpleGet) {
+		DynaPlex::Provider provider{};
+
+		
 		DynaPlex::VarGroup vars;
 
 		vars.Add("id", "lost_sales");
@@ -24,7 +25,7 @@ namespace DynaPlex::Tests {
 
 
 		ASSERT_NO_THROW(
-			model = DynaPlex::GetMDP(vars);
+			model = provider.GetMDP(vars);
 		);
 
 		const std::string prefix = "lost_sales";
@@ -46,6 +47,8 @@ namespace DynaPlex::Tests {
 
 
 	TEST(ModelFactory, FailGet) {
+		DynaPlex::Provider provider{};
+
 		DynaPlex::VarGroup vars;
 
 
@@ -57,7 +60,7 @@ namespace DynaPlex::Tests {
 		DynaPlex::MDP model;
 
 		ASSERT_THROW(
-			model = DynaPlex::GetMDP(vars), DynaPlex::Error
+			model = provider.GetMDP(vars), DynaPlex::Error
 		);
 
 	}

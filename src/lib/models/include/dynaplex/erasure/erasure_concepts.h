@@ -13,7 +13,7 @@ namespace DynaPlex::Erasure
 
 	template<typename T>
 	concept HasGetStateCategory = requires(T a, const typename T::State & s) {
-		{ a.GetStateCategory(s) } -> std::same_as<const StateCategory&>;
+		{ a.GetStateCategory(s) } -> std::same_as<StateCategory>;
 	};
 
 	template<typename T>

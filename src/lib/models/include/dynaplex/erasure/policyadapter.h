@@ -23,7 +23,7 @@ namespace DynaPlex::Erasure
 	class PolicyAdapter final : public PolicyInterface
 	{
 		static_assert(HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
-		static_assert(HasGetStateCategory<t_MDP>, "MDP must publicly define a function GetStateCategory(const MDP::State&) that returns a StateCategory");
+		static_assert(HasGetStateCategory<t_MDP>, "MDP must publicly define a function GetStateCategory(const MDP::State) that returns a StateCategory");
 		using t_State = t_MDP::State;
 
 		static_assert(HasGetAction<t_Policy, t_State> ^ HasGetActionRNG<t_Policy, t_State> ,

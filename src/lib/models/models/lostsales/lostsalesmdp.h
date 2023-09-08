@@ -44,7 +44,7 @@ namespace DynaPlex::Models {
 
 			DynaPlex::VarGroup GetStaticInfo() const;
 
-			const DynaPlex::StateCategory& GetStateCategory(const State&) const;
+			DynaPlex::StateCategory GetStateCategory(const State&) const;
 			bool IsAllowedAction(const State& state, int64_t action) const;
 
 

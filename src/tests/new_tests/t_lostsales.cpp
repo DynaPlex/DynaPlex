@@ -1,13 +1,13 @@
 ﻿#include "dynaplex/vargroup.h"
 #include "dynaplex/error.h"
 #include <gtest/gtest.h>
-#include "dynaplex/factories.h"
-#include "dynaplex/registry.h"
+#include "dynaplex/provider.h"
 
 namespace DynaPlex::Tests {
 	
 
 	TEST(LostSales, Basics) {
+		DynaPlex::Provider provider;
 		DynaPlex::VarGroup vars;
 
 
@@ -27,11 +27,14 @@ namespace DynaPlex::Tests {
 		DynaPlex::MDP model;
 		DynaPlex::Policy policy;
 
+		std::cout << provider.ListMDPs().Dump(2) << std::endl;
+
 		ASSERT_NO_THROW(
-			model = DynaPlex::GetMDP(vars);
+			model = provider.GetMDP(vars);
 		    policy = model->GetPolicy("basestock");
 		);
 
+		std::cout<<model->ListPolicies().Dump(2) << std::endl;
 
 
 		//auto policy2= model->GetPolicy("random");

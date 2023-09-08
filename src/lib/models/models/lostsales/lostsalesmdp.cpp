@@ -97,7 +97,7 @@ namespace DynaPlex::Models {
 		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
 		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
 		 //to the corresponding id given below.
-			registry.Register<BaseStockPolicy>("basestock");
+			registry.Register<BaseStockPolicy>("basestock","Base-stock policy with fixed, non-adjustable base-stock level equal to the bound on system inventory discussed in Zipkin (2008) ");
 		}
 
 	
@@ -108,7 +108,7 @@ namespace DynaPlex::Models {
 		}
 
 
-		const DynaPlex::StateCategory& MDP::GetStateCategory(const State& state) const
+		DynaPlex::StateCategory MDP::GetStateCategory(const State& state) const
 		{
 			return state.cat;
 		}
@@ -120,9 +120,15 @@ namespace DynaPlex::Models {
 			}
 			return false;
 		}
-	}
 
-	//static registrar (only in .cpp file): includes (a generic version of this) MDP in the central registry, such that DynaPlex::GetMDP can locate it 
-	static DynaPlex::Erasure::MDPRegistrar<LostSales::MDP> registrar(/*id*/"lost_sales",/*optional brief description*/ "Canonical lost sales problem.");
+
+		void Register(DynaPlex::Registry& registry)
+		{
+			DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel(
+				/*id though which the MDP will be retrievable*/ "lost_sales",
+				/*description*/ "Canonical lost sales problem, see e.g. Zipkin (2008) for a formal description. (parameters: p, h, leadtime, demand_dist.)",
+				registry); 
+		}
+	}
 }
 

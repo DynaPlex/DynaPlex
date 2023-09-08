@@ -15,12 +15,11 @@ namespace DynaPlex {
     };
     class Registry {
     public:
+        void Register(const std::string& identifier, const std::string& description, MDPFactoryFunction func);
 
-        static void Register(const std::string& identifier, const std::string& description, MDPFactoryFunction func);
+        DynaPlex::MDP GetMDP(const DynaPlex::VarGroup& vars);
 
-        static DynaPlex::MDP GetMDP(const DynaPlex::VarGroup& vars);
-
-        static DynaPlex::VarGroup ListMDPs();
+        DynaPlex::VarGroup ListMDPs();
 
     private:
         struct MDPInfo {
@@ -28,6 +27,6 @@ namespace DynaPlex {
             std::string description;
         };
 
-        static std::unordered_map<std::string, MDPInfo>& GetRegistry();
+        std::unordered_map<std::string, MDPInfo> m_registry;
     };
 }
