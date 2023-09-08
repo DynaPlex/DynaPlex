@@ -74,6 +74,12 @@ def test_convert_to_string_with_params():
     result = dp.test_param(test=['asdf', 'asdf', 'asf'], ace='asdf')
     assert result == expected_output, f"Expected:\n{expected_output}\n\nGot:\n{result}"
 
+def test_list_mdps():
+    mdp_list = dp.list_mdps()
+    assert isinstance(mdp_list, dict)
+    assert len(mdp_list) > 0
+    assert "lost_sales" in mdp_list
+    assert mdp_list["lost_sales"] == "Canonical lost sales problem, see e.g. Zipkin (2008) for a formal description. (parameters: p, h, leadtime, demand_dist.)"
 
 def test_get_var_group():
     expected_output = {'type': 'geom', 'mean': 5}

@@ -12,7 +12,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET default)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN OFF)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
 
-#for succesfully linking on linux to desired paths. 
+#for succesfully linking on linux to desired paths, i.e. to enable GPU
+#note that this will require some manual steps and is not enabled for now. 
 #set(CMAKE_SKIP_RPATH TRUE)
 if(MSVC)
 set(CMAKE_CXX_FLAGS "$CMAKE_CXX_FLAGS /EHsc")

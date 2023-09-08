@@ -10,11 +10,21 @@ namespace DynaPlex {
 	struct Trajectory {
 		VarGroup ToVarGroup() const;
 		int64_t NextAction;
+		StateCategory Category;
 		std::vector<DynaPlex::RNG> RNGs;
 		double CumulativeReturn;
 
 		DynaPlex::dp_State State;
 
-		Trajectory() = default;
+		Trajectory()
+			:RNGs{},
+			Category{},
+			CumulativeReturn{ 0.0 }
+		{
+			RNGs.reserve(2);
+			RNGs.push_back(DynaPlex::RNG{ 0 });
+			RNGs.push_back(DynaPlex::RNG{ 1 });
+
+		}
 	};
 }

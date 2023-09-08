@@ -64,6 +64,10 @@ namespace DynaPlex {
             return vg;
         }
 
+        StateCategory() {
+            *this = StateCategory::Final();
+        }
+
         explicit StateCategory(const VarGroup& varGroup) {
             int64_t index{ 0 };
             std::string awaits;

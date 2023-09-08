@@ -97,7 +97,8 @@ namespace DynaPlex::Models {
 		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
 		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
 		 //to the corresponding id given below.
-			registry.Register<BaseStockPolicy>("basestock","Base-stock policy with fixed, non-adjustable base-stock level equal to the bound on system inventory discussed in Zipkin (2008) ");
+			registry.Register<BaseStockPolicy>("basestock",
+				"Base-stock policy with fixed, non-adjustable base-stock level equal to the bound on system inventory discussed in Zipkin (2008)");
 		}
 
 	

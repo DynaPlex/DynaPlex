@@ -6,25 +6,20 @@ set(targetname DynaPlex)
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
 
-add_library (DP_${targetname} SHARED)
 
+if(dynaplex_enable_pythonbindings)
+target_sources(DP_Bindings PUBLIC ${headers} PRIVATE ${sources} )
+target_include_directories(DP_Bindings PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
+else()
+add_library (DP_${targetname} SHARED)
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${sources})
 add_library (DynaPlex::${targetname} ALIAS DP_${targetname})
-
-set_target_properties(DP_${targetname} PROPERTIES 
-	OUTPUT_NAME DynaPlex	
-	EXPORT_NAME ${targetname}
-)
-
+set_target_properties(DP_${targetname} PROPERTIES OUTPUT_NAME DynaPlex	EXPORT_NAME ${targetname})
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
 target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core DynaPlex::NN  DynaPlex::Models)
-
-
 if(dynaplex_all_warnings)
 target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3>  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra> )
 endif()
-
-
 if(Torch_FOUND)
  if (MSVC)
   file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
@@ -37,4 +32,5 @@ if(Torch_FOUND)
 set_target_properties(DP_${targetname} PROPERTIES COMPILE_FLAGS "/wd4819 /wd4624")
 set_target_properties(DP_${targetname} PROPERTIES COMPILE_FLAGS "/wd4702")
 endif (MSVC)
+endif()
 endif()

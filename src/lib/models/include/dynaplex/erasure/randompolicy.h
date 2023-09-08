@@ -27,7 +27,7 @@ namespace DynaPlex::Erasure
 		int64_t GetAction(const State& state, DynaPlex::RNG& rng) const
 		{
 			int64_t numAllowedActions;
-			for (const int64_t action:_provider(state))
+			for (const int64_t action: provider(state))
 			{				
 				numAllowedActions++;				
 			}

@@ -60,6 +60,7 @@ namespace DynaPlex::Erasure
 				//convert erased state to actual state. 
 				StateAdapter<t_State>* adapter = static_cast<StateAdapter<t_State>*>(traj.State.get());
 				t_State& state = adapter->state;
+				
 				const DynaPlex::StateCategory& cat  = mdp->GetStateCategory(state);
 				
 				if (cat.IsAwaitAction())
@@ -70,7 +71,8 @@ namespace DynaPlex::Erasure
 					}
 					else
 					{
-			//			traj.NextAction = policy.GetAction(state, traj.RNGs[0]);
+						RNG& rng = traj.RNGs[0];
+						traj.NextAction = policy.GetAction(state, rng);
 					}
 				}
 				else
