@@ -79,7 +79,7 @@ namespace DynaPlex::Tests {
 			}
 		};
 	}
-	TEST(RegisterAdditionalMDP, UseUnregisteredMDP) {
+	TEST(mdp_actions, basics) {
 		for (int64_t init = 0; init < 3; init++)
 		{
 			DynaPlex::VarGroup vars;

@@ -14,6 +14,7 @@ namespace DynaPlex {
             AWAIT_ACTION = 0x1ULL << 60,
             AWAIT_EVENT = 0x2ULL << 60,
             FINAL = 0x3ULL << 60,
+            EOH = 0x4ULL << 60 
         };
         uint64_t state;
         // Private constructor
@@ -47,6 +48,11 @@ namespace DynaPlex {
             static StateCategory Final() {
                 return StateCategory(FINAL);
             }
+
+            static StateCategory EndOfHorizon() {
+                return StateCategory(EOH);
+            }
+
        
 
         VarGroup ToVarGroup() const {
@@ -56,6 +62,7 @@ namespace DynaPlex {
             if (IsAwaitAction()) awaits = "action";
             else if (IsAwaitEvent()) awaits = "event";
             else if (IsFinal()) awaits = "-";
+            else if (IsEndOfHorizon()) awaits = "EOH";
             vg.Add("await", awaits);
             if (index > 0)
             {
@@ -87,27 +94,32 @@ namespace DynaPlex {
             else if (awaits == "-") {
                 state = FINAL | index;
             }
+            else if (awaits == "EOH") {
+                state = EOH | index; // No index for EOH
+            }
             else {
                 throw DynaPlex::Error("StateCategory: Invalid category in VarGroup");
             }
         }
 
-
         bool IsAwaitAction() const {
-            return (state & (0x3ULL << 60)) == AWAIT_ACTION;
+            return (state & (0xFULL << 60)) == AWAIT_ACTION;
         }
 
         bool IsAwaitEvent() const {
-            return (state & (0x3ULL << 60)) == AWAIT_EVENT;
+            return (state & (0xFULL << 60)) == AWAIT_EVENT;
         }
 
         bool IsFinal() const {
-            return (state & (0x3ULL << 60)) == FINAL;
+            return (state & (0xFULL << 60)) == FINAL;
         }
 
-        // Get index
+        bool IsEndOfHorizon() const {
+            return (state & (0xFULL << 60)) == EOH;
+        }
+
         std::size_t Index() const {
-            return state & ~(0x3ULL << 60);
+            return state & ~(0xFULL << 60); // This also needs to be consistent
         }
     };
 

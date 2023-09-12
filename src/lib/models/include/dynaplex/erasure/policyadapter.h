@@ -9,16 +9,6 @@
 
 namespace DynaPlex::Erasure
 {
-	template<typename t_Policy, typename t_State>
-	concept HasGetAction = requires(const t_Policy mdp, const t_State & state) {
-		{ mdp.GetAction(state) } -> std::same_as<int64_t>;
-	};
-
-	template<typename t_Policy, typename t_State>
-	concept HasGetActionRNG = requires(const t_Policy mdp, const t_State & state, DynaPlex::RNG & rng) {
-		{ mdp.GetAction(state, rng) } -> std::same_as<int64_t>;
-	};
-
 	template<typename t_MDP, typename t_Policy>
 	class PolicyAdapter final : public PolicyInterface
 	{
@@ -55,13 +45,15 @@ namespace DynaPlex::Erasure
 				// Check that the states belong to this MDP
 				if (traj.State->mdp_int_hash != mdp_int_hash)
 				{
-					throw DynaPlex::Error("Error in Policy->SetActions: It seems you tried to call with states not associated with the MDP that this policy was obtained from. Please note that policies, even generic ones, can only act on states from the same mdp instance that the policy was obtained from.");
+					throw DynaPlex::Error("Error in Policy->SetActions: It seems you tried to call with states not"
+						"associated with the MDP that this policy was obtained from. Please note that policies, even "
+						"generic ones, can only act on states from the same mdp instance that the policy was obtained from.");
 				}
 				//convert erased state to actual state. 
 				StateAdapter<t_State>* adapter = static_cast<StateAdapter<t_State>*>(traj.State.get());
 				t_State& state = adapter->state;
 				
-				const DynaPlex::StateCategory& cat  = mdp->GetStateCategory(state);
+				const DynaPlex::StateCategory& cat = traj.Category; //mdp->GetStateCategory(state);
 				
 				if (cat.IsAwaitAction())
 				{

@@ -5,6 +5,17 @@
 #include "dynaplex/rng.h"
 namespace DynaPlex::Erasure
 {
+
+	template<typename t_Policy, typename t_State>
+	concept HasGetAction = requires(const t_Policy mdp, const t_State & state) {
+		{ mdp.GetAction(state) } -> std::same_as<int64_t>;
+	};
+
+	template<typename t_Policy, typename t_State>
+	concept HasGetActionRNG = requires(const t_Policy mdp, const t_State & state, DynaPlex::RNG & rng) {
+		{ mdp.GetAction(state, rng) } -> std::same_as<int64_t>;
+	};
+
 	template <typename T>
 	concept HasIsAllowedAction = requires(const T mdp, const typename T::State state, int64_t action)
 	{
@@ -15,6 +26,12 @@ namespace DynaPlex::Erasure
 	concept HasGetStateCategory = requires(T a, const typename T::State & s) {
 		{ a.GetStateCategory(s) } -> std::same_as<StateCategory>;
 	};
+
+	template<typename T>
+	concept HasEvent = requires{
+		typename T::Event;
+	};
+
 
 	template<typename T>
 	concept HasState = requires{

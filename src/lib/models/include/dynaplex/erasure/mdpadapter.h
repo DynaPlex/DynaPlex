@@ -47,7 +47,7 @@ namespace DynaPlex::Erasure
 			mdp_int_hash{ vars.Int64Hash() },
 			mdp_id{ vars.Identifier() },
 			policy_registry{},
-			provider{ *mdp.get() }
+			provider{ mdp }
 		{
 			RegisterPolicies();
 		}		
@@ -95,16 +95,7 @@ namespace DynaPlex::Erasure
 			else
 				throw DynaPlex::Error("MDP.GetInitialStateVec in MDP: " + mdp_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
 		}
-		DynaPlex::VarGroup ToVarGroup(const DynaPlex::dp_State& dp_state) const override
-		{
-			if constexpr (DynaPlex::Concepts::ConvertibleToVarGroup<t_State>)
-			{
-				auto& state = ToState(dp_state);
-				return state.ToVarGroup();
-			}
-			else
-				throw DynaPlex::Error("MDP.ToVarGroup(DynaPlex::State) in MDP: " + mdp_id + "\nState is not ConvertibleToVarGroup.");
-		}
+		
 		void IncorporateAction(DynaPlex::dp_State& dp_state) const override
 		{
 			if constexpr (HasModifyStateWithAction<t_MDP>)

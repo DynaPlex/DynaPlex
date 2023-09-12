@@ -6,7 +6,7 @@
 #include "dynaplex/utilities.h"
 #include <torch/torch.h>
 #include <dynaplex/mdp.h>
-#include <dynaplex/provider.h>
+#include <dynaplex/dynaplexprovider.h>
 
 namespace py = pybind11;
 /*
@@ -48,7 +48,7 @@ DynaPlex::VarGroup GetVarGroup()
 namespace DynaPlex {
 
 	// Create a static Provider to manage registrations.
-	static Provider s_provider;
+	static DynaPlexProvider s_provider;
 
 	DynaPlex::MDP GetMDP(py::kwargs& kwargs) {
 		auto vars = DynaPlex::VarGroup(kwargs);

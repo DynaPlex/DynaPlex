@@ -1,8 +1,10 @@
 #pragma once
 #include <concepts>
+#include <memory>
 #include "dynaplex/error.h"
 #include "dynaplex/statecategory.h"
 #include "erasure_concepts.h"
+
 
 namespace DynaPlex::Erasure
 {
@@ -104,15 +106,16 @@ namespace DynaPlex::Erasure
         int64_t first_action;
     };
 
+
+    //provides range-based access to the allowed actions for a state in an MDP.
     template<typename t_MDP>
     class ActionRangeProvider
     {
     public:
-        //takes a _non-owning_ reference to the mdp. 
-        ActionRangeProvider(const t_MDP& mdp)
+        ActionRangeProvider(std::shared_ptr<const t_MDP> mdp)
             : mdp(mdp)
         {
-            auto vars = mdp.GetStaticInfo();
+            auto vars = mdp->GetStaticInfo();
             //may become non-zero later
             min_action = 0;
             vars.Get("valid_actions", max_action);
@@ -120,11 +123,11 @@ namespace DynaPlex::Erasure
 
         ActionRange<t_MDP> operator()(const typename t_MDP::State& state) const
         {
-            return ActionRange<t_MDP>{ mdp, state, min_action, max_action };
+            return ActionRange<t_MDP>{ *(mdp.get()), state, min_action, max_action };
         }
 
     private:
-        const t_MDP& mdp;
+        std::shared_ptr<const t_MDP> mdp;
 
         int64_t min_action;
         int64_t max_action;

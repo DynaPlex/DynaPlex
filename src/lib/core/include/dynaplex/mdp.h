@@ -24,18 +24,15 @@ namespace DynaPlex
 		 */
 		virtual DynaPlex::dp_State GetInitialState() const = 0;
 
+
+
 		/// Provides information about the MDP.
 		virtual DynaPlex::VarGroup GetStaticInfo() const = 0;
 
 		/// Returns a vector containing actions allowed in the provided state.
 		virtual std::vector<int64_t> AllowedActions(const DynaPlex::dp_State&)const = 0;
 
-		/**
-		 * Converts the given state to VarGroup, typically for display purposes.
-		 * Avoid calling this function in tight loops.
-		 */
-		virtual DynaPlex::VarGroup ToVarGroup(const DynaPlex::dp_State&) const = 0;
-
+	
 		virtual void IncorporateAction(DynaPlex::dp_State&) const = 0;
 
 		/**

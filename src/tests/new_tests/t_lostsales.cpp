@@ -1,13 +1,13 @@
 ﻿#include "dynaplex/vargroup.h"
 #include "dynaplex/error.h"
 #include <gtest/gtest.h>
-#include "dynaplex/provider.h"
+#include "dynaplex/dynaplexprovider.h"
 
 namespace DynaPlex::Tests {
 	
 
 	TEST(LostSales, Basics) {
-		DynaPlex::Provider provider;
+		DynaPlex::DynaPlexProvider dp;
 		DynaPlex::VarGroup vars;
 
 
@@ -27,10 +27,10 @@ namespace DynaPlex::Tests {
 		DynaPlex::MDP model;
 		DynaPlex::Policy policy;
 
-		std::cout << provider.ListMDPs().Dump(2) << std::endl;
+		std::cout << dp.ListMDPs().Dump(2) << std::endl;
 
 		ASSERT_NO_THROW(
-			model = provider.GetMDP(vars);
+			model = dp.GetMDP(vars);
 		    policy = model->GetPolicy("basestock");
 		);
 
@@ -46,15 +46,15 @@ namespace DynaPlex::Tests {
 		auto State = model->GetInitialState();
 
 
-		std::cout << model->ToVarGroup(State).Dump() << std::endl;
+		std::cout << State->ToString() << std::endl;
 
 
 
 		model->IncorporateAction(State);
-		std::cout << model->ToVarGroup(State).Dump() << std::endl;
+		std::cout << State->ToString() << std::endl;
 		model->IncorporateAction(State);
-		std::cout << model->ToVarGroup(State).Dump() << std::endl;
-		std::cout << model->GetStaticInfo().Dump() << std::endl;
+		std::cout << State->ToString() << std::endl;
+		std::cout << State->ToString() << std::endl;
 
 	}
 }

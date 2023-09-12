@@ -5,9 +5,9 @@
 
 namespace DynaPlex {
 
-    class Provider {
+    class DynaPlexProvider {
     public:
-        Provider();
+        DynaPlexProvider();
 
         MDP GetMDP(const VarGroup& vars);
 

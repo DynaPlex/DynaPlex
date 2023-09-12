@@ -1,16 +1,16 @@
-#include "dynaplex/provider.h"
+#include "dynaplex/dynaplexprovider.h"
 namespace DynaPlex {
 
-    Provider::Provider() {
+    DynaPlexProvider::DynaPlexProvider() {
         // Register all the MDPs upon startup.
         Models::RegistrationManager::RegisterAll(m_registry);
     }
 
-    MDP Provider::GetMDP(const VarGroup& vars) {
+    MDP DynaPlexProvider::GetMDP(const VarGroup& vars) {
         return m_registry.GetMDP(vars);
     }
 
-    VarGroup Provider::ListMDPs() {
+    VarGroup DynaPlexProvider::ListMDPs() {
         return m_registry.ListMDPs();
     }
 

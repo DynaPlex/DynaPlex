@@ -12,21 +12,19 @@ namespace DynaPlex::Erasure
 	class RandomPolicy
 	{
 		static_assert(HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
-		//This is needed as somebody needs to own the mdp, and provider is non-owning. 
-		std::shared_ptr<const t_MDP> mdp;
+	
 		DynaPlex::Erasure::ActionRangeProvider<t_MDP> provider;
 	public:
 
-		RandomPolicy(std::shared_ptr<const t_MDP> mdp_, const DynaPlex::VarGroup& varGroup)
-			:mdp{ mdp_ },
-		     provider{*mdp.get()}
+		RandomPolicy(std::shared_ptr<const t_MDP> mdp, const DynaPlex::VarGroup& varGroup)
+			: provider{mdp}
 		{
 		}
 		using State = t_MDP::State;
 
 		int64_t GetAction(const State& state, DynaPlex::RNG& rng) const
 		{
-			int64_t numAllowedActions;
+			int64_t numAllowedActions{ 0 };
 			for (const int64_t action: provider(state))
 			{				
 				numAllowedActions++;				
@@ -35,14 +33,17 @@ namespace DynaPlex::Erasure
 			{
 				throw DynaPlex::Error("RandomPolicy: Not a single action allowed.");
 			}
-			double budget = rng.genUniform() * numAllowedActions;
+			double d_budget = rng.genUniform() * static_cast<double>(numAllowedActions);
+			int64_t budget = static_cast<int64_t>(d_budget);
+
 			for (const int64_t action : provider(state))
-			{			
-				budget--;
-				if (budget <= 0.0)
+			{	
+				if (budget == 0)
 				{
 					return action;
-				}			
+				}
+				budget--;
+							
 			}
 			throw DynaPlex::Error("RandomPolicy: Error in logic.");
 		}

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
-
+#include <string>
+#include "vargroup.h"
 namespace DynaPlex {
 	class StateBase {
 	public:
@@ -9,6 +10,16 @@ namespace DynaPlex {
 		StateBase(int64_t hash_value) : mdp_int_hash(hash_value) {}
 	
 	public:
+
+
+		std::string ToString(int indent = -1) {
+			return this->ToVarGroup().Dump(indent);
+		}
+		/**
+		 * Converts the state to a VarGroup. Intended use is for display, illustration and/or debug purposes.
+		 * Avoid calling this function in tight loops. 
+		 */
+		virtual VarGroup ToVarGroup() const = 0;
 		virtual ~StateBase() = default;
 		virtual std::unique_ptr<StateBase> Clone() const = 0;
 	};
