@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "dynaplex/vargroup.h"
-#include "dynaplex/error.h"
+#include "vargroup.h"
+#include "error.h"
 
 namespace DynaPlex {
 

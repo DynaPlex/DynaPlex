@@ -1,7 +1,7 @@
-#include "dynaplex/vargroup.h"
-#include "dynaplex/utilities.h"
 #include <iostream>
 #include <fstream>
+#include "dynaplex/vargroup.h"
+#include "dynaplex/utilities.h"
 #include "dynaplex/error.h"
 #include "vargroup/nlohmann/json.h"
 #include "vargroup/vargroup_private_support_funcs.h"//hash_json and check_validity and levenshteinDist

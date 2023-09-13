@@ -49,21 +49,23 @@ namespace DynaPlex::Erasure
 						"associated with the MDP that this policy was obtained from. Please note that policies, even "
 						"generic ones, can only act on states from the same mdp instance that the policy was obtained from.");
 				}
-				//convert erased state to actual state. 
-				StateAdapter<t_State>* adapter = static_cast<StateAdapter<t_State>*>(traj.State.get());
-				t_State& state = adapter->state;
 				
-				const DynaPlex::StateCategory& cat = traj.Category; //mdp->GetStateCategory(state);
+				const DynaPlex::StateCategory& cat = traj.Category; 
 				
 				if (cat.IsAwaitAction())
 				{
+					//convert type-erased state to underlying type. 
+					StateAdapter<t_State>* adapter = static_cast<StateAdapter<t_State>*>(traj.State.get());
+					t_State& state = adapter->state;
+					//dispatch to policy, depending on the signature of the GetAction implemented
+					//on the policy
 					if constexpr (HasGetAction<t_Policy, t_State>)
 					{
 						traj.NextAction = policy.GetAction(state);
 					}
 					else
 					{
-						RNG& rng = traj.RNGs[0];
+						RNG& rng = traj.rngprovider.GetPolicyRNG();
 						traj.NextAction = policy.GetAction(state, rng);
 					}
 				}

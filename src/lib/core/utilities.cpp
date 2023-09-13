@@ -1,8 +1,7 @@
-#include "dynaplex/utilities.h"
-#include "dynaplex/error.h"
 #include <iostream>
 #include <filesystem>
-
+#include "dynaplex/utilities.h"
+#include "dynaplex/error.h"
 
 namespace fs = std::filesystem;
 

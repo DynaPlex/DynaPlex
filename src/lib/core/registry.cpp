@@ -1,9 +1,9 @@
-#include "dynaplex/registry.h"
-#include "dynaplex/error.h"
-#include "iostream"
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include "dynaplex/registry.h"
+#include "dynaplex/error.h"
 
 namespace DynaPlex {
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "dynaplex/state.h"
+#include "state.h"
 #include "vargroup.h"
 #include "policy.h"
 namespace DynaPlex

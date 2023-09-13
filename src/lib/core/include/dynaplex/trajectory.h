@@ -1,30 +1,37 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include "dynaplex/statecategory.h"
-#include "rng.h"
-#include "dynaplex/state.h"
-#include "dynaplex/vargroup.h"
+#include "vargroup.h"
+#include "statecategory.h"
+#include "rngprovider.h"
+#include "state.h"
 
 namespace DynaPlex {
 	struct Trajectory {
+
+
 		VarGroup ToVarGroup() const;
 		int64_t NextAction;
 		StateCategory Category;
-		std::vector<DynaPlex::RNG> RNGs;
 		double CumulativeReturn;
-
 		DynaPlex::dp_State State;
+		RNGProvider rngprovider;
 
-		Trajectory()
-			:RNGs{},
-			Category{},
-			CumulativeReturn{ 0.0 }
+
+		void Reset(const uint32_t& experiment_number, const uint32_t& world_rank, const bool& eval)
 		{
-			RNGs.reserve(2);
-			RNGs.push_back(DynaPlex::RNG{ 0 });
-			RNGs.push_back(DynaPlex::RNG{ 1 });
-
+			rngprovider.Reset(constructseeds(experiment_number, world_rank, eval));
 		}
+
+		Trajectory(int64_t NumEventRNGs) :
+			NextAction{},
+			Category{},
+			CumulativeReturn{ 0.0 },
+			rngprovider(NumEventRNGs),
+			State{}
+		{}
+	private:
+		std::vector<uint32_t> constructseeds(const uint32_t& experiment_number, const uint32_t& world_rank, const bool& eval);
+		
 	};
 }

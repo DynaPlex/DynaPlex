@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "dynaplex/trajectory.h"
+#include "trajectory.h"
 #include "vargroup.h"
 namespace DynaPlex
 {

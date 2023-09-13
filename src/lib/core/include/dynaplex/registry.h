@@ -3,8 +3,8 @@
 #include <string>
 #include <functional>
 #include <vector>
-#include "dynaplex/vargroup.h"
-#include "dynaplex/mdp.h"
+#include "vargroup.h"
+#include "mdp.h"
 
 namespace DynaPlex {
 

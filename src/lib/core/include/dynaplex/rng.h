@@ -1,15 +1,15 @@
 #pragma once
-#include "pcg_random/pcg_random.hpp"
 #include <random>
+#include "pcg_random/pcg_random.hpp"
 namespace DynaPlex {
 
     class RNG {
     public:
         using type = pcg_cpp::pcg64;       
-        explicit RNG(const std::initializer_list<std::int64_t>& seed_data) {
+        explicit RNG(const std::initializer_list<std::uint32_t>& seed_data) {
             seed_generator(seed_data);
         }
-        explicit RNG(const std::vector<std::int64_t>& seed_data) {
+        explicit RNG(const std::vector<std::uint32_t>& seed_data) {
             seed_generator(seed_data);
         }
        
@@ -27,12 +27,12 @@ namespace DynaPlex {
         std::uniform_real_distribution<double> uniformDist{ 0.0, 1.0 };
 
         // Utility function to create a seed_seq from seed data and seed the generator
-        void seed_generator(const std::initializer_list<std::int64_t>& seed_data) {
+        void seed_generator(const std::initializer_list<std::uint32_t>& seed_data) {
             std::seed_seq seq(seed_data.begin(), seed_data.end());
             generator_.seed(seq);
         }
         // Utility function to create a seed_seq from seed data and seed the generator
-        void seed_generator(const std::vector<std::int64_t>& seed_data) {
+        void seed_generator(const std::vector<std::uint32_t>& seed_data) {
             std::seed_seq seq(seed_data.begin(), seed_data.end());
             generator_.seed(seq);
         }

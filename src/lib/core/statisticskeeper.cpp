@@ -1,7 +1,6 @@
-#include "dynaplex/statisticskeeper.h"
 #include <iostream>
 #include "dynaplex/error.h"
-
+#include "dynaplex/statisticskeeper.h"
 namespace DynaPlex {
 
     StatisticsKeeper::StatisticsKeeper() : count(0), sumOfVal(0.0), sumOfVal2(0.0) {}
