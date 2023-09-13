@@ -2,10 +2,11 @@
 namespace DynaPlex {
 	VarGroup Trajectory::ToVarGroup() const
 	{
-		VarGroup vg{};
-		vg.Add("CumulativeReturn", CumulativeReturn);
-		vg.Add("NextAction", NextAction);
-		return vg;
+		throw DynaPlex::Error("not implemented");
+		//VarGroup vg{};
+	//	vg.Add("CumulativeReturn", CumulativeReturn);
+		//vg.Add("NextAction", NextAction);
+		//return vg;
 	}
 
 	std::vector<uint32_t> Trajectory::constructseeds(const uint32_t& experiment_number, const uint32_t& world_rank, const bool& eval)

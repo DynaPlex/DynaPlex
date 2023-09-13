@@ -15,20 +15,21 @@ namespace DynaPlex::Erasure
 		// Check that the states belong to this MDP
 		if (state->mdp_int_hash != mdp_int_hash)
 		{
-			throw DynaPlex::Error("Error in MDP->ToState: It seems you tried to call with state(s) not created by this MDP, this should not be tried as it can lead to segmentation faults. ");
+			throw DynaPlex::Error("Error in MDP->ToState: It seems you tried to call MDP member functions with states or trajectories not created by this MDP, this should not be tried as it can lead to segmentation faults. ");
 		}
 		// Cast to the specific StatesAdapter type and access the underlying data
 		StateAdapter<typename t_MDP::State>* stateAdapter = static_cast<StateAdapter<typename t_MDP::State>*>(state.get());
+
 		return stateAdapter->state;
 	}
 
 	template <typename t_MDP>
 	typename t_MDP::State& MDPAdapter<t_MDP>::ToState(DynaPlex::dp_State& state) const
-	{
+	{		
 		// Check that the states belong to this MDP
 		if (state->mdp_int_hash != mdp_int_hash)
 		{
-			throw ::DynaPlex::Error("Error in MDP->ToState: It seems you tried to call with state(s) not created by this MDP, this should not be tried as it can lead to segmentations faults. ");
+			throw ::DynaPlex::Error("Error in MDP->ToState: It seems you tried to call MDP member functions with states or trajectories not created by this MDP, this should not be tried as it can lead to segmentations faults. ");
 		}
 		// Cast to the specific StateAdapter type and access the underlying data
 		StateAdapter<typename t_MDP::State>* stateAdapter = static_cast<StateAdapter<typename t_MDP::State>*>(state.get());

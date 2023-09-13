@@ -2,6 +2,7 @@
 #include "dynaplex/error.h"
 #include <gtest/gtest.h>
 #include "dynaplex/dynaplexprovider.h"
+#include "dynaplex/trajectory.h"
 
 namespace DynaPlex::Tests {
 	
@@ -12,49 +13,91 @@ namespace DynaPlex::Tests {
 
 
 		vars.Add("id", "lost_sales");
-		vars.Add("p", 9.0);
+		vars.Add("p", 4.0);
 		vars.Add("h", 1.0);
 		vars.Add("leadtime", 3);
 
 
 		vars.Add("demand_dist", DynaPlex::VarGroup({
 			{"type", "poisson"},
-			{"mean", 4.0}
+			{"mean", 2.0}
 		}));
 
 
 
-		DynaPlex::MDP model;
+		DynaPlex::MDP mdp;
 		DynaPlex::Policy policy;
 
-		std::cout << dp.ListMDPs().Dump(2) << std::endl;
-
+	
 		ASSERT_NO_THROW(
-			model = dp.GetMDP(vars);
-		    policy = model->GetPolicy("basestock");
+			mdp = dp.GetMDP(vars);
+		    policy = mdp->GetPolicy("basestock");
 		);
-
-		std::cout<<model->ListPolicies().Dump(2) << std::endl;
-
-
-		//auto policy2= model->GetPolicy("random");
-
+			
 
 		const std::string prefix = "lost_sales";
-		EXPECT_EQ(prefix, model->Identifier().substr(0, prefix.length())) ;
+		EXPECT_EQ(prefix, mdp->Identifier().substr(0, prefix.length())) ;
 
-		auto State = model->GetInitialState();
+
+
+		std::vector<DynaPlex::Trajectory> Trajectories;
+		int number = 1;
+		Trajectories.reserve(number);
+		for (size_t i = 0; i < number; i++)
+		{
+			Trajectories.push_back(DynaPlex::Trajectory(mdp->NumEventRNGs(), i));
+			Trajectories.back().Reset(i, 0, false);
+		}
+		
+		ASSERT_THROW(Trajectories[0].GetState()->ToString(),DynaPlex::Error);
+
+		
+		mdp->InitiateState(Trajectories);
+		for (auto& traj: Trajectories)
+		{
+			std::cout << "initiate" << std::endl;
+			std::cout << traj.GetState()->ToString() << std::endl;
+		}
+
+		for (int i = 0; i < 10; i++)
+		{			
+			bool anotherEvent = false;
+			do
+			{
+				anotherEvent = mdp->IncorporateEvent(Trajectories);
+				//if (anotherEvent)
+				{
+					std::cout << "event" << std::endl;
+					for (auto& traj : Trajectories)
+					{
+						std::cout << traj.GetState()->ToString() << std::endl;
+					}
+				}
+			} while (anotherEvent);			
+			mdp->IncorporateAction(Trajectories, policy);
+			std::cout << "action" << std::endl;
+			for (auto& traj : Trajectories)
+			{
+				std::cout << traj.GetState()->ToString() << std::endl;
+			}
+		}
+		
+
+		
+
+		/*
+		auto State = mdp->GetInitialState();
 
 
 		std::cout << State->ToString() << std::endl;
 
 
 
-		model->IncorporateAction(State);
+		mdp->IncorporateAction(State);
 		std::cout << State->ToString() << std::endl;
-		model->IncorporateAction(State);
+		mdp->IncorporateAction(State);
 		std::cout << State->ToString() << std::endl;
 		std::cout << State->ToString() << std::endl;
-
+		*/
 	}
 }

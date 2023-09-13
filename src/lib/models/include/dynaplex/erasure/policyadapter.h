@@ -38,12 +38,12 @@ namespace DynaPlex::Erasure
 
 		}
 
-		void SetActions(std::vector<Trajectory>& trajectories) const override
+		void SetActions(std::span<Trajectory> trajectories) const override
 		{	
 			for (Trajectory& traj: trajectories)
 			{
 				// Check that the states belong to this MDP
-				if (traj.State->mdp_int_hash != mdp_int_hash)
+				if (traj.GetState()->mdp_int_hash != mdp_int_hash)
 				{
 					throw DynaPlex::Error("Error in Policy->SetActions: It seems you tried to call with states not"
 						"associated with the MDP that this policy was obtained from. Please note that policies, even "
@@ -55,7 +55,7 @@ namespace DynaPlex::Erasure
 				if (cat.IsAwaitAction())
 				{
 					//convert type-erased state to underlying type. 
-					StateAdapter<t_State>* adapter = static_cast<StateAdapter<t_State>*>(traj.State.get());
+					StateAdapter<t_State>* adapter = static_cast<StateAdapter<t_State>*>(traj.GetState().get());
 					t_State& state = adapter->state;
 					//dispatch to policy, depending on the signature of the GetAction implemented
 					//on the policy
@@ -65,13 +65,13 @@ namespace DynaPlex::Erasure
 					}
 					else
 					{
-						RNG& rng = traj.rngprovider.GetPolicyRNG();
+						RNG& rng = traj.RNGProvider.GetPolicyRNG();
 						traj.NextAction = policy.GetAction(state, rng);
 					}
 				}
 				else
 				{
-					throw DynaPlex::Error("Error in Policy->SetActions: Cannot set action when state is not awaitaction.");
+					throw DynaPlex::Error("Error in Policy->SetActions: Cannot set action when Trajectory.Category is not IsAwaitAction, i.e. when state is not IsAwaitAction.");
 				}
 			}
 

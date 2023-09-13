@@ -61,7 +61,7 @@ namespace DynaPlex::Tests {
 				}
 			}
 
-			State GetInitialState() const
+			State GetInitialState(DynaPlex::RNG&) const
 			{
 				return State{ initial_i };
 			}

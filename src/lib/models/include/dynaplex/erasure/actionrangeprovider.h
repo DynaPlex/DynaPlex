@@ -56,6 +56,10 @@ namespace DynaPlex::Erasure
         {
             return current_action != other.current_action;
         }
+        bool operator==(const ActionIterator& other) const
+        {
+            return current_action == other.current_action;
+        }
     };
 
     template<typename t_MDP>
@@ -99,6 +103,16 @@ namespace DynaPlex::Erasure
             return { mdp, state, max_action, max_action };
         }
 
+        int64_t Count() const
+        {
+            int64_t count = 0;
+            for (auto it = begin(); it != end(); ++it)
+            {
+                count++;
+            }
+            return count;
+        }
+
     private:
         const t_MDP& mdp;
         const State& state;
@@ -121,6 +135,7 @@ namespace DynaPlex::Erasure
             vars.Get("valid_actions", max_action);
         }
 
+        
         ActionRange<t_MDP> operator()(const typename t_MDP::State& state) const
         {
             return ActionRange<t_MDP>{ *(mdp.get()), state, min_action, max_action };

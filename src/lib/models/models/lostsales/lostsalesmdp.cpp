@@ -126,7 +126,7 @@ namespace DynaPlex::Models {
 		void Register(DynaPlex::Registry& registry)
 		{
 			DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel(
-				/*id though which the MDP will be retrievable*/ "lost_sales",
+				/*=id though which the MDP will be retrievable*/ "lost_sales",
 				/*description*/ "Canonical lost sales problem, see e.g. Zipkin (2008) for a formal description. (parameters: p, h, leadtime, demand_dist.)",
 				registry); 
 		}
