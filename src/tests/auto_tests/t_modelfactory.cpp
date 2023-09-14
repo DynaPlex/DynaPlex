@@ -7,7 +7,7 @@ namespace DynaPlex::Tests {
 	
 
 	TEST(ModelFactory, SimpleGet) {
-		DynaPlex::DynaPlexProvider dp{};
+		auto& dp  = DynaPlexProvider::get();
 
 		
 		DynaPlex::VarGroup vars;
@@ -47,7 +47,7 @@ namespace DynaPlex::Tests {
 
 
 	TEST(ModelFactory, FailGet) {
-		DynaPlex::DynaPlexProvider dp{};
+		auto& dp = DynaPlexProvider::get();
 
 		DynaPlex::VarGroup vars;
 

@@ -8,7 +8,7 @@ namespace DynaPlex::Tests {
 	
 
 	TEST(LostSales, Basics) {
-		DynaPlex::DynaPlexProvider dp;
+		auto& dp = DynaPlexProvider::get();
 		DynaPlex::VarGroup vars;
 
 
@@ -41,7 +41,7 @@ namespace DynaPlex::Tests {
 
 
 		std::vector<DynaPlex::Trajectory> Trajectories;
-		int number = 1;
+		int number = 5;
 		Trajectories.reserve(number);
 		for (size_t i = 0; i < number; i++)
 		{
@@ -53,10 +53,10 @@ namespace DynaPlex::Tests {
 
 		
 		mdp->InitiateState(Trajectories);
+		//std::cout << "initiate" << std::endl;
 		for (auto& traj: Trajectories)
 		{
-			std::cout << "initiate" << std::endl;
-			std::cout << traj.GetState()->ToString() << std::endl;
+		//	std::cout << traj.GetState()->ToString() << std::endl;
 		}
 
 		for (int i = 0; i < 10; i++)
@@ -67,10 +67,10 @@ namespace DynaPlex::Tests {
 				anotherEvent = mdp->IncorporateEvent(Trajectories);
 				//if (anotherEvent)
 				{
-					std::cout << "event" << std::endl;
+				//	std::cout << "event" << std::endl;
 					for (auto& traj : Trajectories)
 					{
-						std::cout << traj.GetState()->ToString() << std::endl;
+				//		std::cout << traj.GetState()->ToString() << std::endl;
 					}
 				}
 			} while (anotherEvent);			
@@ -81,23 +81,15 @@ namespace DynaPlex::Tests {
 				std::cout << traj.GetState()->ToString() << std::endl;
 			}
 		}
+
+		mdp->IncorporateEvent(Trajectories);
 		
+		std::cout << "copy" << std::endl;
 
-		
-
-		/*
-		auto State = mdp->GetInitialState();
-
-
-		std::cout << State->ToString() << std::endl;
-
-
-
-		mdp->IncorporateAction(State);
-		std::cout << State->ToString() << std::endl;
-		mdp->IncorporateAction(State);
-		std::cout << State->ToString() << std::endl;
-		std::cout << State->ToString() << std::endl;
-		*/
+		mdp->InitiateState(Trajectories, Trajectories[0].GetState());
+		for (auto& traj : Trajectories)
+		{
+			std::cout << traj.GetState()->ToString() << std::endl;
+		}		
 	}
 }
