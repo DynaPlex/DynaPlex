@@ -7,9 +7,12 @@ namespace DynaPlex::Tests {
 	
 
 	TEST(ModelFactory, SimpleGet) {
-		auto& dp  = DynaPlexProvider::get();
+		auto& dp  = DynaPlexProvider::Get();
 
-		
+		ASSERT_NO_THROW(
+			dp.getSystemInfo()
+		);
+
 		DynaPlex::VarGroup vars;
 
 		vars.Add("id", "lost_sales");
@@ -47,7 +50,7 @@ namespace DynaPlex::Tests {
 
 
 	TEST(ModelFactory, FailGet) {
-		auto& dp = DynaPlexProvider::get();
+		auto& dp = DynaPlexProvider::Get();
 
 		DynaPlex::VarGroup vars;
 

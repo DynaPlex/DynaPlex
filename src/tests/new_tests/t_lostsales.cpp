@@ -8,10 +8,8 @@ namespace DynaPlex::Tests {
 	
 
 	TEST(LostSales, Basics) {
-		auto& dp = DynaPlexProvider::get();
+		auto& dp = DynaPlexProvider::Get();
 		DynaPlex::VarGroup vars;
-
-
 		vars.Add("id", "lost_sales");
 		vars.Add("p", 4.0);
 		vars.Add("h", 1.0);

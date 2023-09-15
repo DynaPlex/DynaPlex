@@ -9,8 +9,11 @@ namespace DynaPlex::Models {
 	{
 		// Forward declarations
 		class MDP;
-		class MDP::State;
 
+		//class MDP {
+		//public:
+		//	class State;
+		//};
 
 		class BaseStockPolicy
 		{

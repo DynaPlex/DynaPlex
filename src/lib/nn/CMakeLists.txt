@@ -6,7 +6,7 @@ set(targetname NN)
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
 
-
+MESSAGE(STATUS "sources: ${sources}")
 
 if(dynaplex_enable_pythonbindings)
 target_sources(DP_Bindings PUBLIC ${headers} PRIVATE ${sources} )

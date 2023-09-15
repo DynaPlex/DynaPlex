@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --time=00:03:00 --exclusive --nodes=2 --ntasks-per-node=1 --cpus-per-task=128 --partition rome --mem=60G 
+module load 2022
+module load CMake/3.23.1-GCCcore-11.3.0
+module load OpenMPI/4.1.4-GCC-11.3.0
+
+export OPENBLAS_NUM_THREADS=1
+
+cd ../out/LinDeb/bin
+srun ./DP_mpi_test
+
+#cd ../python/test
+#conda activate envDP
+#srun python basics.py

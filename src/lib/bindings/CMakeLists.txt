@@ -24,6 +24,11 @@ if(Torch_FOUND)
    target_link_libraries(DP_${targetname} PUBLIC "${TORCH_LIBRARIES}")
 endif()
 
+if(MPI_FOUND)
+target_compile_definitions(DP_${targetname} PRIVATE DP_MPI_AVAILABLE=1)
+target_link_libraries(DP_${targetname} PUBLIC MPI::MPI_CXX)
+endif()
+
  add_custom_command(TARGET DP_${targetname} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/dp/libs/"
                    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:DP_${targetname}>

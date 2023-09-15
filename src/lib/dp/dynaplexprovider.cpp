@@ -1,16 +1,29 @@
-#include "dynaplex/dynaplexprovider.h"
 #include <iostream>
 #ifdef DP_MPI_AVAILABLE
 #include <mpi.h>
 #endif
-
+#include "dynaplex/neuralnetworks.h"
+#include "dynaplex/dynaplexprovider.h"
 
 namespace DynaPlex {
 
+
     // Implementing the Singleton pattern for DynaPlexProvider
-    DynaPlexProvider& DynaPlexProvider::get() {
+    DynaPlexProvider& DynaPlexProvider::Get() {
         static DynaPlexProvider instance;  // Guaranteed to be lazy initialized and destroyed correctly
         return instance;
+    }
+
+
+    void DynaPlexProvider::SetIORootDirectory(std::string path) {
+        m_systemInfo.SetIOLocation(path, "IO_DynaPlex");
+    }
+
+    void DynaPlexProvider::AddBarrier()
+    {
+#ifdef DP_MPI_AVAILABLE
+        MPI_Barrier(MPI_COMM_WORLD);
+#endif
     }
 
     DynaPlexProvider::DynaPlexProvider() {
@@ -30,10 +43,42 @@ namespace DynaPlex {
         int world_rank = 0;  // Default values
         int world_size = 1;
 #endif
-        m_systemInfo = SystemInfo(world_rank, world_size);
+        bool torchavailable = DynaPlex::NeuralNetworks::TorchAvailable();
+      
+        m_systemInfo = SystemInfo(torchavailable,world_rank, world_size,
+           /*callback function: */ []() {DynaPlexProvider::Get().AddBarrier(); }
+            );
+        std::string defined_root_dir = "";
+#ifdef DYNAPLEX_IO_ROOT_DIR
+        defined_root_dir = DYNAPLEX_IO_ROOT_DIR;
+#endif
+        if (!defined_root_dir.empty())
+        { 
+            try
+            {
+                m_systemInfo.SetIOLocation(defined_root_dir, "IO_DynaPlex");
+            }
+            catch (const DynaPlex::Error& e)
+            {
+                // Print the specific error message from the caught exception.
+                std::cerr << "Error: " << e.what() << std::endl;
 
-        
+                // Construct an informative message.
+                std::string informativeMsg = "The root directory provided as a compiler definition DYNAPLEX_IO_ROOT_DIR (e.g. from CMakeUserPresets.json or during compilation) "
+                    "(" + defined_root_dir + ") is likely not an existing directory. "
+                    "Please verify the provided path and recompile.";
 
+                // Throw a new exception or re-throw the original with an updated message.
+                throw DynaPlex::Error(informativeMsg);
+            }
+        }
+        if (world_rank == 0)
+        {
+            if (torchavailable)
+                std::cout << DynaPlex::NeuralNetworks::TorchVersion() << std::endl;
+            else
+                std::cout << "Torch not available" << std::endl;
+        }
 #ifdef DP_MPI_AVAILABLE
         std::cout << "DynaPlex: Hardware Threads: " << m_systemInfo.HardwareThreads()
             << ", MPI: Yes, Rank: " << world_rank
@@ -68,7 +113,11 @@ namespace DynaPlex {
     }
 
     // If you want to expose SystemInfo to users:
-    SystemInfo& DynaPlexProvider::getSystemInfo() {
+    const SystemInfo& DynaPlexProvider::getSystemInfo() {
+        if (!m_systemInfo.HasIODirectory())
+        {
+            throw DynaPlex::Error("You used functionality that may require a valid input/output directory, but none is available. Ensure that DynaPlexProvider::Get().SetIORootDirectory is called before using this functionality. Alternatively, provide compiler-defined macro DYNAPLEX_IO_ROOT_DIR representing a valid root directory.");
+        }
         return m_systemInfo;
     }
 

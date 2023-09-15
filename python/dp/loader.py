@@ -36,4 +36,3 @@ except ImportError as e:
 
 if __name__ == "__main__":
     print("Torch version (python):  " +torch.__version__)
-    DynaPlex.test_torch()

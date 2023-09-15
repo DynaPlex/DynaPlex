@@ -17,8 +17,13 @@ compile specific (test)  target:
 
 cmake --build out/LinRel --target 
 
+//For testing MPI. 
+srun -p genoa -c 32 -n 1 -t 00:30:00 --pty /bin/bash
+
+//for testing on linux:
 //go to out/LinRel and type ctest --verbose, or simply execute individual test executables, to test on linux. 
 
-for setting up conda environment for pybind:
 
+
+for setting up conda environment for pybind:
 conda env create -f path/to/environment.yml

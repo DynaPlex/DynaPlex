@@ -2,7 +2,6 @@
 #include "dynaplex/vargroup.h"
 #include "vargroupcaster.h"
 #include "dynaplex/error.h"
-#include "dynaplex/neuralnetworktrainer.h"
 #include "dynaplex/utilities.h"
 #include <torch/torch.h>
 #include <dynaplex/mdp.h>
@@ -29,11 +28,6 @@ std::string TestParam(py::kwargs& kwargs)
 	return TestParam(vars );
 }
 
-void TestTorch()
-{
-	DynaPlex::NeuralNetworkTrainer trainer{};
-	std::cout << trainer.TorchAvailability() << std::endl;
-}
 
 DynaPlex::VarGroup GetVarGroup()
 {
@@ -49,16 +43,16 @@ namespace DynaPlex {
 
 	DynaPlex::MDP GetMDP(py::kwargs& kwargs) {
 		auto vars = DynaPlex::VarGroup(kwargs);
-		return DynaPlex::DynaPlexProvider::get().GetMDP(vars);  
+		return DynaPlex::DynaPlexProvider::Get().GetMDP(vars);  
 	}
 
 	DynaPlex::MDP GetMDP(const DynaPlex::VarGroup& vars) {
-		return DynaPlex::DynaPlexProvider::get().GetMDP(vars);  
+		return DynaPlex::DynaPlexProvider::Get().GetMDP(vars);  
 	}
 
 	DynaPlex::VarGroup ListMDPs()
 	{
-		return DynaPlex::DynaPlexProvider::get().ListMDPs();
+		return DynaPlex::DynaPlexProvider::Get().ListMDPs();
 	}
 
 }
@@ -69,7 +63,6 @@ PYBIND11_MODULE(DP_Bindings, m) {
 
 	m.doc() = "DynaPlex extension for Python";
 	m.def("get_var_group", &GetVarGroup, "gets some parameters");
-	m.def("test_torch", &TestTorch, "tests pytorch availability");
 	// Expose the MDPInterface
 	py::class_<DynaPlex::MDPInterface,DynaPlex::MDP>(m, "MDP")
 		.def("identifier", &DynaPlex::MDPInterface::Identifier);

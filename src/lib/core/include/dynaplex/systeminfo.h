@@ -1,20 +1,22 @@
 #include <cstdint>
 #include <memory> // for std::unique_ptr
 #include <string>
-
+#include <functional>
 
 
 namespace DynaPlex {
 
     class SystemInfo {
     public: 
-        SystemInfo(std::uint32_t worldRank = 0, std::uint32_t worldSize = 1);
+        SystemInfo();
+        SystemInfo(bool TorchAvailable, std::uint32_t worldRank, std::uint32_t worldSize, std::function<void()> barrier_cb);
         ~SystemInfo();
 
         SystemInfo(const SystemInfo&);  // Copy constructor
         SystemInfo& operator=(const SystemInfo&);  // Copy assignment operator
 
-
+        /// returns whether the SystemInfo has a valid IO directory defined. 
+        bool HasIODirectory() const;
         /// hardwarethreads available to this thing. 
         std::uint32_t HardwareThreads() const;
         std::uint32_t WorldRank() const;
@@ -29,7 +31,11 @@ namespace DynaPlex {
         std::int64_t ElapsedMS() const;
         /// Elapsed time (typeset like hh::mm::ss) since object creation
         std::string Elapsed() const;
+        ///Sets the directory for IO. 
+        void SetIOLocation(const std::string& path, const std::string& dirname);
 
+        ///adds a MPI barrier, if applicable 
+        void AddBarrier() const;
     private:
         class Impl;  // Forward declare the implementation class
         std::unique_ptr<Impl> pimpl;  // Pointer to the implementation

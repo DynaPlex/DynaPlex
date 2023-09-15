@@ -9,17 +9,23 @@ namespace DynaPlex {
     class DynaPlexProvider {
     public:
         /// provides access the single instance of the class
-        static DynaPlexProvider& get();
+        static DynaPlexProvider& Get();
 
+        /**
+         * sets the root directory where a IO_DynaPlex subdirectory will be created, where all 
+         * input and output from dynaplex will be nested. 
+         */ 
+        void SetIORootDirectory(std::string path);
         /// gets an MDP based on the vargroup 
         MDP GetMDP(const VarGroup& vars);
         /// lists the MDPs available. 
         VarGroup ListMDPs();
 
         // If you want to expose SystemInfo to users:
-        SystemInfo& getSystemInfo();
+        const SystemInfo& getSystemInfo();
 
     private:
+        void AddBarrier();
         DynaPlexProvider(); 
         ~DynaPlexProvider();
         // Delete the copy and assignment constructors to ensure singleton behavior
