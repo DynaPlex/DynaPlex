@@ -1,4 +1,4 @@
-#include "SmallClass.h"
+#include "smallclass.h"
 #include <iostream>
 #include "dynaplex/vargroup.h"
 SmallClass::SmallClass(const DynaPlex::VarGroup& vars)

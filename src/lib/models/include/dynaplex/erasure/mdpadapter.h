@@ -35,7 +35,7 @@ namespace DynaPlex::Erasure
 		void RegisterPolicies()
 		{
 			//Register built-in policies
-			policy_registry.Register<RandomPolicy<t_MDP>>("random", "makes a random choice between the allowed actions");
+			policy_registry.template Register<RandomPolicy<t_MDP>>("random", "makes a random choice between the allowed actions");
 			//register client-provided policies. 
 			if constexpr (HasRegisterPolicies<t_MDP, PolicyRegistry<t_MDP>>) {
 				mdp->RegisterPolicies(policy_registry);

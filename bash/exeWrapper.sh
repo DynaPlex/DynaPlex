@@ -5,5 +5,5 @@ then
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$EBROOTCUDA/lib64/stubs  
 fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/anaconda3/envs/py37_torch/lib/python3.7/site-packages/torch/lib
-cd build/snellius/bin
+cd build/linux/bin
 ./DynaPlexExample

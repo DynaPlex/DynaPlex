@@ -17,6 +17,7 @@ compile specific (test)  target:
 
 cmake --build out/LinRel --target 
 
+//go to out/LinRel and type ctest --verbose, or simply execute individual test executables, to test on linux. 
 
 for setting up conda environment for pybind:
 

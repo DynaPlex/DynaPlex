@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <gtest/gtest.h>
-#include "DynaPlex/NeuralNetworkTrainer.h"
+#include "dynaplex/neuralnetworktrainer.h"
 
 namespace DynaPlex::Tests {
 

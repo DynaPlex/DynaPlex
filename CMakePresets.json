@@ -17,12 +17,26 @@
       }
     },
     {
-      "name": "snellius-base",
+      "name": "linux-base",
       "hidden": true,
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/out/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/out/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
       },
       "condition": {
         "type": "notEquals",

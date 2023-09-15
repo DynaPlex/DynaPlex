@@ -1,4 +1,4 @@
-#include "SomeClass.h"
+#include "someclass.h"
 #include <iostream>
 
 

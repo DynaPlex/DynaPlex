@@ -40,7 +40,7 @@ namespace DynaPlex {
 			state = std::move(State);
 		}
 		/// provider of random sequences for use in MDP. May be reset by calling Trajectory::Reset. 
-		RNGProvider RNGProvider;
+		DynaPlex::RNGProvider RNGProvider;
 		/**
 		 * Convenience member that may be used to store the (index of) an object in a container that contains more information
 		 * on this trajectory, like initial information or functions to call when the trajectory completes.

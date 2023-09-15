@@ -47,21 +47,18 @@ DynaPlex::VarGroup GetVarGroup()
 
 namespace DynaPlex {
 
-	// Create a static Provider to manage registrations.
-	static DynaPlexProvider s_provider;
-
 	DynaPlex::MDP GetMDP(py::kwargs& kwargs) {
 		auto vars = DynaPlex::VarGroup(kwargs);
-		return s_provider.GetMDP(vars);  // Use s_provider to get the MDP
+		return DynaPlex::DynaPlexProvider::get().GetMDP(vars);  
 	}
 
 	DynaPlex::MDP GetMDP(const DynaPlex::VarGroup& vars) {
-		return s_provider.GetMDP(vars);  // Use s_provider to get the MDP
+		return DynaPlex::DynaPlexProvider::get().GetMDP(vars);  
 	}
 
 	DynaPlex::VarGroup ListMDPs()
 	{
-		return s_provider.ListMDPs();
+		return DynaPlex::DynaPlexProvider::get().ListMDPs();
 	}
 
 }

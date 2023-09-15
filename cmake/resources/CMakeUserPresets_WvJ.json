@@ -44,9 +44,9 @@
       },
       {
         "name": "LinRel",
-        "inherits": [ "snellius-base", "base-settings" ],
+        "inherits": [ "linux-base", "base-settings" ],
         "cacheVariables": {
-          //Location of PyTorch library on snellius:
+          //Location of PyTorch library on linux:
           "dynaplex_pytorch_path": "/home/willemvj/libtorch/share/cmake",
           "dynaplex_enable_pytorch": true,
           "dynaplex_enable_pythonbindings": false
@@ -54,7 +54,7 @@
       },
       {
         "name": "LinBind",
-        "inherits": [ "snellius-base", "base-settings" ],
+        "inherits": [ "linux-base", "base-settings" ],
         "cacheVariables": {
           //For creating python bindings, linking to a anaconda version of pytorch appears most stable, e.g. something like (when using environment.yml to configure)
           //Note that paths to TorchConfig.cmake and pybind11Config.cmake are needed. 
