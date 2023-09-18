@@ -1,7 +1,7 @@
 
 cmake_minimum_required (VERSION 3.21)
 
-set(targetname NN)
+set(targetname Utilities)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
@@ -22,11 +22,5 @@ target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core)
 if(dynaplex_all_warnings)
 target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3>  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra> )
 endif() 
-#Logic for including PyTorch Privately
-if(Torch_FOUND)
-   target_compile_definitions(DP_${targetname} PRIVATE DP_TORCH_AVAILABLE=1)
-   target_link_libraries(DP_${targetname} PUBLIC "${TORCH_LIBRARIES}")
-endif()
-
 endif()
 

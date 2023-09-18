@@ -115,7 +115,6 @@ namespace DynaPlex::Erasure
 					{
 						traj.CumulativeReturn += mdp->ModifyStateWithAction(state, traj.NextAction);
 						traj.Category = mdp->GetStateCategory(state);
-						traj.ActionCount++;
 					}
 					else
 					{
@@ -138,7 +137,7 @@ namespace DynaPlex::Erasure
 		{
 			if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG> && HasModifyStateWithEvent<t_MDP,t_State,t_Event>)
 			{
-				bool AnyIncorporated = false;
+				bool EventsRemaining = false;
 				for (DynaPlex::Trajectory& traj : trajectories)
 				{
 					if (traj.Category.IsAwaitEvent())
@@ -146,11 +145,15 @@ namespace DynaPlex::Erasure
 						auto& state = ToState(traj.GetState());
 						t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(0));
 						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event);
-						AnyIncorporated = true;
+						traj.EventCount++;
 						traj.Category = mdp->GetStateCategory(state);
+						if (traj.Category.IsAwaitEvent())
+						{
+							EventsRemaining = true;
+						}
 					}
 				}
-				return AnyIncorporated;
+				return EventsRemaining;
 			}
 			else
 				throw DynaPlex::Error("MDP.IncorporateEvent: " + mdp_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event");

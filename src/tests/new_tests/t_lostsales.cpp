@@ -18,7 +18,7 @@ namespace DynaPlex::Tests {
 
 		vars.Add("demand_dist", DynaPlex::VarGroup({
 			{"type", "poisson"},
-			{"mean", 2.0}
+			{"mean", 4.0}
 		}));
 
 
@@ -84,7 +84,7 @@ namespace DynaPlex::Tests {
 		
 		std::cout << "copy" << std::endl;
 
-		mdp->InitiateState(Trajectories, Trajectories[0].GetState());
+		mdp->InitiateState({ &Trajectories[2],1 }, Trajectories.back().GetState());
 		for (auto& traj : Trajectories)
 		{
 			std::cout << traj.GetState()->ToString() << std::endl;

@@ -15,10 +15,8 @@ namespace DynaPlex {
 		  * Do not manually change this. 
 	   	  */
 		StateCategory Category;
-		/// count of the number of events since the last initiation/reset. 
+		/// counts the number of events since the last initiation/reset. 
 		int64_t EventCount;
-		/// count of the number of actions since the last initiation/reset.
-		int64_t ActionCount;
 		/// cumulative return obtained since the last initiation/reset. 
 		double CumulativeReturn;
 	private:
@@ -63,7 +61,6 @@ namespace DynaPlex {
 			NextAction{},
 			Category{},
 			EventCount{ 0 },
-			ActionCount{ 0 },
 			CumulativeReturn{ 0.0 },
 			state{},
 			RNGProvider(NumEventRNGs),

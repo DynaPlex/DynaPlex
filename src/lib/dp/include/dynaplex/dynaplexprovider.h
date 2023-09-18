@@ -2,7 +2,7 @@
 #include "dynaplex/vargroup.h"
 #include "dynaplex/models/registrationmanager.h"
 #include "dynaplex/registry.h"
-#include "dynaplex/systeminfo.h"  // Include SystemInfo header
+#include "dynaplex/system.h"  // Include System header
 
 namespace DynaPlex {
 
@@ -21,8 +21,8 @@ namespace DynaPlex {
         /// lists the MDPs available. 
         VarGroup ListMDPs();
 
-        // If you want to expose SystemInfo to users:
-        const SystemInfo& getSystemInfo();
+        // If you want to expose System to users:
+        const System& GetSystem();
 
     private:
         void AddBarrier();
@@ -33,7 +33,7 @@ namespace DynaPlex {
         DynaPlexProvider& operator=(const DynaPlexProvider&) = delete;
 
         Registry m_registry;          // private instance of Registry
-        SystemInfo m_systemInfo;      // private instance of SystemInfo
+        System m_systemInfo;      // private instance of System
     };
 
 }  // namespace DynaPlex

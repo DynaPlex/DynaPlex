@@ -10,7 +10,10 @@ namespace DynaPlex::Models {
 		{
 			VarGroup vars;		
 			vars.Add("valid_actions", MaxOrderSize + 1);
-			vars.Add("num_features", leadtime);
+			
+			VarGroup feats{};
+			
+			vars.Add("features", feats);
 
 			//potentially add any stuff that was computed for diagnostics purposes
 			//not used by dynaplex framework itself. 
