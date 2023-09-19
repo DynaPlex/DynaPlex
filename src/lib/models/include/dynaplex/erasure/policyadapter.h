@@ -38,14 +38,14 @@ namespace DynaPlex::Erasure
 
 		}
 
-		void SetActions(std::span<Trajectory> trajectories) const override
+		void SetAction(std::span<Trajectory> trajectories) const override
 		{	
 			for (Trajectory& traj: trajectories)
 			{
 				// Check that the states belong to this MDP
 				if (traj.GetState()->mdp_int_hash != mdp_int_hash)
 				{
-					throw DynaPlex::Error("Error in Policy->SetActions: It seems you tried to call with states not"
+					throw DynaPlex::Error("Error in Policy->SetAction: It seems you tried to call with states not"
 						"associated with the MDP that this policy was obtained from. Please note that policies, even "
 						"generic ones, can only act on states from the same mdp instance that the policy was obtained from.");
 				}
@@ -71,7 +71,7 @@ namespace DynaPlex::Erasure
 				}
 				else
 				{
-					throw DynaPlex::Error("Error in Policy->SetActions: Cannot set action when Trajectory.Category is not IsAwaitAction, i.e. when state is not IsAwaitAction.");
+					throw DynaPlex::Error("Error in Policy->SetAction: Cannot set action when Trajectory.Category is not IsAwaitAction, i.e. when state is not IsAwaitAction.");
 				}
 			}
 

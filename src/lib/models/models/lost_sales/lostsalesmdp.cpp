@@ -4,7 +4,7 @@
 
 namespace DynaPlex::Models {
 	using namespace DynaPlex;
-	namespace LostSales /*keep this in line with id below and with namespace name in header*/
+	namespace lost_sales /*keep this in line with id below and with namespace name in header*/
 	{
 		VarGroup MDP::GetStaticInfo() const
 		{
@@ -15,12 +15,16 @@ namespace DynaPlex::Models {
 			
 			vars.Add("features", feats);
 
+			vars.Add("discount_factor", discount_factor);
+
 			//potentially add any stuff that was computed for diagnostics purposes
 			//not used by dynaplex framework itself. 
 			VarGroup diagnostics{};			
 			diagnostics.Add("MaxOrderSize", MaxOrderSize);
 			diagnostics.Add("MaxSystemInv", MaxSystemInv);
 			vars.Add("diagnostics", diagnostics);
+
+
 			
 			return vars;
 		}
@@ -43,7 +47,11 @@ namespace DynaPlex::Models {
 			{
 				queue.push_back(0);
 			}
-			return State{ StateCategory::AwaitEvent(),queue,queue.sum()};
+			State state{};
+			state.cat = StateCategory::AwaitEvent();
+			state.state_vector = queue;
+			state.total_inv = queue.sum();
+			return state;
 		}
 
 		MDP::MDP(const VarGroup& varGroup) :
@@ -53,7 +61,13 @@ namespace DynaPlex::Models {
 			varGroup.Get("h", h);
 			varGroup.Get("leadtime", leadtime);
 			varGroup.Get("demand_dist",demand_dist);
-
+			
+			//providing discount_factor is optional. 
+			if (varGroup.HasKey("discount_factor"))
+				varGroup.Get("discount_factor", discount_factor);
+			else
+				discount_factor = 1.0;
+			
 
 			//Initiate members that are computed from the parameters:
 			auto DemOverLeadtime = DiscreteDist::GetZeroDist();
@@ -91,7 +105,7 @@ namespace DynaPlex::Models {
 		}
 
 		void MDP::GetFeatures(State&, DynaPlex::Features&) {
-			throw "";
+			throw DynaPlex::Error("get features not implemented on lost_sales");
 		}
 		
 
@@ -101,7 +115,8 @@ namespace DynaPlex::Models {
 		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
 		 //to the corresponding id given below.
 			registry.Register<BaseStockPolicy>("basestock",
-				"Base-stock policy with fixed, non-adjustable base-stock level equal to the bound on system inventory discussed in Zipkin (2008)");
+				"Base-stock policy with fixed, non-adjustable base-stock level equal"
+				" to the bound on system inventory discussed in Zipkin (2008)");
 		}
 
 	

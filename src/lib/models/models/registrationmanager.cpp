@@ -3,12 +3,12 @@
 
 namespace DynaPlex::Models {
 	//forward declarations of the registration functions of various MDPs:
-	namespace LostSales {
+	namespace lost_sales {
 		void Register(DynaPlex::Registry&);
 	}
 
 
 	void RegistrationManager::RegisterAll(DynaPlex::Registry& registry) {
-		LostSales::Register(registry);		
+		lost_sales::Register(registry);
 	}
 }

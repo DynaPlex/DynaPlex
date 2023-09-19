@@ -9,7 +9,7 @@
 namespace DynaPlex::Erasure { template <typename MDPType> class PolicyRegistry; }// Forward declaration 
 
 namespace DynaPlex::Models {
-	namespace LostSales /*keep this in line with id below*/
+	namespace lost_sales /*must be consistent everywhere for complete mdp definition and associated policies and states (if not defined inline).*/
 	{		
 		class MDP
 		{			
@@ -17,7 +17,7 @@ namespace DynaPlex::Models {
 			friend class BaseStockPolicy;
 			const DynaPlex::VarGroup varGroup;
 
-			double p, h;
+			double p, h, discount_factor;
 			int64_t leadtime;
 			int64_t MaxOrderSize;
 			int64_t MaxSystemInv;
@@ -28,6 +28,15 @@ namespace DynaPlex::Models {
 				DynaPlex::StateCategory cat;
 				Queue<int64_t> state_vector;
 				int64_t total_inv;			
+				State() = default;
+
+
+				explicit State(const VarGroup& vars)
+				{
+					vars.Get("cat", cat);
+					vars.Get("state_vector", state_vector);
+					vars.Get("total_inv", total_inv);
+				}
 
 				DynaPlex::VarGroup ToVarGroup() const
 				{

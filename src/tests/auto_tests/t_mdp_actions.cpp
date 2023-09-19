@@ -18,6 +18,10 @@ namespace DynaPlex::Tests {
 		public:
 			struct State {
 				int64_t i;
+				VarGroup ToVarGroup() const
+				{//Implementation not needed for these tests. 
+					throw "";
+				}
 			};
 			using Event = int64_t;
 		private:

@@ -125,4 +125,9 @@ namespace DynaPlex {
         return m_systemInfo;
     }
 
+    DynaPlex::Utilities::Demonstrator DynaPlexProvider::GetDemonstrator(const VarGroup& config)
+    {
+        return DynaPlex::Utilities::Demonstrator(m_systemInfo, config);
+    }
+
 }  // namespace DynaPlex

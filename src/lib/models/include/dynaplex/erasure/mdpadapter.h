@@ -23,13 +23,17 @@ namespace DynaPlex::Erasure
 		static_assert(HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
 		using t_State = typename t_MDP::State;
 		using t_Event = std::conditional_t<HasEvent<t_MDP>, typename t_MDP::Event, int64_t>;
-
+		
+		//Should we require this right off the bat and be done with it?
+		//static_assert(DynaPlex::Concepts::ConvertibleToVarGroup<t_State>, "MDP::State must define VarGroup ToVarGroup() const");
+		
 		std::string unique_id;
 		int64_t mdp_int_hash;
 		std::shared_ptr<const t_MDP> mdp;
 		std::string mdp_id;
 		PolicyRegistry<t_MDP> policy_registry;
 		ActionRangeProvider<t_MDP> provider;
+		double discount_factor;
 
 		//Registers the policies with the internal registry:
 		void RegisterPolicies()
@@ -42,6 +46,18 @@ namespace DynaPlex::Erasure
 			}
 		}
 
+		void InitializeVariables()
+		{
+			auto static_vars = GetStaticInfo();
+			if (static_vars.HasKey("discount_factor"))
+				static_vars.Get("discount_factor", discount_factor);
+
+			if (discount_factor > 1.0 || discount_factor <= 0.0)
+			{
+				throw DynaPlex::Error("MDP, id \"" + mdp_id + "\" : discount_factor is invalid: " + std::to_string(discount_factor) + ". Must be in (0.0,1.0].");
+			}
+		}
+
 		
 
 	public:
@@ -51,12 +67,19 @@ namespace DynaPlex::Erasure
 			mdp_int_hash{ vars.Int64Hash() },
 			mdp_id{ vars.Identifier() },
 			policy_registry{},
-			provider{ mdp }
+			provider{ mdp },
+			discount_factor{ 1.0 }
 		{
+			InitializeVariables();
 			RegisterPolicies();
 		}		
 
-		virtual int64_t NumEventRNGs() const override
+		double DiscountFactor() const override
+		{
+			return discount_factor;
+		}
+
+		int64_t NumEventRNGs() const override
 		{
 			//At present, multiple event streams not supported.
 			return 1;
@@ -113,7 +136,7 @@ namespace DynaPlex::Erasure
 					
 					if (traj.Category.IsAwaitAction())
 					{
-						traj.CumulativeReturn += mdp->ModifyStateWithAction(state, traj.NextAction);
+						traj.CumulativeReturn += mdp->ModifyStateWithAction(state, traj.NextAction) * traj.EffectiveDiscountFactor;
 						traj.Category = mdp->GetStateCategory(state);
 					}
 					else
@@ -128,7 +151,7 @@ namespace DynaPlex::Erasure
 		}
 		void IncorporateAction(std::span<DynaPlex::Trajectory> trajectories, const DynaPlex::Policy& policy) const override
 		{
-			policy->SetActions(trajectories);
+			policy->SetAction(trajectories);
 			IncorporateAction(trajectories);
 		}
 
@@ -144,8 +167,10 @@ namespace DynaPlex::Erasure
 					{
 						auto& state = ToState(traj.GetState());
 						t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(0));
-						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event);
 						traj.EventCount++;
+						traj.EffectiveDiscountFactor *= discount_factor;
+						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
+						
 						traj.Category = mdp->GetStateCategory(state);
 						if (traj.Category.IsAwaitEvent())
 						{
@@ -166,7 +191,7 @@ namespace DynaPlex::Erasure
 				{
 					t_State state = mdp->GetInitialState(traj.RNGProvider.GetInitiationRNG());
 					traj.Category = mdp->GetStateCategory(state);
-					traj.ReplaceState(std::move(std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state)));
+					traj.Reset(std::move(std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state)));
 				}
 			}
 			else if constexpr (HasGetInitialState<t_MDP>)
@@ -175,7 +200,7 @@ namespace DynaPlex::Erasure
 				{
 					t_State state = mdp->GetInitialState();
 					traj.Category = mdp->GetStateCategory(state);
-					traj.ReplaceState(std::move( std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state)));
+					traj.Reset(std::move( std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state)));
 				}
 			}
 			else
@@ -185,7 +210,7 @@ namespace DynaPlex::Erasure
 		{
 			for (DynaPlex::Trajectory& traj : trajectories)
 			{
-				traj.ReplaceState(std::move(state->Clone()));
+				traj.Reset(std::move(state->Clone()));
 				auto& t_state = ToState(state);
 				traj.Category = mdp->GetStateCategory(t_state);
 			}

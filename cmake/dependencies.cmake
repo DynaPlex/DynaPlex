@@ -8,9 +8,7 @@ endif()
 if(dynaplex_CMakeUserPresets_exists)
 message("CMakeUserPresets detected in ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json" )
 else()
-message("CMakeUserPresets not detected in ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json")
-message("Copying default userpresets")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/resources/CMakeUserPresets.json.in" ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json)
+message(FATAL_ERROR "CMakeUserPresets not detected at: ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUserPresets.json | REVIEW README.md")
 endif()
 
 

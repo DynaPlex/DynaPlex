@@ -2,11 +2,11 @@
 #include "dynaplex/vargroup.h"
 #include "dynaplex/models/registrationmanager.h"
 #include "dynaplex/registry.h"
-#include "dynaplex/system.h"  // Include System header
-
+#include "dynaplex/system.h"
+#include "dynaplex/Demonstrator.h"
 namespace DynaPlex {
-
     class DynaPlexProvider {
+        
     public:
         /// provides access the single instance of the class
         static DynaPlexProvider& Get();
@@ -23,6 +23,8 @@ namespace DynaPlex {
 
         // If you want to expose System to users:
         const System& GetSystem();
+
+        DynaPlex::Utilities::Demonstrator GetDemonstrator(const VarGroup& config);
 
     private:
         void AddBarrier();

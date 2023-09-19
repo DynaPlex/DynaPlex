@@ -5,15 +5,10 @@
 #include <memory>
 
 namespace DynaPlex::Models {
-	namespace LostSales /*keep this namespace name in line with the name space in which the mdp corresponding to this policy is defined*/
+	namespace lost_sales /*must be consistent everywhere for complete mdp defininition and associated policies.*/
 	{
-		// Forward declarations
+		// Forward declaration
 		class MDP;
-
-		//class MDP {
-		//public:
-		//	class State;
-		//};
 
 		class BaseStockPolicy
 		{

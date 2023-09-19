@@ -6,12 +6,18 @@
 #include "vargroup.h"
 namespace DynaPlex
 {
+	/**
+	 * DynaPlex algorithms access policies through this interface. For custom policies for specific MDPs, there 
+	 * is no need to manually implement this interface. Instead the DynaPlex accepts a duck-typed specific policy 
+	 * (see examples under models/models.)
+	 * that adheres to an informal contract, and will adapt this policy to implement PolicyInterface.
+	 */
 	class PolicyInterface
 	{
 	public:
 		virtual std::string Identifier() const = 0;
 		/// sets the actions if all trajectories in the span/vector have category IsAwaitAction(), throws otherwise.
-		virtual void SetActions(std::span<Trajectory>) const = 0;
+		virtual void SetAction(std::span<Trajectory>) const = 0;
 
 
 	};

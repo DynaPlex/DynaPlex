@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 #include <memory> // for std::unique_ptr
 #include <iostream>  // For std::cout and std::ostream

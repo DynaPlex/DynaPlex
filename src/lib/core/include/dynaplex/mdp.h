@@ -8,6 +8,12 @@
 #include "trajectory.h"
 namespace DynaPlex
 {
+	/**
+	 * DynaPlex algorithms access MDPs through this interface. Note that you are never required to manually implement this interface, instead
+	 * DynaPlex takes a duck-typed specific MDP that adheres to an informal contract
+	 * (see examples under models/models.)
+	 * and adapts this MDP to implement MDPInterface. 
+	 */
 	class MDPInterface
 	{
 	public:
@@ -24,6 +30,8 @@ namespace DynaPlex
 		/// Retrieves the number of event random number generators used by this MDP
 		virtual int64_t NumEventRNGs() const = 0;
 
+		/// Retrieves the discount factor
+		virtual double DiscountFactor() const = 0;
 
 		/**
 		 * Retrieves the initial state for this MDP.
@@ -40,11 +48,13 @@ namespace DynaPlex
 		/**
 		 * Incorporates the NextAction into the trajectories. All trajectories in span/vector
 		 * must have Category.IsAwaitsAction; throws DynaPlex::Exception otherwise. 
+		 * Note: Assumes trajectory.NextAction is allowed for corresponding trajectory.GetState(). 
 		 */
 		virtual void IncorporateAction(std::span<DynaPlex::Trajectory> trajectories) const  = 0;
 		/**
          * Incorporates the action selected by the policy into the trajectories. All trajectories in span/vector
          * must have Category.IsAwaitsAction; throws DynaPlex::Exception otherwise.
+		 * Note: Immediately after the call, NextAction for the trajectory still contains the action taken. 
          */
 		virtual void IncorporateAction(std::span<DynaPlex::Trajectory> trajectories,const DynaPlex::Policy& policy) const =0;
 
@@ -71,12 +81,13 @@ namespace DynaPlex
 	
 		
 		/**
-		 * Initiates the states in the trajectories. Uses GetInitialState(RNG&) if available, otherwise uses 
-		 * GetInitialState(). Updates the Category in the trajectory, but leaves EventCount and CumulativeReturn untouched. 
+		 * Initiates the states in the trajectories. Uses random initial state (GetInitialState(RNG&)) if available, otherwise uses deterministic state (GetInitialState()). 
+		 * Updates the Category in the trajectory, and resets EventCount, CumulativeReturn, and EffectiveDiscountFactor. 
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories) const = 0;
 		/**
-		 * Sets the states in the trajectories to a specific state value. Updates the Category in the trajectory, but leaves EventCount and CumulativeReturn untouched.
+		 * Sets the states in the trajectories to a specific state value. 
+		 * Updates the Category in the trajectory, and resets EventCount, CumulativeReturn, and EffectiveDiscountFactor.
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories,const DynaPlex::dp_State& state) const = 0;
 
@@ -90,6 +101,7 @@ namespace DynaPlex
 		 * Convenience function that calls GetPolicy(VarGroup) with the parameter { "id": id },
 		 * i.e., providing only the id. Suitable for "random" and other generic policies,
 		 * as well as client-provided policies that need no information beyond the id.
+		 * Policies are NOT cross-compatible across MDPs, even generic policies like "random".
 		 */
 		virtual DynaPlex::Policy GetPolicy(const std::string& id) const = 0;
 

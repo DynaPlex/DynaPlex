@@ -104,6 +104,18 @@ namespace DynaPlex {
 			other.num_items = 0;
 		}
 
+		Queue& operator=(const Queue& other) = default;  
+
+		Queue& operator=(Queue&& other) noexcept {
+			if (this != &other) { 
+				first_item = other.first_item;
+				num_items = other.num_items;
+				items = std::move(other.items); 
+				other.num_items = 0;  
+			}
+			return *this;
+		}
+
 		void reserve(size_t capacity)
 		{
 			if (capacity > items.size())

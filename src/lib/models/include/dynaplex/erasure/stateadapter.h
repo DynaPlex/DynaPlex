@@ -20,7 +20,7 @@ namespace DynaPlex::Erasure {
                 return state.ToVarGroup();
             }
             else
-                throw DynaPlex::Error("State->ToVarGroup() : State is not ConvertibleToVarGroup.");
+                throw DynaPlex::Error("State->ToVarGroup() : State is not ConvertibleToVarGroup. To use this functionality, please ensure that State exposes VarGroup ToVarGroup() const.");
 
         }
 
