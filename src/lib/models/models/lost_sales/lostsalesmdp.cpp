@@ -104,7 +104,7 @@ namespace DynaPlex::Models {
 			}
 		}
 
-		void MDP::GetFeatures(State&, DynaPlex::Features&) {
+		void MDP::GetFeatures(const State&, DynaPlex::Features&) const {
 			throw DynaPlex::Error("get features not implemented on lost_sales");
 		}
 		
@@ -114,19 +114,11 @@ namespace DynaPlex::Models {
 		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
 		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
 		 //to the corresponding id given below.
-			registry.Register<BaseStockPolicy>("basestock",
+			registry.Register<BaseStockPolicy>("base_stock",
 				"Base-stock policy with fixed, non-adjustable base-stock level equal"
 				" to the bound on system inventory discussed in Zipkin (2008)");
 		}
-
-	
-
-		void MDP::GetFeatures(const State&, Features&) const
-		{
-			return;
-		}
-
-
+		
 		DynaPlex::StateCategory MDP::GetStateCategory(const State& state) const
 		{
 			return state.cat;

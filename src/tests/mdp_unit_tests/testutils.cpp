@@ -8,28 +8,54 @@
 
 namespace DynaPlex::Tests {
 	
-    void ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& agent_config_name) {
+    void ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& policy_config_name) {
 		auto& dp = DynaPlexProvider::Get();
 		auto& system = dp.GetSystem();
 
-
+		//configure MDP:
 		ASSERT_TRUE(
-			system.file_exists("defaults", model_name, mdp_config_name)
+			system.file_exists("mdp_config_examples", model_name, mdp_config_name)
 		);
-
-		std::string file_path = system.filename("defaults", model_name, mdp_config_name);
-
-		DynaPlex::VarGroup vars = VarGroup::LoadFromFile(file_path);
-
+		DynaPlex::VarGroup mdp_vars_from_json;
 		DynaPlex::MDP mdp;
-		DynaPlex::Policy policy;
+		ASSERT_NO_THROW(
+			std::string file_path = system.filename("mdp_config_examples", model_name, mdp_config_name);
+			mdp_vars_from_json = VarGroup::LoadFromFile(file_path);
+		);
 
 		ASSERT_NO_THROW(
-			mdp = dp.GetMDP(vars);
+			mdp = dp.GetMDP(mdp_vars_from_json);
 		);
-		ASSERT_NO_THROW(
-			policy = mdp->GetPolicy("random");
-		);
+		ASSERT_TRUE(mdp);
+
+
+		DynaPlex::Policy policy;
+		//configure policy:
+		if (policy_config_name != "")
+		{
+			ASSERT_TRUE(
+				system.file_exists("mdp_config_examples", model_name, policy_config_name)
+			);
+			
+			VarGroup policy_vars_from_json;
+			ASSERT_NO_THROW(
+				std::string file_path = system.filename("mdp_config_examples", model_name, policy_config_name);
+			    policy_vars_from_json = VarGroup::LoadFromFile(file_path);
+			);
+
+			ASSERT_NO_THROW(
+				policy = mdp->GetPolicy(policy_vars_from_json);
+			);
+		}
+		else
+		{  //default to random:
+			ASSERT_NO_THROW(
+				policy = mdp->GetPolicy("random");
+			);
+		}
+		//policy must now be initiated. 
+		ASSERT_TRUE(policy);
+		
 
 		int64_t numEventTrajectories;
 		ASSERT_NO_THROW(
@@ -38,9 +64,6 @@ namespace DynaPlex::Tests {
 		Trajectory trajectory{ numEventTrajectories };
 
 
-
-		ASSERT_NO_THROW(
-		);
 		ASSERT_NO_THROW(
 			mdp->InitiateState({ &trajectory,1 });
 		);

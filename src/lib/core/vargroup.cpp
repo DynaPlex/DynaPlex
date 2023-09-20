@@ -388,7 +388,10 @@ namespace DynaPlex {
 		if (file.is_open()) {
 			ordered_json j;
 			try {
-				j= ordered_json::parse(file);
+				j= ordered_json::parse(file,
+					/* callback */ nullptr,
+					/* allow exceptions */ true,
+					/* ignore_comments */ true);
 			}
 			catch (const nlohmann::json::parse_error& e) {
 				throw DynaPlex::Error("Failed to parse JSON file: " + file_path + " - " + e.what());

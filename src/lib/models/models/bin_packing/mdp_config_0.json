@@ -6,13 +6,12 @@
  * - It also simplifies unit_tests, see tests/mdp_unit_tests/*.cpp. 
  */
 {
-  "id": "lost_sales",
-  "p": 4.0,
-  "h": 1.0,
-  "leadtime": 3,
+  "id": "bin_packing",
+  "number_of_bins": 4,
+  "max_bin_size": 20,
   "discount_factor": 1.0,
-  "demand_dist": {
-    "type": "poisson",
-    "mean": 4.0
+  "weight_dist": {
+    "type": "geometric",
+    "mean": 3.0
   }
 }

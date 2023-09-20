@@ -29,7 +29,7 @@ else(dynaplex_enable_pythonbindings)
      endif()
     
       # Ensure the destination directory structure exists.
-      file(MAKE_DIRECTORY ${DYNAPLEX_IO_ROOT_DIR}/IO_DynaPlex/defaults)
+      file(MAKE_DIRECTORY ${DYNAPLEX_IO_ROOT_DIR}/IO_DynaPlex/mdp_config_examples)
 
       # Iterate through subdirectories in 'models' and find JSON files.
       file(GLOB_RECURSE MODEL_JSON_FILES CONFIGURE_DEPENDS  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/models" "${CMAKE_CURRENT_SOURCE_DIR}/models/*/*.json")
@@ -38,7 +38,7 @@ else(dynaplex_enable_pythonbindings)
 
       foreach(JSON_FILE ${MODEL_JSON_FILES})
          get_filename_component(JSON_DIR ${JSON_FILE} DIRECTORY)
-         set(JSON_DEST "${DYNAPLEX_IO_ROOT_DIR}/IO_DynaPlex/defaults/${JSON_FILE}")
+         set(JSON_DEST "${DYNAPLEX_IO_ROOT_DIR}/IO_DynaPlex/mdp_config_examples/${JSON_FILE}")
     
          add_custom_command(
              OUTPUT ${JSON_DEST}

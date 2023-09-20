@@ -6,9 +6,12 @@ namespace DynaPlex::Models {
 	namespace lost_sales {
 		void Register(DynaPlex::Registry&);
 	}
-
+	namespace bin_packing {
+		void Register(DynaPlex::Registry&);
+	}
 
 	void RegistrationManager::RegisterAll(DynaPlex::Registry& registry) {
 		lost_sales::Register(registry);
+		bin_packing::Register(registry);
 	}
 }

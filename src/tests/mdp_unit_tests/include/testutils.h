@@ -4,10 +4,11 @@ namespace DynaPlex::Tests {
 	/**
 	 *Loads json from IORootDir/IO_DynaPlex/defaults/model_name/mdp_config_name
 	 *    - configures MDP from that json
-	 *If provided, loads json from from IORootDir/IO_DynaPlex/defaults/model_name/agent_config_name
+	 *If argument policy_config_name provided, 
+	 *    - loads json from from IORootDir/IO_DynaPlex/defaults/model_name/policy_config_name
 	 *    - configures policy from that json
-	 *If not provided, gets random policy.
-	 * Performs unit tests using the MDP and the policy. 
+	 *If argument policy_config_name not provided, gets random policy.
+	 *Performs range of tests using the MDP and the Policy. 
 	 */
-    void ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& agent_config_name = "");
+    void ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& policy_config_name = "");
 }

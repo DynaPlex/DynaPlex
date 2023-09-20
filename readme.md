@@ -70,4 +70,8 @@ module load 2022
 ```
 **Note**: A sample environment file `python/environment.yml` is provided.
 
-After setting up the environment, compiled Python bindings will allow you to execute Python scripts.
+After setting up the environment, and compilng the bindings, Python bindings will allow you to execute Python scripts.
+
+## Adding Models
+
+Detailed instructions on how to add new models or elements to the project can be found [here](docs/adding-models.md).

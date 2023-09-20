@@ -59,8 +59,6 @@ namespace DynaPlex::Tests {
 
 		
 		ASSERT_NO_THROW(
-		);
-		ASSERT_NO_THROW(
 			mdp->InitiateState({ &trajectory,1 });
 		);
 		ASSERT_NO_THROW(
