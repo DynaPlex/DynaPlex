@@ -74,4 +74,4 @@ After setting up the environment, and compilng the bindings, Python bindings wil
 
 ## Adding Models
 
-Detailed instructions on how to add new models or elements to the project can be found [here](docs/adding-models.md).
+Detailed instructions on how to add new models or elements to the project can be found [here](docs/adding_models.md).
