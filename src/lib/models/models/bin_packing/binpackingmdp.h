@@ -14,7 +14,6 @@ namespace DynaPlex::Models {
 	{		
 		class MDP
 		{			
-			const DynaPlex::VarGroup varGroup;
 			double discount_factor;
 
 			int64_t max_bin_size;
@@ -25,25 +24,9 @@ namespace DynaPlex::Models {
 			struct State {
 				DynaPlex::StateCategory cat;
 				std::vector<int64_t> weight_vector;
-				int64_t upcoming_weight;			
-				State() = default;
+				int64_t upcoming_weight;	
 
-
-				explicit State(const VarGroup& vars)
-				{
-					vars.Get("cat", cat);
-					vars.Get("weight_vector", weight_vector);
-					vars.Get("upcoming_weight", upcoming_weight);
-				}
-
-				DynaPlex::VarGroup ToVarGroup() const
-				{
-					DynaPlex::VarGroup vars;
-					vars.Add("cat", cat);
-					vars.Add("weight_vector", weight_vector);
-					vars.Add("upcoming_weight", upcoming_weight);
-					return vars;
-				}
+				DynaPlex::VarGroup ToVarGroup() const;
 			};
 			double ModifyStateWithAction(State&, int64_t action) const;
 			double ModifyStateWithEvent(State&, DynaPlex::RNG&) const;
@@ -52,6 +35,7 @@ namespace DynaPlex::Models {
 			DynaPlex::StateCategory GetStateCategory(const State&) const;
 			bool IsAllowedAction(const State& state, int64_t action) const;			
 			State GetInitialState() const;
+			State GetState(const VarGroup& vars) const;
 			void RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const;
 			void GetFeatures(const State&, DynaPlex::Features&) const;
 			explicit MDP(const DynaPlex::VarGroup&);

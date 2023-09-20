@@ -38,24 +38,9 @@ namespace DynaPlex::Models {
 		}
 
 
-		MDP::State MDP::GetInitialState() const
-		{
-			auto queue = Queue<int64_t>{};
-			queue.reserve(leadtime + 1);
-			queue.push_back(MaxSystemInv);//<- initial on-hand
-			for (size_t i = 0; i < leadtime - 1; i++)
-			{
-				queue.push_back(0);
-			}
-			State state{};
-			state.cat = StateCategory::AwaitEvent();
-			state.state_vector = queue;
-			state.total_inv = queue.sum();
-			return state;
-		}
+		
 
-		MDP::MDP(const VarGroup& varGroup) :
-			varGroup{ varGroup }
+		MDP::MDP(const VarGroup& varGroup)
 		{
 			varGroup.Get("p", p);
 			varGroup.Get("h", h);
@@ -88,7 +73,7 @@ namespace DynaPlex::Models {
 		{
 			state.cat= StateCategory::AwaitAction();
 
-			auto onHand = state.state_vector.pop_front();//Length is L again.
+			auto onHand = state.state_vector.pop_front();//Length is leadtime again.
 
 			if (onHand > event)
 			{//There is sufficient inventory. Satisfy order and incur holding costs
@@ -132,13 +117,47 @@ namespace DynaPlex::Models {
 			return false;
 		}
 
+		MDP::State MDP::GetInitialState() const
+		{
+			auto queue = Queue<int64_t>{};
+			queue.reserve(leadtime + 1);
+			queue.push_back(MaxSystemInv);//<- initial on-hand
+			for (size_t i = 0; i < leadtime - 1; i++)
+			{
+				queue.push_back(0);
+			}
+			State state{};
+			state.cat = StateCategory::AwaitAction();
+			state.state_vector = queue;
+			state.total_inv = queue.sum();
+			return state;
+		}
+
+		
+		MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const
+		{
+			State state{};
+			vars.Get("cat", state.cat);
+			vars.Get("state_vector", state.state_vector);
+			vars.Get("total_inv", state.total_inv);
+			return state;
+		}
+		DynaPlex::VarGroup MDP::State::ToVarGroup() const
+		{
+			DynaPlex::VarGroup vars;
+			vars.Add("cat", cat);
+			vars.Add("state_vector", state_vector);
+			vars.Add("total_inv", total_inv);
+			return vars;
+		}
+
 
 		void Register(DynaPlex::Registry& registry)
 		{
 			DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel(
 				/*=id though which the MDP will be retrievable*/ "lost_sales",
 				/*description*/ "Canonical lost sales problem, see e.g. Zipkin (2008) for a formal description. (parameters: p, h, leadtime, demand_dist.)",
-				registry); 
+				/*reference to passed registry*/registry); 
 		}
 	}
 }

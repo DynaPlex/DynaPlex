@@ -19,10 +19,16 @@ namespace DynaPlex
 	public:
 		/**
 		 * Returns a unique identifier for this MDP.
-		 * The identifier consists of the MDP id plus a hash of the parameters.
+		 * The identifier consists of the MDP type id plus a hash of the parameters.
 		 * MDPs with the exact same parameters in the same order will have the same identifier.
 		 */
 		virtual std::string Identifier() const = 0;
+
+		/**
+		 * Return an identifier of the underlying type of this MDP. 
+		 */
+		virtual std::string TypeIdentifier() const = 0;
+
 
 		/// Provides information about the MDP.
 		virtual DynaPlex::VarGroup GetStaticInfo() const = 0;

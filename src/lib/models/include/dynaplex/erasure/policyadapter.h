@@ -23,8 +23,14 @@ namespace DynaPlex::Erasure
 		std::shared_ptr<const t_MDP> mdp;
 		std::string identifier;
 		int64_t mdp_int_hash;
+		const DynaPlex::VarGroup vars;
 	public:
-		std::string Identifier() const override
+		const DynaPlex::VarGroup& GetConfig() const override
+		{
+			return vars;
+		}
+
+		std::string TypeIdentifier() const override
 		{
 			return identifier;
 		}
@@ -33,7 +39,8 @@ namespace DynaPlex::Erasure
 			:mdp{mdp},
 			policy{mdp,policy_vars },
 			identifier{ policy_vars.Identifier()},
-			mdp_int_hash{mdp_int_hash}
+			mdp_int_hash{mdp_int_hash},
+			vars{policy_vars}
 		{
 
 		}

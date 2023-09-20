@@ -30,7 +30,7 @@ namespace DynaPlex::Erasure
 		std::string unique_id;
 		int64_t mdp_int_hash;
 		std::shared_ptr<const t_MDP> mdp;
-		std::string mdp_id;
+		std::string mdp_type_id;
 		PolicyRegistry<t_MDP> policy_registry;
 		ActionRangeProvider<t_MDP> provider;
 		double discount_factor;
@@ -54,7 +54,7 @@ namespace DynaPlex::Erasure
 
 			if (discount_factor > 1.0 || discount_factor <= 0.0)
 			{
-				throw DynaPlex::Error("MDP, id \"" + mdp_id + "\" : discount_factor is invalid: " + std::to_string(discount_factor) + ". Must be in (0.0,1.0].");
+				throw DynaPlex::Error("MDP, id \"" + mdp_type_id + "\" : discount_factor is invalid: " + std::to_string(discount_factor) + ". Must be in (0.0,1.0].");
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace DynaPlex::Erasure
 			mdp{ std::make_shared<const t_MDP>(vars) },
 			unique_id{ vars.UniqueIdentifier() },
 			mdp_int_hash{ vars.Int64Hash() },
-			mdp_id{ vars.Identifier() },
+			mdp_type_id{ vars.Identifier() },
 			policy_registry{},
 			provider{ mdp },
 			discount_factor{ 1.0 }
@@ -102,6 +102,11 @@ namespace DynaPlex::Erasure
 			return vec;
 		}
 
+		std::string TypeIdentifier() const override
+		{
+			return mdp_type_id;
+		}
+
 		std::string Identifier() const override
 		{
 			return unique_id;
@@ -121,7 +126,7 @@ namespace DynaPlex::Erasure
 				return std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state);
 			}
 			else
-				throw DynaPlex::Error("MDP.GetInitialStateVec in MDP: " + mdp_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
+				throw DynaPlex::Error("MDP.GetInitialStateVec in MDP: " + mdp_type_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
 		}
 		
 		
@@ -146,7 +151,7 @@ namespace DynaPlex::Erasure
 				}
 			}
 			else
-				throw DynaPlex::Error("MDP.IncorporateActions: " + mdp_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
+				throw DynaPlex::Error("MDP.IncorporateActions: " + mdp_type_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
 			
 		}
 		void IncorporateAction(std::span<DynaPlex::Trajectory> trajectories, const DynaPlex::Policy& policy) const override
@@ -178,7 +183,7 @@ namespace DynaPlex::Erasure
 						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, traj.RNGProvider.GetEventRNG(event_stream)) * traj.EffectiveDiscountFactor;
 					}
 					else //if constexpr 
-						throw DynaPlex::Error("MDP.IncorporateEvent: " + mdp_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event and ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
+						throw DynaPlex::Error("MDP.IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event and ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
 
 
 					traj.Category = mdp->GetStateCategory(state);
@@ -211,7 +216,7 @@ namespace DynaPlex::Erasure
 				}
 			}
 			else
-				throw DynaPlex::Error("MDP.InitiateState: " + mdp_id + "\nMDP does not publicly define GetInitialState() const or GetInitialState(DynaPlex::RNG&) const returning MDP::State");
+				throw DynaPlex::Error("MDP.InitiateState: " + mdp_type_id + "\nMDP does not publicly define GetInitialState() const or GetInitialState(DynaPlex::RNG&) const returning MDP::State");
 		}
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories, const DynaPlex::dp_State& state) const override
 		{

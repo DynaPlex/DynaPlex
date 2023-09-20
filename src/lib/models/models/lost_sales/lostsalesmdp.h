@@ -15,8 +15,7 @@ namespace DynaPlex::Models {
 		{			
 			//to give this access to private members:
 			friend class BaseStockPolicy;
-			const DynaPlex::VarGroup varGroup;
-
+			//MDP variables:
 			double p, h, discount_factor;
 			int64_t leadtime;
 			int64_t MaxOrderSize;
@@ -24,45 +23,25 @@ namespace DynaPlex::Models {
 			DynaPlex::DiscreteDist demand_dist;
 		public:
 			using Event = int64_t;
+
 			struct State {
+				//State variables:
 				DynaPlex::StateCategory cat;
 				Queue<int64_t> state_vector;
-				int64_t total_inv;			
-				State() = default;
-
-
-				explicit State(const VarGroup& vars)
-				{
-					vars.Get("cat", cat);
-					vars.Get("state_vector", state_vector);
-					vars.Get("total_inv", total_inv);
-				}
-
-				DynaPlex::VarGroup ToVarGroup() const
-				{
-					DynaPlex::VarGroup vars;
-					vars.Add("cat", cat);
-					vars.Add("state_vector", state_vector);		
-					vars.Add("total_inv", total_inv);
-					return vars;
-				}
+				int64_t total_inv;
+				
+				DynaPlex::VarGroup ToVarGroup() const;
 			};
 			double ModifyStateWithAction(State&, int64_t action) const;
 			double ModifyStateWithEvent(State&,const Event&) const;
 			Event GetEvent(DynaPlex::RNG& rng) const;
-
 			DynaPlex::VarGroup GetStaticInfo() const;
-
 			DynaPlex::StateCategory GetStateCategory(const State&) const;
 			bool IsAllowedAction(const State& state, int64_t action) const;
-
-
 			State GetInitialState() const;
-
+			State GetState(const VarGroup&) const;
 			void RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const;
-
 			void GetFeatures(const State&, DynaPlex::Features&) const;
-
 			explicit MDP(const DynaPlex::VarGroup&);
 		};
 	}

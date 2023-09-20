@@ -7,7 +7,7 @@
 namespace DynaPlex::Tests {
 	
 
-	TEST(LostSales, Basics) {
+	TEST(Demonstrator, WithLostSales) {
 		auto& dp = DynaPlexProvider::Get();
 		DynaPlex::VarGroup vars;
 		vars.Add("id", "lost_sales");
@@ -32,16 +32,24 @@ namespace DynaPlex::Tests {
 			mdp = dp.GetMDP(vars);
 		);
 		ASSERT_NO_THROW(
-		    policy = mdp->GetPolicy("basestock");
+		    policy = mdp->GetPolicy("base_stock");
 		);
 		
-		int64_t max_events = 400;
+
+
+		int64_t max_events = 100;
 		auto demonstrator_config = DynaPlex::VarGroup{ {"max_event_count", max_events},{"seed",123}};
 
 		auto demonstrator = dp.GetDemonstrator(demonstrator_config);
 
 		auto trace = demonstrator.GetTrace(mdp);
 		
-		ASSERT_EQ(trace.size(), max_events*2-1);
+		for (auto& elem : trace)
+		{
+		//	std::cout << elem.Dump() << std::endl;
+		}
+
+		//lost_sales starts with action, and alternates between actions and events, never final. Hence, there will be 2*maxevents elements in trace. 
+		ASSERT_EQ(trace.size(), max_events*2);
 	}
 }

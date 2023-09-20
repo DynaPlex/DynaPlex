@@ -28,6 +28,9 @@ namespace DynaPlex::Tests {
 		);
 		ASSERT_TRUE(mdp);
 
+		ASSERT_EQ(
+			mdp->TypeIdentifier(), model_name
+		);
 
 		DynaPlex::Policy policy;
 		//configure policy:

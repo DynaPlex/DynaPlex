@@ -36,14 +36,14 @@ namespace DynaPlex::Tests {
 
 		auto State = model->GetInitialState();
 
-		DynaPlex::VarGroup policyvars{ {"id","basestock"} };
+		DynaPlex::VarGroup policyvars{ {"id","base_stock"} };
 
 		DynaPlex::Policy policy{};
 		ASSERT_NO_THROW(
 			policy = model->GetPolicy(policyvars);
 		);
 
-		EXPECT_EQ(policy->Identifier(), "basestock");
+		EXPECT_EQ(policy->TypeIdentifier(), "base_stock");
 
 	}
 

@@ -8,7 +8,7 @@ namespace DynaPlex::Models {
 	{
 		VarGroup MDP::GetStaticInfo() const
 		{
-			VarGroup vars;		
+			VarGroup vars;
 			vars.Add("valid_actions", number_of_bins);
 
 			VarGroup feats{};
@@ -43,6 +43,23 @@ namespace DynaPlex::Models {
 			return 0.0;
 		}
 
+		DynaPlex::VarGroup MDP::State::ToVarGroup() const
+		{
+			DynaPlex::VarGroup vars;
+			vars.Add("cat", cat);
+			vars.Add("weight_vector", weight_vector);
+			vars.Add("upcoming_weight", upcoming_weight);
+			return vars;
+		}
+
+		MDP::State MDP::GetState(const VarGroup& vars) const
+		{
+			State state{};			
+			vars.Get("cat", state.cat);
+			vars.Get("weight_vector", state.weight_vector);
+			vars.Get("upcoming_weight", state.upcoming_weight);		
+			return state;
+		}
 
 		MDP::State MDP::GetInitialState() const
 		{			
@@ -53,8 +70,7 @@ namespace DynaPlex::Models {
 			return state;
 		}
 
-		MDP::MDP(const VarGroup& varGroup) :
-			varGroup{ varGroup }
+		MDP::MDP(const VarGroup& varGroup) 
 		{
 
 		
@@ -84,13 +100,8 @@ namespace DynaPlex::Models {
 		
 
 		void MDP::RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const
-		{//Here, we register any custom heuristics we want to provide for this MDP.	
-		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
-		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
-		 //to the corresponding id given below.
-		//	registry.Register<BaseStockPolicy>(/*=id though which the policy will be retrievable*/"base_stock",
-		////	/*description*/	"Base-stock policy with fixed, non-adjustable base-stock level equal"
-		//		" to the bound on system inventory discussed in Zipkin (2008)");
+		{
+			//no custom policies registered currently for this MDP. 
 		}
 
 	

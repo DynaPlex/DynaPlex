@@ -95,7 +95,7 @@ namespace DynaPlex {
                 state = FINAL | index;
             }
             else if (awaits == "EOH") {
-                state = EOH | index; // No index for EOH
+                state = EOH | index; 
             }
             else {
                 throw DynaPlex::Error("StateCategory: Invalid category in VarGroup");
@@ -119,7 +119,7 @@ namespace DynaPlex {
         }
 
         std::int64_t Index() const {
-            return state & ~(0xFULL << 60); // This also needs to be consistent
+            return state & ~(0xFULL << 60); 
         }
     };
 

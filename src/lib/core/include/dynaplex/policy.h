@@ -15,7 +15,14 @@ namespace DynaPlex
 	class PolicyInterface
 	{
 	public:
-		virtual std::string Identifier() const = 0;
+		/**
+		 * Return an identifier of the underlying type of this MDP.
+		 */
+		virtual std::string TypeIdentifier() const = 0;
+		/**
+		 * Returns the configuration of this policy. 
+		 */
+		virtual const DynaPlex::VarGroup& GetConfig() const = 0;
 		/// sets the actions if all trajectories in the span/vector have category IsAwaitAction(), throws otherwise.
 		virtual void SetAction(std::span<Trajectory>) const = 0;
 
