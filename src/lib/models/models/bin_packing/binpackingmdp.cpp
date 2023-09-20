@@ -17,10 +17,15 @@ namespace DynaPlex::Models {
 			return vars;
 		}
 
-		double MDP::ModifyStateWithEvent(State& state, const MDP::Event& event) const
+
+		//NOTE: using ModifyStateWithEvent which takes DynaPlex::RNG directly is not
+		//recommended. Only resort to this after exhausting all other options.
+		//Note that in the present case, it would be very easy to refactor and take a proper event,
+		//The present use is only for documentation purposes. 
+		double MDP::ModifyStateWithEvent(State& state, DynaPlex::RNG& rng) const
 		{
 			state.cat = StateCategory::AwaitAction();
-			state.upcoming_weight = event;
+			state.upcoming_weight = weight_dist.GetSample(rng);
 			return 0.0;
 		}
 

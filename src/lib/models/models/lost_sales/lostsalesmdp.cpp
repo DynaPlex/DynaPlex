@@ -84,7 +84,7 @@ namespace DynaPlex::Models {
 			return demand_dist.GetSample(rng);
 		}
 
-		double MDP::ModifyStateWithEvent(State& state, const MDP::Event& event) const
+		double MDP::ModifyStateWithEvent(State& state,const MDP::Event& event) const
 		{
 			state.cat= StateCategory::AwaitAction();
 

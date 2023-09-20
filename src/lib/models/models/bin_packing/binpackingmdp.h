@@ -46,7 +46,7 @@ namespace DynaPlex::Models {
 				}
 			};
 			double ModifyStateWithAction(State&, int64_t action) const;
-			double ModifyStateWithEvent(State&, const Event&) const;
+			double ModifyStateWithEvent(State&, DynaPlex::RNG&) const;
 			Event GetEvent(DynaPlex::RNG& rng) const;
 			DynaPlex::VarGroup GetStaticInfo() const;
 			DynaPlex::StateCategory GetStateCategory(const State&) const;

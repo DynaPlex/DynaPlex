@@ -158,30 +158,37 @@ namespace DynaPlex::Erasure
 		
 		bool IncorporateEvent(std::span<DynaPlex::Trajectory> trajectories) const override
 		{
-			if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG> && HasModifyStateWithEvent<t_MDP,t_State,t_Event>)
+
+			bool EventsRemaining = false;
+			for (DynaPlex::Trajectory& traj : trajectories)
 			{
-				bool EventsRemaining = false;
-				for (DynaPlex::Trajectory& traj : trajectories)
+				if (traj.Category.IsAwaitEvent())
 				{
+					auto& state = ToState(traj.GetState());
+					traj.EventCount++;
+					traj.EffectiveDiscountFactor *= discount_factor;
+					auto event_stream = traj.Category.Index();
+					if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG> && HasModifyStateWithEvent<t_MDP, t_State, t_Event>)
+					{
+						t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(event_stream));
+						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
+					}
+					else if constexpr (HasModifyStateWithEventRNG<t_MDP, t_State, DynaPlex::RNG>)
+					{
+						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, traj.RNGProvider.GetEventRNG(event_stream)) * traj.EffectiveDiscountFactor;
+					}
+					else //if constexpr 
+						throw DynaPlex::Error("MDP.IncorporateEvent: " + mdp_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event and ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
+
+
+					traj.Category = mdp->GetStateCategory(state);
 					if (traj.Category.IsAwaitEvent())
 					{
-						auto& state = ToState(traj.GetState());
-						t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(0));
-						traj.EventCount++;
-						traj.EffectiveDiscountFactor *= discount_factor;
-						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
-						
-						traj.Category = mdp->GetStateCategory(state);
-						if (traj.Category.IsAwaitEvent())
-						{
-							EventsRemaining = true;
-						}
+						EventsRemaining = true;
 					}
 				}
-				return EventsRemaining;
 			}
-			else
-				throw DynaPlex::Error("MDP.IncorporateEvent: " + mdp_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event");
+			return EventsRemaining;
 		}
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories) const override
 		{		

@@ -2,13 +2,18 @@
 #include <type_traits>
 #include "dynaplex/vargroup.h"
 #include "dynaplex/statecategory.h"
-#include "dynaplex/rng.h"
 namespace DynaPlex::Erasure
 {
 	template <typename t_MDP, typename t_State, typename t_Event>
 	concept HasModifyStateWithEvent = requires(const t_MDP & mdp, t_State & state, const t_Event & event) {
 		{ mdp.ModifyStateWithEvent(state, event) } -> std::same_as<double>;
 	};
+
+	template <typename t_MDP, typename t_State, typename t_RNG>
+	concept HasModifyStateWithEventRNG = requires(const t_MDP & mdp, t_State & state, t_RNG & rng) {
+		{ mdp.ModifyStateWithEvent(state, rng) } -> std::same_as<double>;
+	};
+
 
 	template <typename t_MDP, typename t_Event, typename t_RNG>
 	concept HasGetEvent = requires(const t_MDP & mdp, t_RNG & rng) {

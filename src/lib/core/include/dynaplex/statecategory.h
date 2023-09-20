@@ -118,7 +118,7 @@ namespace DynaPlex {
             return (state & (0xFULL << 60)) == EOH;
         }
 
-        std::size_t Index() const {
+        std::int64_t Index() const {
             return state & ~(0xFULL << 60); // This also needs to be consistent
         }
     };
