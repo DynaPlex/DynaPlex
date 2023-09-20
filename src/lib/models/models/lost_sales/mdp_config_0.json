@@ -1,0 +1,16 @@
+/// Example MDP configuration file. 
+/// - Files under models/_subdir_/_filename_.json are copied to DYNAPLEX_IO_ROOT_DIR/IO_DynaPlex/defaults/_subdir_/_filename_.json
+/// where executable and unit_tests look for them. 
+/// - Providing example MDP configuration files is not required, but serves as documentation of the MDP.
+/// - It also simplifies unit_tests, see tests/mdp_unit_tests/*.cpp. 
+{
+  "id": "lost_sales",
+  "p": 4.0,
+  "h": 1.0,
+  "leadtime": 3,
+  "discount_factor": 1.0,
+  "demand_dist": {
+    "type": "geometric",
+    "mean": 3.0
+  }
+}

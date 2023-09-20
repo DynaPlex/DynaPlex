@@ -1,7 +1,7 @@
 ﻿
 cmake_minimum_required (VERSION 3.20)
 
-set(targetname tests)
+set(targetname other_unit_tests)
 
 
 add_executable (DP_${targetname})
