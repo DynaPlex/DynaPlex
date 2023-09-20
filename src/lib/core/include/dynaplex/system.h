@@ -23,10 +23,36 @@ namespace DynaPlex {
         std::uint32_t HardwareThreads() const;
         std::uint32_t WorldRank() const;
         std::uint32_t WorldSize() const;
-        /// Returns path to file in subdirectory of folder, either existing or new. 
-        std::string filename(const std::string& subdir, const std::string& filename);
-        /// Returns path to file in folder, either existing or new. 
-        std::string filename(const std::string& filename);
+
+        //file_exists methods still need implementation. 
+
+        /// returns whether file exists: IOLocation()/filename.
+        bool file_exists(const std::string& filename) const;
+
+        /// returns whether file exists: IOLocation()/subdir/filename.
+        bool file_exists(const std::string& subdir, const std::string& filename) const;
+
+        /// returns whether file exists: IOLocation()/subdir/subsubdir/filename.
+        bool file_exists(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const;
+
+        /**
+         *Creates IOLocation() / subdir / subsubdir if it does not exist.
+         *Returns path to file (maybe non-existent) in IOLocation() / subdir / subsubdir / filename.
+         */
+        //still need to implement this filename overload, others have been implemented. 
+        std::string filename(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const;
+
+        /**
+         *Creates IOLocation() / subdir if it does not exist.
+         *Returns path to file (maybe non-existent) in IOLocation() / subdir / filename.
+         */
+        std::string filename(const std::string& subdir, const std::string& filename) const;
+        
+        /**
+         *Creates IOLocation() / subdir if it does not exist.
+         *Returns path to file (maybe non-existent) in IOLocation() / subdir / filename.
+         */
+        std::string filename(const std::string& filename) const;
         /// Returns path to input-output folder. 
         std::string IOLocation() const;
         /// Elapsed time in ms. 

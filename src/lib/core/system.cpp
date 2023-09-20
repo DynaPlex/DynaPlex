@@ -65,7 +65,55 @@ namespace DynaPlex {
     std::uint32_t System::WorldSize() const {
         return pimpl->world_size_;
     }
-    std::string System::filename(const std::string& subdir, const std::string& filename) {
+
+    bool System::file_exists(const std::string& filename) const {
+        fs::path file_path = pimpl->io_location_ / filename;
+        return fs::exists(file_path);
+    }
+
+    bool System::file_exists(const std::string& subdir, const std::string& filename) const {
+        fs::path subdir_path = pimpl->io_location_ / subdir;
+        fs::path file_path = subdir_path / filename;
+        return fs::exists(file_path);
+    }
+
+    bool System::file_exists(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const {
+        fs::path subdir_path = pimpl->io_location_ / subdir;
+        fs::path subsubdir_path = subdir_path / subsubdir;
+        fs::path file_path = subsubdir_path / filename;
+        return fs::exists(file_path);
+    }
+
+    std::string System::filename(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const {
+        fs::path subdir_path = pimpl->io_location_ / subdir;
+        fs::path subsubdir_path = subdir_path / subsubdir;
+
+        // Check if subdir_path exists
+        if (!fs::exists(subdir_path)) {
+            // If subdir_path doesn't exist, attempt to create it
+            fs::create_directory(subdir_path);
+        }
+        else if (!fs::is_directory(subdir_path)) {
+            // Handle the error: subdir_path exists but is not a directory
+            throw DynaPlex::Error(subdir_path.string() + " exists but is not a directory.");
+        }
+
+        // Check if subsubdir_path exists
+        if (!fs::exists(subsubdir_path)) {
+            // If subsubdir_path doesn't exist, attempt to create it
+            fs::create_directory(subsubdir_path);
+        }
+        else if (!fs::is_directory(subsubdir_path)) {
+            // Handle the error: subsubdir_path exists but is not a directory
+            throw DynaPlex::Error(subsubdir_path.string() + " exists but is not a directory.");
+        }
+
+        fs::path file_path = subsubdir_path / filename;
+        return file_path.string();
+    }
+
+
+    std::string System::filename(const std::string& subdir, const std::string& filename) const {
         fs::path subdir_path = pimpl->io_location_ / subdir;
 
         // Check if subdir_path exists
@@ -75,14 +123,14 @@ namespace DynaPlex {
         }
         else if (!fs::is_directory(subdir_path)) {
             // Handle the error: subdir_path exists but is not a directory
-            throw std::runtime_error(subdir_path.string() + " exists but is not a directory.");
+            throw DynaPlex::Error(subdir_path.string() + " exists but is not a directory.");
         }
 
         fs::path file_path = subdir_path / filename;
         return file_path.string();
     }
 
-    std::string System::filename(const std::string& filename) {
+    std::string System::filename(const std::string& filename) const {
         fs::path file_path = pimpl->io_location_ / filename;
         return file_path.string();
     }

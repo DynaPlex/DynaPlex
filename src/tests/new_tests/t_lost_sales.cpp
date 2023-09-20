@@ -6,19 +6,22 @@
 #include "dynaplex/Demonstrator.h"
 namespace DynaPlex::Tests {
 	
-	void ExecuteTest(const std::string& model_name, const std::string& config_name)
-	{
+
+	TEST(MDP, Basics) {
 		auto& dp = DynaPlexProvider::Get();
-		auto& system = dp.GetSystem();
+		DynaPlex::VarGroup vars;
+		vars.Add("id", "lost_sales");
+		vars.Add("p", 4.0);
+		vars.Add("h", 1.0);
+		vars.Add("leadtime", 3);
+		vars.Add("discount_factor", 1.0);
+
+		vars.Add("demand_dist", DynaPlex::VarGroup({
+			{"type", "poisson"},
+			{"mean", 4.0}
+			}));
 
 
-		ASSERT_TRUE(
-			system.file_exists("defaults", model_name, config_name)
-		);
-
-		std::string file_path = system.filename("defaults", model_name, config_name);
-
-		DynaPlex::VarGroup vars = VarGroup::LoadFromFile(file_path);
 
 		DynaPlex::MDP mdp;
 		DynaPlex::Policy policy;
@@ -34,10 +37,10 @@ namespace DynaPlex::Tests {
 		ASSERT_NO_THROW(
 			numEventTrajectories = mdp->NumEventRNGs();
 		);
-		Trajectory trajectory{ numEventTrajectories };
+		Trajectory trajectory{numEventTrajectories};
 
 
-
+		
 		ASSERT_NO_THROW(
 		);
 		ASSERT_NO_THROW(
@@ -47,7 +50,7 @@ namespace DynaPlex::Tests {
 			trajectory.SeedRNGProvider(dp.GetSystem(), true, 123);
 		);
 
-		int64_t max_event_count = 10;
+	    int64_t max_event_count = 10;
 		bool finalreached = false;
 		while (trajectory.EventCount < max_event_count && !finalreached)
 		{
@@ -71,16 +74,6 @@ namespace DynaPlex::Tests {
 			{
 				finalreached = true;
 			}
-		}
-
-	}
-
-
-
-	TEST(lost_sales, default_mdp_config_0) {
-		std::string model_name = "lost_sales";
-		std::string config_name = "default_mdp_config_0.json";
-		ExecuteTest(model_name, config_name);
-	
+		}			
 	}
 }

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include "dynaplex/vargroup.h"
-#include "dynaplex/utilities.h"
 #include "dynaplex/error.h"
 #include "vargroup/nlohmann/json.h"
 #include "vargroup/vargroup_private_support_funcs.h"//hash_json and check_validity and levenshteinDist
@@ -375,25 +374,24 @@ namespace DynaPlex {
 		return id;
 	}
 
-	void VarGroup::SaveToFile(const std::string& filename) const {
-		std::ofstream file(Utilities::GetOutputLocation(filename));
+	void VarGroup::SaveToFile(const std::string& file_path) const {
+		std::ofstream file(file_path);
 		if (!file.is_open()) {
-			throw DynaPlex::Error("Failed to open file for writing: " + filename);
+			throw DynaPlex::Error("Failed to open file for writing: " + file_path);
 		}
 		file << pImpl->data.dump(4);
 		file.close();
 	}
 
-	VarGroup VarGroup::LoadFromFile(const std::string& filename) {
-		auto loc = DynaPlex::Utilities::GetOutputLocation(filename);
-		std::ifstream file(loc);
+	VarGroup VarGroup::LoadFromFile(const std::string& file_path) {
+		std::ifstream file(file_path);
 		if (file.is_open()) {
 			ordered_json j;
 			try {
 				file >> j;
 			}
 			catch (const nlohmann::json::parse_error& e) {
-				throw DynaPlex::Error("Failed to parse JSON file: " + filename + " - " + e.what());
+				throw DynaPlex::Error("Failed to parse JSON file: " + file_path + " - " + e.what());
 			}
 			file.close();
 
@@ -403,14 +401,14 @@ namespace DynaPlex {
 			}
 			catch (const DynaPlex::Error& e)
 			{
-				throw DynaPlex::Error(std::string("Error in loaded JSON data from ") + loc + ":\n  " + e.what());
+				throw DynaPlex::Error(std::string("Error in loaded JSON data from ") + file_path + ":\n  " + e.what());
 			}
 			VarGroup VarGroup;
 			VarGroup.pImpl->data = std::move(j);
 			return VarGroup;
 		}
 		else {
-			throw DynaPlex::Error("Unable to open file for reading: " + filename);
+			throw DynaPlex::Error("Unable to open file for reading: " + file_path);
 		}
 	}
 
