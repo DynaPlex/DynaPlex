@@ -1,6 +1,6 @@
-#include "lostsalesmdp.h"
+#include "mdp.h"
 #include "dynaplex/erasure/mdpregistrar.h"
-#include "lostsalespolicies.h"
+#include "policies.h"
 
 namespace DynaPlex::Models {
 	using namespace DynaPlex;

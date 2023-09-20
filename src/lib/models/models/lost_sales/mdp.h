@@ -9,7 +9,7 @@
 //namespace DynaPlex::Erasure { template <typename MDPType> class PolicyRegistry; }// Forward declaration 
 
 namespace DynaPlex::Models {
-	namespace lost_sales /*must be consistent everywhere for complete mdp definition and associated policies and states (if not defined inline).*/
+	namespace lost_sales /*must be consistent everywhere for complete mdp definition and associated policies and states.*/
 	{		
 		class MDP
 		{			

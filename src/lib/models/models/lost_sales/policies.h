@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "lostsalesmdp.h"
+#include "mdp.h"
 #include "dynaplex/vargroup.h"
 #include <memory>
 

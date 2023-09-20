@@ -14,6 +14,10 @@ For the easiest setup, provide a `CMakeUserPresets.txt` in the root directory. N
 
 With the setup in place, compiling the library should be straightforward in most IDEs that support CMake.
 
+For using the python bindings, we recommend setting up a specific conda environment using python/environment.yml. 
+
+After this, update the CMakeUserPresets.txt for WinPB to point to the relevant dependencies inside the newly created environment. Compiling WinPB afterwards will result in the bindings being compiled. CMake automatically copies them to python/dp/libs, where python/dp/load.py should be able to locate them. As a consequence, the scripts in python/test should run them. 
+
 ## Linux/Snellius
 
 1. **Initialize Environment and Load modules**:
@@ -70,7 +74,7 @@ module load 2022
 ```
 **Note**: A sample environment file `python/environment.yml` is provided.
 
-After setting up the environment, and compilng the bindings, Python bindings will allow you to execute Python scripts.
+After setting up the environment, and compiling the bindings, Python bindings will allow you to execute the Python scripts just, see also windows descriptions.
 
 ## Adding Models
 
