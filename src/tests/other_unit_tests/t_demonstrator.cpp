@@ -9,43 +9,31 @@ namespace DynaPlex::Tests {
 
 	TEST(Demonstrator, WithLostSales) {
 		auto& dp = DynaPlexProvider::Get();
-		DynaPlex::VarGroup vars;
-		vars.Add("id", "lost_sales");
-		vars.Add("p", 4.0);
-		vars.Add("h", 1.0);
-		vars.Add("leadtime", 3);
-		vars.Add("discount_factor", 1.0);
+		auto& system = dp.GetSystem();
 
-		vars.Add("demand_dist", DynaPlex::VarGroup({
-			{"type", "poisson"},
-			{"mean", 4.0}
-			}));
-
-
-
-		DynaPlex::MDP mdp;
-		DynaPlex::Policy policy;
-
-
-
-		ASSERT_NO_THROW(
-			mdp = dp.GetMDP(vars);
+		std::string model_name = "lost_sales";
+		std::string mdp_config_name = "mdp_config_0.json";
+		//configure MDP:
+		ASSERT_TRUE(
+			system.file_exists("mdp_config_examples", model_name, mdp_config_name)
 		);
+		DynaPlex::VarGroup mdp_vars_from_json;
 		ASSERT_NO_THROW(
-		    policy = mdp->GetPolicy("base_stock");
+			std::string file_path = system.filename("mdp_config_examples", model_name, mdp_config_name);
+		    mdp_vars_from_json = VarGroup::LoadFromFile(file_path);
 		);
+
+		auto mdp = dp.GetMDP(mdp_vars_from_json);
 		
+		DynaPlex::Policy policy = mdp->GetPolicy("random");
 
-
-		int64_t max_events = 100;
+		int64_t max_events = 10;
 		auto demonstrator_config = DynaPlex::VarGroup{ {"max_event_count", max_events},{"seed",123}};
-
 		auto demonstrator = dp.GetDemonstrator(demonstrator_config);
-
 		auto trace = demonstrator.GetTrace(mdp);
 		
 		for (auto& elem : trace)
-		{
+		{//this would print the various parts of the trace. 
 		//	std::cout << elem.Dump() << std::endl;
 		}
 

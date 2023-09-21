@@ -117,7 +117,7 @@ namespace DynaPlex::Models {
 		void Register(DynaPlex::Registry& registry)
 		{
 			DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel(
-				/*=id though which the MDP will be retrievable*/ "lost_sales",
+				/*=id though which the MDP will be retrievable*/ "bin_packing",
 				/*description*/ "a dynamic bin-packing problem. Weight are revealed one by one, and must be added to on of several bins. When a bin exceeds maximum_weight, it is dispatched and hence emptied. Any weight exceeding the maximum_weight is cost. I.e. we must avoid making the bins fuller than strictly neccesary for dispatch. ",
 				registry); 
 		}
