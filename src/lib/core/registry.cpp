@@ -9,8 +9,7 @@ namespace DynaPlex {
 
     void Registry::Register(const std::string& identifier, const std::string& description, MDPFactoryFunction func) {
         if (m_registry.find(identifier) != m_registry.end()) {
-            // Log the error. 
-            std::cerr << "DYNAPLEX WARNING: An MDP with id \"" + identifier + "\" is already registered. Overwriting previous registration.\n";
+            throw DynaPlex::Error("Error during construction of MDP Registry. You attempted to register two MDPs with the same identifier: \"" + identifier + "\". Each MDP must be registered under a unique name.");
         }
         m_registry[identifier] = { func, description };
     }

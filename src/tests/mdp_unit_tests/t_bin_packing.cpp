@@ -1,13 +1,6 @@
-﻿#include "dynaplex/vargroup.h"
-#include "dynaplex/error.h"
-#include <gtest/gtest.h>
-#include "dynaplex/dynaplexprovider.h"
-#include "dynaplex/trajectory.h"
-#include "dynaplex/Demonstrator.h"
+﻿#include <gtest/gtest.h>
 #include "testutils.h" // for ExecuteTest
-namespace DynaPlex::Tests {
-	
-	
+namespace DynaPlex::Tests {	
 	TEST(bin_packing, mdp_config_0) {
 
 		//Note: models/model_name/mdp_config_name is valid json config file for mdp "model_name". 
@@ -15,6 +8,4 @@ namespace DynaPlex::Tests {
 		std::string config_name = "mdp_config_0.json";
 		ExecuteTest(model_name, config_name);
 	}
-	
-
 }

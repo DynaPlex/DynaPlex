@@ -18,10 +18,6 @@ namespace DynaPlex::Models {
 		}
 
 
-		//NOTE: using ModifyStateWithEvent which takes DynaPlex::RNG directly is not
-		//recommended. Only resort to this after exhausting all other options.
-		//Note that in the present case, it would be very easy to refactor and take a proper event,
-		//The present use is only for documentation purposes. 
 		double MDP::ModifyStateWithEvent(State& state, const Event& event) const
 		{
 			state.cat = StateCategory::AwaitAction();
@@ -121,7 +117,7 @@ namespace DynaPlex::Models {
 		void Register(DynaPlex::Registry& registry)
 		{
 			DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel(
-				/*=id though which the MDP will be retrievable*/ "bin_packing",
+				/*=id though which the MDP will be retrievable*/ "lost_sales",
 				/*description*/ "a dynamic bin-packing problem. Weight are revealed one by one, and must be added to on of several bins. When a bin exceeds maximum_weight, it is dispatched and hence emptied. Any weight exceeding the maximum_weight is cost. I.e. we must avoid making the bins fuller than strictly neccesary for dispatch. ",
 				registry); 
 		}
