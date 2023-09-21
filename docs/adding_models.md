@@ -4,7 +4,7 @@ DynaPlex facilitates the extension with new native models (e.g. Markov Decision 
 
 ---
 
-## Understanding what is provided
+## Understanding what needs to be provided
 
 To begin, review the implementations under `src/lib/models/models`, especially the one in `src/lib/models/models/lost_sales`.
 
@@ -47,7 +47,7 @@ After successful compilation, set up a test for the new MDP:
 2. Add some content that tests the new MDP. The following is a good start (note mdp_id should be changed twice to the id of the mdp you are testing for!). You could add other tests later:
 
 ```cpp
-// file: src/tests/mdp_unit_tests/t_new.cpp:
+// file: src/tests/mdp_unit_tests/t_mdp_id.cpp:
 #include <gtest/gtest.h>
 #include "testutils.h" // for ExecuteTest
 
@@ -58,7 +58,6 @@ namespace DynaPlex::Tests {
         ExecuteTest(model_name, config_name);
     }
 }
-
 //other tests can be added later. 
 ```
 
