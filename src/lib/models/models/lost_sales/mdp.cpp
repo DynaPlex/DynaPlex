@@ -3,7 +3,6 @@
 #include "policies.h"
 
 namespace DynaPlex::Models {
-	using namespace DynaPlex;
 	namespace lost_sales /*keep this in line with id below and with namespace name in header*/
 	{
 		VarGroup MDP::GetStaticInfo() const
@@ -40,16 +39,16 @@ namespace DynaPlex::Models {
 
 		
 
-		MDP::MDP(const VarGroup& varGroup)
+		MDP::MDP(const VarGroup& config)
 		{
-			varGroup.Get("p", p);
-			varGroup.Get("h", h);
-			varGroup.Get("leadtime", leadtime);
-			varGroup.Get("demand_dist",demand_dist);
+			config.Get("p", p);
+			config.Get("h", h);
+			config.Get("leadtime", leadtime);
+			config.Get("demand_dist",demand_dist);
 			
 			//providing discount_factor is optional. 
-			if (varGroup.HasKey("discount_factor"))
-				varGroup.Get("discount_factor", discount_factor);
+			if (config.HasKey("discount_factor"))
+				config.Get("discount_factor", discount_factor);
 			else
 				discount_factor = 1.0;
 			
@@ -90,7 +89,7 @@ namespace DynaPlex::Models {
 		}
 
 		void MDP::GetFeatures(const State&, DynaPlex::Features&) const {
-			throw DynaPlex::Error("get features not implemented on lost_sales");
+			throw DynaPlex::Error("DynaPlex::Features not yet implemented");
 		}
 		
 

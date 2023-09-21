@@ -108,8 +108,8 @@ namespace DynaPlex {
 #endif
     }
 
-    MDP DynaPlexProvider::GetMDP(const VarGroup& vars) {
-        return m_registry.GetMDP(vars);
+    MDP DynaPlexProvider::GetMDP(const VarGroup& config) {
+        return m_registry.GetMDP(config);
     }
 
     VarGroup DynaPlexProvider::ListMDPs() {

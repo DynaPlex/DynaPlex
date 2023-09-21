@@ -15,13 +15,13 @@ namespace DynaPlex {
         m_registry[identifier] = { func, description };
     }
 
-    DynaPlex::MDP Registry::GetMDP(const DynaPlex::VarGroup& vars) {
+    DynaPlex::MDP Registry::GetMDP(const DynaPlex::VarGroup& config) {
         std::string id;
-        vars.Get("id", id);
+        config.Get("id", id);
 
         auto it = m_registry.find(id);
         if (it != m_registry.end()) {
-            return it->second.function(vars);
+            return it->second.function(config);
         }
         throw DynaPlex::Error("No MDP available with identifier \"" + id + "\". Use ListMDPs() / list_mdps() to obtain available MDPs.");
     }

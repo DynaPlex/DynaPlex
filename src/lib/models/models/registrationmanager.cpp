@@ -2,7 +2,7 @@
 #include "dynaplex/registry.h"
 
 namespace DynaPlex::Models {
-	//forward declarations of the registration functions of various MDPs:
+	//forward declarations of the registration functions of MDPs:
 	namespace lost_sales {
 		void Register(DynaPlex::Registry&);
 	}

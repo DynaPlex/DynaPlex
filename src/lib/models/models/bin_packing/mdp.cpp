@@ -22,10 +22,10 @@ namespace DynaPlex::Models {
 		//recommended. Only resort to this after exhausting all other options.
 		//Note that in the present case, it would be very easy to refactor and take a proper event,
 		//The present use is only for documentation purposes. 
-		double MDP::ModifyStateWithEvent(State& state, DynaPlex::RNG& rng) const
+		double MDP::ModifyStateWithEvent(State& state, const Event& event) const
 		{
 			state.cat = StateCategory::AwaitAction();
-			state.upcoming_weight = weight_dist.GetSample(rng);
+			state.upcoming_weight = event;
 			return 0.0;
 		}
 
@@ -70,19 +70,19 @@ namespace DynaPlex::Models {
 			return state;
 		}
 
-		MDP::MDP(const VarGroup& varGroup) 
+		MDP::MDP(const VarGroup& config)
 		{
 
 		
-			varGroup.Get("max_bin_size", max_bin_size);
-			varGroup.Get("number_of_bins", number_of_bins);
-			varGroup.Get("weight_dist", weight_dist);
+			config.Get("max_bin_size", max_bin_size);
+			config.Get("number_of_bins", number_of_bins);
+			config.Get("weight_dist", weight_dist);
 			
 		    //check for possible negative values of weight_dist. 
 
 			//providing discount_factor is optional. 
-			if (varGroup.HasKey("discount_factor"))
-				varGroup.Get("discount_factor", discount_factor);
+			if (config.HasKey("discount_factor"))
+				config.Get("discount_factor", discount_factor);
 			else
 				discount_factor = 1.0;
 		}
@@ -95,7 +95,7 @@ namespace DynaPlex::Models {
 		
 
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {
-			throw DynaPlex::Error("get features not implemented on lost_sales");
+			throw DynaPlex::Error("DynaPlex::Features not yet implemented");
 		}
 		
 

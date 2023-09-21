@@ -17,7 +17,7 @@ namespace DynaPlex {
          */ 
         void SetIORootDirectory(std::string path);
         /// gets an MDP based on the vargroup 
-        MDP GetMDP(const VarGroup& vars);
+        MDP GetMDP(const VarGroup& config);
         /// lists the MDPs available. 
         VarGroup ListMDPs();
 

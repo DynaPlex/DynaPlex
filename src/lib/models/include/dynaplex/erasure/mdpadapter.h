@@ -61,11 +61,11 @@ namespace DynaPlex::Erasure
 		
 
 	public:
-		MDPAdapter(const DynaPlex::VarGroup& vars) :
-			mdp{ std::make_shared<const t_MDP>(vars) },
-			unique_id{ vars.UniqueIdentifier() },
-			mdp_int_hash{ vars.Int64Hash() },
-			mdp_type_id{ vars.Identifier() },
+		MDPAdapter(const DynaPlex::VarGroup& config) :
+			mdp{ std::make_shared<const t_MDP>(config) },
+			unique_id{ config.UniqueIdentifier() },
+			mdp_int_hash{ config.Int64Hash() },
+			mdp_type_id{ config.Identifier() },
 			policy_registry{},
 			provider{ mdp },
 			discount_factor{ 1.0 }
