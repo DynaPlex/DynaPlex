@@ -38,23 +38,35 @@ namespace DynaPlex::Erasure
 		//Registers the policies with the internal registry:
 		void RegisterPolicies()
 		{
-			//Register built-in policies
-			policy_registry.template Register<RandomPolicy<t_MDP>>("random", "makes a random choice between the allowed actions");
-			//register client-provided policies. 
-			if constexpr (HasRegisterPolicies<t_MDP, PolicyRegistry<t_MDP>>) {
-				mdp->RegisterPolicies(policy_registry);
+			try {
+				// Register built-in policies
+				policy_registry.template Register<RandomPolicy<t_MDP>>("random", "makes a random choice between the allowed actions");
+
+				// Register client-provided policies. 
+				if constexpr (HasRegisterPolicies<t_MDP, PolicyRegistry<t_MDP>>) {
+					mdp->RegisterPolicies(policy_registry);
+				}
+			}
+			catch (const DynaPlex::Error& e) {
+				// Catch the error, append or modify the message, and rethrow
+				throw DynaPlex::Error(std::string("Error in MDPAdapter::RegisterPolicies: ") + e.what());
 			}
 		}
 
 		void InitializeVariables()
 		{
-			auto static_vars = GetStaticInfo();
-			if (static_vars.HasKey("discount_factor"))
-				static_vars.Get("discount_factor", discount_factor);
-
-			if (discount_factor > 1.0 || discount_factor <= 0.0)
-			{
-				throw DynaPlex::Error("MDP, id \"" + mdp_type_id + "\" : discount_factor is invalid: " + std::to_string(discount_factor) + ". Must be in (0.0,1.0].");
+			try {
+				auto static_vars = GetStaticInfo();
+				if (static_vars.HasKey("discount_factor"))
+					static_vars.Get("discount_factor", discount_factor);
+				if (discount_factor > 1.0 || discount_factor <= 0.0)
+				{
+					throw DynaPlex::Error("MDP, id \"" + mdp_type_id + "\" : discount_factor is invalid: " + std::to_string(discount_factor) + ". Must be in (0.0,1.0].");
+				}
+			}
+			catch (const DynaPlex::Error& e) {
+				// Catch the error, append or modify the message, and rethrow
+				throw DynaPlex::Error(std::string("Error in MDPAdapter::RegisterPolicies: ") + e.what());
 			}
 		}
 

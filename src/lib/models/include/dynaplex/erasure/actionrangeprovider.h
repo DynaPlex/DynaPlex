@@ -129,10 +129,16 @@ namespace DynaPlex::Erasure
         ActionRangeProvider(std::shared_ptr<const t_MDP> mdp)
             : mdp(mdp)
         {
-            auto vars = mdp->GetStaticInfo();
-            //may become non-zero later
-            min_action = 0;
-            vars.Get("valid_actions", max_action);
+            try {
+                auto vars = mdp->GetStaticInfo();
+                //may become non-zero later
+                min_action = 0;
+                vars.Get("valid_actions", max_action);
+            }
+            catch (const DynaPlex::Error& e) {
+                // Catch the error, append or modify the message, and rethrow
+                throw DynaPlex::Error(std::string("Error in MDPAdapter::ActionRangeProvider: ") + e.what());
+            }           
         }
 
         

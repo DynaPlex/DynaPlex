@@ -70,9 +70,6 @@ namespace DynaPlex::Tests {
 ```
 
 ---
-Certainly! Here's your content with typesetting and minor improvements:
-
----
 
 ## Modify the MDP Logic to Match Desired Functionality
 

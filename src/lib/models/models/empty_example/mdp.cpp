@@ -9,7 +9,8 @@ namespace DynaPlex::Models {
 		VarGroup MDP::GetStaticInfo() const
 		{
 			VarGroup vars;
-			//vars.Add("valid_actions", );
+			//Needs to update later:
+			vars.Add("valid_actions", 1);
 			//VarGroup feats{};
 			//vars.Add("features", feats);
 			vars.Add("discount_factor", discount_factor);
@@ -101,7 +102,6 @@ namespace DynaPlex::Models {
 
 		void Register(DynaPlex::Registry& registry)
 		{
-			DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel("empty_example", "", registry);
 			//To use this MDP with dynaplex, register it like so, setting name equal to namespace and directory name
 			// and adding appropriate description. 
 			//DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel(
