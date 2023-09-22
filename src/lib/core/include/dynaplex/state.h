@@ -22,6 +22,7 @@ namespace DynaPlex {
 		virtual VarGroup ToVarGroup() const = 0;
 		virtual ~StateBase() = default;
 		virtual std::unique_ptr<StateBase> Clone() const = 0;
+
 	};
 
 	//A DynaPlex::State can be cloned, and moved, but not copied

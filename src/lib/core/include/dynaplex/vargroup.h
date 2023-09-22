@@ -207,8 +207,8 @@ namespace DynaPlex {
 			}
 		}
 
-		void SaveToFile(const std::string &filename) const;
-		static VarGroup LoadFromFile(const std::string &filename);
+		void SaveToFile(const std::string & filePath) const;
+		static VarGroup LoadFromFile(const std::string &filePath);
 
 		std::string Hash() const;
 		int64_t Int64Hash() const;

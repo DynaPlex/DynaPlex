@@ -1,15 +1,6 @@
 #include "dynaplex/trajectory.h"
 namespace DynaPlex {
-	VarGroup Trajectory::ToVarGroup() const
-	{
-		throw DynaPlex::Error("not implemented");
-		//VarGroup vg{};
-	//	vg.Add("CumulativeReturn", CumulativeReturn);
-		//vg.Add("NextAction", NextAction);
-		//return vg;
-	}
-
-
+	
 	Trajectory::Trajectory(int64_t NumEventRNGs, int64_t externalIndex):
 	    NextAction{},
 		Category{},

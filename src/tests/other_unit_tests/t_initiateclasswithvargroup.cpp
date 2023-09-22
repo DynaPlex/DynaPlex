@@ -10,6 +10,8 @@ namespace DynaPlex::Tests {
 
 		auto nested = DynaPlex::VarGroup({ {"Id","1"},{"Size",1.0} });
 
+		//This loads an entire vargroup from json. 
+		//DynaPlex::VarGroup::LoadFromFile("path / to / file");
 		auto nested2 = DynaPlex::VarGroup({ {"Id","2"},{"Size",4.0} });
 
 		DynaPlex::VarGroup varGroup({

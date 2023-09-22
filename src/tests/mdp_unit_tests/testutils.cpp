@@ -172,13 +172,87 @@ namespace DynaPlex::Tests {
 			for (auto& state : someStates)
 			{
 				auto vars = state->ToVarGroup();
-				auto loaded_state = mdp->GetState(vars);
-				auto vars_from_loaded_state = loaded_state->ToVarGroup();
+
+				DynaPlex::dp_State loaded_state{};
+				
+				ASSERT_NO_THROW(
+					loaded_state = mdp->GetState(vars);
+				) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? Set SkipStateSerializationTests to skip this test.  ";
+		
+			auto vars_from_loaded_state = loaded_state->ToVarGroup();
 				if (!SkipEqualityTests)
 				{
-					ASSERT_TRUE(mdp->StatesAreEqual(state, loaded_state)) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented?";
+					ASSERT_TRUE(mdp->StatesAreEqual(state, loaded_state)) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? Set SkipStateSerializationTests to skip this test.  ";
 				}
 
+				ASSERT_EQ(vars, vars_from_loaded_state) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? Set SkipStateSerializationTests to skip this test. ";
+
+
+
+				std::vector<Trajectory> trajVec{};
+				for (size_t i = 0; i < 2; i++)
+				{
+					trajVec.push_back(std::move(Trajectory(mdp->NumEventRNGs(),0)));
+					
+				} 
+
+				mdp->InitiateState({ &trajVec[0] ,1 }, state);
+				mdp->InitiateState({ &trajVec[1] ,1 }, loaded_state);
+				trajVec[0].SeedRNGProvider(dp.GetSystem(), false,12,0);
+				trajVec[1].SeedRNGProvider(dp.GetSystem(), false, 12, 0);
+
+				int64_t max_event_count = 10;
+				int64_t action_count = 0;
+				
+				
+				bool finalreached = false;
+				while (trajVec[0].EventCount < max_event_count && !finalreached)
+				{
+					auto& cat = trajVec[0].Category;
+					ASSERT_EQ(trajVec[0].Category, trajVec[1].Category)<<info<<"Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
+					ASSERT_EQ(trajVec[0].CumulativeReturn, trajVec[1].CumulativeReturn) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
+					ASSERT_EQ(trajVec[0].EventCount, trajVec[1].EventCount) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
+					
+					if (!SkipEqualityTests)
+					{
+						ASSERT_TRUE(mdp->StatesAreEqual(trajVec[0].GetState(), trajVec[1].GetState())) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
+					}
+
+
+					if (cat.IsAwaitEvent())
+					{
+						ASSERT_NO_THROW(
+							mdp->IncorporateEvent(trajVec);
+						) << info << "Did you correctly implement ModifyStateWithEvent  and GetEvent?";
+					}
+					else if (cat.IsAwaitAction())
+					{
+						//std::cout << "test" << std::endl;
+						action_count++;
+						ASSERT_NO_THROW(
+							policy->SetAction(trajVec);
+						) << info << " Issue with policy. Did you correctly implement GetAction on policy " + policy->TypeIdentifier() + "?";
+						ASSERT_NO_THROW(
+							mdp->IncorporateAction(trajVec)
+						) << info << "Did you correctly implement ModifyStateWithAction? ";
+					}
+					else if (cat.IsFinal())
+					{
+						finalreached = true;
+					}
+					if (!RelaxOnProgramFlow)
+					{
+						//getting stuck in an action loop should trip this. 
+						ASSERT_LE(action_count, max_event_count * 1000) << info << "A simulation of your trajection seems to get stuck in a loop with only actions, and no events. In ModifyStateWithAction, did you ensure that the state category becomes AwaitEvent or Final? If this is intentional, set RelaxOnLoops to skip this test. ";
+					}
+					else
+					{
+						if (action_count > 100 * max_event_count)
+						{
+							finalreached = true;
+						}
+					}
+				}
 			}
 		}
     }

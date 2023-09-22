@@ -13,7 +13,6 @@ namespace DynaPlex::Models {
 			VarGroup feats{};
 			
 			vars.Add("features", feats);
-
 			vars.Add("discount_factor", discount_factor);
 
 			//potentially add any stuff that was computed for diagnostics purposes
@@ -22,8 +21,6 @@ namespace DynaPlex::Models {
 			diagnostics.Add("MaxOrderSize", MaxOrderSize);
 			diagnostics.Add("MaxSystemInv", MaxSystemInv);
 			vars.Add("diagnostics", diagnostics);
-
-
 			
 			return vars;
 		}
@@ -109,11 +106,7 @@ namespace DynaPlex::Models {
 		}
 
 		bool MDP::IsAllowedAction(const State& state, int64_t action) const {
-			if (state.total_inv + action <= MaxSystemInv)
-			{
-				return true;
-			}
-			return false;
+			return (state.total_inv + action) <= MaxSystemInv;
 		}
 
 		MDP::State MDP::GetInitialState() const

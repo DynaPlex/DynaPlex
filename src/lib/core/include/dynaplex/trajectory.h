@@ -7,8 +7,9 @@
 #include "state.h"
 #include "system.h"
 
-namespace DynaPlex {
 
+
+namespace DynaPlex {
 	struct Trajectory {
 		/// used by MDPAdapter when IncorporateActions is called without argument.
 	    int64_t NextAction;
@@ -50,7 +51,7 @@ namespace DynaPlex {
 				throw DynaPlex::Error("Trajectory: Attempting to get state that has not been initialized. ");
 		}
 		/// moves the state into the trajectory, and resets CumulativeReturn, EffectiveDiscountFactor, and EventCount. 
-		void Reset(DynaPlex::dp_State&& State);
+		void Reset(DynaPlex::dp_State&&);
 		
 		/// re-initiates EventCount, EffectiveDiscountFactor, CumulativeReturn.  
 		void Reset();
@@ -71,11 +72,9 @@ namespace DynaPlex {
 		 * Creates a trajectory that supports NumEventRNGs, without initial state.
 		 * external_index is some context_defined item that is not muted by MDPAdapter. 
 		 */
-		Trajectory(int64_t NumEventRNGs, int64_t externalIndex = 0);
+		explicit Trajectory(int64_t NumEventRNGs, int64_t externalIndex = 0);
 
 
-		/// converts Trajectory to VarGroup
-		VarGroup ToVarGroup() const;
 
 	
 	};
