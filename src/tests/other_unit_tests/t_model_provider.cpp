@@ -10,7 +10,7 @@ namespace DynaPlex::Tests {
 		auto& dp  = DynaPlexProvider::Get();
 
 		ASSERT_NO_THROW(
-			dp.GetSystem()
+			dp.System()
 		);
 
 		DynaPlex::VarGroup config;

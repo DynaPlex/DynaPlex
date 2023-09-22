@@ -22,7 +22,7 @@ namespace DynaPlex {
         VarGroup ListMDPs();
 
         // If you want to expose System to users:
-        const System& GetSystem();
+        const System& System();
 
         DynaPlex::Utilities::Demonstrator GetDemonstrator(const VarGroup& config);
 
@@ -35,7 +35,7 @@ namespace DynaPlex {
         DynaPlexProvider& operator=(const DynaPlexProvider&) = delete;
 
         Registry m_registry;          // private instance of Registry
-        System m_systemInfo;      // private instance of System
+        DynaPlex::System m_systemInfo;      // private instance of System
     };
 
 }  // namespace DynaPlex

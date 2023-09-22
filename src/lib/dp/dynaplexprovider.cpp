@@ -47,7 +47,7 @@ namespace DynaPlex {
 #endif
         bool torchavailable = DynaPlex::NeuralNetworks::TorchAvailable();
       
-        m_systemInfo = System(torchavailable,world_rank, world_size,
+        m_systemInfo = DynaPlex::System(torchavailable,world_rank, world_size,
            /*callback function: */ []() {DynaPlexProvider::Get().AddBarrier(); }
             );
         std::string defined_root_dir = "";
@@ -77,9 +77,9 @@ namespace DynaPlex {
 
 
         if (torchavailable)
-            GetSystem() << DynaPlex::NeuralNetworks::TorchVersion() << std::endl;
+            System() << DynaPlex::NeuralNetworks::TorchVersion() << std::endl;
         else
-            GetSystem() << "Torch not available" << std::endl;
+            System() << "Torch not available" << std::endl;
 
 #ifdef DP_MPI_AVAILABLE
 		std::cout << "DynaPlex: Hardware Threads: " << m_systemInfo.HardwareThreads()
@@ -97,7 +97,7 @@ namespace DynaPlex {
     // Destructor
     DynaPlexProvider::~DynaPlexProvider() {
      
-        GetSystem() << "DynaPlex: Finalizing. Time Elapsed: " << GetSystem().Elapsed() << std::endl;
+        System() << "DynaPlex: Finalizing. Time Elapsed: " << System().Elapsed() << std::endl;
         // If MPI is available, finalize it
 #ifdef DP_MPI_AVAILABLE
         int mpi_finalized;
@@ -116,8 +116,7 @@ namespace DynaPlex {
         return m_registry.ListMDPs();
     }
 
-    // If you want to expose System to users:
-    const System& DynaPlexProvider::GetSystem() {
+    const System& DynaPlexProvider::System() {
         if (!m_systemInfo.HasIODirectory())
         {
             throw DynaPlex::Error("You used functionality that may require a valid input/output directory, but none is available. Ensure that DynaPlexProvider::Get().SetIORootDirectory is called before using this functionality. Alternatively, provide compiler-defined macro DYNAPLEX_IO_ROOT_DIR representing a valid root directory.");

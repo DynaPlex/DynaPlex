@@ -64,7 +64,7 @@ namespace DynaPlex::Tests {
 			mdp->InitiateState({ &trajectory,1 });
 		);
 		ASSERT_NO_THROW(
-			trajectory.SeedRNGProvider(dp.GetSystem(), true, 123);
+			trajectory.SeedRNGProvider(dp.System(), true, 123);
 		);
 
 	    int64_t max_event_count = 10;

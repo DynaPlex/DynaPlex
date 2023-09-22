@@ -9,7 +9,7 @@ namespace DynaPlex::Tests {
 
 	TEST(Demonstrator, WithLostSales) {
 		auto& dp = DynaPlexProvider::Get();
-		auto& system = dp.GetSystem();
+		auto& system = dp.System();
 
 		std::string model_name = "lost_sales";
 		std::string mdp_config_name = "mdp_config_0.json";

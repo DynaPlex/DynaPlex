@@ -15,9 +15,9 @@ DynaPlex focuses on solving problems arising in Operations Management: Supply Ch
 
 ## Configuration
 
-For the easiest setup, provide a `CMakeUserPresets.txt` in the root directory. Note: `CMakeUserPresets.txt` in the root directory is ignored by Git. This allows for specific configurations tailored to your local setup. An example file can be found at `cmake/resources/`. Be sure to adapt this to your specific needs.
+For the easiest setup, provide a `CMakeUserPresets.txt` in the root directory. Note: `CMakeUserPresets.txt` in the root directory is ignored by Git. This allows for passing in specific configurations and paths tailored to your local environment. An example file can be found at `cmake/resources/`. You could copy this to the root directory, and adapt it to your specific needs.
 
-The CMakeUserPresets.txt should provide variables, including DYNAPLEX_IO_ROOT_DIR where input and output for dynaplex will be stored and retrieved from. 
+The CMakeUserPresets.txt should provide paths to certain dependences, including DYNAPLEX_IO_ROOT_DIR where input and output for DynaPlex will be stored and retrieved from. 
 
 ## Windows
 
@@ -36,7 +36,7 @@ After this, update the CMakeUserPresets.txt for WinPB to point to the relevant d
     ```
 
 2. **Build**:
-    - For a specific preset from cmake user presets (e.g., `LinRelease`):
+    - For a specific preset from cmake user presets (e.g., `LinRel`):
         ```bash
         cmake --preset=LinRel  # Other options: LinDeb/ LinDB
         ```
@@ -75,12 +75,13 @@ For setting up a Conda environment, for compiling the python bindings and runnin
 ```bash
 conda env create -f path/to/environment.yml
 ```
-**Note**: for this to work, conda needs to be available. It can be loaded via the module environments,
+**Note**: for this to work, conda needs to be available. On snellius, it can be loaded via the module environments,
 something like
 ```bash
 module load 2022
-#instruction for bringing appropriate anaconda environment in scope. 
+module load  ... 
 ```
+
 **Note**: A sample environment file `python/environment.yml` is provided.
 
 After setting up the environment, and compiling the bindings, Python bindings will allow you to execute the Python scripts just, see also windows descriptions.

@@ -13,7 +13,7 @@ namespace DynaPlex::Tests {
 
     void Tester::ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& policy_config_name) {
 		auto& dp = DynaPlexProvider::Get();
-		auto& system = dp.GetSystem();
+		auto& system = dp.System();
 		std::string info = model_name + "|" + mdp_config_name;
 		if (policy_config_name != "")
 			info += "|" + policy_config_name;
@@ -96,7 +96,7 @@ namespace DynaPlex::Tests {
 				) << info << "Error while cloning state. Does mdp::State support copying?";
 			}
 			ASSERT_NO_THROW(
-				trajectory.SeedRNGProvider(dp.GetSystem(), true, seed);
+				trajectory.SeedRNGProvider(dp.System(), true, seed);
 			) << info;
 
 			int64_t max_event_count = 128;
@@ -198,8 +198,8 @@ namespace DynaPlex::Tests {
 
 				mdp->InitiateState({ &trajVec[0] ,1 }, state);
 				mdp->InitiateState({ &trajVec[1] ,1 }, loaded_state);
-				trajVec[0].SeedRNGProvider(dp.GetSystem(), false,12,0);
-				trajVec[1].SeedRNGProvider(dp.GetSystem(), false, 12, 0);
+				trajVec[0].SeedRNGProvider(dp.System(), false,12,0);
+				trajVec[1].SeedRNGProvider(dp.System(), false, 12, 0);
 
 				int64_t max_event_count = 10;
 				int64_t action_count = 0;

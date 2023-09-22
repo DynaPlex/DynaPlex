@@ -39,7 +39,6 @@ namespace DynaPlex {
          *Creates IOLocation() / subdir / subsubdir if it does not exist.
          *Returns path to file (maybe non-existent) in IOLocation() / subdir / subsubdir / filename.
          */
-        //still need to implement this filename overload, others have been implemented. 
         std::string filename(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const;
 
         /**
@@ -53,7 +52,7 @@ namespace DynaPlex {
          *Returns path to file (maybe non-existent) in IOLocation() / subdir / filename.
          */
         std::string filename(const std::string& filename) const;
-        /// Returns path to input-output folder. 
+        /// Returns path to input-output folder, i.e. to IO_DynaPlex folder. 
         std::string IOLocation() const;
         /// Elapsed time in ms. 
         std::int64_t ElapsedMS() const;
