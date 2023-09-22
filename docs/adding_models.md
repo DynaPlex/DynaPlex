@@ -113,9 +113,9 @@ The current version of the DynaPlex library uses a similar API to the legacy ver
   - In Legacy DynaPlex, the flow of the program could be determined by the function `bool AwaitsAction(const State& state)`, and `bool IsFinal(const State& state)`, and for the case of 
   multiple tasktypes, also `int TaskType(State& state)`. This was effective but a bit cumbersome, and the new version instead supports all functionality in  `DynaPlex::StateCategory GetStateCategory(const state& state)`. StateCategory can be 
   either `IsAwaitEvent();`, `IsAwaitAction();`, or `IsFinal();`. Moreover, apart from having these three possible values, it also supports an index:
-```cpp
-auto cat = StateCategory::AwaitAction(int64_t index);
-```
+  ```cpp
+  auto cat = StateCategory::AwaitAction(int64_t index);
+  ```
   - Index may be usefull when you have a range of actions that must be performed sequentially after a single event, e.g. actions for various entities in your model. Indices will also support tasktypes. 
 
   - It is recommended to simply have `StateCategory` as a member variable to `State`, so that it can be kept up-to-date easily and returned from `GetStateCategory`. 
@@ -138,15 +138,15 @@ auto cat = StateCategory::AwaitAction(int64_t index);
 
 
 
-- **MDP Constructor**: Every MDP should have a constructor accepting a `const VarGroup&`. The `VarGroup` behaves similarly to a JSON file or nested dictionary, albeit with some limitations (e.g., only supporting homogeneous lists and requiring the root to be an object). This consistent construction method:
+- **MDP Constructor**: Every MDP should have a constructor accepting a `const VarGroup&`. The `VarGroup` behaves similarly to a JSON file or nested dictionary, albeit with some restrictions (lists must be homogeneous and root must be object/dict). This consistent construction method:
   - Enables the uniform creation of MDPs and type erasure. This means any MDP can be retrieved with a single function, and there's a singular type `DynaPlex::MDP` that can house every MDP.
   - Streamlines algorithm writing, compilation, and python bindings.
   - Since the MDP is defined by these variables, a unique identifier can be generated from them, eliminating the need to manually implement and update `GetIdentifier`.
   - enables very flexible configuration of any MDP. 
 
-- **VarGroup Usage**: The `VarGroup` is frequently used throughout the code. For its syntax, refer to `tests/other_unit_tests/t_model_provider.cpp` and `t_initiateclasswithvargroup.cpp` in the same directory. You'll need to:
-  - Convert `MDP::State` to `VarGroup`, facilitating state console printing and conversion to native python objects.
-  - Provide a reverse conversion, as shown in `lost_sales.mdp`.
+- **VarGroup Usage**: The `VarGroup` is frequently used throughout the code. For its syntax, refer to `tests/other_unit_tests/t_model_provider.cpp` and `t_initiateclasswithvargroup.cpp` in the same directory. Apart from providing a constructor of the MDP based on VarGroup, You'll need to:
+  - Convert `MDP::State` to `VarGroup`, facilitating state console printing and conversion to native python objects, as shown in `lost_sales.cpp`
+  - Provide a reverse conversion, as shown in `lost_sales.cpp`.
 
 ---
 
@@ -185,11 +185,7 @@ Ensure that corresponding function definitions align with the above declaration 
 
 namespace DynaPlex::Models {
     namespace mdp_id {
-         VarGroup MDP::GetStaticInfo() const {
-              // Implementation details go here.          
-         }
-
-         // Other function definitions follow.
+         // function definitions 
     }
 }
 ```
@@ -243,8 +239,6 @@ void RegistrationManager::RegisterAll(DynaPlex::Registry& registry) {
 ```
 
 Replace `<mdp_id>` with your specific MDP's identifier.
-
----
 
 With these steps, your MDP model should be properly registered and made retrievable both through the specified provider and the Python interface.
 ___
