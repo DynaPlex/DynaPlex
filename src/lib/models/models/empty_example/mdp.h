@@ -18,6 +18,8 @@ namespace DynaPlex::Models {
 				//using this is recommended:
 				DynaPlex::StateCategory cat;
 				DynaPlex::VarGroup ToVarGroup() const;
+				//Defaulting this does not always work. It can be removed as only the exact solver would benefit from this. 
+				bool operator==(const State& other) const = default;
 			};
 			//Event may also be struct or class like.
 			using Event = int64_t;

@@ -24,8 +24,7 @@ namespace DynaPlex::Erasure
 		using t_State = typename t_MDP::State;
 		using t_Event = std::conditional_t<HasEvent<t_MDP>, typename t_MDP::Event, int64_t>;
 		
-		//Should we require this right off the bat and be done with it?
-		//static_assert(DynaPlex::Concepts::ConvertibleToVarGroup<t_State>, "MDP::State must define VarGroup ToVarGroup() const");
+		static_assert(DynaPlex::Concepts::ConvertibleToVarGroup<t_State>, "MDP::State must define VarGroup ToVarGroup() const");
 		
 		std::string unique_id;
 		int64_t mdp_int_hash;
@@ -35,7 +34,6 @@ namespace DynaPlex::Erasure
 		ActionRangeProvider<t_MDP> provider;
 		double discount_factor;
 
-		//Registers the policies with the internal registry:
 		void RegisterPolicies()
 		{
 			try {
@@ -48,7 +46,6 @@ namespace DynaPlex::Erasure
 				}
 			}
 			catch (const DynaPlex::Error& e) {
-				// Catch the error, append or modify the message, and rethrow
 				throw DynaPlex::Error(std::string("Error in MDPAdapter::RegisterPolicies: ") + e.what());
 			}
 		}
@@ -97,6 +94,45 @@ namespace DynaPlex::Erasure
 			return 1;
 		}
 
+
+		/// Returns bool indicating whether the underlying mdp supports converting a VarGroup to a state. 
+		bool SupportsGetStateFromVarGroup() const override
+		{
+			return HasGetStateFromVars<t_MDP, t_State>;
+		}
+
+		/// Returns bool indicating whether the underlying mdp supports equality tests for states. 
+		bool SupportsEqualityTest() const override
+		{
+			return std::equality_comparable<t_State>;
+
+		}
+
+
+
+		DynaPlex::dp_State GetState(const VarGroup& vars) const override
+		{
+			if constexpr (HasGetStateFromVars<t_MDP, t_State>)
+			{
+				t_State state = mdp->GetState(vars);
+				return std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state);
+			}
+			else
+				throw DynaPlex::Error("MDP->GetState(const VarGroup&): MDP must publicly define MDP::GetState(const VarGroup&) const returning MDP::State. ");
+		}
+		bool StatesAreEqual(const DynaPlex::dp_State& state1,const DynaPlex::dp_State& state2) const override
+		{
+			if constexpr (std::equality_comparable<t_State>)
+			{
+				auto& t_state1 = ToState(state1);
+				auto& t_state2 = ToState(state2);
+				return t_state1 == t_state2;
+			}
+			else
+				throw DynaPlex::Error("MDP->StatesAreEqual(dp_State&,dp_State&) : MDP does not support comparing states for equality. Are any State member variables not equality comparable? ");
+
+		}
+
 		//Defined in mdpadapter_tostate.h included below
 		const t_State& ToState(const DynaPlex::dp_State& state) const;		
 		t_State& ToState(DynaPlex::dp_State& state) const;
@@ -138,7 +174,7 @@ namespace DynaPlex::Erasure
 				return std::make_unique<StateAdapter<t_State>>(mdp_int_hash, state);
 			}
 			else
-				throw DynaPlex::Error("MDP.GetInitialStateVec in MDP: " + mdp_type_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
+				throw DynaPlex::Error("MDP->GetInitialStateVec in MDP: " + mdp_type_id + "\nMDP must publicly define GetInitialState() const returning MDP::State.");
 		}
 		
 		
@@ -158,12 +194,12 @@ namespace DynaPlex::Erasure
 					}
 					else
 					{
-						throw DynaPlex::Error("MDP.IncorporateActions: Cannot incorporate action if Trajectory.Category is not AwaitAction");
+						throw DynaPlex::Error("MDP->IncorporateActions: Cannot incorporate action if Trajectory.Category is not AwaitAction");
 					}
 				}
 			}
 			else
-				throw DynaPlex::Error("MDP.IncorporateActions: " + mdp_type_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
+				throw DynaPlex::Error("MDP->IncorporateActions: " + mdp_type_id + "\nMDP does not publicly define ModifyStateWithAction(MDP::State,int64_t) const returning double");
 			
 		}
 		void IncorporateAction(std::span<DynaPlex::Trajectory> trajectories, const DynaPlex::Policy& policy) const override
@@ -195,7 +231,7 @@ namespace DynaPlex::Erasure
 						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, traj.RNGProvider.GetEventRNG(event_stream)) * traj.EffectiveDiscountFactor;
 					}
 					else //if constexpr 
-						throw DynaPlex::Error("MDP.IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event and ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
+						throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event and ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
 
 
 					traj.Category = mdp->GetStateCategory(state);
@@ -228,7 +264,7 @@ namespace DynaPlex::Erasure
 				}
 			}
 			else
-				throw DynaPlex::Error("MDP.InitiateState: " + mdp_type_id + "\nMDP does not publicly define GetInitialState() const or GetInitialState(DynaPlex::RNG&) const returning MDP::State");
+				throw DynaPlex::Error("MDP->InitiateState: " + mdp_type_id + "\nMDP does not publicly define GetInitialState() const or GetInitialState(DynaPlex::RNG&) const returning MDP::State");
 		}
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories, const DynaPlex::dp_State& state) const override
 		{

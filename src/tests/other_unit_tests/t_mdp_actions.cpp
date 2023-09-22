@@ -22,6 +22,8 @@ namespace DynaPlex::Tests {
 				{//Implementation not needed for these tests. 
 					throw "";
 				}
+				bool operator==(const State& other) const = default;
+
 			};
 			using Event = int64_t;
 		private:

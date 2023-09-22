@@ -15,13 +15,14 @@ namespace DynaPlex::Models {
 			int64_t max_bin_size;
 			int64_t number_of_bins;
 			DynaPlex::DiscreteDist weight_dist;
-		public:
+		public:			
 			using Event = int64_t;
 			struct State {
 				DynaPlex::StateCategory cat;
 				std::vector<int64_t> weight_vector;
 				int64_t upcoming_weight;	
-
+				//Defaulting this does not always work. It can be removed as only the exact solver might benefit from this. 
+				bool operator==(const State& other) const = default;
 				DynaPlex::VarGroup ToVarGroup() const;
 			};
 			double ModifyStateWithAction(State&, int64_t action) const;

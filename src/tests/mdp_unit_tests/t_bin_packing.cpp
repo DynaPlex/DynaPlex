@@ -6,6 +6,7 @@ namespace DynaPlex::Tests {
 		//Note: models/model_name/mdp_config_name is valid json config file for mdp "model_name". 
 		std::string model_name = "bin_packing";
 		std::string config_name = "mdp_config_0.json";
-		ExecuteTest(model_name, config_name);
+		Tester tester{};
+		tester.ExecuteTest(model_name, config_name);
 	}
 }

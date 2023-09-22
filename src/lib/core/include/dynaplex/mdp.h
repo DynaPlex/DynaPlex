@@ -47,6 +47,23 @@ namespace DynaPlex
 		 */
 		virtual DynaPlex::dp_State GetInitialState() const = 0;
 
+
+		/// Returns bool indicating whether the underlying mdp supports converting a VarGroup to a state. 
+		virtual bool SupportsGetStateFromVarGroup() const = 0;
+
+		/// Returns bool indicating whether the underlying mdp supports equality tests for states. 
+		virtual bool SupportsEqualityTest() const = 0;
+
+		/// Gets a state by converting the passed-in state.  
+		virtual DynaPlex::dp_State GetState(const VarGroup&) const = 0;
+		
+	
+		/**
+		 *checks equality of states arising from this mdp. Throws if any of the two states do not arise from this mdp.
+		 *Only defined if the underlying State class supports it. 
+		 */
+		virtual bool StatesAreEqual(const DynaPlex::dp_State&,const DynaPlex::dp_State&) const = 0;
+
 		/// Returns a vector containing actions allowed in the provided state.
 		virtual std::vector<int64_t> AllowedActions(const DynaPlex::dp_State&)const = 0;
 

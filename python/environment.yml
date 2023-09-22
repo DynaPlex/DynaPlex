@@ -7,7 +7,7 @@ channels:
 dependencies:
   - python=3.11.4
   - pytorch=2.0.1
-#If you want to make use of GPU, change - cpuonly to - cudatoolkit=11.8 or similar
+#If you want to make use of GPU, change - cpuonly to - cudatoolkit=11.8 or similar. 
   - cpuonly
   - pybind11
   - pytest

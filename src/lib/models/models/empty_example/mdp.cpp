@@ -102,6 +102,7 @@ namespace DynaPlex::Models {
 
 		void Register(DynaPlex::Registry& registry)
 		{
+			DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel("empty_example", "nonempty description", registry);
 			//To use this MDP with dynaplex, register it like so, setting name equal to namespace and directory name
 			// and adding appropriate description. 
 			//DynaPlex::Erasure::MDPRegistrar<MDP>::RegisterModel(

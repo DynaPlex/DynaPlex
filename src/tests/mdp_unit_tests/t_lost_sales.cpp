@@ -13,7 +13,8 @@ namespace DynaPlex::Tests {
 		//Note: models/model_name/mdp_config_name is valid json config file for mdp "model_name". 
 		std::string model_name = "lost_sales";
 		std::string config_name = "mdp_config_0.json";
-		ExecuteTest(model_name, config_name);
+		Tester tester{};
+		tester.ExecuteTest(model_name, config_name);
 	}
 	TEST(lost_sales, mdp_config_1) {
 		std::string model_name = "lost_sales";
@@ -21,7 +22,8 @@ namespace DynaPlex::Tests {
 		std::string mdp_config_name = "mdp_config_1.json";
 		//Note: models/model_name/policy_config_name is valid json config file for a policy for "model_name".  
 		std::string policy_config_name = "policy_config_1.json";
-		ExecuteTest(model_name, mdp_config_name, policy_config_name);
+		Tester tester{};
+		tester.ExecuteTest(model_name, mdp_config_name, policy_config_name);
 	}
 
 	TEST(lost_sales, Basics) {

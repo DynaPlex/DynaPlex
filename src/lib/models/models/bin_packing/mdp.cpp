@@ -67,16 +67,12 @@ namespace DynaPlex::Models {
 		}
 
 		MDP::MDP(const VarGroup& config)
-		{
-
-		
+		{		
 			config.Get("max_bin_size", max_bin_size);
 			config.Get("number_of_bins", number_of_bins);
 			config.Get("weight_dist", weight_dist);
+			//to do: check weight_dist validity
 			
-		    //check for possible negative values of weight_dist. 
-
-			//providing discount_factor is optional. 
 			if (config.HasKey("discount_factor"))
 				config.Get("discount_factor", discount_factor);
 			else
@@ -99,11 +95,7 @@ namespace DynaPlex::Models {
 		{
 			//no custom policies registered currently for this MDP. 
 		}
-
-	
-
 		
-
 		DynaPlex::StateCategory MDP::GetStateCategory(const State& state) const
 		{
 			return state.cat;
@@ -112,7 +104,6 @@ namespace DynaPlex::Models {
 		bool MDP::IsAllowedAction(const State& state, int64_t action) const {
 			return true;
 		}
-
 
 		void Register(DynaPlex::Registry& registry)
 		{

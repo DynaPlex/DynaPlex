@@ -37,6 +37,9 @@ namespace DynaPlex :: Utilities{
 
 		trajectory.SeedRNGProvider(system, true,seed);
 		
+
+		
+
 		double cumulative_return = 0.0;
 		bool finalreached = false;
 		while (trajectory.EventCount < max_event_count && !finalreached)

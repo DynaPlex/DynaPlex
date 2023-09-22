@@ -11,7 +11,7 @@
   "max_bin_size": 20,
   "discount_factor": 1.0,
   "weight_dist": {
-    "type": "geometric",
-    "mean": 3.0
+    "type": "custom",
+    "probs": [0.0, 0.1, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1 ]
   }
 }

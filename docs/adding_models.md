@@ -37,10 +37,9 @@ Certainly! Here's the information you provided with the code section properly fo
 
 ### Add test for the copied MDP
 
-(DynaPlex is tested using googletest, a well-known and well-documented framework. Using tests to check whether code is following intended logic is easy. A test is an executable that has specific assertions that check
-whether things are going as intended. If any part of a test throws an exception, this will be catched and an informative message may be printed.) 
+(DynaPlex includes googletest, a well-known and well-documented test framework. Using tests to check whether code is following intended logic is the best way to verify an MDP.) 
 
-After successful compilation, set up a test for the new MDP:
+After successful compilation, set up a googletest for the new MDP:
 
 1. Create a new file in `src/tests/mdp_unit_tests` named appropriately (e.g., `t_mdp_id.cpp`), where `_mdp_id_` matches the directory name and the registration name of the MDP.
 
@@ -54,8 +53,8 @@ After successful compilation, set up a test for the new MDP:
 namespace DynaPlex::Tests {    
     TEST(mdp_id, mdp_config_0) {
         std::string model_name = "mdp_id"; // this should match the id and namespace name discussed earlier
-        std::string config_name = "mdp_config_0.json";
-        ExecuteTest(model_name, config_name);
+        std::string mdp_config_name = "mdp_config_0.json";
+        ExecuteTest(model_name,  mdp_config_name);
     }
 }
 //other tests can be added later. 
@@ -68,6 +67,18 @@ namespace DynaPlex::Tests {
   // other variables should be left unchanged, as we didn't make any changes to the old mdp except the id under which it is registered. 
 }
 ```
+
+Compiling and running mdp_unit_tests.exe should give some results. If starting from a working mdp (like lost_sales), all tests should pass since all we did
+was register existing logic under a new name. If starting from empty_example, test will fail with NotImplementedExample, but this can be solved by adding new logic.
+
+The testing works as follows. During compilation, the json files in models/models get copied to a subdirectory of in DYNAPLEX_IO_ROOT_DIR/IO_DynaPlex/defaults. 
+
+Now, when the test executes, ExecuteTest does the following:
+- Loads json from `IORootDir/IO_DynaPlex/defaults/model_name/mdp_config_name`
+  -attempts to configure MDP from that json
+- Sets a random policy
+- Performs range of tests using the MDP and the Policy, i.e. checks whether a number of simulation steps can be run, and whether all things work appropriately. 
+
 
 ---
 
@@ -87,13 +98,21 @@ To test whether intended logic is working, it may be helpfull to use a demonstra
 
 ## Notable Changes from Legacy DynaPlex
 
+NOTE: It should not be neccesary to make changes to any CMakeLists.txt. Newly added files should be automatically detected. Contact main developers if you find limitatations in this.
+Set dependencies in the CMakeUserPresets.txt, and not directly in the CMakeLists.txt! 
+
 The current version of the DynaPlex library uses a similar API to the legacy version. However, several changes have been made:
 
-- **Namespaces**: Strict requirements for namespaces facilitate copying and pasting an MDP, changing identifiers, and adding new MDPs, as discussed extensively above.
-  
-- **Data Types for Modeling**:
-  - State and MDP integer elements are preferably `int64_t`.
-  - For continuous variables, use `double`.
+- **StateCategory**:
+  - In Legacy DynaPlex, the flow of the program could be determined by the function `bool AwaitsAction(const State& state)`, and `bool IsFinal(const State& state)`, and for the case of 
+  multiple tasktypes, also `int TaskType(State& state)`. This was cumbersome, and the new version instead supports `DynaPlex::StateCategory GetStateCategory(const state& state)`. StateCategory can be 
+  either `IsAwaitEvent();`, `IsAwaitAction();`, or `IsFinal();`. Moreover, apart from having these three possible values, it also supports an index:
+```cpp
+auto cat = StateCategory::AwaitAction(int64_t index);
+```
+ Index may be usefull when you have a range of actions that must be performed sequentially after a single event, e.g. actions for various entities in your model. They will also be used for supporting tasktypes, later. 
+ 
+ It is recommended to simply have `StateCategory` as a member variable to `State`, so that it can be kept up-to-date easily and returned from `GetStateCategory`. 
 
 - **Action Type**: Actions transitioned from `size_t` (unsigned) to `int64_t` (signed). This change was made for several reasons:
   - Improved compatibility with Torch, which uses `int64_t`.
@@ -101,9 +120,17 @@ The current version of the DynaPlex library uses a similar API to the legacy ver
   - The library can support negative actions in future DynaPlex versions.
   - Using `int64_t` for both input actions, and internal logic, simplifies implementation as an action can be substracted from a number without casting. 
 
+- **Static Info Communication**: Attributes like the number of allowed actions, number of features, and `alpha` (now `discount_factor`) no longer come from member functions like `NumFeatures()` or `NumValidActions()` or from the `alpha` member variable. Instead, this information is packaged and provided when `GetStaticInfo()` is called, offering future flexibility and other benefits.
+
+- **Namespaces**: Strict requirements for namespaces facilitate copying and pasting an MDP, changing identifiers, and adding new MDPs, as discussed extensively above.
+  
+- **Data Types for Modeling**:
+  - State and MDP integer elements are preferably `int64_t`.
+  - For continuous variables, use `double`.
+
 - **Event Type**: By default, events are `int64_t`, but manual overrides remain possible.
 
-- **Static Info Communication**: Attributes like the number of allowed actions, number of features, and `alpha` (now `discount_factor`) no longer come from member functions like `NumFeatures()` or `NumValidActions()` or from the `alpha` member variable. Instead, this information is packaged and provided when `GetStaticInfo()` is called, offering future flexibility and other benefits.
+
 
 - **MDP Constructor**: Every MDP should have a constructor accepting a `const VarGroup&`. The `VarGroup` behaves similarly to a JSON file or nested dictionary, albeit with some limitations (e.g., only supporting homogeneous lists and requiring the root to be an object). This consistent construction method:
   - Enables the uniform creation of MDPs and type erasure. This means any MDP can be retrieved with a single function, and there's a singular type `DynaPlex::MDP` that can house every MDP.

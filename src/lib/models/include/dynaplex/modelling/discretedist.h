@@ -44,6 +44,8 @@ namespace DynaPlex
 		Iterator begin() const;
 		Iterator end() const;
 
+		bool operator==(const DiscreteDist& other) const = default;
+	
 	private:
 		std::vector<double> translatedPMF{};
 		int64_t min{ 0 };

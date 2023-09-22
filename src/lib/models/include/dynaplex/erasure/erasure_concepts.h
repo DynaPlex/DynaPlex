@@ -4,6 +4,12 @@
 #include "dynaplex/statecategory.h"
 namespace DynaPlex::Erasure
 {
+
+	template <typename t_MDP,typename t_State>
+	concept HasGetStateFromVars = requires(const t_MDP & t, const VarGroup & vars) {
+		{ t.GetState(vars) } -> std::same_as<t_State>;
+	};
+
 	template <typename t_MDP, typename t_State, typename t_Event>
 	concept HasModifyStateWithEvent = requires(const t_MDP & mdp, t_State & state, const t_Event & event) {
 		{ mdp.ModifyStateWithEvent(state, event) } -> std::same_as<double>;

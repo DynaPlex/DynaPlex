@@ -1,18 +1,27 @@
+# DynaPlex
+
+DynaPlex is a software library for solving Markov Decision Problems and similar models (POMDP, HMM) written primarily in c++. It supports 
+deep reinforcement learning, classical parameterized policies, and exact methods based on policy and value iteration. 
+
+Focus is on solving problems arising in Operations Management: Supply Chain, Transportation and Logistics, Manufacturing, etc. 
+
 # Building Instructions for Windows and Linux
 
 ## Prerequisites
 
 - **CMake**: Building is supported with a modern CMake version (>= 3.21).
 - **PyTorch**: Tests were conducted with a recent version. 
-- **Python Bindings**: Code uses pybind11 - currently we provide a anaconda environment.yml that can be used to create appropriate environment. 
+- **Python Bindings**: With pybind11 - we provide an anaconda python/environment.yml that can be used to create appropriate environment. 
 
 ## Configuration
 
 For the easiest setup, provide a `CMakeUserPresets.txt` in the root directory. Note: `CMakeUserPresets.txt` in the root directory is ignored by Git. This allows for specific configurations tailored to your local setup. An example file can be found at `cmake/resources/`. Be sure to adapt this to your specific needs.
 
+The CMakeUserPresets.txt should provide variables, including DYNAPLEX_IO_ROOT_DIR where input and output for dynaplex will be stored and retrieved from. 
+
 ## Windows
 
-With the setup in place, compiling the library should be straightforward in most IDEs that support CMake.
+With the setup in place, compiling the library should be straightforward in most IDEs that support CMake (possibly via a proper extension). 
 
 For using the python bindings, we recommend setting up a specific conda environment using python/environment.yml. 
 
@@ -20,7 +29,7 @@ After this, update the CMakeUserPresets.txt for WinPB to point to the relevant d
 
 ## Linux/Snellius
 
-1. **Initialize Environment and Load modules**:
+1. **Initialize Environment and Load modules**: only on Snellius. 
     ```bash
     cd bash
     source loadmodules.sh
@@ -40,7 +49,7 @@ After this, update the CMakeUserPresets.txt for WinPB to point to the relevant d
         ```
         CMake Error: Could not read presets from /home/willemvj/DynaPlexPrivate: Unrecognized "version" field
         ```
-      You may have forgotten to `source loadmodules.sh` to bring the recent CMake version into scope.
+      Your CMake version is not recent enough. On Snellius, you may have forgotten to `source loadmodules.sh` to bring the recent CMake version into scope.
 
     - Compile a specific target [e.g. sometarget] that is not included in all:
         ```bash

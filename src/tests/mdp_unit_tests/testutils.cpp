@@ -8,29 +8,37 @@
 
 namespace DynaPlex::Tests {
 	
-    void ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& policy_config_name) {
+	
+
+
+    void Tester::ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& policy_config_name) {
 		auto& dp = DynaPlexProvider::Get();
 		auto& system = dp.GetSystem();
-
+		std::string info = model_name + "|" + mdp_config_name;
+		if (policy_config_name != "")
+			info += "|" + policy_config_name;
+		info += ": ";
 		//configure MDP:
 		ASSERT_TRUE(
-			system.file_exists("mdp_config_examples", model_name, mdp_config_name)
-		);
+			system.file_exists("mdp_config_examples", model_name, mdp_config_name) 
+		)<<info << "Does a file models/models/" << model_name << "/" << mdp_config_name << "exist, and was it succesfullly copied to IO_DynaPlex folder by CMake?";
+
+
 		DynaPlex::VarGroup mdp_vars_from_json;
 		DynaPlex::MDP mdp;
 		ASSERT_NO_THROW(
 			std::string file_path = system.filename("mdp_config_examples", model_name, mdp_config_name);
-			mdp_vars_from_json = VarGroup::LoadFromFile(file_path);
-		);
+		    mdp_vars_from_json = VarGroup::LoadFromFile(file_path);
+		) << info << "File: models/models/" << model_name << "/" << mdp_config_name << " is not accepted as a validly formatted configuration file.";
 
 		ASSERT_NO_THROW(
 			mdp = dp.GetMDP(mdp_vars_from_json);
-		);
-		ASSERT_TRUE(mdp);
+		) << info << "Failed to configure mdp with file models/models/" << model_name << "/" << mdp_config_name << ". Is the id correct? Were all neccesary arguments in MDP constructor provided in json file, and are they valid? Does GetStaticInfo provide all required information?";
+		ASSERT_TRUE(mdp) <<info << "Contact developers. ";
 
 		ASSERT_EQ(
 			mdp->TypeIdentifier(), model_name
-		);
+		) << info << "File models/models/" << model_name << "/" << mdp_config_name << " does not define a mdp of type " << model_name;
 
 		DynaPlex::Policy policy;
 		//configure policy:
@@ -38,65 +46,139 @@ namespace DynaPlex::Tests {
 		{
 			ASSERT_TRUE(
 				system.file_exists("mdp_config_examples", model_name, policy_config_name)
-			);
+			) <<info << "File models/models/" << model_name << " / " << mdp_config_name << " does not exist";
 			
 			VarGroup policy_vars_from_json;
 			ASSERT_NO_THROW(
 				std::string file_path = system.filename("mdp_config_examples", model_name, policy_config_name);
-			    policy_vars_from_json = VarGroup::LoadFromFile(file_path);
-			);
+				policy_vars_from_json = VarGroup::LoadFromFile(file_path);
+			) << info << "File: models/models/" << model_name << "/" << policy_config_name << " is not accepted as a validly formatted configuration file.";
+
 
 			ASSERT_NO_THROW(
 				policy = mdp->GetPolicy(policy_vars_from_json);
-			);
+			) << info << "Failed to configure policy with file models/models/" << model_name << "/" << policy_config_name << ". Is the id correct? Were all neccesary arguments in policy constructor provided in json file? Did you correctly register the custom policy in RegisterPolicies?";
+			
 		}
 		else
 		{  //default to random:
 			ASSERT_NO_THROW(
 				policy = mdp->GetPolicy("random");
-			);
+			) <<info;
 		}
-		//policy must now be initiated. 
-		ASSERT_TRUE(policy);
-		
+		std::string policy_type = "";
+		ASSERT_NO_THROW(
+			policy_type = policy->TypeIdentifier();
+		) << info ;
 
-		int64_t numEventTrajectories;
+		//policy must now be initiated. 
+		ASSERT_TRUE(policy) <<info;		
+
+		int64_t numEventTrajectories{};
 		ASSERT_NO_THROW(
 			numEventTrajectories = mdp->NumEventRNGs();
 		);
 		Trajectory trajectory{ numEventTrajectories };
 
-
-		ASSERT_NO_THROW(
-			mdp->InitiateState({ &trajectory,1 });
-		);
-		ASSERT_NO_THROW(
-			trajectory.SeedRNGProvider(dp.GetSystem(), true, 123);
-		);
-
-		int64_t max_event_count = 10;
-		bool finalreached = false;
-		while (trajectory.EventCount < max_event_count && !finalreached)
+		int numSeeds = 64;
+		std::vector<DynaPlex::dp_State> someStates;
+		someStates.reserve(numSeeds + 1);
+		for (int seed = 0; seed < numSeeds; seed++)
 		{
-			auto& cat = trajectory.Category;
-			if (cat.IsAwaitEvent())
+			ASSERT_NO_THROW(
+				mdp->InitiateState({ &trajectory,1 });
+			) << info << "Did you correctly implement GetInitialState() const or GetInitialState(DynaPlex::RNG&) const";
+
+			if (seed == 0)
 			{
 				ASSERT_NO_THROW(
-					mdp->IncorporateEvent({ &trajectory,1 });
-				);
+					someStates.push_back(trajectory.GetState()->Clone())
+				) << info << "Error while cloning state. Does mdp::State support copying?";
 			}
-			else if (cat.IsAwaitAction())
+			ASSERT_NO_THROW(
+				trajectory.SeedRNGProvider(dp.GetSystem(), true, seed);
+			) << info;
+
+			int64_t max_event_count = 128;
+			bool finalreached = false;
+			int64_t action_count = 0;
+			
+			
+			while (trajectory.EventCount < max_event_count && !finalreached)
 			{
-				ASSERT_NO_THROW(
-					policy->SetAction({ &trajectory,1 });
-				);
-				ASSERT_NO_THROW(
-					mdp->IncorporateAction({ &trajectory,1 });
-				);
+				auto& cat = trajectory.Category;
+				if (cat.IsAwaitEvent())
+				{
+					ASSERT_NO_THROW(
+						mdp->IncorporateEvent({ &trajectory,1 });
+					) << info << "Did you correctly implement ModifyStateWithEvent  and GetEvent?";
+				}
+				else if (cat.IsAwaitAction())
+				{
+					//std::cout << "test" << std::endl;
+					action_count++;
+					ASSERT_NO_THROW(
+						policy->SetAction({ &trajectory,1 });
+					) << info << " Issue with policy. Did you correctly implement GetAction on policy " + policy->TypeIdentifier() + "?";
+					ASSERT_NO_THROW(
+						mdp->IncorporateAction({ &trajectory,1 })
+					) << info << "Did you correctly implement ModifyStateWithAction? ";
+				}
+				else if (cat.IsFinal())
+				{
+					finalreached = true;
+				}
+				if (!RelaxOnProgramFlow)
+				{
+					//getting stuck in an action loop should trip this. 
+					ASSERT_LE(action_count, max_event_count * 1000) << info << "A simulation of your trajection seems to get stuck in a loop with only actions, and no events. In ModifyStateWithAction, did you ensure that the state category becomes AwaitEvent or Final? If this is intentional, set RelaxOnLoops to skip this test.";
+				}
+				else
+				{
+					if (action_count > 100 * max_event_count)
+					{
+						finalreached = true;
+					}
+				}
 			}
-			else if (cat.IsFinal())
+
+			if (!RelaxOnProgramFlow)
 			{
-				finalreached = true;
+				//expect at least a single action per event- probably more. 
+				ASSERT_GE(action_count, trajectory.EventCount / 2 - 1) << info << "Substantially less actions then anticipated were taken. Did you ensure that State Category in ModifyStateWithEvent is set to AwaitAction again? If this is intentional, set RelaxOnLoops to skip this test. ";
+			}
+			ASSERT_NO_THROW(
+				someStates.push_back(trajectory.GetState()->Clone())
+			) << info << "Error while cloning state. Does mdp::State support copying?";
+		}
+
+
+		ASSERT_EQ(someStates.size(), numSeeds + 1);
+
+		if (!SkipEqualityTests)
+		{
+			ASSERT_TRUE(mdp->SupportsEqualityTest());
+			auto& firstState = someStates[0];
+			for (auto& state : someStates)
+			{
+				ASSERT_TRUE(mdp->StatesAreEqual(state, state));
+			}
+		}
+
+		if (!SkipStateSerializationTests)
+		{
+			auto& firstState = someStates[0];
+
+			for (auto& state : someStates)
+			{
+				auto vars = state->ToVarGroup();
+				auto loaded_state = mdp->GetState(vars);
+				auto vars_from_loaded_state = loaded_state->ToVarGroup();
+				if (!SkipEqualityTests)
+				{
+					ASSERT_TRUE(mdp->StatesAreEqual(state, loaded_state)) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented?";
+				}
+
 			}
 		}
     }

@@ -36,6 +36,9 @@ namespace DynaPlex::Models {
 				
 				//declaration; for definition see mdp.cpp:
 				DynaPlex::VarGroup ToVarGroup() const;
+				//Defaulting this does not always work. It can be removed as only the exact solver would benefit from this
+				bool operator==(const State& other) const = default;
+
 			};
 
 			//This may be changed as needed, e.g. into struct Event, as struct State above. 
