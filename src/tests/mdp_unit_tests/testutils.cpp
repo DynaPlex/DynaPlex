@@ -1,9 +1,9 @@
-#include "TestUtils.h"
+#include "testutils.h"
 #include "dynaplex/vargroup.h"
 #include "dynaplex/error.h"
 #include "dynaplex/dynaplexprovider.h"
 #include "dynaplex/trajectory.h"
-#include "dynaplex/Demonstrator.h"
+#include "dynaplex/demonstrator.h"
 #include <gtest/gtest.h>
 
 namespace DynaPlex::Tests {

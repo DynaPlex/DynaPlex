@@ -15,9 +15,18 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
 #for succesfully linking on linux to desired paths, i.e. to enable GPU
 #note that this will require some manual steps and is not enabled for now. 
 #set(CMAKE_SKIP_RPATH TRUE)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 if(MSVC)
-set(CMAKE_CXX_FLAGS "$CMAKE_CXX_FLAGS /EHsc")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+else(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+endif(MSVC)
+
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 endif()
+
 
 set(stageDir ${CMAKE_CURRENT_BINARY_DIR})
 include(GNUInstallDirs)
