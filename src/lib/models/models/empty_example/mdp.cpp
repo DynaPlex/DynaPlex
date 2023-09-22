@@ -3,7 +3,6 @@
 
 
 namespace DynaPlex::Models {
-	using namespace DynaPlex;
 	namespace empty_example /*keep this in line with id below and with namespace name in header*/
 	{
 		VarGroup MDP::GetStaticInfo() const

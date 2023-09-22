@@ -3,7 +3,6 @@
 
 
 namespace DynaPlex::Models {
-	using namespace DynaPlex;
 	namespace bin_packing /*keep this in line with id below and with namespace name in header*/
 	{
 		VarGroup MDP::GetStaticInfo() const
@@ -80,7 +79,7 @@ namespace DynaPlex::Models {
 		}
 
 
-		MDP::Event MDP::GetEvent(RNG& rng) const {
+		MDP::Event MDP::GetEvent(DynaPlex::RNG& rng) const {
 			return weight_dist.GetSample(rng);
 		}
 

@@ -15,15 +15,14 @@ namespace DynaPlex::Erasure
 		{ mdp.ModifyStateWithEvent(state, event) } -> std::same_as<double>;
 	};
 
-	template <typename t_MDP, typename t_State, typename t_RNG>
-	concept HasModifyStateWithEventRNG = requires(const t_MDP & mdp, t_State & state, t_RNG & rng) {
-		{ mdp.ModifyStateWithEvent(state, rng) } -> std::same_as<double>;
-	};
-
-
 	template <typename t_MDP, typename t_Event, typename t_RNG>
 	concept HasGetEvent = requires(const t_MDP & mdp, t_RNG & rng) {
 		{ mdp.GetEvent(rng) } -> std::same_as<t_Event>;
+	};
+
+	template <typename t_MDP,typename t_State, typename t_Event, typename t_RNG>
+	concept HasGetStateDependentEvent = requires(const t_MDP & mdp, const t_State& state, t_RNG & rng) {
+		{ mdp.GetEvent(state, rng) } -> std::same_as<t_Event>;
 	};
 
 	template<typename t_Policy, typename t_State>
@@ -31,8 +30,8 @@ namespace DynaPlex::Erasure
 		{ mdp.GetAction(state) } -> std::same_as<int64_t>;
 	};
 
-	template<typename t_Policy, typename t_State>
-	concept HasGetActionRNG = requires(const t_Policy mdp, const t_State & state, DynaPlex::RNG & rng) {
+	template<typename t_Policy, typename t_State, typename t_MDP>
+	concept HasGetActionRNG = requires(const t_Policy mdp, const t_State & state, t_MDP & rng) {
 		{ mdp.GetAction(state, rng) } -> std::same_as<int64_t>;
 	};
 

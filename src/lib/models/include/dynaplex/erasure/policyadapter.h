@@ -16,7 +16,7 @@ namespace DynaPlex::Erasure
 		static_assert(HasGetStateCategory<t_MDP>, "MDP must publicly define a function GetStateCategory(const MDP::State) that returns a StateCategory");
 		using t_State = t_MDP::State;
 
-		static_assert(HasGetAction<t_Policy, t_State> ^ HasGetActionRNG<t_Policy, t_State> ,
+		static_assert(HasGetAction<t_Policy, t_State> ^ HasGetActionRNG<t_Policy, t_State,  DynaPlex::RNG> ,
 			" t_MDP should implement GetAction(State) or GetAction(State,RNG), but not both!");
 
 		t_Policy policy;

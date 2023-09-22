@@ -221,18 +221,27 @@ namespace DynaPlex::Erasure
 					traj.EventCount++;
 					traj.EffectiveDiscountFactor *= discount_factor;
 					auto event_stream = traj.Category.Index();
-					if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG> && HasModifyStateWithEvent<t_MDP, t_State, t_Event>)
+
+					if constexpr (HasModifyStateWithEvent<t_MDP, t_State, t_Event>)
 					{
-						t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(event_stream));
-						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
-					}
-					else if constexpr (HasModifyStateWithEventRNG<t_MDP, t_State, DynaPlex::RNG>)
-					{
-						traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, traj.RNGProvider.GetEventRNG(event_stream)) * traj.EffectiveDiscountFactor;
+						
+						if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG>)
+						{
+							t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(event_stream));
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
+						}
+						else if constexpr (HasGetStateDependentEvent<t_MDP, t_State, t_Event, DynaPlex::RNG>)
+						{
+							t_Event Event = mdp->GetEvent(state, traj.RNGProvider.GetEventRNG(event_stream));
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
+						}
+						else
+							throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define function GetEvent(DynaPlex::RNG&) returning MDP::Event. ");
+
 					}
 					else //if constexpr 
-						throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define GetEvent(DynaPlex::RNG&) const returning MDP::Event and ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
-
+						throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
+						
 
 					traj.Category = mdp->GetStateCategory(state);
 					if (traj.Category.IsAwaitEvent())
