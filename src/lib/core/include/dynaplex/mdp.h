@@ -88,19 +88,6 @@ namespace DynaPlex
 		 */
 		virtual bool IncorporateEvent(std::span<DynaPlex::Trajectory> trajectories) const = 0;
 		
-		//Maybe later, for specific demonstration purposes so that a specific event category can be tested:
-		//would require Event to be ConvertibleFromVarGroup. 
-	    //virtual void IncorporateEvent(std::span<DynaPlex::Trajectory> trajectories,std::span<DynaPlex::VarGroup> events_as_vargroup) const = 0;
-
-		/**
-		 * Incorporates events in the provided trajectories until for each of the provided trajectories at least one of the following holds:
-		 * 1. Category IsFinal
-		 * 2. EventCount>=MaxEventCount, in which case category will be set to EOH
-		 * 3. Category IsAwaitAction, and there is more than a single action allowed
-		 * returns true if all states are in category 3, false otherwise. 
-         */
-		//virtual bool IncorporateUntilNonTrivialAction(std::span<DynaPlex::Trajectory> trajectories,int64_t MaxEventCount) const = 0;
-
 	
 		
 		/**

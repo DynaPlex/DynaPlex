@@ -54,7 +54,8 @@ namespace DynaPlex::Tests {
     TEST(mdp_id, mdp_config_0) {
         std::string model_name = "mdp_id"; // this should match the id and namespace name discussed earlier
         std::string mdp_config_name = "mdp_config_0.json";
-        ExecuteTest(model_name,  mdp_config_name);
+        Tester tester{};
+		tester.ExecuteTest(model_name, config_name);
     }
 }
 //other tests can be added later. 
@@ -79,6 +80,7 @@ Now, when the test executes, ExecuteTest does the following:
 - Sets a random policy
 - Performs range of tests using the MDP and the Policy, i.e. checks whether a number of simulation steps can be run, and whether all things work appropriately. 
 
+**Note:** A .json file is one way to configure an MDP, but mdps may also be directly configured from c++ code (via a VarGroup, see `../src/tests/other_unit_tests/t_model_provider.cpp`), or via a dict object in python.
 
 ---
 
