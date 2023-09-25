@@ -3,17 +3,13 @@
 #include "dynaplex/error.h"
 #include <gtest/gtest.h>
 #include "someclass.h"
-
+#include "dynaplex/dynaplexprovider.h"
 namespace DynaPlex::Tests {
 
 	TEST(InitiateClassWithVarGroup, VarGroup) {
-
+		//Create a VarGroup via the API:
 		auto nested = DynaPlex::VarGroup({ {"Id","1"},{"Size",1.0} });
-
-		//This loads an entire vargroup from json. 
-		//DynaPlex::VarGroup::LoadFromFile("path / to / file");
 		auto nested2 = DynaPlex::VarGroup({ {"Id","2"},{"Size",4.0} });
-
 		DynaPlex::VarGroup varGroup({
 			{"testEnumClass",static_cast<int>(SomeClass::Test::option)},
 			{"myString","string"},
@@ -21,13 +17,17 @@ namespace DynaPlex::Tests {
 			{"myVector", DynaPlex::VarGroup::Int64Vec{123,123}},
 			{ "nestedClass",nested},
 			{"myNestedVector",DynaPlex::VarGroup::VarGroupVec{nested,nested2} },
-			{ "myQueue",DynaPlex::VarGroup::Int64Vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14} } ,{ "as", "as"} });
+			{ "myQueue",DynaPlex::VarGroup::Int64Vec{1,14} } });
 
+		//Save that VarGroup to disk. 
+		auto& dp = DynaPlexProvider::Get();
+		auto filename = dp.System().filename("tests", "initiateclasswithvargroup", "someclass.json");
+		varGroup.SaveToFile(filename);
+		//Load the VarGroup that was just saved:
+		VarGroup loadedFromJson = VarGroup::LoadFromFile(filename);
 
-
-
-		//Initiate someclass with the varGroup
-		SomeClass someclass(varGroup);
+		//Initiate someclass with the varGroup loaded from disk. 
+		SomeClass someclass(loadedFromJson);
 
 		ASSERT_EQ(someclass.testEnumClass, SomeClass::Test::option);
 		//now someclass should have taken the values from the vargroup.
