@@ -90,7 +90,7 @@ After setting up the environment, and compiling the bindings, Python bindings wi
 
 Detailed instructions on how to add new models or elements to the project can be found [here](docs/adding_models.md).
 
-## Added example executables
+## Adding an example executable
 
 See [here](docs/add_executable.md). 
 
