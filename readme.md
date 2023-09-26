@@ -90,6 +90,10 @@ After setting up the environment, and compiling the bindings, Python bindings wi
 
 Detailed instructions on how to add new models or elements to the project can be found [here](docs/adding_models.md).
 
+## Added example executables
+
+See [here](docs/add_executable.md). 
+
 ## Algoriths
 
-I am still in the process of porting algorithms from the legacy DynaPlex version. This will be finished in the coming weeks. 
+We are still in the process of porting algorithms from the legacy DynaPlex version. This will be finished in the coming weeks. 
