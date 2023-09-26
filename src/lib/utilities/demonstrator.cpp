@@ -1,4 +1,4 @@
-#include "dynaplex/_demonstrator.h"
+#include "dynaplex/demonstrator.h"
 #include "dynaplex/trajectory.h"
 namespace DynaPlex :: Utilities{
 

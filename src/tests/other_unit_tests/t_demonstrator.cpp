@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include "dynaplex/dynaplexprovider.h"
 #include "dynaplex/trajectory.h"
-#include "dynaplex/_demonstrator.h"
+#include "dynaplex/demonstrator.h"
 namespace DynaPlex::Tests {
 	
 
