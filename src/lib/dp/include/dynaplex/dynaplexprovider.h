@@ -3,7 +3,7 @@
 #include "dynaplex/models/registrationmanager.h"
 #include "dynaplex/registry.h"
 #include "dynaplex/system.h"
-#include "dynaplex/demonstrator.h"
+#include "dynaplex/_demonstrator.h"
 namespace DynaPlex {
     class DynaPlexProvider {
         
