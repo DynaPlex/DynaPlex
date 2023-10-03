@@ -104,7 +104,7 @@ namespace DynaPlex::Tests {
 			int64_t action_count = 0;
 			
 			
-			while (trajectory.EventCount < max_event_count && !finalreached)
+			while (trajectory.PeriodCount < max_event_count && !finalreached)
 			{
 				auto& cat = trajectory.Category;
 				if (cat.IsAwaitEvent())
@@ -126,6 +126,7 @@ namespace DynaPlex::Tests {
 				}
 				else if (cat.IsFinal())
 				{
+					ASSERT_TRUE(!mdp->IsInfiniteHorizon()) << info << " MDP GetStaticInfo indicates that the MDP has infinite horizon, but it returns categories that are IsFinal. Ensure consistency.";
 					finalreached = true;
 				}
 				if (!RelaxOnProgramFlow)
@@ -145,7 +146,7 @@ namespace DynaPlex::Tests {
 			if (!RelaxOnProgramFlow)
 			{
 				//expect at least a single action per event- probably more. 
-				ASSERT_GE(action_count, trajectory.EventCount / 2 - 1) << info << "Substantially less actions then anticipated were taken. Did you ensure that State Category in ModifyStateWithEvent is set to AwaitAction again? If this is intentional, set RelaxOnLoops to skip this test. ";
+				ASSERT_GE(action_count, trajectory.PeriodCount / 2 - 1) << info << "Substantially less actions then anticipated were taken. Did you ensure that State Category in ModifyStateWithEvent is set to AwaitAction again? Note that PeriodCount is by default only increased when returning StateCategory.Index(0). If your MDP uses hardly any events intentionally, set RelaxOnLoops to skip this test. ";
 			}
 			ASSERT_NO_THROW(
 				someStates.push_back(trajectory.GetState()->Clone())
@@ -201,17 +202,17 @@ namespace DynaPlex::Tests {
 				trajVec[0].SeedRNGProvider(dp.System(), false,12,0);
 				trajVec[1].SeedRNGProvider(dp.System(), false, 12, 0);
 
-				int64_t max_event_count = 10;
+				int64_t max_period_count = 10;
 				int64_t action_count = 0;
 				
 				
 				bool finalreached = false;
-				while (trajVec[0].EventCount < max_event_count && !finalreached)
+				while (trajVec[0].PeriodCount < max_period_count && !finalreached)
 				{
 					auto& cat = trajVec[0].Category;
 					ASSERT_EQ(trajVec[0].Category, trajVec[1].Category)<<info<<"Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
 					ASSERT_EQ(trajVec[0].CumulativeReturn, trajVec[1].CumulativeReturn) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
-					ASSERT_EQ(trajVec[0].EventCount, trajVec[1].EventCount) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
+					ASSERT_EQ(trajVec[0].PeriodCount, trajVec[1].PeriodCount) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
 					
 					if (!SkipEqualityTests)
 					{
@@ -238,16 +239,17 @@ namespace DynaPlex::Tests {
 					}
 					else if (cat.IsFinal())
 					{
+						ASSERT_TRUE(!mdp->IsInfiniteHorizon()) << info << " MDP GetStaticInfo indicates that the MDP has infinite horizon, but it returns categories that are IsFinal. Ensure consistency.";
 						finalreached = true;
 					}
 					if (!RelaxOnProgramFlow)
 					{
 						//getting stuck in an action loop should trip this. 
-						ASSERT_LE(action_count, max_event_count * 1000) << info << "A simulation of your trajection seems to get stuck in a loop with only actions, and no events. In ModifyStateWithAction, did you ensure that the state category becomes AwaitEvent or Final? If this is intentional, set RelaxOnLoops to skip this test. ";
+						ASSERT_LE(action_count, max_period_count * 1000) << info << "A simulation of your trajection seems to get stuck in a loop with only actions, and no events. In ModifyStateWithAction, did you ensure that the state category becomes AwaitEvent or Final? If this is intentional, set RelaxOnLoops to skip this test. ";
 					}
 					else
 					{
-						if (action_count > 100 * max_event_count)
+						if (action_count > 100 * max_period_count)
 						{
 							finalreached = true;
 						}

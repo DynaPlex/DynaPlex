@@ -171,8 +171,18 @@ namespace DynaPlex {
 				},
 				value);
 		}
-
-		
+		template<typename T>		
+		void GetOrDefaultHelper(const std::string& key, T& out_val, const T& default_value)
+		{
+			if (HasKey(key, true))
+			{
+				GetHelper(key, out_val);
+			}
+			else
+			{
+				out_val = default_value;
+			}
+		}
 
 		template<typename T>
 		void GetHelper(const std::string& key, T& out_val) const {
@@ -309,6 +319,20 @@ namespace DynaPlex {
 	void VarGroup::Get(const std::string& key, int64_t& out_val) const {
 		pImpl->GetHelper(key, out_val);
 	}
+
+	void VarGroup::GetOrDefault(const std::string& key, int64_t& out_val,const int64_t& default_value) const {
+		pImpl->GetOrDefaultHelper(key, out_val, default_value);
+	}
+	void VarGroup::GetOrDefault(const std::string& key, std::string& out_val, const std::string& default_value) const {
+		pImpl->GetOrDefaultHelper(key, out_val, default_value);
+	}
+	void VarGroup::GetOrDefault(const std::string& key, double& out_val, const double& default_value) const {
+		pImpl->GetOrDefaultHelper(key, out_val, default_value);
+	}
+	void VarGroup::GetOrDefault(const std::string& key, bool& out_val, const bool& default_value) const {
+		pImpl->GetOrDefaultHelper(key, out_val, default_value);
+	}
+
 	void VarGroup::Get(const std::string& key, std::string& out_val) const {
 		pImpl->GetHelper(key, out_val);
 	}

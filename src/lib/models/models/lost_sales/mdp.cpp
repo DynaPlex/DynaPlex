@@ -27,6 +27,10 @@ namespace DynaPlex::Models {
 
 		double MDP::ModifyStateWithAction(State& state, int64_t action) const
 		{
+			if (!IsAllowedAction(state, action))
+			{
+				throw DynaPlex::Error("Lost Sales: action not allowed");
+			}
 			state.state_vector.push_back(action);
 			state.total_inv += action;
 			state.cat = StateCategory::AwaitEvent();
@@ -58,6 +62,7 @@ namespace DynaPlex::Models {
 			}
 			MaxOrderSize = demand_dist.Fractile(p / (p + h));
 			MaxSystemInv = DemOverLeadtime.Fractile(p / (p + h));
+
 		}
 
 
@@ -106,7 +111,8 @@ namespace DynaPlex::Models {
 		}
 
 		bool MDP::IsAllowedAction(const State& state, int64_t action) const {
-			return (state.total_inv + action) <= MaxSystemInv;
+			return ((state.total_inv + action) <= MaxSystemInv && action <= MaxOrderSize) 
+				   || action == 0;
 		}
 
 		MDP::State MDP::GetInitialState() const

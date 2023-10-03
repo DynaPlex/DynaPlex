@@ -13,6 +13,13 @@ namespace DynaPlex::Models {
 			VarGroup feats{};
 			vars.Add("features", feats);
 			vars.Add("discount_factor", discount_factor);
+
+			//This indicates that the MDP never terminates. 
+			//It may be used by various algorithms. 
+			//infinite is default, other value is finite for algorithms that are guaranteed to reach a final state at some point. 
+			vars.Add("horizon_type", "infinite");
+
+
 			return vars;
 		}
 

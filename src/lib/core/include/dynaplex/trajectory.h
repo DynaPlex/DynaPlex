@@ -19,11 +19,12 @@ namespace DynaPlex {
 	   	  */
 		StateCategory Category;
 		/**
-		  * counts the number of events since the last initiation/reset. 
+		  * counts the number of periods since the last initiation/reset. Be default, the period is increased whenever an
+		  * event is incorporated, and the index of the StateCategory is 0. 
 		  * Automatically kept up-to-date with calls to MDP->func(Trajectories, ...). 
 		  * Do not manually change this.
 		  */
-		int64_t EventCount;
+		int64_t PeriodCount;
 		/**
 	      * Effective discount factor based on the number of events since initiation / last reset. 
 		  * Multiplied by the DiscountFactor before each event: Automatically kept up-to-date with calls to MDP->func(Trajectories, ...).
@@ -50,10 +51,10 @@ namespace DynaPlex {
 			else
 				throw DynaPlex::Error("Trajectory: Attempting to get state that has not been initialized. ");
 		}
-		/// moves the state into the trajectory, and resets CumulativeReturn, EffectiveDiscountFactor, and EventCount. 
+		/// moves the state into the trajectory, and resets CumulativeReturn, EffectiveDiscountFactor, and PeriodCount. 
 		void Reset(DynaPlex::dp_State&&);
 		
-		/// re-initiates EventCount, EffectiveDiscountFactor, CumulativeReturn.  
+		/// re-initiates PeriodCount, EffectiveDiscountFactor, CumulativeReturn.  
 		void Reset();
 		/// provider of random sequences for use in MDP. May be reset by calling Trajectory::Reset. 
 		DynaPlex::RNGProvider RNGProvider;

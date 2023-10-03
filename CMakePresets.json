@@ -1,5 +1,4 @@
 ﻿{
-  //Further configurations may be defined in cmakeuserpresets.json
   "version": 3,
   "configurePresets": [
     {

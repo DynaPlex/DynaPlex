@@ -8,8 +8,6 @@
 
 namespace DynaPlex::Erasure
 {
-
-
     template<typename t_MDP>
     inline bool IsAllowedAction(const t_MDP& mdp, const typename t_MDP::State& state, int64_t action)
     {
@@ -86,7 +84,18 @@ namespace DynaPlex::Erasure
                             extra += "\nNOTE: State is not AwaitAction.";
                         }
                     }
-                    
+                    if constexpr (DynaPlex::Concepts::ConvertibleToVarGroup<State>)
+                    {
+                        std::string s = "";
+                        try
+                        {
+                            s = state.ToVarGroup().ToAbbrvString();
+                        }
+                        catch (...) {
+                            s = "";
+                        };
+                        extra += "\n" + s;
+                    }
                     throw DynaPlex::Error("ActionRange: State does not have a single valid action."+extra);
                 }
             }        

@@ -6,15 +6,15 @@ namespace DynaPlex::Models {
 	{
 
 		//MDP and State refer to the specific ones defined in current namespace
-		BaseStockPolicy::BaseStockPolicy(std::shared_ptr<const MDP> mdp, const VarGroup& varGroup)
+		BaseStockPolicy::BaseStockPolicy(std::shared_ptr<const MDP> mdp, const VarGroup& config)
 			:mdp{ mdp }
 		{
-			//Any initiation goes here. 
+			config.GetOrDefault("base_stock_level", base_stock_level, mdp->MaxSystemInv);
 		}
 
 		int64_t BaseStockPolicy::GetAction(const MDP::State& state) const
 		{
-			int64_t action = mdp->MaxSystemInv - state.total_inv;
+			int64_t action = base_stock_level - state.total_inv;
 			//We maximize, so actually this is capped base-stock. 
 			if (action > mdp->MaxOrderSize)
 			{

@@ -7,21 +7,21 @@ namespace DynaPlex::Utilities {
 	class Demonstrator {
 	public:
 		/**
-		 *VarGroup must provide int64_t max_event_count, which will will be used when calling GetTrace. 
-		 * it may also provide seed. 
+		 *Config may include max_event_count (default:3), which will will be used when calling GetTrace. 
+		 * it may also include rng_seed (default:0). 
 		 */
-		Demonstrator(const DynaPlex::System& system, const VarGroup& config);
+		Demonstrator(const DynaPlex::System& system, const VarGroup& config = VarGroup{});
 
 
 		/**
 		 * Returns a trace, i.e. a sequence of states (converted ToVarGroup()), starting from an initial state,
-		 * until reaching a final state or until MaxEventCount events have occured. 
+		 * until reaching a final state or until max_period_count periods have passed. 
 		 */
 		std::vector<VarGroup> GetTrace(DynaPlex::MDP mdp, DynaPlex::Policy policy = nullptr);
 
 	private:
-		int64_t max_event_count;
-		int64_t seed;
+		int64_t max_period_count;
+		int64_t rng_seed;
 		System system;
 
 

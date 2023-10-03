@@ -6,7 +6,7 @@
 #include "dynaplex/error.h"
 #include "dynaplex/modelling/discretedist.h"
 #include "dynaplex/rng.h"
-#include "dynaplex/statisticskeeper.h"
+#include "dynaplex/policycomparison.h"
 
 namespace DynaPlex::Tests {
 
@@ -22,13 +22,16 @@ namespace DynaPlex::Tests {
 		std::map<int64_t, size_t> buckets; // Map from bucket index to count of means
 
 		for (size_t meanIndex = 0; meanIndex < numMeans; ++meanIndex) {
-			StatisticsKeeper stats;
+			std::vector<double> vec;
+			vec.reserve(numSamples);
 
 			for (size_t sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex) {
-				stats.AddStatistic(dist.GetSample(rng));
+				vec.push_back(dist.GetSample(rng));
 			}
+				
+			auto comparison = PolicyComparison::GetComparison(vec);
 
-			double deviationFromTrueMean = stats.MuHat() - trueMean;
+			double deviationFromTrueMean = comparison.mean(0) - trueMean;
 
 			// Assigning the deviation to a bucket using the standard deviation of the sample mean
 			int64_t bucketIndex = static_cast<int64_t>(std::floor(deviationFromTrueMean / sdOfSampleMean));

@@ -19,7 +19,6 @@
         "DYNAPLEX_IO_ROOT_DIR": "/home/willemvj"
       }
     },
-    //WinDeb, WinRel, WinPB, are windows builds for respectivel debug, release, and for creating the python bindings.
     {
       "name": "WinDeb",
       "inherits": [ "x64-debug", "win-base" ],
@@ -58,7 +57,6 @@
         "dynaplex_python_path": "C:/Users/wjaarsveld/Anaconda3/envs/envDP"
       }
     },
-    //LinDeb, LinRel, LinPB, are linux builds for respectivel debug, release, and for creating the python bindings.
     {
       "name": "LinDeb",
       "inherits": [ "linux-debug", "lin-base" ],
@@ -95,6 +93,22 @@
         "dynaplex_enable_gurobi": false,
         "dynaplex_gurobi_path": ""
       }
-    }
+    },
+    {
+      "name": "WinDebCl",
+      "inherits": [ "win-base"],
+      "cacheVariables": {
+       // Disabling makes running a bit faster, but not all functionality is available.
+        "dynaplex_enable_pytorch": false,
+        // Note that python bindings can only be built in release, since python.exe is a release build.
+        "dynaplex_enable_pythonbindings": false,
+        "dynaplex_enable_tests": true,
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_BUILD_TYPE": "Debug"//,
+        //"CMAKE_CXX_CLANG_TIDY": "clang-tidy;-fexceptions,-checks=-*,bugprone-*,performance-*,readability-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-readability-magic-numbers,clang-analyzer-core.*,clang-analyzer-security.*"
+      }
+   }
+
   ]
 }

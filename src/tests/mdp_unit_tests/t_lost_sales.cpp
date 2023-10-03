@@ -67,9 +67,9 @@ namespace DynaPlex::Tests {
 			trajectory.SeedRNGProvider(dp.System(), true, 123);
 		);
 
-	    int64_t max_event_count = 10;
+	    int64_t max_period_count = 10;
 		bool finalreached = false;
-		while (trajectory.EventCount < max_event_count && !finalreached)
+		while (trajectory.PeriodCount < max_period_count && !finalreached)
 		{
 			auto& cat = trajectory.Category;
 			if (cat.IsAwaitEvent())

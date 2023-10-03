@@ -27,8 +27,8 @@ namespace DynaPlex::Tests {
 		
 		DynaPlex::Policy policy = mdp->GetPolicy("random");
 
-		int64_t max_events = 10;
-		auto demonstrator_config = DynaPlex::VarGroup{ {"max_event_count", max_events},{"seed",123}};
+		int64_t max_periods = 10;
+		auto demonstrator_config = DynaPlex::VarGroup{ {"max_period_count", max_periods},{"seed",123} };
 		auto demonstrator = dp.GetDemonstrator(demonstrator_config);
 		auto trace = demonstrator.GetTrace(mdp);
 		
@@ -38,6 +38,6 @@ namespace DynaPlex::Tests {
 		}
 
 		//lost_sales starts with action, and alternates between actions and events, never final. Hence, there will be 2*maxevents elements in trace. 
-		ASSERT_EQ(trace.size(), max_events*2);
+		ASSERT_EQ(trace.size(), max_periods *2);
 	}
 }

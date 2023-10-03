@@ -69,21 +69,6 @@ namespace DynaPlex::Tests {
 			StateCategory await_event_of_type_from_vg(await_event_of_type_vg);
 			EXPECT_TRUE(await_event_of_type_from_vg.IsAwaitEvent());
 			EXPECT_EQ(await_event_of_type_from_vg.Index(), 2);
-		}
-		{
-			auto eoh = StateCategory::EndOfHorizon();
-
-			EXPECT_FALSE(eoh.IsAwaitAction());
-			EXPECT_FALSE(eoh.IsAwaitEvent());
-			EXPECT_FALSE(eoh.IsFinal());
-			EXPECT_TRUE(eoh.IsEndOfHorizon());
-			EXPECT_EQ(eoh.Index(), 0);
-
-			// Convert EOH to VarGroup and back
-			auto eoh_vg = eoh.ToVarGroup();
-			StateCategory eoh_from_vg(eoh_vg);
-			EXPECT_TRUE(eoh_from_vg.IsEndOfHorizon());
-			EXPECT_EQ(eoh_from_vg.Index(), 0);
-		}
+		}		
 	}
 }

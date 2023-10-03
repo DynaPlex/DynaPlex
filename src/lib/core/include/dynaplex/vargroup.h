@@ -152,6 +152,12 @@ namespace DynaPlex {
 
 		bool HasKey(const std::string& key, bool warn_if_similar=true) const;
 
+
+		void GetOrDefault(const std::string& key, int64_t& out_val, const int64_t& default_value) const;
+		void GetOrDefault(const std::string& key, double& out_val, const double& default_value) const;
+		void GetOrDefault(const std::string& key, bool& out_val, const bool& default_value) const;
+		void GetOrDefault(const std::string& key, std::string& out_val, const std::string& default_value) const;
+
 		void Get(const std::string& key, VarGroup& out_val) const;
 		void Get(const std::string& key, int64_t& out_val) const;
 		void Get(const std::string& key, std::string& out_val) const;

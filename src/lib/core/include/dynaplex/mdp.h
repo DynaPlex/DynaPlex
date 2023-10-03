@@ -47,6 +47,11 @@ namespace DynaPlex
 		 */
 		virtual DynaPlex::dp_State GetInitialState() const = 0;
 
+		/**
+		 * If true, indicates that the MDP is guaranteed never to terminate, i.e. StateCategory will never be IsFinal(). 
+		 * If false, indicates that the MDP terminates, i.e. StateCategory will eventually be IsFinal().  
+		 */
+		virtual bool IsInfiniteHorizon() const = 0;
 
 		/// Returns bool indicating whether the underlying mdp supports converting a VarGroup to a state. 
 		virtual bool SupportsGetStateFromVarGroup() const = 0;
@@ -88,16 +93,34 @@ namespace DynaPlex
 		 */
 		virtual bool IncorporateEvent(std::span<DynaPlex::Trajectory> trajectories) const = 0;
 		
-	
+		/**
+		 * Incorporates events in the provided trajectories until for each of the provided trajectories at least one of the following holds:
+		 * 1. Category IsFinal()
+		 * 2. trajectory.PeriodCount>=MaxPeriodCount, and Category.IsAwaitEvent();
+		 * 3. Category.IsAwaitAction(), and there is more than a single action allowed
+		 * returns true if all states are in category 3, false otherwise.
+		 */
+		virtual bool IncorporateUntilNonTrivialAction(std::span<DynaPlex::Trajectory> trajectories,int64_t MaxPeriodCount) const = 0;
 		
 		/**
+		 * Incorporates events in the provided trajectories until for each of the provided trajectories at least one of the following holds:
+		 * 1. Category IsFinal()
+		 * 2. trajectory.PeriodCount>=MaxPeriodCount, and Category.IsAwaitEvent();
+		 * 3. Category.IsAwaitAction()
+		 * returns true if all states are in category 3, false otherwise.
+		 */
+		virtual bool IncorporateUntilAction(std::span<DynaPlex::Trajectory> trajectories, int64_t MaxPeriodCount) const = 0;
+
+
+
+		/**
 		 * Initiates the states in the trajectories. Uses random initial state (GetInitialState(RNG&)) if available, otherwise uses deterministic state (GetInitialState()). 
-		 * Updates the Category in the trajectory, and resets EventCount, CumulativeReturn, and EffectiveDiscountFactor. 
+		 * Updates the Category in the trajectory, and resets PeriodCount, CumulativeReturn, and EffectiveDiscountFactor. 
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories) const = 0;
 		/**
 		 * Sets the states in the trajectories to a specific state value. 
-		 * Updates the Category in the trajectory, and resets EventCount, CumulativeReturn, and EffectiveDiscountFactor.
+		 * Updates the Category in the trajectory, and resets PeriodCount, CumulativeReturn, and EffectiveDiscountFactor.
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories,const DynaPlex::dp_State& state) const = 0;
 

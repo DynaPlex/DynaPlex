@@ -19,7 +19,7 @@ namespace DynaPlex {
 
         /// returns whether the System has a valid IO directory defined. 
         bool HasIODirectory() const;
-        /// hardwarethreads available to this thing. 
+        /// hardwarethreads available for the process or algorithm that receives this system.
         std::uint32_t HardwareThreads() const;
         std::uint32_t WorldRank() const;
         std::uint32_t WorldSize() const;

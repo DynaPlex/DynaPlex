@@ -73,15 +73,18 @@ namespace DynaPlex
 		static DiscreteDist GetZeroDist();
 		static DiscreteDist GetPoissonDist(double mean);
 		static DiscreteDist GetGeometricDist(double mean);
-		/// <summary>
-		/// Example: GetCumtomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2 
-		/// corresponds to -2 with prob 0.1, -1 with prob 0.2, 0 with prob 0.3 and 1 with prob 0.4.
-		/// </summary>
+		
+		/**
+		 * Example: GetCumtomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2 
+		 * corresponds to -2 with prob 0.1, -1 with prob 0.2, 0 with prob 0.3 and 1 with prob 0.4.
+		 */
 		static DiscreteDist GetCustomDist(const std::vector<double>& probs, int64_t offset = 0);
-		/// <summary>
-		/// Example: GetCumtomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2 
-		/// corresponds to -2 with prob 0.1, -1 with prob 0.2, 0 with prob 0.3 and 1 with prob 0.4.
-		/// </summary>
+			
+
+		/**
+		 * Example: GetCumtomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2
+		 * corresponds to -2 with prob 0.1, -1 with prob 0.2, 0 with prob 0.3 and 1 with prob 0.4.
+		 */
 		static DiscreteDist GetCustomDist(std::vector<double>&& probs, int64_t offset = 0);
 
 		int64_t Max() const
@@ -94,13 +97,13 @@ namespace DynaPlex
 		}
 
 
-		// returns distribution that corresponds to the sum of this and another distribution (assuming the two distributions are independent)
+		/// returns distribution that corresponds to the sum of this and another distribution (assuming the two distributions are independent)
 		DiscreteDist Add(const DiscreteDist& other) const;
 
-		// Returns a discrete distribution that represents the maximum of the current distribution and the given value.
+		/// Returns a discrete distribution that represents the maximum of the current distribution and the given value.
 		DiscreteDist TakeMaximumWith(int64_t value) const;
 
-		// Returns a discrete distribution that represents minus the current distribution.
+		/// Returns a discrete distribution that represents minus the current distribution.
 		DiscreteDist Invert() const;
 		/**
 		 * Computes the fractile (quantile) for the given discrete distribution.

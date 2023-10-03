@@ -14,8 +14,7 @@ namespace DynaPlex {
 		enum StateType : uint64_t {
 			AWAIT_ACTION = 0x1ULL << 60,
 			AWAIT_EVENT = 0x2ULL << 60,
-			FINAL = 0x3ULL << 60,
-			EOH = 0x4ULL << 60
+			FINAL = 0x3ULL << 60
 		};
 
 
@@ -56,10 +55,7 @@ namespace DynaPlex {
 			return StateCategory(FINAL);
 		}
 
-		static StateCategory EndOfHorizon() {
-			return StateCategory(EOH);
-		}
-
+	
 
 
 		VarGroup ToVarGroup() const {
@@ -69,7 +65,6 @@ namespace DynaPlex {
 			if (IsAwaitAction()) awaits = "action";
 			else if (IsAwaitEvent()) awaits = "event";
 			else if (IsFinal()) awaits = "-";
-			else if (IsEndOfHorizon()) awaits = "EOH";
 			vg.Add("await", awaits);
 			if (index > 0)
 			{
@@ -106,9 +101,6 @@ namespace DynaPlex {
 			else if (awaits == "-") {
 				state = FINAL | index;
 			}
-			else if (awaits == "EOH") {
-				state = EOH | index;
-			}
 			else {
 				throw DynaPlex::Error("StateCategory: Invalid category in VarGroup");
 			}
@@ -124,10 +116,6 @@ namespace DynaPlex {
 
 		bool IsFinal() const {
 			return (state & (0xFULL << 60)) == FINAL;
-		}
-
-		bool IsEndOfHorizon() const {
-			return (state & (0xFULL << 60)) == EOH;
 		}
 
 		std::int64_t Index() const {

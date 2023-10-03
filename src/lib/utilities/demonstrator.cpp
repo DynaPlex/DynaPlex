@@ -2,18 +2,11 @@
 #include "dynaplex/trajectory.h"
 namespace DynaPlex :: Utilities{
 
-	Demonstrator::Demonstrator(const System& system,const VarGroup& varGroup)
+	Demonstrator::Demonstrator(const System& system,const VarGroup& config)
 		:system{system}
 	{
-		varGroup.Get("max_event_count", max_event_count);
-		if (varGroup.HasKey("seed"))
-		{
-			varGroup.Get("seed", seed);
-		}
-		else
-		{
-			seed = 0;
-		}
+		config.GetOrDefault("max_period_count", max_period_count, 3);
+		config.GetOrDefault("rng_seed", rng_seed, 0);
 	}
 	std::vector<VarGroup> Demonstrator::GetTrace(DynaPlex::MDP mdp, DynaPlex::Policy policy)
 	{
@@ -25,29 +18,20 @@ namespace DynaPlex :: Utilities{
 		if (!policy)
 		{   //default to random policy. 
 			policy = mdp->GetPolicy("random");
-			if (!policy)
-			{
-				throw DynaPlex::Error("Demonstrator: Could not retrieve default random policy");
-			}
 		}
 		//vector that will hold a single trajectory. 
 		Trajectory trajectory{ mdp->NumEventRNGs()};
-		
 		mdp->InitiateState({ &trajectory,1 });
-
-		trajectory.SeedRNGProvider(system, true,seed);
-		
-
-		
-
+		trajectory.SeedRNGProvider(system, true,rng_seed);
 		double cumulative_return = 0.0;
 		bool finalreached = false;
-		while (trajectory.EventCount < max_event_count && !finalreached)
+		while (trajectory.PeriodCount < max_period_count && !finalreached)
 		{
 			VarGroup snapshot{};
 			snapshot.Add("state", trajectory.GetState()->ToVarGroup() );
-			snapshot.Add("event_count", trajectory.EventCount);
-			snapshot.Add("incremental_return", trajectory.CumulativeReturn-cumulative_return);
+			snapshot.Add("period_count", trajectory.PeriodCount);
+			snapshot.Add("incr_return", trajectory.CumulativeReturn-cumulative_return);
+			snapshot.Add("cum_return", trajectory.CumulativeReturn);
 			cumulative_return = trajectory.CumulativeReturn;
 
 			auto& cat = trajectory.Category;

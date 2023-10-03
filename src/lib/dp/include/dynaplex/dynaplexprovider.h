@@ -4,6 +4,7 @@
 #include "dynaplex/registry.h"
 #include "dynaplex/system.h"
 #include "dynaplex/demonstrator.h"
+#include "dynaplex/policycomparer.h"
 namespace DynaPlex {
     class DynaPlexProvider {
         
@@ -22,9 +23,20 @@ namespace DynaPlex {
         VarGroup ListMDPs();
 
         // If you want to expose System to users:
-        const System& System();
+        const DynaPlex::System& System();
 
-        DynaPlex::Utilities::Demonstrator GetDemonstrator(const VarGroup& config);
+        DynaPlex::Utilities::Demonstrator GetDemonstrator(const VarGroup& config = VarGroup{});
+
+        /**
+         * Gets a policy evaluator for a specific mdp. A algorithm config may also be provided.
+         * Config may include number_of_trajectories (default:4096 for infinite horizon mdps; 16384 for finite horizon mdps).
+         * If mdp is infinite horizon, undiscounted: config may include warmup_periods (default: 128), periods_per_trajectory (default: 1024).
+         * If mdp is infinite horizon, discounted: config may include periods_per_trajectory (default: 1024).
+         * If mdp is finite horizon: config may include max_periods_until_error (default: 16384), this is the maximum number of steps in a trajectory until mdp is expected to terminate by reaching final state.
+         * Config may also include rng_seed (default 0).
+         */
+        DynaPlex::Utilities::PolicyComparer GetPolicyComparer(DynaPlex::MDP mdp, const VarGroup& config = VarGroup{});
+
 
     private:
         void AddBarrier();

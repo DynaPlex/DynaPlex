@@ -74,21 +74,20 @@ namespace DynaPlex {
 				throw DynaPlex::Error(informativeMsg);
 			}
 		}
-
-
-        if (torchavailable)
-            System() << DynaPlex::NeuralNetworks::TorchVersion() << std::endl;
-        else
-            System() << "Torch not available" << std::endl;
-
 #ifdef DP_MPI_AVAILABLE
 		std::cout << "DynaPlex: Hardware Threads: " << m_systemInfo.HardwareThreads()
 			<< ", MPI: Yes, Rank: " << world_rank
             << "/: " << world_size << std::endl;
 #else
         std::cout << "DynaPlex: Hardware Threads: " << m_systemInfo.HardwareThreads()
-            << ", MPI: No" << std::endl;
+            << ", MPI: No, " << std::endl;
 #endif
+        AddBarrier();
+        if (torchavailable)
+            System() << DynaPlex::NeuralNetworks::TorchVersion() << std::endl;
+        else
+            System() << "Torch not available" << std::endl;
+
         // Register all the MDPs upon startup.
         Models::RegistrationManager::RegisterAll(m_registry);
     }
@@ -127,6 +126,12 @@ namespace DynaPlex {
     DynaPlex::Utilities::Demonstrator DynaPlexProvider::GetDemonstrator(const VarGroup& config)
     {
         return DynaPlex::Utilities::Demonstrator(m_systemInfo, config);
+    }
+
+  
+    DynaPlex::Utilities::PolicyComparer DynaPlexProvider::GetPolicyComparer(DynaPlex::MDP mdp, const VarGroup& config)
+    {
+        return DynaPlex::Utilities::PolicyComparer(m_systemInfo,mdp, config);
     }
 
 }  // namespace DynaPlex
