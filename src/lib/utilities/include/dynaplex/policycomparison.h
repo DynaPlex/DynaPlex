@@ -7,7 +7,7 @@
 namespace DynaPlex {
     /**
      * @class PolicyComparison
-     * @brief This class is designed to compute and compare statistics of multiple policies.
+     * @brief This class is designed to compute and compare statistics of multiple policies or other options. 
      *
      * PolicyComparison computes the mean, variance, and covariance for a set of
      * policies, each represented as a vector of double values.
@@ -18,6 +18,7 @@ namespace DynaPlex {
         std::vector<double> means;
         std::vector<std::vector<double>> covariances;
 
+        void Initialize();
     public:
         /**
          * @brief Construct a new PolicyComparison object.
@@ -25,6 +26,14 @@ namespace DynaPlex {
          * @param nestedVector A matrix-like structure where each row represents a policy dataset.
          */
         PolicyComparison(const std::vector<std::vector<double>>& nestedVector);
+
+
+        /**
+        * @brief Construct a new PolicyComparison object.
+        *
+        * @param nestedVector A matrix-like structure where each row represents a policy dataset.
+        */
+        PolicyComparison(std::vector<std::vector<double>>&& nestedVector);
 
         static PolicyComparison GetComparison(const std::vector<double> vector);
 

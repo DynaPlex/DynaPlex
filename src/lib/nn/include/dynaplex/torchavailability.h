@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
-namespace DynaPlex::NeuralNetworks {
+
+namespace DynaPlex::TorchAvailability {
 	bool TorchAvailable();
 
 	std::string TorchVersion();
+
+
 }//namespace DynaPlex

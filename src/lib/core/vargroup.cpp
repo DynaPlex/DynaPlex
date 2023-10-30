@@ -139,9 +139,9 @@ namespace DynaPlex {
 			return os.str();
 		}
 
-		void Add(const std::string& key, const DataType& value) {
+		void Add(const std::string& key, const DataType& value, bool override=false) {
 			// Check if the key already exists in the data
-			if (data.find(key) != data.end()) {
+			if (!override && (data.find(key) != data.end())) {
 				throw DynaPlex::Error("Attempted to add a duplicate key: " + key);
 			}
 
@@ -207,8 +207,15 @@ namespace DynaPlex {
 			if (data[key].is_array()) {
 				try {
 					for (const auto& item : data[key]) {
+
+
 						if (item.is_object()) {
 							VarGroup varGroup = Impl::ToVarGroup(item);
+							out_val.push_back(varGroup);
+						}
+						else if (item.is_null())
+						{
+							VarGroup varGroup{};
 							out_val.push_back(varGroup);
 						}
 						else {
@@ -316,6 +323,48 @@ namespace DynaPlex {
 	void VarGroup::Add(std::string s, const VarGroupVec& vec) {
 		pImpl->Add(s, vec);
 	}
+
+	void VarGroup::Set(std::string s, int val) {
+		pImpl->Add(s, static_cast<int64_t>(val),true);
+	}
+
+
+	void VarGroup::Set(std::string s, int64_t val) {
+		pImpl->Add(s, val,true);
+	}
+	void VarGroup::Set(std::string s, bool val) {
+		pImpl->Add(s, val, true);
+	}
+
+
+	void VarGroup::Set(std::string s, std::string val) {
+		pImpl->Add(s, val, true);
+	}
+	void VarGroup::Set(std::string s, const char* val) {
+		std::string value = val;
+		pImpl->Add(s, value, true);
+	}
+
+	void VarGroup::Set(std::string s, double val) {
+		pImpl->Add(s, val, true);
+	}
+	void VarGroup::Set(std::string s, const Int64Vec& vec) {
+		pImpl->Add(s, vec, true);
+	}
+	void VarGroup::Set(std::string s, const DoubleVec& vec) {
+		pImpl->Add(s, vec, true);
+	}
+	void VarGroup::Set(std::string s, const StringVec& vec) {
+		pImpl->Add(s, vec, true);
+	}
+	void VarGroup::Set(std::string s, const VarGroup& vec) {
+		pImpl->Add(s, vec, true);
+	}
+	void VarGroup::Set(std::string s, const VarGroupVec& vec) {
+		pImpl->Add(s, vec, true);
+	}
+
+
 	void VarGroup::Get(const std::string& key, int64_t& out_val) const {
 		pImpl->GetHelper(key, out_val);
 	}
@@ -369,6 +418,12 @@ namespace DynaPlex {
 	void VarGroup::Get(const std::string& key, VarGroup& out_val) const {
 		pImpl->AssertKeyExistence(key);
 
+		if (pImpl->data[key].is_null()) {
+			//empty is interpreted as an empty vargroup. 
+			out_val = VarGroup{};
+			return;
+		}
+
 		if (!pImpl->data[key].is_object()) {
 			throw DynaPlex::Error("expected object type for key " + key + ", but found " + std::string(pImpl->data[key].type_name()));
 		}
@@ -398,12 +453,12 @@ namespace DynaPlex {
 		return id;
 	}
 
-	void VarGroup::SaveToFile(const std::string& file_path) const {
+	void VarGroup::SaveToFile(const std::string& file_path,const int indent) const {
 		std::ofstream file(file_path);
 		if (!file.is_open()) {
 			throw DynaPlex::Error("Failed to open file for writing: " + file_path);
 		}
-		file << pImpl->data.dump(4);
+		file << pImpl->data.dump(indent);
 		file.close();
 	}
 

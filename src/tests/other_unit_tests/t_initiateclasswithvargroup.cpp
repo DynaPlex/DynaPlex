@@ -21,7 +21,7 @@ namespace DynaPlex::Tests {
 
 		//Save that VarGroup to disk. 
 		auto& dp = DynaPlexProvider::Get();
-		auto filename = dp.System().filename("tests", "initiateclasswithvargroup", "someclass.json");
+		auto filename = dp.System().filepath("tests", "initiateclasswithvargroup", "someclass.json");
 		varGroup.SaveToFile(filename);
 		//Load the VarGroup that was just saved:
 		VarGroup loadedFromJson = VarGroup::LoadFromFile(filename);

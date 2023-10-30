@@ -1,10 +1,10 @@
-#include "dynaplex/neuralnetworks.h"
+#include "dynaplex/torchavailability.h"
 #include <iostream>
 #if DP_TORCH_AVAILABLE
 #include <torch/torch.h>
 #endif
 
-namespace DynaPlex :: NeuralNetworks{
+namespace DynaPlex ::TorchAvailability {
 
     bool TorchAvailable()
     {
@@ -28,11 +28,11 @@ namespace DynaPlex :: NeuralNetworks{
         result += std::to_string(TORCH_VERSION_PATCH) + "\t";
         if (torch::cuda::is_available())
         {
-            result += "cuda available. ";
+       //     result += "cuda available. ";
         }
         else
         {
-            result += "cuda not available. ";
+      //      result += "cuda not available. ";
         }       
 #else
         result = "torch not available";

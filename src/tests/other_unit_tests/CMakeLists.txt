@@ -17,6 +17,7 @@ add_test(NAME DP_${targetname} COMMAND DP_${targetname})
 target_sources(DP_${targetname} PRIVATE ${sources} ${headers})
 
 
+add_dependencies(DP_${targetname} DP_copy_model_config_files)
 
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
 

@@ -18,6 +18,7 @@ namespace DynaPlex::Erasure
 	template<typename t_MDP>
 	class MDPAdapter final : public MDPInterface
 	{
+		static_assert(HasGetStateCategory<t_MDP>, "MDP must publicly define a function GetStateCategory(const MDP::State) const that returns a StateCategory");
 		static_assert(DynaPlex::Concepts::ConvertibleFromVarGroup<t_MDP>, "MDP must define public constructor with const VarGroup& parameter");
 		static_assert(HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
 		static_assert(HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
@@ -34,6 +35,22 @@ namespace DynaPlex::Erasure
 		ActionRangeProvider<t_MDP> provider;
 		double discount_factor;
 		bool is_infinite_horizon;
+		int64_t num_flat_features, num_allowed_actions;
+
+
+		virtual int64_t NumValidActions() const override {
+			return provider.NumValidActions();
+		}
+		virtual bool ProvidesFlatFeatures() const override {
+			return HasGetFlatFeatures<t_MDP, t_State>;
+
+		}
+		virtual int64_t NumFlatFeatures() const override {
+			if constexpr (HasGetFlatFeatures<t_MDP, t_State>)
+				return num_flat_features;
+			throw DynaPlex::Error("MDP::NumFlatFeatures: mdp " + mdp_type_id + " does not have num_flat_features; underlying mdp does not define void GetFeatures(const DynaPlex::State&, DynaPlex::Features&) const ");
+		}
+
 
 		void RegisterPolicies()
 		{
@@ -51,16 +68,65 @@ namespace DynaPlex::Erasure
 			}
 		}
 
+		void InitializeFeatureMetaInfo(const DynaPlex::VarGroup& static_vars)
+		{
+			//initialize info pertaining to flat features. 
+			if constexpr (HasGetFlatFeatures<t_MDP, t_State>)
+			{
+				if (static_vars.HasKey("num_flat_features"))
+				{
+					static_vars.Get("num_flat_features", num_flat_features);
+				}
+				else
+				{
+					//try to automatically determine the number of flat features, by finding an actions state
+					//and calling GetFeatures to get the features, and counting the number of features returned. 
+					DynaPlex::Trajectory traj(NumEventRNGs());
+					std::span<DynaPlex::Trajectory> span = { &traj,1 };
+					traj.SeedRNGProvider(false, 24031984, 1);
+					try
+					{
+						InitiateState(span);
+						IncorporateUntilAction(span, 256);
+					}
+					catch (const DynaPlex::Error& e) {
+						throw DynaPlex::Error(std::string("Error in mdp initialization for " + mdp_type_id + ". Could not automatically determine NumFlatFeatures. (Consider defining \"num_flat_features\" on the VarGroup returned from GetStaticInfo.) Error: \n") + e.what());
+					}
+					if (!traj.Category.IsAwaitAction())
+					{
+						throw DynaPlex::Error(std::string("Error in mdp initialization for " + mdp_type_id + ". Could not automatically determine NumFlatFeatures: \n Failed to automatically determine a state that awaits an action. \n Consider defining \"num_flat_features\" on the VarGroup returned from GetStaticInfo. "));
+					}
+					else
+					{
+						std::vector<float> feature_store(0, 0.0);
+						DynaPlex::Features feats(feature_store);
+						auto& t_state = ToState(traj.GetState());
+						mdp->GetFeatures(t_state, feats);
+						num_flat_features = feats.NumFeatsAdded();
+					}
+				}
+			}
+			else
+			{
+				num_flat_features = 0;
+			}
+
+		}
+
 		void InitializeVariables()
 		{
 			try {
 				auto static_vars = GetStaticInfo();
+				//flat_features				
+				InitializeFeatureMetaInfo(static_vars);
+				//discount_factor
 				if (static_vars.HasKey("discount_factor"))
 					static_vars.Get("discount_factor", discount_factor);
 				if (discount_factor > 1.0 || discount_factor <= 0.0)
 				{
 					throw DynaPlex::Error("MDP, id \"" + mdp_type_id + "\" :  GetStaticInfo returns VarGroup with key discount_factor that is invalid: " + std::to_string(discount_factor) + ". Must be in (0.0,1.0].");
 				}
+				//horizon_type
 				if (static_vars.HasKey("horizon_type"))
 				{
 					std::string s;
@@ -74,10 +140,10 @@ namespace DynaPlex::Erasure
 						is_infinite_horizon = false;
 					}
 					else
-					{
 						throw DynaPlex::Error("MDP, id \"" + mdp_type_id + "\" : GetStaticInfo returns VarGroup with key horizon_type that is invalid: " + s + ". Must be either \"finite\" or \"infinite\"");
-					}
 				}
+				//num_flat_features
+
 
 			}
 			catch (const DynaPlex::Error& e) {
@@ -119,20 +185,93 @@ namespace DynaPlex::Erasure
 			return 1;
 		}
 
-
-		/// Returns bool indicating whether the underlying mdp supports converting a VarGroup to a state. 
 		bool SupportsGetStateFromVarGroup() const override
 		{
 			return HasGetStateFromVars<t_MDP, t_State>;
 		}
 
-		/// Returns bool indicating whether the underlying mdp supports equality tests for states. 
 		bool SupportsEqualityTest() const override
 		{
 			return std::equality_comparable<t_State>;
+		}
+
+
+		void GetFlatFeatures(const DynaPlex::dp_State& state, std::span<float> feats) const override
+		{
+			if constexpr (HasGetFlatFeatures<t_MDP, t_State>)
+			{
+				if (num_flat_features != feats.size())
+					throw DynaPlex::Error("MDP->GetFlatFeatures(state,feats): size of feats argument does not equal NumFlatFeatures");
+
+				auto& t_state = ToState(state);
+
+				auto cat = mdp->GetStateCategory(t_state);
+				if (!cat.IsAwaitAction())
+					throw DynaPlex::Error("MDP->GetFlatFeatures(state,feats): state Category does not satisfy Category.IsAwaitAction().");
+
+				DynaPlex::Features traj_feats(feats);
+				mdp->GetFeatures(t_state, traj_feats);
+				if (!traj_feats.IsFilled())
+					throw DynaPlex::Error("MDP->GetFlatFeatures(state,feats): mdp->GetFeatures(const State&, DynaPlex::Features&) const for mdp type " + mdp_type_id + " returns number of features that is inconsistent with num_flat_features. Possible causes: \n1) GetFeatures returns different numbers of features for different states; ensure consistency. \n2) num_flat_features as returned by GetStaticInfo is inconsistent with the number of features actually returned by GetFeatures(const State&, DynaPlex::Features&) const.");
+			}
+			else
+				throw DynaPlex::Error("MDP->GetFlatFeatures(state,feats): MDP must publicly define MDP::GetFeatures(const State&, DynaPlex::Features&) const returning void.");
 
 		}
 
+
+		void SetArgMaxAction(std::span<Trajectory> trajectories, std::span<float> values_per_valid_action) const override
+		{
+			size_t num_valid_actions = static_cast<size_t>(provider.NumValidActions());
+			if ( trajectories.size() * num_valid_actions != values_per_valid_action.size())
+				throw DynaPlex::Error("MDP->SetArgMaxAction - nonconformant dimensions of values_per_valid_action and trajectories.  ");
+
+			size_t offset = 0;
+			for (auto& traj : trajectories)
+			{
+				auto values_for_traj = values_per_valid_action.subspan(offset, num_valid_actions);
+				auto& t_state = ToState(traj.GetState());
+				float best_val = -std::numeric_limits<float>::infinity();
+				for (const auto& action : provider(t_state))
+				{
+					if (values_for_traj[action] > best_val)
+					{
+						traj.NextAction = action;
+						best_val = values_for_traj[action];
+					}
+				}				
+				offset += num_valid_actions;
+			}
+		}
+
+
+
+		void GetFlatFeatures(const std::span<DynaPlex::Trajectory> trajectories, std::span<float> feats) const override
+		{
+			if constexpr (HasGetFlatFeatures<t_MDP, t_State>)
+			{
+				if (num_flat_features * trajectories.size() != feats.size())
+					throw DynaPlex::Error("MDP->GetFlatFeatures(trajectories,feats): size of feats argument does not equal NumFlatFeatures*trajectories.size()");
+
+				size_t offset = 0;
+				for (const auto& trajectory : trajectories)
+				{
+					if (!trajectory.Category.IsAwaitAction())
+						throw DynaPlex::Error("MDP->GetFlatFeatures(trajectories,feats): trajectory in trajectories does not satisfy Category.IsAwaitAction().");
+
+					auto sub_feats = feats.subspan(offset, num_flat_features);
+					DynaPlex::Features traj_feats(sub_feats);
+					auto& t_state = ToState(trajectory.GetState());
+					mdp->GetFeatures(t_state, traj_feats);
+					if (!traj_feats.IsFilled())
+						throw DynaPlex::Error("MDP->GetFlatFeatures(trajectories,feats): mdp->GetFeatures(const State&, DynaPlex::Features&) const for mdp type " + mdp_type_id + " returns number of features that is inconsistent with num_flat_features. Possible causes: \n1) GetFeatures returns different numbers of features for different states; ensure consistency. \n2) num_flat_features as returned by GetStaticInfo is inconsistent with the number of features actually returned by GetFeatures(const State&, DynaPlex::Features&) const.");
+
+					offset += num_flat_features;
+				}
+			}
+			else
+				throw DynaPlex::Error("MDP->GetFlatFeatures(trajectories,feats): MDP must publicly define MDP::GetFeatures(const State&, DynaPlex::Features&) const returning void.");
+		}
 
 
 		DynaPlex::dp_State GetState(const VarGroup& vars) const override
@@ -158,6 +297,12 @@ namespace DynaPlex::Erasure
 
 		}
 
+		bool CheckConformant(DynaPlex::dp_State& state) const override
+		{
+			return state->mdp_int_hash == mdp_int_hash;
+		}
+
+
 		//Defined in mdpadapter_tostate.h included below
 		const t_State& ToState(const DynaPlex::dp_State& state) const;
 		t_State& ToState(DynaPlex::dp_State& state) const;
@@ -165,6 +310,7 @@ namespace DynaPlex::Erasure
 		std::vector<int64_t> AllowedActions(const DynaPlex::dp_State& dp_state) const override
 		{
 			auto& t_state = ToState(dp_state);
+
 			auto actions = provider(t_state);
 			std::vector<int64_t> vec;
 			vec.reserve(actions.Count());
@@ -302,7 +448,7 @@ namespace DynaPlex::Erasure
 			return IncorporateUntilSomeAction<false>(trajectories, MaxPeriodCount);
 		}
 
-		
+
 		bool IncorporateUntilNonTrivialAction(std::span<DynaPlex::Trajectory> trajectories, int64_t MaxPeriodCount) const override
 		{
 			return IncorporateUntilSomeAction<true>(trajectories, MaxPeriodCount);
@@ -384,6 +530,11 @@ namespace DynaPlex::Erasure
 				auto& t_state = ToState(state);
 				traj.Category = mdp->GetStateCategory(t_state);
 			}
+		}
+
+		double Objective(const DynaPlex::dp_State& state) const override
+		{//currently, only minimization is supported. 
+			return -1.0;
 		}
 
 

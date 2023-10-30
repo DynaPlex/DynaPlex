@@ -28,8 +28,8 @@ namespace DynaPlex::Models {
 		double MDP::ModifyStateWithAction(State& state, int64_t action) const
 		{
 			if (!IsAllowedAction(state, action))
-			{
-				throw DynaPlex::Error("Lost Sales: action not allowed");
+			{				
+				throw DynaPlex::Error("Lost Sales: action not allowed: state.total_inv: " + std::to_string(state.total_inv) + "  action: " + std::to_string(action) + "  MaxSystemInv: " + std::to_string(MaxSystemInv) + " MaxOrderSize " + std::to_string(MaxOrderSize));
 			}
 			state.state_vector.push_back(action);
 			state.total_inv += action;
@@ -63,6 +63,7 @@ namespace DynaPlex::Models {
 			MaxOrderSize = demand_dist.Fractile(p / (p + h));
 			MaxSystemInv = DemOverLeadtime.Fractile(p / (p + h));
 
+
 		}
 
 
@@ -90,18 +91,17 @@ namespace DynaPlex::Models {
 			}
 		}
 
-		void MDP::GetFeatures(const State&, DynaPlex::Features&) const {
-			throw DynaPlex::Error("DynaPlex::Features not yet implemented");
+		void MDP::GetFeatures(const State& state, DynaPlex::Features& features) const {
+			features.Add(state.state_vector);
 		}
 		
-
 		void MDP::RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const
 		{//Here, we register any custom heuristics we want to provide for this MDP.	
 		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
 		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
 		 //to the corresponding id given below.
 			registry.Register<BaseStockPolicy>("base_stock",
-				"Base-stock policy with fixed, non-adjustable base-stock level equal"
+				"Base-stock policy with parameter base_stock_level - default parameter is equal"
 				" to the bound on system inventory discussed in Zipkin (2008)");
 		}
 		

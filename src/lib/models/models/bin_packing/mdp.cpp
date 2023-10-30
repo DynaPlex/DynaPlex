@@ -93,7 +93,8 @@ namespace DynaPlex::Models {
 		
 
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {
-			throw DynaPlex::Error("DynaPlex::Features not yet implemented");
+			features.Add(state.weight_vector);
+			features.Add(state.upcoming_weight);
 		}
 		
 

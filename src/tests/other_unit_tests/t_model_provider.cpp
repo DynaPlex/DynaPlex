@@ -36,6 +36,10 @@ namespace DynaPlex::Tests {
 		//Note that model is of type DynaPlex::MDP, even though the underlying type is lost_sales. 
 		//This means that it can be passed to any function that requires DynaPlex::MDP. 
 
+		ASSERT_TRUE(
+			model->ProvidesFlatFeatures()
+		);
+
 		//We check this as follows:
 		EXPECT_EQ("lost_sales", model->TypeIdentifier()) ;
 		//Note the -> DynaPlex::MDP is of pointer type, so its member functions are all retrieved using ->.

@@ -19,7 +19,7 @@ namespace DynaPlex::Tests {
 		);
 		DynaPlex::VarGroup mdp_vars_from_json;
 		ASSERT_NO_THROW(
-			std::string file_path = system.filename("mdp_config_examples", model_name, mdp_config_name);
+			std::string file_path = system.filepath("mdp_config_examples", model_name, mdp_config_name);
 		    mdp_vars_from_json = VarGroup::LoadFromFile(file_path);
 		);
 

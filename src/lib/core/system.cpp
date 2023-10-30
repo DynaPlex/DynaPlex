@@ -21,6 +21,39 @@ namespace DynaPlex {
         // Default copy constructor
         Impl(const Impl& other) = default;
 
+
+      
+
+        bool file_exists_impl(const std::initializer_list<std::string>& subdirs, const std::string& filename) const {
+            fs::path file_path = io_location_;
+
+            for (const auto& subdir : subdirs) {
+                file_path /= subdir;
+            }
+
+            file_path /= filename;
+
+            return fs::exists(file_path);
+        }
+
+        std::string filepath_impl(const std::initializer_list<std::string>& subdirs, const std::string& filename) const {
+            fs::path curr_path = io_location_;
+
+            for (const auto& subdir : subdirs) {
+                curr_path /= subdir;
+
+                if (!fs::exists(curr_path)) {
+                    fs::create_directory(curr_path);
+                }
+                else if (!fs::is_directory(curr_path)) {
+                    throw std::runtime_error(curr_path.string() + " exists but is not a directory.");
+                }
+            }
+
+            curr_path /= filename;
+            return curr_path.string();
+        }
+
         // Default copy assignment operator
         Impl& operator=(const Impl& other) = default;
         std::chrono::steady_clock::time_point start_time_;
@@ -31,6 +64,12 @@ namespace DynaPlex {
         fs::path io_location_;
         std::function<void()> barrier_callback_;
     };
+
+    std::string System::SetFileExtension(const std::string& filepath, const std::string& extension) {
+        fs::path p(filepath);
+        p.replace_extension(extension);
+        return p.string();
+    }
 
     void System::AddBarrier() const {
         if (pimpl->barrier_callback_) {
@@ -66,73 +105,53 @@ namespace DynaPlex {
         return pimpl->world_size_;
     }
 
+    void System::remove_file(const std::string& file_path)
+    {
+        if (!fs::remove(file_path))
+        {
+            throw DynaPlex::Error("System::remove_file - could not delete file.");
+        }
+    }
+
+
     bool System::file_exists(const std::string& filename) const {
-        fs::path file_path = pimpl->io_location_ / filename;
-        return fs::exists(file_path);
+        return pimpl->file_exists_impl({ }, filename);
     }
 
     bool System::file_exists(const std::string& subdir, const std::string& filename) const {
-        fs::path subdir_path = pimpl->io_location_ / subdir;
-        fs::path file_path = subdir_path / filename;
-        return fs::exists(file_path);
+        return pimpl->file_exists_impl({ subdir }, filename);
     }
 
     bool System::file_exists(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const {
-        fs::path subdir_path = pimpl->io_location_ / subdir;
-        fs::path subsubdir_path = subdir_path / subsubdir;
-        fs::path file_path = subsubdir_path / filename;
-        return fs::exists(file_path);
+        return pimpl->file_exists_impl({ subdir , subsubdir }, filename);
     }
 
-    std::string System::filename(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const {
-        fs::path subdir_path = pimpl->io_location_ / subdir;
-        fs::path subsubdir_path = subdir_path / subsubdir;
-
-        // Check if subdir_path exists
-        if (!fs::exists(subdir_path)) {
-            // If subdir_path doesn't exist, attempt to create it
-            fs::create_directory(subdir_path);
-        }
-        else if (!fs::is_directory(subdir_path)) {
-            // Handle the error: subdir_path exists but is not a directory
-            throw DynaPlex::Error(subdir_path.string() + " exists but is not a directory.");
-        }
-
-        // Check if subsubdir_path exists
-        if (!fs::exists(subsubdir_path)) {
-            // If subsubdir_path doesn't exist, attempt to create it
-            fs::create_directory(subsubdir_path);
-        }
-        else if (!fs::is_directory(subsubdir_path)) {
-            // Handle the error: subsubdir_path exists but is not a directory
-            throw DynaPlex::Error(subsubdir_path.string() + " exists but is not a directory.");
-        }
-
-        fs::path file_path = subsubdir_path / filename;
-        return file_path.string();
+    bool System::file_exists(const std::string& subdir, const std::string& subsubdir, const std::string& subsubsubdir, const std::string& filename) const {
+        return pimpl->file_exists_impl({ subdir , subsubdir,subsubsubdir }, filename);
     }
 
-
-    std::string System::filename(const std::string& subdir, const std::string& filename) const {
-        fs::path subdir_path = pimpl->io_location_ / subdir;
-
-        // Check if subdir_path exists
-        if (!fs::exists(subdir_path)) {
-            // If subdir_path doesn't exist, attempt to create it
-            fs::create_directory(subdir_path);
-        }
-        else if (!fs::is_directory(subdir_path)) {
-            // Handle the error: subdir_path exists but is not a directory
-            throw DynaPlex::Error(subdir_path.string() + " exists but is not a directory.");
-        }
-
-        fs::path file_path = subdir_path / filename;
-        return file_path.string();
+    bool System::file_exists(const std::string& subdir, const std::string& subsubdir, const std::string& subsubsubdir, const std::string& subsubsubsubdir, const std::string& filename) const {
+        return pimpl->file_exists_impl({ subdir , subsubdir,subsubsubdir, subsubsubsubdir }, filename);
     }
 
-    std::string System::filename(const std::string& filename) const {
-        fs::path file_path = pimpl->io_location_ / filename;
-        return file_path.string();
+    std::string System::filepath(const std::string& subdir, const std::string& subsubdir, const std::string& subsubsubdir, const std::string& subsubsubsubdir, const std::string& filename) const {
+        return pimpl->filepath_impl({ subdir,subsubdir,subsubsubdir,subsubsubsubdir }, filename);
+    }
+
+    std::string System::filepath(const std::string& subdir, const std::string& subsubdir, const std::string& subsubsubdir, const std::string& filename) const {
+        return pimpl->filepath_impl({ subdir,subsubdir,subsubsubdir }, filename);
+    }
+
+    std::string System::filepath(const std::string& subdir, const std::string& subsubdir, const std::string& filename) const {
+        return pimpl->filepath_impl({subdir,subsubdir}, filename);
+    }
+
+    std::string System::filepath(const std::string& subdir, const std::string& filename) const {
+        return pimpl->filepath_impl({ subdir }, filename);
+    }
+
+    std::string System::filepath(const std::string& filename) const {
+        return pimpl->filepath_impl({}, filename);
     }
 
     bool System::HasIODirectory() const {
@@ -191,12 +210,14 @@ namespace DynaPlex {
         
     std::string System::Elapsed(std::int64_t ms) const
     {
-        auto total_seconds =ms / 1000;
+        auto total_seconds = ms / 1000;
         int days = total_seconds / (24 * 3600);
         total_seconds %= (24 * 3600);
         int hours = total_seconds / 3600;
         int minutes = (total_seconds % 3600) / 60;
         int seconds = total_seconds % 60;
+
+        int milliseconds = ms % 1000;
 
         std::ostringstream oss;
 
@@ -205,7 +226,8 @@ namespace DynaPlex {
         }
         oss << std::setw(2) << std::setfill('0') << hours << ":"
             << std::setw(2) << std::setfill('0') << minutes << ":"
-            << std::setw(2) << std::setfill('0') << seconds;
+            << std::setw(2) << std::setfill('0') << seconds << "."
+            << std::setw(3) << std::setfill('0') << milliseconds; 
 
         return oss.str();
     }

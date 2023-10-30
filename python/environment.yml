@@ -11,3 +11,4 @@ dependencies:
   - cpuonly
   - pybind11
   - pytest
+# add dependencies for pytorch geom. 

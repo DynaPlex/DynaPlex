@@ -11,43 +11,50 @@ namespace DynaPlex {
         return PolicyComparison(nested);
     }
 
-    PolicyComparison::PolicyComparison(const std::vector<std::vector<double>>& nestedVector)
-        : data(nestedVector) {
-
-        if (nestedVector.size()==0)
-        {
-            throw Error("PolicyComparison: nestedVector must have non-zero length.");
+    void PolicyComparison::Initialize() {
+        if (data.size() == 0) {
+            throw DynaPlex::Error("PolicyComparison: nestedVector must have non-zero length.");
         }
 
         // Check for uniformity of inner vector lengths and validity
-        size_t len = nestedVector.front().size();
-        for (const auto& vec : nestedVector) {
-            if (vec.size() != len || vec.size() <= 1) {
-                throw Error("PolicyComparison: All inner vectors must have equal length and length > 1.");
+        size_t len = data.front().size();
+        for (const auto& vec : data) {
+            if (vec.size() != len) {
+                throw DynaPlex::Error("PolicyComparison: All inner vectors must have equal length and length > 1.");
             }
         }
 
+        
+
         // Compute means
-        means.resize(nestedVector.size(), 0.0);
-        for (size_t i = 0; i < nestedVector.size(); ++i) {
-            for (const auto& value : nestedVector[i]) {
+        means.resize(data.size(), 0.0);
+        for (size_t i = 0; i < data.size(); ++i) {
+            for (const auto& value : data[i]) {
                 means[i] += value;
             }
             means[i] /= len;
         }
 
         // Compute covariance matrix
-        covariances.resize(nestedVector.size(), std::vector<double>(nestedVector.size(), 0.0));
-        for (size_t i = 0; i < nestedVector.size(); ++i) {
-            for (size_t j = 0; j < nestedVector.size(); ++j) {
+        covariances.resize(data.size(), std::vector<double>(data.size(), 0.0));
+        for (size_t i = 0; i < data.size(); ++i) {
+            for (size_t j = 0; j < data.size(); ++j) {
                 for (size_t k = 0; k < len; ++k) {
-                    covariances[i][j] += (nestedVector[i][k] - means[i]) * (nestedVector[j][k] - means[j]);
+                    covariances[i][j] += (data[i][k] - means[i]) * (data[j][k] - means[j]);
                 }
                 covariances[i][j] /= (len - 1);
             }
         }
     }
 
+    PolicyComparison::PolicyComparison(const std::vector<std::vector<double>>& nestedVector)
+        : data(nestedVector) {
+        Initialize();        
+    }
+    PolicyComparison::PolicyComparison(std::vector<std::vector<double>>&& nestedVector)
+        : data(std::move(nestedVector)) {
+        Initialize();
+    }
    
 
     double PolicyComparison::mean(int64_t i, int64_t j) const {
@@ -70,6 +77,10 @@ namespace DynaPlex {
 
     
     double PolicyComparison::standardError(int64_t i, int64_t j) const {
+        size_t len = data.front().size();
+        if (len == 1) {
+            throw Error("PolicyComparison: cannot compute standardError since there is only one datapoint per alternative. ");
+        }
         size_t n = data.size();
         if (i >= n || i < 0)
             throw Error("PolicyComparison: index i out of range");

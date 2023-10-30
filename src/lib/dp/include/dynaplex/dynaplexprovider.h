@@ -5,6 +5,7 @@
 #include "dynaplex/system.h"
 #include "dynaplex/demonstrator.h"
 #include "dynaplex/policycomparer.h"
+#include "dynaplex/dcl.h"
 namespace DynaPlex {
     class DynaPlexProvider {
         
@@ -25,6 +26,17 @@ namespace DynaPlex {
         // If you want to expose System to users:
         const DynaPlex::System& System();
 
+
+        void SavePolicy(DynaPlex::Policy policy, std::string file_path_without_extension);
+
+        DynaPlex::Policy LoadPolicy(DynaPlex::MDP mdp, std::string file_path_without_extension);
+        
+        DynaPlex::Algorithms::DCL GetDCL(DynaPlex::MDP mdp, const VarGroup& config = VarGroup{}, DynaPlex::Policy policy = nullptr);
+
+        /**
+         * Config may include max_event_count (default:3)
+         * it may also include rng_seed (default:0).
+         */
         DynaPlex::Utilities::Demonstrator GetDemonstrator(const VarGroup& config = VarGroup{});
 
         /**

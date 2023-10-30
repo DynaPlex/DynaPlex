@@ -2,8 +2,9 @@
 #ifdef DP_MPI_AVAILABLE
 #include <mpi.h>
 #endif
-#include "dynaplex/neuralnetworks.h"
+#include "dynaplex/torchavailability.h"
 #include "dynaplex/dynaplexprovider.h"
+#include "dynaplex/trainedpolicyprovider.h"
 
 namespace DynaPlex {
 
@@ -13,8 +14,22 @@ namespace DynaPlex {
         static DynaPlexProvider instance;  // Guaranteed to be lazy initialized and destroyed correctly
         return instance;
     }
+    void DynaPlexProvider::SavePolicy(DynaPlex::Policy policy, std::string file_path_without_extension) {
+        TrainedPolicyProvider::SavePolicy(policy, file_path_without_extension);
 
-   
+
+    }
+
+    DynaPlex::Policy DynaPlexProvider::LoadPolicy(DynaPlex::MDP mdp, std::string file_path_without_extension) {
+        return TrainedPolicyProvider::LoadPolicy(mdp, file_path_without_extension);
+    }
+
+
+    DynaPlex::Algorithms::DCL DynaPlexProvider::GetDCL(DynaPlex::MDP mdp, const VarGroup& config, DynaPlex::Policy policy)
+    {
+        return DynaPlex::Algorithms::DCL{ this->System(),mdp, config, policy };
+    }
+
 
 
     void DynaPlexProvider::SetIORootDirectory(std::string path) {
@@ -35,7 +50,7 @@ namespace DynaPlex {
         MPI_Initialized(&mpi_initialized);
         if (!mpi_initialized) {
             MPI_Init(nullptr, nullptr);
-    }
+        }
 
         int world_rank;
         int world_size;
@@ -45,7 +60,7 @@ namespace DynaPlex {
         int world_rank = 0;  // Default values
         int world_size = 1;
 #endif
-        bool torchavailable = DynaPlex::NeuralNetworks::TorchAvailable();
+        bool torchavailable = DynaPlex::TorchAvailability::TorchAvailable();
       
         m_systemInfo = DynaPlex::System(torchavailable,world_rank, world_size,
            /*callback function: */ []() {DynaPlexProvider::Get().AddBarrier(); }
@@ -77,14 +92,14 @@ namespace DynaPlex {
 #ifdef DP_MPI_AVAILABLE
 		std::cout << "DynaPlex: Hardware Threads: " << m_systemInfo.HardwareThreads()
 			<< ", MPI: Yes, Rank: " << world_rank
-            << "/: " << world_size << std::endl;
+            << "/" << world_size << std::endl;
 #else
         std::cout << "DynaPlex: Hardware Threads: " << m_systemInfo.HardwareThreads()
             << ", MPI: No, " << std::endl;
 #endif
         AddBarrier();
         if (torchavailable)
-            System() << DynaPlex::NeuralNetworks::TorchVersion() << std::endl;
+            System() << DynaPlex::TorchAvailability::TorchVersion() << std::endl;
         else
             System() << "Torch not available" << std::endl;
 

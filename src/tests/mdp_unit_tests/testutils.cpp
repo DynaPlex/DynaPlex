@@ -27,7 +27,7 @@ namespace DynaPlex::Tests {
 		DynaPlex::VarGroup mdp_vars_from_json;
 		DynaPlex::MDP mdp;
 		ASSERT_NO_THROW(
-			std::string file_path = system.filename("mdp_config_examples", model_name, mdp_config_name);
+			std::string file_path = system.filepath("mdp_config_examples", model_name, mdp_config_name);
 		    mdp_vars_from_json = VarGroup::LoadFromFile(file_path);
 		) << info << "File: models/models/" << model_name << "/" << mdp_config_name << " is not accepted as a validly formatted configuration file.";
 
@@ -50,7 +50,7 @@ namespace DynaPlex::Tests {
 			
 			VarGroup policy_vars_from_json;
 			ASSERT_NO_THROW(
-				std::string file_path = system.filename("mdp_config_examples", model_name, policy_config_name);
+				std::string file_path = system.filepath("mdp_config_examples", model_name, policy_config_name);
 				policy_vars_from_json = VarGroup::LoadFromFile(file_path);
 			) << info << "File: models/models/" << model_name << "/" << policy_config_name << " is not accepted as a validly formatted configuration file.";
 
@@ -78,16 +78,42 @@ namespace DynaPlex::Tests {
 		ASSERT_NO_THROW(
 			numEventTrajectories = mdp->NumEventRNGs();
 		);
+		ASSERT_GE(numEventTrajectories, 1);
+
 		Trajectory trajectory{ numEventTrajectories };
 
 		int numSeeds = 64;
 		std::vector<DynaPlex::dp_State> someStates;
 		someStates.reserve(numSeeds + 1);
+		bool ProvidesFlatFeatures{ false };
+		int64_t NumFlatFeatures{ 0 };
+
+		if (AssertFlatFeatureAvailability)
+		{
+			ASSERT_TRUE(
+				mdp->ProvidesFlatFeatures()
+			);
+		}
+
+		ASSERT_NO_THROW(
+			ProvidesFlatFeatures = mdp->ProvidesFlatFeatures();
+		);
+
+		if (ProvidesFlatFeatures)
+		{
+			ASSERT_NO_THROW(
+				NumFlatFeatures = mdp->NumFlatFeatures();
+			);
+		}
+
+		std::vector<float> feats_store(NumFlatFeatures, 0.0f);
+
 		for (int seed = 0; seed < numSeeds; seed++)
 		{
 			ASSERT_NO_THROW(
 				mdp->InitiateState({ &trajectory,1 });
 			) << info << "Did you correctly implement GetInitialState() const or GetInitialState(DynaPlex::RNG&) const";
+
 
 			if (seed == 0)
 			{
@@ -96,26 +122,37 @@ namespace DynaPlex::Tests {
 				) << info << "Error while cloning state. Does mdp::State support copying?";
 			}
 			ASSERT_NO_THROW(
-				trajectory.SeedRNGProvider(dp.System(), true, seed);
+				trajectory.SeedRNGProvider( true, seed);
 			) << info;
 
 			int64_t max_event_count = 128;
 			bool finalreached = false;
 			int64_t action_count = 0;
-			
-			
+			int64_t total_event_count = 0;
+		
 			while (trajectory.PeriodCount < max_event_count && !finalreached)
 			{
 				auto& cat = trajectory.Category;
 				if (cat.IsAwaitEvent())
 				{
+					total_event_count++;
 					ASSERT_NO_THROW(
 						mdp->IncorporateEvent({ &trajectory,1 });
 					) << info << "Did you correctly implement ModifyStateWithEvent  and GetEvent?";
 				}
 				else if (cat.IsAwaitAction())
 				{
-					//std::cout << "test" << std::endl;
+					if (ProvidesFlatFeatures)
+					{
+						ASSERT_NO_THROW(
+							mdp->GetFlatFeatures({ &trajectory,1 }, feats_store);
+						) << info << "See error: did you correctly implement GetFeatures(State,DynaPlex::Features)?";
+						std::vector<float> alt_feats_store(NumFlatFeatures, 0.0f);
+						ASSERT_NO_THROW(
+							mdp->GetFlatFeatures(trajectory.GetState(), alt_feats_store);
+						) << info << "See error: did you correctly implement GetFeatures(State,DynaPlex::Features)?";
+						ASSERT_EQ(feats_store, alt_feats_store);
+					}
 					action_count++;
 					ASSERT_NO_THROW(
 						policy->SetAction({ &trajectory,1 });
@@ -129,10 +166,14 @@ namespace DynaPlex::Tests {
 					ASSERT_TRUE(!mdp->IsInfiniteHorizon()) << info << " MDP GetStaticInfo indicates that the MDP has infinite horizon, but it returns categories that are IsFinal. Ensure consistency.";
 					finalreached = true;
 				}
+				if (mdp->IsInfiniteHorizon())
+				{
+					ASSERT_GE(trajectory.PeriodCount * 100 + 100, total_event_count) << info << "A simulation of your trajectory seems incorporate events, but no or hardly any events have index=0. In infinite horizon MDPs, time is accounted for by index=0 events, so ensure that those are present.  ";
+				}
 				if (!RelaxOnProgramFlow)
 				{
 					//getting stuck in an action loop should trip this. 
-					ASSERT_LE(action_count, max_event_count * 1000) << info << "A simulation of your trajection seems to get stuck in a loop with only actions, and no events. In ModifyStateWithAction, did you ensure that the state category becomes AwaitEvent or Final? If this is intentional, set RelaxOnLoops to skip this test.";
+					ASSERT_LE(action_count, max_event_count * 1000) << info << "A simulation of your trajectory seems to get stuck in a loop with only actions, and no events. In ModifyStateWithAction, did you ensure that the state category becomes AwaitEvent or Final? If this is intentional, set RelaxOnLoops to skip this test.";
 				}
 				else
 				{
@@ -199,8 +240,8 @@ namespace DynaPlex::Tests {
 
 				mdp->InitiateState({ &trajVec[0] ,1 }, state);
 				mdp->InitiateState({ &trajVec[1] ,1 }, loaded_state);
-				trajVec[0].SeedRNGProvider(dp.System(), false,12,0);
-				trajVec[1].SeedRNGProvider(dp.System(), false, 12, 0);
+				trajVec[0].SeedRNGProvider(false,12,0);
+				trajVec[1].SeedRNGProvider(false, 12, 0);
 
 				int64_t max_period_count = 10;
 				int64_t action_count = 0;

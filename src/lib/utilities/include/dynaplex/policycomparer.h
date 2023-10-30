@@ -21,7 +21,7 @@ namespace DynaPlex::Utilities {
 		 * If mdp is infinite horizon, discounted: config may include periods_per_trajectory (default: 1024). 
 		 * If mdp is finite horizon: config may include max_periods_until_error (default: 16384), this is the maximum number of steps in a trajectory until
 		 * mdp is expected to terminate by reaching final state. 
-		 * Config may also include rng_seed (default 0). 
+		 * Config may also include rng_seed (default 13021984). 
 		 */
 		PolicyComparer(const DynaPlex::System& system, DynaPlex::MDP mdp, const DynaPlex::VarGroup& config = VarGroup{});
 

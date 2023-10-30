@@ -15,8 +15,8 @@ def test_non_convertible():
 
 def test_model_factory_missing():
     # Create VarGroup using a Python dictionary. Note typo
-     vars = {"id": "LosSales", "p": 9.0, "h": 1.0, "leadtime": 3}
-   # Expecting an error when calling get_mdp
+    vars = {"id": "LosSales", "p": 9.0, "h": 1.0, "leadtime": 3}
+    #Expecting an error when calling get_mdp
     with pytest.raises(RuntimeError, match=re.escape("DynaPlex: No MDP available with identifier \"LosSales\". Use ListMDPs() / list_mdps() to obtain available MDPs.")) as exc_info:
         model = dp.get_mdp(vars)
 

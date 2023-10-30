@@ -14,6 +14,8 @@ namespace DynaPlex::Tests {
 		std::string model_name = "lost_sales";
 		std::string config_name = "mdp_config_0.json";
 		Tester tester{};
+		tester.AssertFlatFeatureAvailability = true;
+
 		tester.ExecuteTest(model_name, config_name);
 	}
 	TEST(lost_sales, mdp_config_1) {
@@ -23,6 +25,8 @@ namespace DynaPlex::Tests {
 		//Note: models/model_name/policy_config_name is valid json config file for a policy for "model_name".  
 		std::string policy_config_name = "policy_config_1.json";
 		Tester tester{};
+		tester.AssertFlatFeatureAvailability = true;
+
 		tester.ExecuteTest(model_name, mdp_config_name, policy_config_name);
 	}
 
@@ -64,7 +68,7 @@ namespace DynaPlex::Tests {
 			mdp->InitiateState({ &trajectory,1 });
 		);
 		ASSERT_NO_THROW(
-			trajectory.SeedRNGProvider(dp.System(), true, 123);
+			trajectory.SeedRNGProvider(true, 123);
 		);
 
 	    int64_t max_period_count = 10;

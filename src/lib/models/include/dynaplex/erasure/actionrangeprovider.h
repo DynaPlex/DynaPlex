@@ -150,6 +150,10 @@ namespace DynaPlex::Erasure
             }           
         }
 
+        int64_t NumValidActions() const {
+            return max_action - min_action;
+        }
+
         
         ActionRange<t_MDP> operator()(const typename t_MDP::State& state) const
         {

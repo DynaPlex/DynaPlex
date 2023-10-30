@@ -1,13 +1,19 @@
 #pragma once
 #include <type_traits>
 #include "dynaplex/vargroup.h"
+#include "dynaplex/features.h"
 #include "dynaplex/statecategory.h"
 namespace DynaPlex::Erasure
 {
+	template <typename t_MDP,typename t_State>
+	concept HasGetFlatFeatures = requires (const t_MDP & mdp, const t_State & state, DynaPlex::Features & feats) {
+		mdp.GetFeatures(state, feats);
+	};
+
 
 	template <typename t_MDP,typename t_State>
-	concept HasGetStateFromVars = requires(const t_MDP & t, const VarGroup & vars) {
-		{ t.GetState(vars) } -> std::same_as<t_State>;
+	concept HasGetStateFromVars = requires(const t_MDP & mdp, const VarGroup & vars) {
+		{ mdp.GetState(vars) } -> std::same_as<t_State>;
 	};
 
 	template <typename t_MDP, typename t_State, typename t_Event>

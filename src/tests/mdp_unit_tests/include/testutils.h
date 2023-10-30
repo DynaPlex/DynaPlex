@@ -17,8 +17,8 @@ namespace DynaPlex::Tests {
 		void ExecuteTest(const std::string& model_name, const std::string& mdp_config_name, const std::string& policy_config_name = "");
 
 		Tester() {};
-
-
+		/// if set to true, test asserts that the MDP correctly implements flat features. 
+		bool AssertFlatFeatureAvailability = false;
 		/*
 		 *Typical MDPs will alternate between consuming events and consuming actions, e.g. each time one action and one event. Some tests are conducted
 		 * to check whether the MDP has a reasonable number of actions and events. If you MDP has only events, or only actions, you can set relaxonloops to skip these tests. 

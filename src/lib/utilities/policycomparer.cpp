@@ -13,7 +13,7 @@ namespace DynaPlex::Utilities {
 		for (int64_t experiment_number = 0; experiment_number < ReturnPerTrajectory.size(); experiment_number++)
 		{
 			trajectories.emplace_back(mdp->NumEventRNGs(), experiment_number + offset);
-			trajectories.back().SeedRNGProvider(system, true, experiment_number + offset,rng_seed);
+			trajectories.back().SeedRNGProvider(true, experiment_number + offset,rng_seed);
 		}
 
 		//Initiate each trajectory with a random state. 
@@ -89,7 +89,9 @@ namespace DynaPlex::Utilities {
 			periods_per_trajectory = 0;  // Unused for finite horizon MDP
 			warmup_periods = 0; //also unused. 
 		}
-		config.GetOrDefault("rng_seed", rng_seed, 0);
+		int64_t rng_seed_base;
+		config.GetOrDefault("rng_seed", rng_seed_base, 13021984);
+		rng_seed = RNG::ToSeed(rng_seed_base, "PolicyComparer");
 	}
 
 	void PolicyComparer::CheckTrajectoriesInfiniteHorizon(std::span<DynaPlex::Trajectory> trajectories, int64_t cumulative_periods) const {
@@ -179,6 +181,8 @@ namespace DynaPlex::Utilities {
 				throw DynaPlex::Error("PolicyComparer: policy should not be null");
 			}
 			nestedReturnValues.push_back(std::vector<double>(number_of_trajectories, 0.0));
+		
+
 			DynaPlex::Parallel::parallel_compute<double>(nestedReturnValues[i], [this, &policy](std::span<double> span, int64_t start) {
 				this->ComputeReturns(span, policy, start);
 				}, system.HardwareThreads());			
@@ -199,8 +203,7 @@ namespace DynaPlex::Utilities {
 				forPolicy.Add("benchmark", "yes");
 			}
 			varGroups.push_back(forPolicy);
-		}
-		
+		}		
 		return varGroups;
 
 	}

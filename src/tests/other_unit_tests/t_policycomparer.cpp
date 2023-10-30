@@ -202,7 +202,7 @@ namespace DynaPlex::Tests {
 		);
 		DynaPlex::VarGroup mdp_vars_from_json;
 		ASSERT_NO_THROW(
-			std::string file_path = system.filename("mdp_config_examples", model_name, mdp_config_name);
+			std::string file_path = system.filepath("mdp_config_examples", model_name, mdp_config_name);
 		    mdp_vars_from_json = VarGroup::LoadFromFile(file_path);
 		);
 
@@ -210,10 +210,10 @@ namespace DynaPlex::Tests {
 		
 		DynaPlex::Policy policy = mdp->GetPolicy("random");
 
-		VarGroup vars{ {"number_of_trajectories",1048} };
+		VarGroup vars{ {"number_of_trajectories",512} };
 
 		auto evaluator = dp.GetPolicyComparer(mdp,vars);
 		auto assessment = evaluator.Assess(policy);
-		std::cout << assessment.Dump() << std::endl;
+		//std::cout << assessment.Dump() << std::endl;
 	}
 }

@@ -102,7 +102,7 @@ namespace DynaPlex {
 		bool operator!=(const VarGroup& other) const;
 
 		void Add(std::string s, const VarGroup& vec);
-		//Only to support Add("key", 3); with integer literal - calls Add(std::string s, int64_t val)
+		///Supports e.g. Add("key", 3); with integer literal - calls Add(std::string s, int64_t val)
 		void Add(std::string s, int val);
 		void Add(std::string s, int64_t val);
 		void Add(std::string s, bool val);
@@ -115,9 +115,24 @@ namespace DynaPlex {
 		void Add(std::string s, const DoubleVec& vec);
 		void Add(std::string s, const VarGroupVec& vec);
 
+
+		void Set(std::string s, const VarGroup& vec);
+		///Supports e.g. Add("key", 3); with integer literal - calls Add(std::string s, int64_t val)
+		void Set(std::string s, int val);
+		void Set(std::string s, int64_t val);
+		void Set(std::string s, bool val);
+		void Set(std::string s, std::string val);
+		void Set(std::string s, const char* val);
+
+		void Set(std::string s, double val);
+		void Set(std::string s, const Int64Vec& vec);
+		void Set(std::string s, const StringVec& vec);
+		void Set(std::string s, const DoubleVec& vec);
+		void Set(std::string s, const VarGroupVec& vec);
+
 		template <typename T>
 			requires std::is_enum_v<T>
-		void Add(const std::string& key, T val) {
+		void Add(const std::string& key,const T& val) {
 			using UnderlyingType = std::underlying_type_t<T>;
 			static_assert(std::is_same_v<UnderlyingType, int64_t> || std::is_same_v<UnderlyingType, int>,
 				"VarGroup: Supported enum class underlying types are int and int64_t only");
@@ -125,13 +140,13 @@ namespace DynaPlex {
 		}
 
 		template <Concepts::ConvertibleToVarGroup T>
-		void Add(const std::string& key, T val)
+		void Add(const std::string& key,const T& val)
 		{
 			Add(key, val.ToVarGroup());
 		}
 
 		template <Concepts::ReadableVarGroupContainer T>
-		void Add(const std::string& key, T val)
+		void Add(const std::string& key,const T& val)
 		{
 			VarGroupVec vec;
 			for (const auto& item : val) {
@@ -141,7 +156,7 @@ namespace DynaPlex {
 		}
 
 		template <Concepts::ReadableBasicContainer T>
-		void Add(const std::string& key, T val)
+		void Add(const std::string& key,const T& val)
 		{
 			std::vector<typename T::value_type> vec;
 			for (const auto& item : val) {
@@ -149,6 +164,44 @@ namespace DynaPlex {
 			}
 			Add(key, vec);
 		}
+
+
+
+		template <typename T>
+			requires std::is_enum_v<T>
+		void Set(const std::string& key, const T& val) {
+			using UnderlyingType = std::underlying_type_t<T>;
+			static_assert(std::is_same_v<UnderlyingType, int64_t> || std::is_same_v<UnderlyingType, int>,
+				"VarGroup: Supported enum class underlying types are int and int64_t only");
+			Set(key, static_cast<int64_t>(val));
+		}
+
+		template <Concepts::ConvertibleToVarGroup T>
+		void Set(const std::string& key, const T& val)
+		{
+			Set(key, val.ToVarGroup());
+		}
+
+		template <Concepts::ReadableVarGroupContainer T>
+		void Set(const std::string& key, const T& val)
+		{
+			VarGroupVec vec;
+			for (const auto& item : val) {
+				vec.push_back(item.ToVarGroup());
+			}
+			Set(key, vec);
+		}
+
+		template <Concepts::ReadableBasicContainer T>
+		void Set(const std::string& key, const T& val)
+		{
+			std::vector<typename T::value_type> vec;
+			for (const auto& item : val) {
+				vec.push_back(item);
+			}
+			Set(key, vec);
+		}
+
 
 		bool HasKey(const std::string& key, bool warn_if_similar=true) const;
 
@@ -213,7 +266,7 @@ namespace DynaPlex {
 			}
 		}
 
-		void SaveToFile(const std::string & filePath) const;
+		void SaveToFile(const std::string & filePath,const int indent=-1) const;
 		static VarGroup LoadFromFile(const std::string &filePath);
 
 		std::string Hash() const;

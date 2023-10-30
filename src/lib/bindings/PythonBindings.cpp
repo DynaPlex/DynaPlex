@@ -2,21 +2,12 @@
 #include "dynaplex/vargroup.h"
 #include "vargroupcaster.h"
 #include "dynaplex/error.h"
-#include "dynaplex/utilities.h"
 #include <torch/torch.h>
 #include <dynaplex/mdp.h>
 #include <dynaplex/dynaplexprovider.h>
 
 namespace py = pybind11;
-/*
-namespace DynaPlex {
-	DynaPlex::MDP GetMDP(py::kwargs& kwargs)
-	{
-		auto vars = DynaPlex::VarGroup(kwargs);
-		return DynaPlex::GetMDP(vars);
-	}
-}
-*/
+
 std::string TestParam(DynaPlex::VarGroup& vars)
 {
 	return vars.ToAbbrvString();

@@ -53,13 +53,18 @@ namespace DynaPlex::Models {
 			double ModifyStateWithAction(State&, int64_t action) const;
 			double ModifyStateWithEvent(State&,const Event&) const;
 			Event GetEvent(DynaPlex::RNG&) const;
+		
 			DynaPlex::VarGroup GetStaticInfo() const;
+			
 			DynaPlex::StateCategory GetStateCategory(const State&) const;
+			
 			bool IsAllowedAction(const State&, int64_t action) const;
+			
 			//You may also define this with a parameter DynaPlex::RNG&, for random initial states:
 			State GetInitialState() const;
+
 			State GetState(const VarGroup&) const;
-			void GetFeatures(const State&, DynaPlex::Features&) const;
+			void GetFeatures(const State&, DynaPlex::Features&) const;			
 			//Enables all MDPs to be constructer in a uniform manner. e
 			explicit MDP(const DynaPlex::VarGroup&);
 			void RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>&) const;
