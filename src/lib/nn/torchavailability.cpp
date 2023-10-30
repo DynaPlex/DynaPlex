@@ -35,7 +35,7 @@ namespace DynaPlex ::TorchAvailability {
       //      result += "cuda not available. ";
         }       
 #else
-        result = "torch not available";
+        result = "DynaPlex: torch not available. To make available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt";
 #endif	
 
         return result;

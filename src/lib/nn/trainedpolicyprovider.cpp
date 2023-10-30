@@ -45,7 +45,7 @@ namespace DynaPlex {
 			return policy;
 
 #else
-			throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: Torch not available - Cannot construct.");
+			throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: Torch not available - Cannot construct. To make torch available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt ");
 #endif
 		}
 		else//id == "NN_Policy"
@@ -66,10 +66,15 @@ namespace DynaPlex {
 			if (!as_NN_policy) {
 				throw DynaPlex::Error("NeuralNetworkProvider::SavePolicy - cannot save this policy of declared type+ " + id + ". Cast to NN_Policy fails.");
 			}
+#if DP_TORCH_AVAILABLE		
 			auto weights_path = System::SetFileExtension(path_to_policy_without_extension, "pth");
 			torch::save(as_NN_policy->neural_network->ptr(), weights_path);
 			auto json_path = System::SetFileExtension(path_to_policy_without_extension, "json");
 			as_NN_policy->policy_config.SaveToFile(json_path, 1);
+#else
+			throw DynaPlex::Error("NeuralNetworkProvider::SavePolicy - Torch not available, cannot save. To make torch available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt ");
+
+#endif
 		}
 		else {
 			throw DynaPlex::Error("NeuralNetworkProvider::SavePolicy - do not know how to save policy of declared type+ " + id + ".");

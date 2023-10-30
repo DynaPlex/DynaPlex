@@ -116,7 +116,7 @@ namespace DynaPlex::Tests {
 			}
 			catch (const DynaPlex::Error& e)
 			{
-				std::string expected_exception = "DynaPlex: PolicyTrainer::TrainPolicy - Torch not available, cannot train policy.";
+				std::string expected_exception = "DynaPlex: PolicyTrainer::TrainPolicy - Torch not available, cannot train policy. To make torch available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt ";
 				EXPECT_EQ(e.what(), expected_exception);
 			}
 			);

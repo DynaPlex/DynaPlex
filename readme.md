@@ -5,6 +5,20 @@ deep reinforcement learning, approximate dynamic programming, classical paramete
 
 DynaPlex focuses on solving problems arising in Operations Management: Supply Chain, Transportation and Logistics, Manufacturing, etc. 
 
+Of course! Below is a draft for a new section in your README to address this issue:
+
+---
+
+## Cloning the Repository with Dependencies
+
+When cloning the repository, it's essential to also download the required submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/WillemvJ/DynaPlexPrivate.git
+```
+
+if you did not recurse submodules, or if you use other tools for cloning repos, please somehow ensure that submodules (especially googletest) are available. 
+
 ## Build Instructions for Windows and Linux
 
 ### Prerequisites
@@ -95,6 +109,39 @@ Detailed instructions on how to add new models or elements to the project can be
 
 See [here](docs/add_executable.md). 
 
-## Algoriths
+## Algorithms
 
-We are still in the process of porting algorithms from the legacy DynaPlex version. This will be finished in the coming weeks. 
+The DCL algorithm was ported from legacy DynaPlex, for an example usage see [here](src/examples/dcl_example/dcl_example.cpp). 
+
+
+
+
+
+## Troubleshooting
+
+### Missing CMakeLists.txt in googletest directory
+
+**Error:**
+
+```
+CMake Error at C:\Users\<username>\source\repos\DynaPlexPrivate\CMakeLists.txt:20 (add_subdirectory):
+  The source directory
+    C:/Users/<username>/source/repos/DynaPlexPrivate/src/extern/googletest
+  does not contain a CMakeLists.txt file.
+```
+
+**Solution:**
+
+This error usually occurs if the repository was cloned without the `--recurse-submodules` option, which results in missing submodule contents.
+
+To resolve this:
+
+1. Navigate to your cloned repository's root directory.
+2. Run the following commands:
+
+```bash
+git submodule init
+git submodule update
+```
+
+This will fetch and checkout the appropriate content for the `googletest` submodule. After executing these commands, try running CMake again. 

@@ -35,7 +35,7 @@ namespace DynaPlex {
         // Use MDP's SetArgMaxAction to determine the action based on the neural network's scores.
         mdp->SetArgMaxAction(trajectories, std::span<float>(output_scores.data_ptr<float>(), trajectories.size() * mdp->NumValidActions()));
 #else
-        throw DynaPlex::Error("NN_Policy: Torch not available - Cannot SetAction.");
+        throw DynaPlex::Error("NN_Policy: Torch not available - Cannot SetAction. To make torch available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt. ");
 #endif
     }
 
