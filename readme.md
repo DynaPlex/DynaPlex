@@ -70,9 +70,11 @@ After this, update the CMakeUserPresets.txt for WinPB to point to the relevant d
 
 3. **Testing MPI**:
     ```bash
-    srun -p genoa -c 32 -n 1 -t 00:30:00 --pty /bin/bash
+    srun -p genoa -c 192 -n 1 -t 00:59:00 --pty /bin/bash
     ```
     also use srun to then do something on that node. 
+
+    This can also be used to test other things. 
 
 4. **Running Tests**:
     - Go to the build directory (`out/LinRel`):

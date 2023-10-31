@@ -75,17 +75,14 @@ namespace DynaPlex::NN{
         auto any_module_as_nn_module = any_module.ptr();
 
         if (!silent)
-            system << nn_architecture.Dump(1) << std::endl;
+            system << nn_architecture.Dump() << std::endl;
          // Set up the optimizer (for example, Adam optimizer).
-        torch::optim::Adam optimizer(any_module_as_nn_module->parameters(), torch::optim::AdamOptions(2e-4).betas({ 0.5,0.999 }).weight_decay(0.0));
-
-
-
       
-        // Splitting the dataset into training and validation sets
-        int64_t validation_size = std::max( static_cast<int64_t>(0.05 * data.Samples.size()),1ll);
+        torch::optim::Adam optimizer(any_module_as_nn_module->parameters(), torch::optim::AdamOptions(2e-4).betas({ 0.5,0.999 }).weight_decay(0.0));
+            
+        int64_t validation_size = std::max( static_cast<int64_t>(0.05 * data.Samples.size()),static_cast<int64_t>(1));
         int64_t training_size = static_cast<int64_t>(data.Samples.size()) - validation_size;
-
+        
         // Ensure we have at least one mini-batch of training data and one sample of test data
         if (training_size < mini_batch_size || training_size<0 ) {
             throw DynaPlex::Error("PolicyTrainer::TrainPolicy - Insufficient data samples for training and validation: "+std::to_string( data.Samples.size()));
@@ -102,15 +99,14 @@ namespace DynaPlex::NN{
         float average_training_loss{ 0.0f };
         DynaPlex::RNG rng{ 26071983 };
 
+     
         auto start_time = std::chrono::steady_clock::now();
 
-        do{
-        
+        do{       
             std::shuffle(training_data.begin(), training_data.end(), rng.gen());
             float total_training_loss = 0.0;
             for (int64_t batch = 0; batch < num_batches; batch++) {
-                optimizer.zero_grad();
-
+                optimizer.zero_grad();       
                 auto [batched_inputs, batched_targets, mask] = prepare_batch({ &training_data[batch * mini_batch_size], static_cast<size_t>(mini_batch_size) }, mdp);
 
                 // Forward pass.

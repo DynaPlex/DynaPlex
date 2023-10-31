@@ -2,6 +2,7 @@
 #include "dynaplex/parallel_execute.h"
 #include "dynaplex/policytrainer.h"
 
+
 namespace DynaPlex::Algorithms {
 
 	using sample_vec = std::vector<DynaPlex::NN::Sample>;

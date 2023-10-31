@@ -8,6 +8,7 @@
 #include "dynaplex/uniformactionselector.h"
 #include "dynaplex/sequentialhalving.h"
 #include "dynaplex/policytrainer.h"
+#include <atomic>
 namespace DynaPlex::Algorithms {
 	class DCL
 	{

@@ -1,4 +1,4 @@
-#include "NN_Policy.h"
+#include "nn_policy.h"
 #include "dynaplex/system.h"
 #if DP_TORCH_AVAILABLE
 #include <torch/torch.h>

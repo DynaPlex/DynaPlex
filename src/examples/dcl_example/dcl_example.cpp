@@ -31,19 +31,19 @@ int main() {
 	auto policy = mdp->GetPolicy("base_stock");
 
 	DynaPlex::VarGroup nn_training{
-		{"early_stopping_patience",5}
+		{"early_stopping_patience",10}
 	};
 
 	DynaPlex::VarGroup nn_architecture{
 		{"type","mlp"},
 		{"hidden_layers",DynaPlex::VarGroup::Int64Vec{64,64}}
 	};
-	int64_t num_gens=1;
+	int64_t num_gens=2;
 	DynaPlex::VarGroup dcl_config{
 		//use defaults everywhere. 
 		{"N",5000},
 		{"num_gens",num_gens},
-		{"M",400},
+		{"M",1000},
 		{"nn_architecture",nn_architecture},
 		{"nn_training",nn_training},
 		{"retrain_lastgen_only",false}
@@ -61,6 +61,8 @@ int main() {
 		//This gets policy with specific index:
 		//auto first = dcl.GetPolicy(1);
 		
+
+		return 0;
 		//This gets all trained policy, as well as the initial policy, in a vector:
 		auto policies = dcl.GetPolicies();
 

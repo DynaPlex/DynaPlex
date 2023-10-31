@@ -2,7 +2,8 @@
 module load 2022
 module load CMake/3.23.1-GCCcore-11.3.0
 module load OpenMPI/4.1.4-GCC-11.3.0
-
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
 conda activate envDP
 
 #CUDA not currently tested. 
