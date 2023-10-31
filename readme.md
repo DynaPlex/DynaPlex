@@ -5,8 +5,6 @@ deep reinforcement learning, approximate dynamic programming, classical paramete
 
 DynaPlex focuses on solving problems arising in Operations Management: Supply Chain, Transportation and Logistics, Manufacturing, etc. 
 
-Of course! Below is a draft for a new section in your README to address this issue:
-
 ---
 
 ## Cloning the Repository with Dependencies
