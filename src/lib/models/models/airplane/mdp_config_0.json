@@ -1,0 +1,22 @@
+/**
+ * MDP configuration file demonstrating a specific MDP configuration.  
+ * - Files under models/_subdir_/_filename_.json are copied to DYNAPLEX_IO_ROOT_DIR/IO_DynaPlex/mdp_config_examples/_subdir_/_filename_.json
+ *  where executable and mdp_unit_tests look for them. 
+ * - Providing MDP configuration files is not required, but serves as documentation. 
+ * - It also simplifies unit_tests, see tests/mdp_unit_tests/*.cpp. 
+ */
+{
+  "id": "airplane",
+  "discount_factor": 1.0,
+  "InitialDays": 25,
+  "InitialSeats": 12,
+  "PricePerSeatPerCustType": [ 3000.0, 2000.0, 1000.0 ],
+  "cust_dist": {
+    "type": "custom",
+    "probs": [ 0.4, 0.3, 0.3 ]
+  },
+  "seat_dist": {
+    "type": "custom",
+    "probs": [ 0.8, 0.2 ]
+  }
+}
