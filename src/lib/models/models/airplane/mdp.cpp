@@ -14,7 +14,6 @@ namespace DynaPlex::Models {
 			VarGroup feats{};
 			vars.Add("features", feats);
 			vars.Add("discount_factor", discount_factor);
-			vars.Add("horizon_type", "finite");
 			return vars;
 		}
 
@@ -189,4 +188,3 @@ namespace DynaPlex::Models {
 		}
 	}
 }
-

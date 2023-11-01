@@ -10,7 +10,7 @@
   "discount_factor": 1.0,
   "InitialDays": 25,
   "InitialSeats": 12,
-  "PricePerSeatPerCustType": [ 3000.0, 2000.0, 1000.0 ],
+  "PricePerSeatPerCustType": [3000.0, 2000.0, 1000.0],
   "cust_dist": {
     "type": "custom",
     "probs": [ 0.4, 0.3, 0.3 ]
