@@ -6,5 +6,10 @@
  * - It also simplifies unit_tests, see tests/mdp_unit_tests/*.cpp. 
  */
 {
-  "id": "rule_based"
+  "id": "rule_based",
+  "seat_threshold_low": 1,
+  "seat_threshold_high": 5,
+  "remainingday_threshold": 9,
+  "price_threshold_low": 1000.0,
+  "price_threshold_high": 2000.0
 }
