@@ -30,7 +30,7 @@ namespace DynaPlex::Models {
 				//Defaulting this does not always work. It can be removed as only the exact solver would benefit from this. 
 				bool operator==(const State& other) const = default;
 			};
-			//Event may also be struct or class like.
+			//Events can take on any structure, here we use structs to showcase, but we may use int64_t if events are simpler
 			struct Event {
 				double PriceOfferedPerSeat;
 			};

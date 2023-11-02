@@ -31,7 +31,7 @@ namespace DynaPlex::Models {
 			state.PriceOfferedPerSeat = event.PriceOfferedPerSeat;
 
 			if (state.RemainingDays==0 || state.RemainingSeats == 0)
-			{
+			{//here, we check if the MDP should terminate
 				state.cat = StateCategory::Final();
 			}
 			return 0.0;
@@ -45,10 +45,6 @@ namespace DynaPlex::Models {
 				std::cout << "something is wrong in airplane::ModifyStateWithAction" << std::endl;
 				throw;
 			}
-			if (!IsAllowedAction(state, action))
-			{
-				throw DynaPlex::Error("airplane: action not allowed");
-			};
 
 			state.cat = StateCategory::AwaitEvent();//after processing this action, we await an event.
 
@@ -65,7 +61,7 @@ namespace DynaPlex::Models {
 					state.RemainingSeats--;
 					//One day passes.
 					state.RemainingDays--;
-					//Note that DynaPlex is cost-based, so we return minus the reward here:
+					//Note that DynaPlex is cost-based, so we return negative reward here:
 					double returnval = -state.PriceOfferedPerSeat;
 					state.PriceOfferedPerSeat = 0.0;
 					return returnval;
@@ -133,14 +129,15 @@ namespace DynaPlex::Models {
 
 
 		MDP::Event MDP::GetEvent(RNG& rng) const {
+			//generate an event using the custom discrete distribution (see mdp_config_0.json)
 			int64_t custType = cust_dist.GetSample(rng);
 			double pricePerSeat = PricePerSeatPerCustType[custType];
-			//Note that the arrays are zero-based, so we need to add one here to get appropriate probabilities:
 			return Event(pricePerSeat);
 		}
 
 
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {
+			//state features as supplied to the algorithm
 			features.Add(state.RemainingDays);
 			features.Add(state.RemainingSeats);
 			features.Add(state.PriceOfferedPerSeat);
