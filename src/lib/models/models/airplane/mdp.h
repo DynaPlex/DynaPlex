@@ -14,14 +14,12 @@ namespace DynaPlex::Models {
 			//any other mdp variables go here:
 			 
 			DynaPlex::DiscreteDist cust_dist;//the distribution of customer types
-			DynaPlex::DiscreteDist seat_dist;//the distribution of customer types
 			std::vector<double> PricePerSeatPerCustType;
 
 			int64_t InitialSeats;
 			int64_t InitialDays;
 
 			struct State {
-				int64_t NumSeatsRequested;
 				int64_t RemainingDays;
 				int64_t RemainingSeats;
 				double PriceOfferedPerSeat;
@@ -34,7 +32,6 @@ namespace DynaPlex::Models {
 			};
 			//Event may also be struct or class like.
 			struct Event {
-				int64_t NumSeats;
 				double PriceOfferedPerSeat;
 			};
 
@@ -43,7 +40,7 @@ namespace DynaPlex::Models {
 			Event GetEvent(DynaPlex::RNG& rng) const;
 			DynaPlex::VarGroup GetStaticInfo() const;
 			DynaPlex::StateCategory GetStateCategory(const State&) const;
-			bool IsAllowedAction(const State& state, int64_t action) const;			
+			bool IsAllowedAction(const State& state, int64_t action) const;		
 			State GetInitialState() const;
 			State GetState(const VarGroup&) const;
 			void RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>&) const;

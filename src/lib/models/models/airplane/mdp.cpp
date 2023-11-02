@@ -14,6 +14,12 @@ namespace DynaPlex::Models {
 			VarGroup feats{};
 			vars.Add("features", feats);
 			vars.Add("discount_factor", discount_factor);
+
+			//This indicates that the MDP terminates. 
+			//It may be used by various algorithms. 
+			//infinite is default, other value is finite for algorithms that are guaranteed to reach a final state at some point. 
+			vars.Add("horizon_type", "finite");
+
 			return vars;
 		}
 
@@ -22,8 +28,12 @@ namespace DynaPlex::Models {
 		{
 			//after processing this event, we await an action.
 			state.cat = StateCategory::AwaitAction();
-			state.NumSeatsRequested = event.NumSeats;
 			state.PriceOfferedPerSeat = event.PriceOfferedPerSeat;
+
+			if (state.RemainingDays==0 || state.RemainingSeats == 0)
+			{
+				state.cat = StateCategory::Final();
+			}
 			return 0.0;
 		}
 
@@ -40,7 +50,7 @@ namespace DynaPlex::Models {
 				throw DynaPlex::Error("airplane: action not allowed");
 			};
 
-			state.cat = StateCategory::AwaitEvent();//after processing this event, we await an event.
+			state.cat = StateCategory::AwaitEvent();//after processing this action, we await an event.
 
 			if (action==0)
 			{//reject offer
@@ -51,20 +61,13 @@ namespace DynaPlex::Models {
 			{
 				if (action == 1)
 				{
-					if (state.RemainingSeats < state.NumSeatsRequested)
-					{
-						//This action should not be allowed, something is wrong! 
-						std::cout << "this action is not allowed in airplane::ModifyStateWithAction" << std::endl;
-						throw;
-					}
 					//Subtract the requested seats from the remaining seats
-					state.RemainingSeats -= state.NumSeatsRequested;
+					state.RemainingSeats--;
 					//One day passes.
 					state.RemainingDays--;
 					//Note that DynaPlex is cost-based, so we return minus the reward here:
-					double returnval = -state.PriceOfferedPerSeat * state.NumSeatsRequested;
+					double returnval = -state.PriceOfferedPerSeat;
 					state.PriceOfferedPerSeat = 0.0;
-					state.NumSeatsRequested = 0;
 					return returnval;
 				}
 				else
@@ -81,7 +84,6 @@ namespace DynaPlex::Models {
 			//add all state variables
 			DynaPlex::VarGroup vars;
 			vars.Add("cat", cat);
-			vars.Add("NumSeatsRequested", NumSeatsRequested);
 			vars.Add("RemainingDays", RemainingDays);
 			vars.Add("RemainingSeats", RemainingSeats);
 			vars.Add("PriceOfferedPerSeat", PriceOfferedPerSeat);
@@ -92,7 +94,6 @@ namespace DynaPlex::Models {
 		{
 			State state{};			
 			vars.Get("cat", state.cat);
-			vars.Get("NumSeatsRequested", state.NumSeatsRequested);
 			vars.Get("RemainingDays", state.RemainingDays);
 			vars.Get("RemainingSeats", state.RemainingSeats);
 			vars.Get("PriceOfferedPerSeat", state.PriceOfferedPerSeat);
@@ -104,7 +105,6 @@ namespace DynaPlex::Models {
 			State state{};
 			state.cat = StateCategory::AwaitEvent();//or AwaitAction(), depending on logic
 			//initiate other variables.
-			state.NumSeatsRequested = 0;
 			state.PriceOfferedPerSeat = 0.0;
 			state.RemainingDays = InitialDays;
 			state.RemainingSeats = InitialSeats;
@@ -124,11 +124,10 @@ namespace DynaPlex::Models {
 				discount_factor = 1.0;
 
 			config.Get("InitialDays", InitialDays);
-			config.Get("RemainingSeats", InitialSeats);
+			config.Get("InitialSeats", InitialSeats);
 
 			config.Get("PricePerSeatPerCustType", PricePerSeatPerCustType);
 			config.Get("cust_dist", cust_dist);
-			config.Get("seat_dist", seat_dist);
 		
 		}
 
@@ -137,15 +136,12 @@ namespace DynaPlex::Models {
 			int64_t custType = cust_dist.GetSample(rng);
 			double pricePerSeat = PricePerSeatPerCustType[custType];
 			//Note that the arrays are zero-based, so we need to add one here to get appropriate probabilities:
-			size_t numSeats = seat_dist.GetSample(rng) + 1;
-			return Event(numSeats, pricePerSeat);
+			return Event(pricePerSeat);
 		}
 
-		
 
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {
 			features.Add(state.RemainingDays);
-			features.Add(state.NumSeatsRequested);
 			features.Add(state.RemainingSeats);
 			features.Add(state.PriceOfferedPerSeat);
 		}
@@ -172,7 +168,7 @@ namespace DynaPlex::Models {
 			//If we haven't returned, apparently action=1.
 			//We can accept if the remaining seats is larger than or equal to the
 			//requested seats:
-			return state.NumSeatsRequested <= state.RemainingSeats;
+			return 0 <= state.RemainingSeats;
 		}
 
 

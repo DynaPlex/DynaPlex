@@ -14,9 +14,5 @@
   "cust_dist": {
     "type": "custom",
     "probs": [ 0.4, 0.3, 0.3 ]
-  },
-  "seat_dist": {
-    "type": "custom",
-    "probs": [ 0.8, 0.2 ]
   }
 }
