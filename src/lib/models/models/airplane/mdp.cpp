@@ -147,7 +147,7 @@ namespace DynaPlex::Models {
 		void MDP::RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const
 		{
 			//custom policies, if added at some point, can be added here. For syntax, refer to models/models/lost_sales/mdp.cpp
-			registry.Register<RuleBasedPolicy>("RuleBasedPolicy",
+			registry.Register<RuleBasedPolicy>("rule_based",
 				"The heuristic rule as proposed by the manager");
 		}
 		
