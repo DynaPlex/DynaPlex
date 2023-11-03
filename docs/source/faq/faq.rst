@@ -1,5 +1,6 @@
-Frequently Asked Questions
-==========================
+.. _label_troubleshooting:
+Troubleshooting
+===============
 
 If you encounter the following errors while working with DynaPlex, follow the associated solutions:
 

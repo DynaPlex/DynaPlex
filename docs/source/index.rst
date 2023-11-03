@@ -50,8 +50,7 @@ Contents
    :maxdepth: 0
    :caption: API reference
 
-   reference/models_api
-   reference/dcl_api
+   reference/api_refs
 
 .. toctree::
    :maxdepth: 0
@@ -62,7 +61,7 @@ Contents
 
 .. toctree::
    :maxdepth: 0
-   :caption: Frequently Asked Questions
+   :caption: Troubleshooting
 
    faq/faq
 

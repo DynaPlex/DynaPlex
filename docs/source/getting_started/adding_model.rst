@@ -3,6 +3,9 @@ Adding your MDP model
 
 DynaPlex facilitates the extension with new native models (e.g., Markov Decision Processes (MDPs) and policies). This document explains how to add an additional model, which will then be generally usable and retrievable (both in Python and for the generic C++ functionality).
 
+.. seealso::
+    If you instead want to have a step-by-step guide for adding a model, we refer to the Tutorial pages, starting with :ref:`label_airplane`.
+
 Understanding what needs to be provided
 ----------------------------------------
 
@@ -17,6 +20,9 @@ Adding a model is easiest in debug mode, such as in WinDeb or LinDeb.
 
 Start by copying the code of an existing MDP and registering it under a new name.
 
+.. hint::
+    We advise you to start with the ``empty_example`` as your starting MDP
+
 Copy an MDP and register it under a new name:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -30,15 +36,14 @@ Copy an MDP and register it under a new name:
 6. **Registration Manager**: In ``/models/models/registrationmanager.cpp``, forward-declare the Register function for the new model in the appropriate namespace. Call this function within the ``RegisterAll`` function.
    - Refer to the below ``Namespaces`` section for more details.
 
-Following these steps allows for creating a duplicate of an MDP registered under a new name. Ensure that the code compiles and runs without issues. If problems arise, refer to the troubleshooting section.
+Following these steps allows for creating a duplicate of an MDP registered under a new name. Ensure that the code compiles and runs without issues. If problems arise, refer to the :ref:`label_troubleshooting` section.
 
 Change code in template
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Iteratively combine the following steps to adjust the MDP to your desired logic:
 
-1. **Modify Member Variables**: Adjust member variables in both the `mdp` and nested `state` struct located in `mdp.h`.
-    - Make sure to update the functions providing serialization and initiation within the class body.
+1. **Modify Member Variables**: Adjust member variables in both the `mdp` and nested `state` struct located in `mdp.h`: Make sure to update the functions providing serialization and initiation within the class body.
 
 2. **Initial State Logic**: Provide logic for creating an initial state.
 
@@ -48,9 +53,9 @@ Iteratively combine the following steps to adjust the MDP to your desired logic:
 
 5. **Modify the Test Configuration**: While adapting the logic, make sure to keep the `mdp_config_0` up to date to ensure that the MDP can be tested.
 
-Running `dp_mdp_unit_tests` is a must to avoid oversights.
+Running ``dp_mdp_unit_tests`` is a must to avoid oversights.
 
-To verify that your code logic is in order, you might want to visualize a sequence of states when following some policy. For an example, see the test `TEST(bin_packing, trace)` in `src/tests/mdp_unit_tests/t_bin_packing.cpp`.
+To verify that your code logic is in order, you might want to visualize a sequence of states when following some policy. For an example, see the test ``TEST(bin_packing, trace)`` in ``src/tests/mdp_unit_tests/t_bin_packing.cpp``.
 
 Details on Namespaces, Directory Names, IDs, Registration
 ---------------------------------------------------------
@@ -60,7 +65,7 @@ When adding a new MDP, consistency in naming directories, files, classes, and na
 Naming the MDP Class
 ~~~~~~~~~~~~~~~~~~~~
 
-It's recommended to name the MDP class simply as `MDP`. To differentiate it from other MDPs, it should be enclosed within a specific namespace:
+It's recommended to name the MDP class simply as ``MDP``. To differentiate it from other MDPs, it should be enclosed within a specific namespace:
 
 .. code-block:: cpp
 

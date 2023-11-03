@@ -72,6 +72,7 @@ html_theme_options = {
         "navigation.prune",
         "toc.follow",
         "toc.integrate",
+        "navigation.indexes"
     ],
     "palette": [
         {
