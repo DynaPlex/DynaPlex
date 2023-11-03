@@ -15,8 +15,8 @@ DynaPlex focuses on solving problems arising in Operations Management: Supply Ch
 - **`docs/`**: Contains the documentation.
 - **`python/`**: Contains all functionality for pybindings.
 - **`src/`**: Contains the main code, users will only work in this folder.
-  - **`examples/`**: Contains all executables you can run (and generate yourself).
-  - **`extern/`**: Contains all external libraries sued (e.g., googletest).
+  - **`examples/`**: Contains all executables you can run (you can add additional executables yourself here, that use the library).
+  - **`extern/`**: Contains all external libraries used (e.g., googletest).
   - **`lib/`**: Contains all algorithms and all MDP models, you can implement your MDP in src/lib/models/models.
   - **`tests/`**: Contains all code for unit testing (supported by googletest).
 
@@ -57,7 +57,7 @@ We provide several example implementations of MDPs, these can be found in [here]
 
 ## Contributing
 
-It is much appreaciated if you contribute to DynaPlex by making a pull request of your implementations.
+It is much appreciated if you contribute to DynaPlex by making a pull request of your implementations.
 
 ---
 
@@ -67,4 +67,4 @@ To do.
 
 ## Algorithms
 
-The DCL algorithm was ported from legacy DynaPlex, for an example usage see [here](src/examples/dcl_example/dcl_example.cpp). 
+The DCL algorithm is available, for an example usage see [here](src/examples/dcl_example/dcl_example.cpp). 

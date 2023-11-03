@@ -3,7 +3,7 @@ Changes from Legacy (v0.0)
 
 .. note::
    It should not be necessary to make changes to any CMakeLists.txt. Newly added files should be automatically detected. Contact main developers if you find limitations in this.
-   Set paths to dependencies in the CMakeUserPresets.txt, and not directly in the CMakeLists.txt!
+   Set paths to dependencies in the CMakeUserPresets.txt, and not directly in the CMakeLists.txt. An exception happens when adding a new executable to the ``src/examples'' directory. 
 
 The current version of the DynaPlex library uses a similar API to the legacy version. However, several changes have been made:
 
