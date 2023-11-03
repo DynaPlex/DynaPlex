@@ -4,7 +4,7 @@ Airplane MDP formulation
 
 A deliberately simple example: A company sells tickets to a flight. The flight can carry at most 10 passengers, and there are three types of customers:
 
-- Type 1 customers pay r\ :sub:`1` \ = 3000 euros for a seat
+- Type 1 customers pay r\ :sub:`1` \ = 3000 euros for a seat 
 
 - Type 2 customers pay r\ :sub:`2` \ = 2000 euros for a seat
 
