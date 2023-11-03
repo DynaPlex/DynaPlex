@@ -25,3 +25,5 @@ bld/
 
 /CMakeUserPresets.json
 /python/lib
+poetry*.lock
+/docs/build/
