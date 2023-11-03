@@ -1,6 +1,14 @@
 Installation instructions
 =========================
 
+Prerequisites
+-------------
+
+We assume that you already have installed a C++ IDE and if you want to run locally, a local version of LibTorch. You also need to install CMake (version >=3.21).
+
+Setup
+-----
+
 For the easiest setup, provide a ``CMakeUserPresets.json`` in the root directory. Note: ``CMakeUserPresets.json`` in the root directory is ignored by Git. This allows for passing in specific configurations and paths tailored to your local environment. An example file can be found at ``cmake/resources/``. You could copy this to the root directory, and adapt it to your specific needs.
 
 .. hint::

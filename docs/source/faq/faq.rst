@@ -1,4 +1,5 @@
 .. _label_troubleshooting:
+
 Troubleshooting
 ===============
 
@@ -41,6 +42,7 @@ Missing MDP Identifier Error:
       Actual: it throws DynaPlex::Error with description "DynaPlex: No MDP available with identifier "<some_identifier>". Use ListMDPs() / list_mdps() to obtain available MDPs.".
 
    Solutions:
+
    - Verify if ``<some_identifier>`` is the correct identifier for the MDP you added.
    - Ensure that you registered the MDP correctly using the ``MDP::Register(DynaPlex::Registry& registry)`` method in ``models/models/<...>/mdp.cpp``.
    - Update ``models/models/registrationmanager.cpp`` with the new MDP if you haven't done so.
@@ -53,4 +55,5 @@ Invalid Discount Factor Error:
       Actual: it throws DynaPlex::Error with description "DynaPlex: MDP, id "<some_identifier>" : discount_factor is invalid: -6277438562204192487878988888393020692503707483087375482269988814848.000000. Must be in (0.0,1.0]".
 
    Solutions:
+
    - Make sure you've read the ``discount_factor`` correctly from the provided ``VarGroup`` in the ``MDP::MDP(const VarGroup& config)`` constructor.
