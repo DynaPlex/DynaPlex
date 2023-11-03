@@ -31,7 +31,10 @@ int main() {
 	auto policy = mdp->GetPolicy("base_stock");
 
 	DynaPlex::VarGroup nn_training{
-		{"early_stopping_patience",10}
+		{"early_stopping_patience",15},
+		{"mini_batch_size", 64},
+		{"max_training_epochs", 1000},
+		{"train_based_on_probs", true}
 	};
 
 	DynaPlex::VarGroup nn_architecture{
@@ -41,9 +44,10 @@ int main() {
 	int64_t num_gens=2;
 	DynaPlex::VarGroup dcl_config{
 		//use defaults everywhere. 
-		{"N",5000},
 		{"num_gens",num_gens},
+		{"N",5000},
 		{"M",1000},
+		{"H",40},
 		{"nn_architecture",nn_architecture},
 		{"nn_training",nn_training},
 		{"retrain_lastgen_only",false}

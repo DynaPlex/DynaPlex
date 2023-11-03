@@ -45,7 +45,7 @@ namespace DynaPlex {
 			return policy;
 
 #else
-			throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: Torch not available - Cannot construct. To make torch available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt ");
+			throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: Torch not available - Cannot construct.");
 #endif
 		}
 		else//id == "NN_Policy"

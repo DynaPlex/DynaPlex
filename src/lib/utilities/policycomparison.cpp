@@ -45,6 +45,8 @@ namespace DynaPlex {
                 covariances[i][j] /= (len - 1);
             }
         }
+
+        ComputeProbabilities();
     }
 
     PolicyComparison::PolicyComparison(const std::vector<std::vector<double>>& nestedVector)
@@ -86,13 +88,13 @@ namespace DynaPlex {
             throw Error("PolicyComparison: index i out of range");
         if (j == -1 )
         {            
-            return std::sqrt(covariances.at(i).at(i) / n);
+            return std::sqrt(covariances.at(i).at(i) / len);
         }
         else
         {
             if (j >= n || j < 0)
                 throw Error("PolicyComparison: index j out of range");
-            return std::sqrt((covariances.at(i).at(i) + covariances.at(j).at(j) - 2 * covariances.at(i).at(j)) / n);
+            return std::sqrt((covariances.at(i).at(i) + covariances.at(j).at(j) - 2 * covariances.at(i).at(j)) / len);
         }
     }
 
@@ -103,6 +105,35 @@ namespace DynaPlex {
             result += std::to_string(m) + " ";
         }
         return result;
+    }
+
+    void PolicyComparison::ComputeProbabilities() {
+        size_t n = data.size();
+        probs.resize(n, 0.0);
+        size_t len = data.front().size();
+        for (size_t j = 0; j < len; j++) {
+            double best_score = -std::numeric_limits<double>::infinity();
+            size_t best_alternative{};
+            for (size_t i = 0; i < n; i++) {
+                double score = data.at(i).at(j);
+                if (score > best_score) {
+                    best_score = score;
+                    best_alternative = i;
+                }
+            }
+            probs.at(best_alternative) += 1.0;
+        }
+        for (size_t i = 0; i < n; i++) {
+              probs.at(i) /= len;
+        }
+    }
+
+    double PolicyComparison::GetProbability(int64_t i) const {
+        size_t n = data.size();
+        if (i >= n || i < 0)
+            throw Error("PolicyComparison: index i out of range");
+
+        return probs.at(i);
     }
 
 }  // namespace DynaPlex

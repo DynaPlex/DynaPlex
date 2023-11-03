@@ -12,8 +12,9 @@ namespace DynaPlex::NN
 	public:
 		std::vector<DynaPlex::NN::Sample> Samples;
 		SampleData(DynaPlex::MDP);
-		void SaveToFile(DynaPlex::MDP, std::string path, int64_t json_indent=-1);
+		void SaveToFile(DynaPlex::MDP, std::string path, int64_t json_indent=-1, bool silent=true);
 		static SampleData CreateNewFromFile(DynaPlex::MDP, std::string path);
 		void AddFromFile(DynaPlex::MDP, std::string path);
+		void PrintStatistics();
 	};
 }

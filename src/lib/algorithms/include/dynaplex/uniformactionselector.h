@@ -3,6 +3,8 @@
 #include "dynaplex/policy.h"
 #include "dynaplex/system.h"
 #include "dynaplex/vargroup.h"
+#include "dynaplex/sample.h"
+
 namespace DynaPlex::DCL {
 	class UniformActionSelector {
 
@@ -11,7 +13,7 @@ namespace DynaPlex::DCL {
 		UniformActionSelector() = default;
 		UniformActionSelector(uint32_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP&, DynaPlex::Policy&);
 
-		void SetAction(DynaPlex::Trajectory& traj, const int32_t seed) const;
+		void SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const;
 
 
 	

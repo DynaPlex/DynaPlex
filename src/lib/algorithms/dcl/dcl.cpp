@@ -157,16 +157,14 @@ namespace DynaPlex::Algorithms {
 						trajectory.NextAction = allowed.front();
 					}
 					else {
-					//	if (M > ceil(log(allowed.size()) / log(2))) {
-					//		sequentialhalving_action_selector.SetAction(trajectory, offset + num_samples_added);
-					//	}
-					//	else {
-							uniform_action_selector.SetAction(trajectory, offset + num_samples_added);
-					//	}
 						auto& sample = somesamples[num_samples_added];
-						sample.state = trajectory.GetState()->Clone();
-						sample.sample_number = offset + num_samples_added;
-						sample.action_label = trajectory.NextAction;
+						//if (!(M > ceil(log(allowed.size()) / log(2)))) {
+						//	sequentialhalving_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
+						//}
+						//else {
+						uniform_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
+						//}
+
 						if constexpr (std::atomic<int64_t>::is_always_lock_free)
 						{
 							total_samples_collected++;
@@ -297,7 +295,8 @@ namespace DynaPlex::Algorithms {
 				sample_data.AddFromFile(mdp, GetPathOfSampleFile(generation, rank));
 				system.remove_file(GetPathOfSampleFile(generation, rank));
 			}
-			sample_data.SaveToFile(mdp, GetPathOfSampleFile(generation), json_save_format);
+			sample_data.SaveToFile(mdp, GetPathOfSampleFile(generation), json_save_format, silent);
+
 		}
 	}
 }

@@ -3,12 +3,15 @@
 #include "dynaplex/policy.h"
 #include "dynaplex/system.h"
 #include "dynaplex/vargroup.h"
+#include "dynaplex/sample.h"
+
 namespace DynaPlex::DCL {
 	/**
   * Sequential Halving algorithm. 
   * A state-of-the-art bandit algorithm for selecting the best alternative out of others.
   * Automatically kept up-to-date with calls to MDP->func(Trajectories, ...).
   * See the original paper: https://proceedings.mlr.press/v28/karnin13.pdf
+  * See DCL paper for its implementation: https://arxiv.org/pdf/2011.15122.pdf
   */
 	class SequentialHalving {
 
@@ -17,7 +20,7 @@ namespace DynaPlex::DCL {
 		SequentialHalving() = default;
 		SequentialHalving(uint32_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP&, DynaPlex::Policy&);
 
-		void SetAction(DynaPlex::Trajectory& traj, const int32_t seed) const;
+		void SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const;
 
 
 

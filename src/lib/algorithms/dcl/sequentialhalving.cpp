@@ -21,7 +21,7 @@ namespace DynaPlex::DCL {
 	bool adopt_crn_sh = true;
 	int64_t max_chunk_size_sh = 256;
 
-	void SequentialHalving::SetAction(DynaPlex::Trajectory& traj, const int32_t seed) const
+	void SequentialHalving::SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const
 	{
 		if (!traj.Category.IsAwaitAction())
 			throw DynaPlex::Error("SequentialHalving::SetAction - called for trajectory which is not await_action.");
@@ -166,6 +166,18 @@ namespace DynaPlex::DCL {
 			if (iter == total_rounds - 1)
 			{
 				traj.NextAction = competing_actions.front();
+				sample.state = traj.GetState()->Clone();
+				sample.sample_number = seed;
+				sample.action_label = traj.NextAction;
+				sample.cost_improvement.reserve(root_actions.size());
+				sample.q_hat_vec.reserve(root_actions.size());
+				sample.z_stat = 1.3;
+				sample.q_hat = best_reward * objective;
+
+				for (int i = 0; i < root_actions.size(); i++){
+					sample.cost_improvement.push_back(0.0);
+					sample.q_hat_vec.push_back(0.0);
+				}
 			}
 		}
 	}

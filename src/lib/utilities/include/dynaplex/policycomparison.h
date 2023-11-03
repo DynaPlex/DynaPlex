@@ -17,6 +17,7 @@ namespace DynaPlex {
         std::vector<std::vector<double>> data;
         std::vector<double> means;
         std::vector<std::vector<double>> covariances;
+        std::vector<double> probs;
 
         void Initialize();
     public:
@@ -58,6 +59,18 @@ namespace DynaPlex {
         double standardError(int64_t i, int64_t j=-1) const;
 
         std::string ToString() const;
+
+        /**
+         * @brief Compute probabilities for each alternative (policy) by ranking and comparing them in individual tests.
+         */
+        void ComputeProbabilities();
+        /**
+        * @brief Returns the probability of an alternative (policy).
+        *
+        * @param i Index of the alternative (policy).
+        */
+        double GetProbability(int64_t i) const;
+
     };
 
 }  // namespace DynaPlex

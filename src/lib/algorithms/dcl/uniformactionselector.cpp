@@ -20,7 +20,7 @@ namespace DynaPlex::DCL {
 	bool adopt_crn = true;
 	int64_t max_chunk_size = 256;
 	int64_t max_steps_until_completion_expected = 1000000;
-	void UniformActionSelector::SetAction(DynaPlex::Trajectory& traj, const int32_t seed) const
+	void UniformActionSelector::SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const
 	{
 		if (!traj.Category.IsAwaitAction())
 			throw DynaPlex::Error("UniformActionSelector::SetAction - called for trajectory which is not await_action.");
@@ -28,6 +28,14 @@ namespace DynaPlex::DCL {
 		
 		auto root_state = traj.GetState()->Clone();
 		auto root_actions = mdp->AllowedActions(root_state);
+		policy->SetAction({ &traj,1 });
+
+		auto prescribed_action_initial_policy = traj.NextAction;
+		auto it = std::lower_bound(root_actions.begin(), root_actions.end(), prescribed_action_initial_policy);
+		if (it != root_actions.end() && *it == prescribed_action_initial_policy) {
+			prescribed_action_initial_policy = it - root_actions.begin();
+		}
+
 		if (root_actions.size() <= 1)
 			throw DynaPlex::Error("UniformActionSelector::SetAction - called for state with only single<=1 allowed actions.");
 
@@ -120,12 +128,14 @@ namespace DynaPlex::DCL {
 		//find arg_max, which because of objective will correspond to minimum or maximum costs as appropriate
 		double best_reward = -std::numeric_limits<double>::infinity();
 		int64_t best_action = 0;
+		int64_t best_action_id = 0; 
 		for (int64_t action_id = 0; action_id < root_actions.size(); action_id++)
 		{
 			if (comp.mean(action_id) > best_reward)
 			{
 				best_reward = comp.mean(action_id);
 				best_action = root_actions.at(action_id);
+				best_action_id = action_id;
 			}
 		}
 		if (best_reward == -std::numeric_limits<double>::infinity())
@@ -133,7 +143,37 @@ namespace DynaPlex::DCL {
 
 		traj.NextAction = best_action;
 
+		sample.state = traj.GetState()->Clone();
+		sample.sample_number = seed;
+		sample.action_label = traj.NextAction;
+		sample.cost_improvement.reserve(root_actions.size());
+		sample.q_hat_vec.reserve(root_actions.size());
+		sample.q_hat = best_reward * objective;
 
+		double zValueForBestAlternative = 100.0;
+		for (int64_t action_id = 0; action_id < root_actions.size(); action_id++) {
+			sample.cost_improvement.push_back(comp.mean(action_id, prescribed_action_initial_policy) * objective);
+			sample.q_hat_vec.push_back(comp.mean(action_id) * objective);
+			sample.probabilities.push_back(comp.GetProbability(action_id));
+			if (action_id != best_action_id && M > 1)
+			{
+				double sigma = comp.standardError(action_id, best_action_id);
+				double mu = comp.mean(action_id, best_action_id) * objective;
+				double zValue = mu / sigma;
+				if (sigma == 0.0)
+				{
+					zValue = 100.0;
+				}
+				zValueForBestAlternative = std::min(zValue, zValueForBestAlternative);
+			}
+		}
+		if (M > 1)
+		{
+			sample.z_stat = zValueForBestAlternative;
+		}
+		else {
+			sample.z_stat = 0.0;
+		}
 	}
 
 

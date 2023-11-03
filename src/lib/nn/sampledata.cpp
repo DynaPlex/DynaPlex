@@ -3,7 +3,7 @@
 #include "dynaplex/rng.h"
 namespace DynaPlex::NN
 {
-	void SampleData::SaveToFile(DynaPlex::MDP mdp, std::string path,int64_t json_indent)
+	void SampleData::SaveToFile(DynaPlex::MDP mdp, std::string path,int64_t json_indent, bool silent)
 	{
 		if (!mdp->SupportsGetStateFromVarGroup())
 		{
@@ -16,11 +16,44 @@ namespace DynaPlex::NN
 				throw DynaPlex::Error("SampleData::save : Error - trying to save samples that contain states not created with this mdp.");
 			}
 		}
+
+		if (!silent) {
+			PrintStatistics();
+		}
+
 		VarGroup vars{};
 		vars.Add("unique_identifier", mdp->Identifier());
 		vars.Add("Samples", Samples);
 
 		vars.SaveToFile(path,json_indent);
+	}
+
+	void SampleData::PrintStatistics()
+	{
+		std::vector<double> levels = { 0.5, 1.0, 1.5, 2.0, 2.5, 3.0 };
+		std::vector<size_t> counts(levels.size(), 0);
+		double avgMU = 0.0;
+		double avgMUsamp = 0.0;
+
+		for (auto& sample : Samples)
+		{
+			for (size_t i = 0; i < levels.size(); i++)
+			{
+				if (sample.z_stat > levels[i])
+				{
+					counts[i]++;
+				}
+			}
+			avgMU += sample.q_hat;
+		}
+		std::cout << "Simulator statistics " << std::endl;
+		std::cout << Samples.size() << " samples; ";
+		for (size_t i = 0; i < levels.size(); i++)
+		{
+			std::cout << (counts[i] * 100) / Samples.size() << "% at Z>" << levels[i] << "; ";
+		}
+		std::cout << std::endl;
+		std::cout << "Avg Mean of Q values: " << avgMU / Samples.size() <<std::endl;
 	}
 
 	SampleData SampleData::CreateNewFromFile(DynaPlex::MDP mdp, std::string path)
@@ -55,6 +88,11 @@ namespace DynaPlex::NN
 
 			vg.Get("action_label", sample.action_label);
 			vg.Get("sample_number", sample.sample_number);
+			vg.Get("q_hat", sample.q_hat);
+			vg.Get("q_hat_vec", sample.q_hat_vec);
+			vg.Get("z_stat", sample.z_stat);
+			vg.Get("cost_improvement", sample.cost_improvement);
+			vg.Get("probabilities", sample.probabilities);
 		}
 
 		return result;

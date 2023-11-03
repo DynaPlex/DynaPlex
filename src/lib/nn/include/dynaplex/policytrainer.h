@@ -18,5 +18,6 @@ namespace DynaPlex::NN
 		int64_t mini_batch_size;
 		int64_t early_stopping_patience;
 		int64_t max_training_epochs;
+		bool train_based_on_probs;
 	};
 }//DynaPlex::NN

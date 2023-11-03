@@ -2,6 +2,7 @@
 #include "dynaplex/dynaplex_model_includes.h"
 #include "dynaplex/modelling/discretedist.h"
 #include "dynaplex/modelling/queue.h"
+#include <map>
 
 //namespace DynaPlex::Erasure { template <typename MDPType> class PolicyRegistry; }// Forward declaration 
 
@@ -22,6 +23,31 @@ namespace DynaPlex::Models {
 			int64_t MaxOrderSize;
 			int64_t MaxSystemInv;
 			DynaPlex::DiscreteDist demand_dist;
+
+			//struct State : public IStateReflection {
+			//	//State category keeps track of what should happen next to this state:
+			//	// an event, an action, or maybe the MDP reached a final state. It will
+			//	//typically be convenient to have this member variable in the state, as this will
+			//	//make GetStateCategory() trivial to implement. 
+			//	DynaPlex::StateCategory cat;
+
+			//	//Other members depend on the MDP:
+			//	Queue<int64_t> state_vector;
+			//	int64_t total_inv;
+			//	double value;
+
+			//	static std::map<std::string, int64_t State::*> registry;
+			//	void RegisterVars() override {
+			//		registry["total_inv"] = &State::total_inv;
+			//		registry["value"] = &State::value;
+			//	}
+
+			//	//declaration; for definition see mdp.cpp:
+			//	DynaPlex::VarGroup ToVarGroup() const;
+			//	//Defaulting this does not always work. It can be removed as only the exact solver would benefit from this
+			//	bool operator==(const State& other) const = default;
+			//};
+
 			//A state is a struct (or class) that represents state information for the MDP:
 			struct State {
 				//State category keeps track of what should happen next to this state:
