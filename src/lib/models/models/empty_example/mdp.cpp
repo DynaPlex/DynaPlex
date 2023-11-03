@@ -1,5 +1,6 @@
 #include "mdp.h"
 #include "dynaplex/erasure/mdpregistrar.h"
+#include "policies.h"
 
 
 namespace DynaPlex::Models {
@@ -82,12 +83,15 @@ namespace DynaPlex::Models {
 			throw DynaPlex::NotImplementedError();
 		}
 		
-
 		void MDP::RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>& registry) const
-		{
-			//custom policies, if added at some point, can be added here. For syntax, refer to models/models/lost_sales/mdp.cpp
+		{//Here, we register any custom heuristics we want to provide for this MDP.	
+		 //On the generic DynaPlex::MDP constructed from this, these heuristics can be obtained
+		 //in generic form using mdp->GetPolicy(VarGroup vars), with the id in var set
+		 //to the corresponding id given below.
+			registry.Register<EmptyPolicy>("empty_policy",
+				"This policy is a place-holder, and throws a NotImplementedError when asked for an action. ");
 		}
-		
+
 		DynaPlex::StateCategory MDP::GetStateCategory(const State& state) const
 		{
 			//this typically works, but state.cat must be kept up-to-date when modifying states. 
