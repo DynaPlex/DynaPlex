@@ -16,14 +16,16 @@ Only way to see the visualized docs page is by building it (see build_docs.md)
 	* [Adding an executable](source/getting_started/adding_executable.rst)
 * Tutorial
 	* [Airplane revenue management MDP](source/tutorial/airplane_mdp.rst)
-	* [Setup]
-	* [Adding the MDP]
-	* [Testing and running]
+	* [Setup](source/tutorial/setup.rst)
+	* [Adding the MDP](source/tutorial/adding_mdp.rst)
+	* [Define a custom policy](source/tutorial/policy.rst)
+	* [Testing and running](source/tutorial/testing_running.rst)
 * API reference
 	* To do
+* Algorithms
+	* [DCL](source/algorithms/algorithms.rst)
 * Getting help and contributing
 	* [Contributing](source/community/contributing.rst)
 	* [Getting help](source/community/getting_help.rst)
 * [FAQ](source/faq/faq.rst)
-* [Examples](source/examples/examples.rst)
 * [Legacy information](source/legacy/legacy.rst)
