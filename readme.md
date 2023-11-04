@@ -32,8 +32,6 @@ git clone --recurse-submodules https://github.com/WillemvJ/DynaPlexPrivate.git
 
 if you did not recurse submodules, or if you use other tools for cloning repos, please somehow ensure that submodules (especially googletest) are available. 
 
-## Build Instructions for Windows and Linux
-
 ### Prerequisites
 
 - **CMake**: Building is supported with a modern CMake version (>= 3.21).
