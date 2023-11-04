@@ -73,11 +73,6 @@ Contents
 
    faq/faq
 
-.. toctree::
-   :maxdepth: 0
-   :caption: Examples
-
-   examples/examples
 
 .. toctree::
    :maxdepth: 0

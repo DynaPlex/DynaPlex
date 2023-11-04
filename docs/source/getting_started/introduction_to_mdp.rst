@@ -1,5 +1,5 @@
-﻿A brief introduction to MDP
-===========================
+﻿A brief introduction to MDPs
+============================
 
 Welcome to the world of Markov Decision Processes (MDPs)! MDPs are a fundamental concept in the field of artificial intelligence and reinforcement learning. They are widely used to model decision-making problems where an agent interacts with an environment to maximize some notion of cumulative reward.
 

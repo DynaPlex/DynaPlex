@@ -15,7 +15,7 @@ To set up a Conda environment for compiling the Python bindings and running Pyth
    module load 2022
    module load  ...
 
-.. note::
+.. hint::
 	A sample environment file ``python/environment.yml`` is provided.
 
 After setting up the environment, and compiling the bindings, Python bindings will allow you to execute the Python scripts just, see also windows descriptions.
