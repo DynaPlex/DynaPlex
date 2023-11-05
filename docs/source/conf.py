@@ -2,11 +2,12 @@ import datetime
 import os
 import shutil
 import sys
+import pprint
 
 import tomli
 
 # -- Project information
-sys.path.insert(0, os.path.abspath("../../"))
+sys.path.insert(0, os.path.abspath('../../'))
 
 now = datetime.date.today()
 
@@ -22,12 +23,6 @@ autoclass_content = "class"
 autodoc_member_order = "bysource"
 autodoc_typehints = "signature"
 
-# -- numpydoc
-numpydoc_xref_param_type = True
-numpydoc_class_members_toctree = False
-numpydoc_attributes_as_param_list = False
-napoleon_include_special_with_doc = True
-
 # -- nbsphinx
 nbsphinx_execute = "always"
 
@@ -38,20 +33,29 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    'breathe',
     "sphinx_immaterial",
     "nbsphinx",
-    "numpydoc",
 ]
 
-exclude_patterns = ["_build", "**.ipynb_checkpoints"]
+exclude_patterns = []
+
+breathe_projects = {
+    'DynaPlex': '../../docs/doxygen/xml',
+}
+breathe_default_project = 'DynaPlex'
+
+for project, path in breathe_projects.items():
+    full_path = os.path.abspath(os.path.join(os.path.dirname(__file__), path))
+    print(f"Breathe project '{project}' path: {full_path}")
+
+source_suffix = ['.rst','.xml']
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
 }
 intersphinx_disabled_domains = ["std"]
-
-templates_path = ["_templates"]
 
 add_module_names = False
 python_use_unqualified_type_names = True
@@ -105,16 +109,6 @@ html_theme_options = {
         },
     ],
 }
-
-python_resolve_unqualified_typing = True
-python_transform_type_annotations_pep585 = True
-python_transform_type_annotations_pep604 = True
-object_description_options = [
-    ("py:.*", dict(include_fields_in_toc=False, include_rubrics_in_toc=False)),
-    ("py:attribute", dict(include_in_toc=False)),
-    ("py:parameter", dict(include_in_toc=False)),
-]
-
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"

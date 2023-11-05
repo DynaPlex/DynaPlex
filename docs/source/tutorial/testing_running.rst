@@ -51,19 +51,19 @@ Go to ``src/examples/executable_example`` and copy and paste the directory with 
 Change the directory name to ``airplane_mdp``.
 In ``src/examples/CMakeLists.txt`` change the following:
 
-.. code-block:: cpp
+.. code-block:: cmake
 
-    add_subdirectory(executable_example) # Existing
-    add_subdirectory(airplane_mdp) # Added
+	add_subdirectory(executable_example) # Existing
+	add_subdirectory(airplane_mdp) # Added
 
 
 Next go to ``src/examples/airplane_mdp/CMakeLists.txt`` and change:
 
 
-.. code-block:: cpp
+.. code-block:: cmake
 
-    # set(targetname executable_example) # Remove
-    set(targetname airplane_mdp) # Add
+	#set(targetname executable_example) # Remove
+	set(targetname airplane_mdp) # Add
 
 Rerunning cmake should enable you to select the target ``dp_airplane_mdp``. Note that this target is excluded from all, meaning that you have to specifically select it to compile and run.
 

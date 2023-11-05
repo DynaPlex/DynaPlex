@@ -1,4 +1,5 @@
 ﻿.. _label_airplane:
+
 Airplane MDP formulation
 ========================
 
