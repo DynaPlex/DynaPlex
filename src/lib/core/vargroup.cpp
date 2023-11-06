@@ -228,7 +228,12 @@ namespace DynaPlex {
 				}
 			}
 			else {
-				throw DynaPlex::Error("Key " + key + " must be of type array in VarGroup.");
+				if (data[key].is_null())
+				{
+					out_val = VarGroupVec{};
+				}
+				else
+					throw DynaPlex::Error("Key " + key + " must be of type array in VarGroup.");
 			}
 		}
 
