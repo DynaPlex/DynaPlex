@@ -32,8 +32,6 @@ git clone --recurse-submodules https://github.com/WillemvJ/DynaPlexPrivate.git
 
 if you did not recurse submodules, or if you use other tools for cloning repos, please somehow ensure that submodules (especially googletest) are available. 
 
-## Build Instructions for Windows and Linux
-
 ### Prerequisites
 
 - **CMake**: Building is supported with a modern CMake version (>= 3.21).
@@ -44,8 +42,7 @@ if you did not recurse submodules, or if you use other tools for cloning repos, 
 
 ## Documentation
 
-The documentation has moved to the docs/ folder in this repo. Click (todo) for the static readthedocs page.
-
+The documentation has moved to the docs/ folder in this repo.
 
 ---
 
@@ -55,9 +52,13 @@ We provide several example implementations of MDPs, these can be found in [here]
 
 ---
 
-## Contributing
+## Contributing and Getting help
 
-It is much appreciated if you contribute to DynaPlex by making a pull request of your implementations.
+We are very happy if you want to share your contributions to DynaPlex with the rest of the community.
+All contributions are submitted through GitHub Pull Requests. For all instructions see the docs/
+
+We are happy to discuss development and issues in the GitHub repository. Please open a new issue if you want to discuss something with us.
+When you find a bug: open a new issue in the repository, please include a short, self-contained code snippet that reproduces the problem.
 
 ---
 

@@ -44,14 +44,21 @@ Contents
    tutorial/airplane_mdp
    tutorial/setup
    tutorial/adding_mdp
+   tutorial/policy
    tutorial/testing_running
+   tutorial/python
 
 .. toctree::
    :maxdepth: 0
    :caption: API reference
 
-   reference/models_api
-   reference/dcl_api
+   reference/api_refs
+
+.. toctree::
+   :maxdepth: 0
+   :caption: Algorithms
+
+   algorithms/algorithms
 
 .. toctree::
    :maxdepth: 0
@@ -62,15 +69,10 @@ Contents
 
 .. toctree::
    :maxdepth: 0
-   :caption: Frequently Asked Questions
+   :caption: Troubleshooting
 
    faq/faq
 
-.. toctree::
-   :maxdepth: 0
-   :caption: Examples
-
-   examples/examples
 
 .. toctree::
    :maxdepth: 0

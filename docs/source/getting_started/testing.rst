@@ -26,7 +26,7 @@ If compilation in the previous step was successful, it's time to set up a google
        // other tests can be added later. 
    }
 
-3. Modify the configuration file for testing the new MDP. Ensure the old ``mdp_config_0.json`` name is still valid but update the id:
+3. If wanted, modify the configuration file for testing the new MDP. Ensure the old ``mdp_config_0.json`` name is still valid but update the id:
 
 .. code-block:: json
 
