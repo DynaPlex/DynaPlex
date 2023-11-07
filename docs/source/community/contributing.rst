@@ -9,7 +9,9 @@ Before we can accept a pull request and merge your changes into the master branc
 
 - Commit messages are clear and short
 
-- Your code is well tested, please include the test files such that we can test ourselves too
+- Your branch passes the 2 unit test, see the ExecuteTests() function in the src/tests folder
+
+- Your code is well tested and bugfree, please include the test files such that we can test ourselves too
 
 - Please only submit a single new feature in a branch, do not submit a large heap of changes in your branch
 

@@ -29,11 +29,11 @@ Furthermore, we define several variables that are parameters for tuning the poli
 				//this is the MDP defined inside the current namespace!
 				std::shared_ptr<const MDP> mdp;
 				const VarGroup varGroup;
+				double price_threshold_low;
+				double price_threshold_high;
 				int64_t seat_threshold_low;
 				int64_t seat_threshold_high;
 				int64_t remainingday_threshold;
-				double price_threshold_low;
-				double price_threshold_high;
 			public:
 				RuleBasedPolicy(std::shared_ptr<const MDP> mdp, const VarGroup& config);
 				int64_t GetAction(const MDP::State& state) const;
@@ -48,9 +48,6 @@ We can set the parameters in a seperate config file ``policy_config_0.json``:
 
 	{
 	  "id": "rule_based",
-	  "seat_threshold_low": 1,
-	  "seat_threshold_high": 5,
-	  "remainingday_threshold": 9,
 	  "price_threshold_low": 1000.0,
 	  "price_threshold_high": 2000.0
 	}
@@ -65,12 +62,13 @@ Next, we implement the policy in ``policy.cpp``:
 		RuleBasedPolicy::RuleBasedPolicy(std::shared_ptr<const MDP> mdp, const VarGroup& config)
 			:mdp{ mdp }
 		{
-			//define the policy parameters and provide default values
-			config.GetOrDefault("seat_threshold_low", seat_threshold_low, 1);
-			config.GetOrDefault("seat_threshold_high", seat_threshold_high, 5);
-			config.GetOrDefault("remainingday_threshold", remainingday_threshold, 9);
-			config.GetOrDefault("price_threshold_low", price_threshold_low, 1000.0);
-			config.GetOrDefault("price_threshold_high", price_threshold_high, 2000.0);
+			//provide default values and load parameters from json
+			config.GetOrDefault("price_threshold_low", price_threshold_low, 0.0);
+			config.GetOrDefault("price_threshold_high", price_threshold_high, 1.0);
+			//we can also set parameters directly in the constructor
+			seat_threshold_low = 1;
+			seat_threshold_high = 5;
+			remainingday_threshold = 9;
 		}
 
 		int64_t RuleBasedPolicy::GetAction(const MDP::State& state) const
