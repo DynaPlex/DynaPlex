@@ -1,5 +1,6 @@
 #include "dynaplex/trainedpolicyprovider.h"
 #include "neuralnetworkprovider.h"
+#include "torchscriptwrapper.h"
 #include "nn_policy.h"
 #if DP_TORCH_AVAILABLE
 #include <torch/torch.h>
@@ -19,7 +20,7 @@ namespace DynaPlex {
 		std::string id;
 			
 		policy_config.Get("id", id);
-
+#if DP_TORCH_AVAILABLE		
 		if (id == "NN_Policy")
 		{
 			//check whether dimensionalities are matching:
@@ -30,7 +31,7 @@ namespace DynaPlex {
 			policy_config.Get("num_outputs", num_outputs);
 			if (num_outputs != mdp->NumValidActions())
 				throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy - cannot create neural network policy from loaded data for this mdp because num_outputs for the loaded policy does not match mdp->NumValidActions(). ");
-#if DP_TORCH_AVAILABLE			
+	
 			//create policy:
 			auto policy = std::make_shared<NN_Policy>(mdp);
 			DynaPlex::VarGroup nn_architecture;
@@ -44,14 +45,24 @@ namespace DynaPlex {
 			policy->policy_config = policy_config;
 			return policy;
 
-#else
-			throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: Torch not available - Cannot construct.");
-#endif
 		}
-		else//id == "NN_Policy"
+		else if (id == "torchscript")
+		{
+
+			auto policy = std::make_shared<NN_Policy>(mdp);
+			// Use the TorchScriptWrapper class to wrap the TorchScript module
+			auto torchscript_wrapper = std::make_shared<DynaPlex::NN::TorchScriptWrapper>(path_to_weights); // Assuming path_to_weights is the path to the .pt file
+			policy->neural_network = std::make_unique<torch::nn::AnyModule>(torchscript_wrapper);
+			policy->policy_config = policy_config;
+			return policy;
+		}
+		else
 		{
 			throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: id of neural network is: "+ id + ". This id is not available.");
 		}
+#else
+		throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: Torch not available - Cannot construct. To make torch available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt ");
+#endif
 	}
 	void TrainedPolicyProvider::SavePolicy(DynaPlex::Policy policy, std::string path_to_policy_without_extension)
 	{

@@ -5,10 +5,10 @@
 
 namespace DynaPlex::Algorithms {
 
-	using sample_vec = std::vector<DynaPlex::NN::Sample>;
+	//using sample_vec = std::vector<DynaPlex::NN::Sample>;
 
 
-	DCL::DCL(const DynaPlex::System& system, DynaPlex::MDP mdp, const VarGroup& config, DynaPlex::Policy policy_0)
+	DCL::DCL(const DynaPlex::System& system, DynaPlex::MDP mdp,DynaPlex::Policy policy_0, const VarGroup& config)
 		: system{ system }, mdp{ mdp }, policy_0{ nullptr }
 	{
 		if (!mdp)
@@ -167,7 +167,7 @@ namespace DynaPlex::Algorithms {
 
 						if constexpr (std::atomic<int64_t>::is_always_lock_free)
 						{
-							total_samples_collected++;
+							(*total_samples_collected.get())++;
 						}
 						if (++num_samples_added == somesamples.size())
 							break;//the while(!final_reached) loop, to eventually stop executution. 
@@ -191,6 +191,26 @@ namespace DynaPlex::Algorithms {
 		return;
 	}
 
+	
+
+	std::tuple<std::string,std::string,std::string> DCL::GetPathsOfPolicyFiles(int64_t generation)
+	{
+		std::string root = system.filepath("dcl", mdp->Identifier(), "torch_script", "nn_policy_gen" + std::to_string(generation));
+		auto json = system.SetFileExtension(root, "json");
+		auto weights = system.SetFileExtension(root, "pth");
+		return { root,json,weights };
+		
+	}
+	
+
+
+	std::string DCL::GetPathOfFeatsSampleFile(int64_t generation)
+	{
+		std::string filename = "samples_feats_gen" + std::to_string(generation);
+		filename += ".json";
+		return this->system.filepath("dcl", this->mdp->Identifier(), filename);
+	}
+
 	std::string DCL::GetPathOfSampleFile(int64_t generation, int rank)
 	{
 		std::string filename = "samples_gen" + std::to_string(generation);
@@ -199,6 +219,30 @@ namespace DynaPlex::Algorithms {
 		filename += ".json";
 		return this->system.filepath("dcl", this->mdp->Identifier(), filename);
 	}
+
+	std::string DCL::GenerateFeatsSamples(DynaPlex::Policy policy, int64_t generation) {
+		GenerateSamples(policy, generation);
+		DynaPlex::NN::SampleData data{ mdp };
+		data.AddFromFile(mdp, GetPathOfSampleFile(generation));
+
+		auto new_path = GetPathOfFeatsSampleFile(generation);
+		std::vector<VarGroup> samples;
+		samples.reserve(data.Samples.size());
+		for (auto& sample : data.Samples)
+		{
+			samples.push_back(std::move(sample.ToVarGroupWithFeats(mdp)));
+		}
+		
+		VarGroup samples_with_feats{};
+		samples_with_feats.Add("samples", samples);
+
+		samples_with_feats.SaveToFile(new_path);
+
+		return new_path;
+	}
+
+
+
 
 	void DCL::GenerateSamples(DynaPlex::Policy policy, int64_t generation)
 	{
@@ -223,16 +267,20 @@ namespace DynaPlex::Algorithms {
 		//for reporting progress:
 		DynaPlex::Parallel::ProgressReporter reporter;
 		//Default option, used unless we can have an lock_free sample counter.
-		reporter = [this](const std::atomic<bool>&) { std::cout << "Collecting samples: progress reporting not possible" << std::endl; };
+		reporter = [this](const std::atomic<bool>&) { 
+			if (!silent)
+				system << "Collecting samples: progress reporting not possible" << std::endl; 			
+			};
 		//if appropriate, set specific progress reporter. 
-		//if constexpr (std::atomic<int64_t>::is_always_lock_free && std::atomic<bool>::is_always_lock_free)
+		if constexpr (std::atomic<int64_t>::is_always_lock_free && std::atomic<bool>::is_always_lock_free)
 		{
 			if (system.WorldRank() == 0)
 			{//only enable progress reporting on a single node. 
-				total_samples_collected = 0;
-				if (system.WorldSize() == 1)
+				total_samples_collected = std::make_shared<std::atomic<int64_t>>(0);
+				if (system.WorldSize() == 1) {
 					if (!silent)
 						system << "Progress:" << std::endl;
+				}
 				else
 					if (!silent)
 						system << "Progress (node 0 only):" << std::endl;
@@ -240,11 +288,11 @@ namespace DynaPlex::Algorithms {
 					int64_t chars_printed = 0;
 					int64_t max_chars_to_print = 50;
 					int64_t num_ms = 1;
-					while (!error_occurred && total_samples_collected < N) {
+					while (!error_occurred && (*total_samples_collected.get()) < N) {
 						std::this_thread::sleep_for(std::chrono::milliseconds(num_ms));
 						if (num_ms < 1000)
 							num_ms *= 4;
-						int64_t to_print = (max_chars_to_print * total_samples_collected) / N;
+						int64_t to_print = (max_chars_to_print * (*total_samples_collected.get())) / N;
 						while ( chars_printed < to_print)
 						{
 							if (!silent)
@@ -256,7 +304,8 @@ namespace DynaPlex::Algorithms {
 						}
 						system << std::flush;
 					}
-					system << std::endl;
+					if(!silent)
+						system << std::endl;
 				};
 			}
 		}

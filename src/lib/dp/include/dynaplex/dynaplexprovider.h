@@ -18,12 +18,14 @@ namespace DynaPlex {
          * input and output from dynaplex will be nested. 
          */ 
         void SetIORootDirectory(std::string path);
+
+
         /// gets an MDP based on the vargroup 
         MDP GetMDP(const VarGroup& config);
         /// lists the MDPs available. 
         VarGroup ListMDPs();
 
-        // If you want to expose System to users:
+
         const DynaPlex::System& System();
 
 
@@ -31,7 +33,7 @@ namespace DynaPlex {
 
         DynaPlex::Policy LoadPolicy(DynaPlex::MDP mdp, std::string file_path_without_extension);
         
-        DynaPlex::Algorithms::DCL GetDCL(DynaPlex::MDP mdp, const VarGroup& config = VarGroup{}, DynaPlex::Policy policy = nullptr);
+        DynaPlex::Algorithms::DCL GetDCL(DynaPlex::MDP mdp, DynaPlex::Policy policy = nullptr, const VarGroup& config = VarGroup{});
 
         /**
          * Config may include max_event_count (default:3)

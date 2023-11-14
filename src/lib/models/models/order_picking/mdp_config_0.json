@@ -1,0 +1,25 @@
+/**
+ * MDP configuration file demonstrating a specific MDP configuration.  
+ * - Files under models/_subdir_/_filename_.json are copied to DYNAPLEX_IO_ROOT_DIR/IO_DynaPlex/mdp_config_examples/_subdir_/_filename_.json
+ *  where executable and mdp_unit_tests look for them. 
+ * - Providing MDP configuration files is not required, but serves as documentation. 
+ * - It also simplifies unit_tests, see tests/mdp_unit_tests/*.cpp. 
+ */
+{
+  "id": "order_picking",
+  "discount_factor": 1.00,
+  //other variables that are read by the constructor go here
+  "grid_size": 4,
+  "n_pickers": 2,
+  "max_orders_per_event": 1,
+  "holding_cost": 1,
+  "move_cost": 0,
+  "tardiness_cost": 10,
+  "order_probability": 1.0,
+  "min_time_window": 5,
+  "max_time_window": 5,
+  "max_confirmed": 100,
+  "fixed_initial_state": false,
+  "manual_initial_state": false,
+  "n_features_per_node": 8
+}

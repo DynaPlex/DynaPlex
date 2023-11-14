@@ -297,7 +297,7 @@ namespace DynaPlex::Erasure
 
 		}
 
-		bool CheckConformant(DynaPlex::dp_State& state) const override
+		bool CheckConformant(const DynaPlex::dp_State& state) const override
 		{
 			return state->mdp_int_hash == mdp_int_hash;
 		}
@@ -320,6 +320,13 @@ namespace DynaPlex::Erasure
 			}
 			return vec;
 		}
+
+		bool IsAllowedAction(const DynaPlex::dp_State& dp_state, int64_t action) const override
+		{
+			auto& t_state = ToState(dp_state);
+			return provider.IsAllowedAction(t_state, action);
+		}
+
 
 		std::string TypeIdentifier() const override
 		{
@@ -536,6 +543,11 @@ namespace DynaPlex::Erasure
 		{//currently, only minimization is supported. 
 			return -1.0;
 		}
+		double Objective() const override
+		{//currently, only minimization is supported. 
+			return -1.0;
+		}
+
 
 
 

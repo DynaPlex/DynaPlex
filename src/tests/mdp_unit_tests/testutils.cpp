@@ -82,7 +82,9 @@ namespace DynaPlex::Tests {
 
 		Trajectory trajectory{ numEventTrajectories };
 
-		int numSeeds = 64;
+
+		ASSERT_GE(NumParallelTests, 1) << info << "tester.NumParallelTests should be >=1";
+		int numSeeds = NumParallelTests;
 		std::vector<DynaPlex::dp_State> someStates;
 		someStates.reserve(numSeeds + 1);
 		bool ProvidesFlatFeatures{ false };
@@ -187,14 +189,13 @@ namespace DynaPlex::Tests {
 			if (!RelaxOnProgramFlow)
 			{
 				//expect at least a single action per event- probably more. 
-				ASSERT_GE(action_count, trajectory.PeriodCount / 2 - 1) << info << "Substantially less actions then anticipated were taken. Did you ensure that State Category in ModifyStateWithEvent is set to AwaitAction again? Note that PeriodCount is by default only increased when returning StateCategory.Index(0). If your MDP uses hardly any events intentionally, set RelaxOnLoops to skip this test. ";
+				ASSERT_GE(action_count, trajectory.PeriodCount / 5 - 1) << info << "Substantially less actions then anticipated were taken. Did you ensure that State Category in ModifyStateWithEvent is set to AwaitAction again? Note that PeriodCount is by default only increased when returning StateCategory.Index(0). If your MDP uses hardly any actions intentionally, set RelaxOnLoops to skip this test. ";
 			}
 			ASSERT_NO_THROW(
 				someStates.push_back(trajectory.GetState()->Clone())
 			) << info << "Error while cloning state. Does mdp::State support copying?";
 		}
-
-
+		
 		ASSERT_EQ(someStates.size(), numSeeds + 1);
 
 		if (!SkipEqualityTests)

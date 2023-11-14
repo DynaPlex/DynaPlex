@@ -154,6 +154,10 @@ namespace DynaPlex::Erasure
             return max_action - min_action;
         }
 
+        bool IsAllowedAction(const typename t_MDP::State& state, int64_t action) const
+        {
+            return DynaPlex::Erasure::IsAllowedAction<t_MDP>(*mdp, state, action);
+        }
         
         ActionRange<t_MDP> operator()(const typename t_MDP::State& state) const
         {

@@ -43,11 +43,12 @@ namespace DynaPlex::Tests {
 			{"N",6},//number of samples
 			{"M",1},//rollouts per action
 			{"H",4},//horizon, i.e. number of steps.
+			{"L",10},//number of warmup periods before collecting samples.
 			{"num_gens",num_gens},//number of neural network generations.
 			{"nn_training",nn_training},
 			{"silent",true }//to ensure that DCL does not write any output to console				
 		};
-		DynaPlex::Algorithms::DCL dcl = dp.GetDCL(mdp, dcl_config,policy);
+		DynaPlex::Algorithms::DCL dcl = dp.GetDCL(mdp, policy, dcl_config);
 
 
 		if (DynaPlex::TorchAvailability::TorchAvailable())

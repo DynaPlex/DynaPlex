@@ -38,6 +38,48 @@ namespace DynaPlex {
 	      * Do not manually change this.
 	      */
 		double CumulativeReturn;
+
+		// Move constructor
+		Trajectory(Trajectory&& other) noexcept = default;
+
+		// Move assignment operator
+		Trajectory& operator=(Trajectory&& other) noexcept = default;
+
+
+		// Copy constructor
+		Trajectory(const Trajectory& other)
+			: NextAction(other.NextAction),
+			Category(other.Category),
+			PeriodCount(other.PeriodCount),
+			EffectiveDiscountFactor(other.EffectiveDiscountFactor),
+			CumulativeReturn(other.CumulativeReturn),
+			RNGProvider(other.RNGProvider),
+			ExternalIndex(other.ExternalIndex) {
+			if (other.HasState()) {
+				state = other.state->Clone();  // Use the clone method for dp_State
+			}
+		}
+
+		// Copy assignment operator
+		Trajectory& operator=(const Trajectory& other) {
+			if (this != &other) {  // self-assignment check
+				NextAction = other.NextAction;
+				Category = other.Category;
+				PeriodCount = other.PeriodCount;
+				EffectiveDiscountFactor = other.EffectiveDiscountFactor;
+				CumulativeReturn = other.CumulativeReturn;
+				RNGProvider = other.RNGProvider;
+				ExternalIndex = other.ExternalIndex;
+				if (other.HasState()) {
+					state = other.state->Clone();  // Use the clone method for dp_State
+				}
+				else {
+					state.reset();
+				}
+			}
+			return *this;
+		}
+
 	private:
 		/// (type-erased) state of the system.
 		DynaPlex::dp_State state;
@@ -48,6 +90,11 @@ namespace DynaPlex {
 				return state;
 			else
 				throw DynaPlex::Error("Trajectory: Attempting to get state that has not been initialized. ");
+		}
+
+		bool HasState() const
+		{
+			return static_cast<bool>(state);
 		}
 
 		const DynaPlex::dp_State& GetState() const

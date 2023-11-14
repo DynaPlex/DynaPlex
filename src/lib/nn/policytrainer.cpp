@@ -66,9 +66,7 @@ namespace DynaPlex::NN {
         throw DynaPlex::Error("PolicyTrainer::LoadPolicy - Torch not available, cannot load policy. To make torch available, set dynaplex_enable_pytorch to true and dynaplex_pytorch_path to an appropriate path, e.g. in CMakeUserPresets.txt ");
 #endif
     }
-
-
-	
+    	
 	void PolicyTrainer::TrainPolicy(DynaPlex::VarGroup nn_architecture, int64_t generation, std::string path_to_sample_data, bool silent) {
 		NeuralNetworkProvider provider(mdp);
         SampleData data{ mdp };
@@ -79,7 +77,6 @@ namespace DynaPlex::NN {
 #if DP_TORCH_AVAILABLE
         auto any_module = provider.GetTrainableNN(nn_architecture);
         auto any_module_as_nn_module = any_module.ptr();
-
         if (!silent)
             system << nn_architecture.Dump() << std::endl;
          // Set up the optimizer (for example, Adam optimizer).

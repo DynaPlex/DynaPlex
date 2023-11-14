@@ -28,6 +28,10 @@ namespace DynaPlex
 		 */
 		virtual int64_t NumValidActions() const = 0;
 
+		/**
+		 * Returns whether the action is allowed in this state; 
+		 */
+		virtual bool IsAllowedAction(const DynaPlex::dp_State&, int64_t action) const = 0;
 
 		
 		/**
@@ -72,7 +76,7 @@ namespace DynaPlex
 		virtual double DiscountFactor() const = 0;
 
 		/// Imperfect verification whether the state was created with this mdp
-		virtual bool CheckConformant(DynaPlex::dp_State& state) const = 0;
+		virtual bool CheckConformant(const DynaPlex::dp_State& state) const = 0;
 
 		/**
 		 * Retrieves the initial state for this MDP.
@@ -173,10 +177,11 @@ namespace DynaPlex
 		virtual bool IncorporateUntilAction(std::span<DynaPlex::Trajectory> trajectories, int64_t MaxPeriodCount = std::numeric_limits<int64_t>::max()) const = 0;
 
 
-
-
-
-
+		/**
+		 * Returns -1.0 or 1.0, depending on whether the mdp objective is minimization of maximization. 
+		 * Throws if objective is state-dependent.
+		 */
+		virtual double Objective() const = 0;
 
 		/**
 		 * Returns -1.0 or 1.0, depending on whether the objective in the given state is minimization or maximization. 
@@ -185,12 +190,12 @@ namespace DynaPlex
 
 		/**
 		 * Initiates the states in the trajectories. Uses random initial state (GetInitialState(RNG&)) if available, otherwise uses deterministic state (GetInitialState()). 
-		 * Updates the Category in the trajectory, and resets PeriodCount, CumulativeReturn, and EffectiveDiscountFactor. 
+		 * Updates the Category in the trajectory, and re-initiates PeriodCount, CumulativeReturn, and EffectiveDiscountFactor. 
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories) const = 0;
 		/**
 		 * Sets the states in the trajectories to a specific state value. 
-		 * Updates the Category in the trajectory, and resets PeriodCount, CumulativeReturn, and EffectiveDiscountFactor.
+		 * Updates the Category in the trajectory, and re-initiates PeriodCount, CumulativeReturn, and EffectiveDiscountFactor.
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories,const DynaPlex::dp_State& state) const = 0;
 

@@ -3,12 +3,16 @@ channels:
   - conda-forge
   - pytorch
   - nvidia
-  - defaults  
+  - defaults
+  - pyg
 dependencies:
-  - python=3.11.4
-  - pytorch=2.0.1
-#If you want to make use of GPU, change - cpuonly to - cudatoolkit=11.8 or similar. 
+  - python=3.11.6
+  - pytorch=2.1.0
+  - pip
   - cpuonly
-  - pybind11
+  - pybind11=2.11.1
   - pytest
-# add dependencies for pytorch geom. 
+  - pip:
+    - torch_geometric==2.4.0
+    - gymnasium==0.29.1
+    - tianshou==0.5.1

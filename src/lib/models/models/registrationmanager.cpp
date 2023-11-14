@@ -9,9 +9,13 @@ namespace DynaPlex::Models {
 	namespace bin_packing {
 		void Register(DynaPlex::Registry&);
 	}
+	namespace order_picking {
+		void Register(DynaPlex::Registry&);
+	}
 	
 	void RegistrationManager::RegisterAll(DynaPlex::Registry& registry) {
 		lost_sales::Register(registry);
 		bin_packing::Register(registry);
+		order_picking::Register(registry);
 	}
 }

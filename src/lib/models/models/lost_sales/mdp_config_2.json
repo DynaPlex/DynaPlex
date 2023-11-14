@@ -1,0 +1,11 @@
+{
+  "id": "lost_sales",
+  "p": 4.0,
+  "h": 1.0,
+  "leadtime": 3,
+  "discount_factor": 1.0,
+  "demand_dist": {
+    "type": "poisson",
+    "mean": 4.0
+  }
+}

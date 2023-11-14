@@ -50,7 +50,41 @@ namespace DynaPlex::NN {
 
 		return vars;
 		
+		return vars;		
 	}
+	DynaPlex::VarGroup Sample::ToVarGroupWithFeats(DynaPlex::MDP mdp) const {
+		DynaPlex::VarGroup vars;
+		if (!mdp->CheckConformant(state))
+			throw DynaPlex::Error("Sample::ToVarGroupWithFeats - state nonconformant with mdp.");
+		
+		vars.Add("action_label", action_label);
+		auto allowedActions = mdp->AllowedActions(state);
+		
+		//vars.Add("allowed_actions", allowedActions);
+
+		std::vector<int64_t> actionMask(mdp->NumValidActions(), 0);
+		for (auto action : allowedActions) {
+			actionMask[action] = 1;
+		}
+		vars.Add("allowed_actions", actionMask);
+
+		if (!mdp->ProvidesFlatFeatures()) {
+			throw DynaPlex::Error("Sample::ToVarGroupWithFeats - mdp does not provide flat features. This is currently unsupported.");
+		}
+		auto num_feats = mdp->NumFlatFeatures();
+
+		std::vector<float> feats(num_feats);
+		mdp->GetFlatFeatures(state,feats);
+		std::vector<double> d_feats;
+		for (auto f: feats)
+		{
+			d_feats.push_back(static_cast<double>(f));
+		}
+		vars.Add("features", d_feats);
+
+		return vars;
+	}
+
 
 }
 

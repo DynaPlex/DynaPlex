@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 import glob
@@ -31,7 +32,31 @@ except ImportError as e:
     else:
         # If no modules are found, just raise the original error.
         raise e
-    
+
+
+def save_policy(model, json_info, path, device='cpu'):
+    # Save the model and json at the path.
+    # Torchscript model
+    if device != torch.device('cpu'):
+        model.to('cpu')
+
+    model.dynaplex_eval = True
+    traced_script_module = torch.jit.script(model)
+    traced_script_module.save(f'{path}.pth')
+
+    if device != torch.device('cpu'):
+        model.to(device)
+    model.dynaplex_eval = False
+
+    # Json file
+    # Serializing json
+    json_info['id'] = 'torchscript'
+    json_obj = json.dumps(json_info, indent=1)
+    # Writing to sample.json
+    with open(f"{path}.json", "w") as outfile:
+        outfile.write(json_obj)
+
+DynaPlex.save_policy = save_policy
 
 
 if __name__ == "__main__":

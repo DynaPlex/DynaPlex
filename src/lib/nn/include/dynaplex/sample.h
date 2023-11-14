@@ -2,7 +2,7 @@
 #include<vector>
 #include "dynaplex/state.h"
 #include "dynaplex/vargroup.h"
-
+#include "dynaplex/mdp.h"
 namespace DynaPlex::NN
 {
     /// A state with a sample action or distribution over actions, for use with supervised learning algorithms.
@@ -28,5 +28,6 @@ namespace DynaPlex::NN
 
         DynaPlex::VarGroup ToVarGroup() const;
 
+        DynaPlex::VarGroup ToVarGroupWithFeats(DynaPlex::MDP mdp) const;
     };
 }

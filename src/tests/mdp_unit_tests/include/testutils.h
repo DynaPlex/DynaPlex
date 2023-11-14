@@ -28,5 +28,7 @@ namespace DynaPlex::Tests {
 		bool SkipEqualityTests = false;
 		/// Skip tests related to serialization of states, e.g. when the MDP does not support State GetState(const VarGroup&) const;
 		bool SkipStateSerializationTests = false;
+		/// If tests are slow, you can bring this number down.  
+		int64_t NumParallelTests = 64;
 	};
 }
