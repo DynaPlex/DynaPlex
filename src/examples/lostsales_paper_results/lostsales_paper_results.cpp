@@ -9,7 +9,8 @@ int main() {
 	DynaPlex::VarGroup nn_training{
 		{"early_stopping_patience",15},
 		{"mini_batch_size", 64},
-		{"max_training_epochs", 1000}
+		{"max_training_epochs", 1000},
+		{"train_based_on_probs", true}
 	};
 
 	DynaPlex::VarGroup nn_architecture{
@@ -34,16 +35,26 @@ int main() {
 	//retrieve MDP registered under the id string "lost_sales":
 	config.Add("id", "lost_sales");
 	config.Add("h", 1.0);
-	config.Add("number_of_trajectories", 100);
-	config.Add("periods_per_trajectory", 10000);
+
+	DynaPlex::VarGroup test_config;
+	test_config.Add("number_of_trajectories", 100);
+	test_config.Add("periods_per_trajectory", 10000);
 
 	std::vector<double> p_values = { 4.0, 9.0, 19.0, 39.0 };
 	std::vector<int> leadtime_values = { 2, 3, 4, 6, 8, 10 };
 	std::vector<std::string> demand_dist_types = { "poisson", "geometric" };
 
-	for (double p : p_values) {
-		for (int leadtime : leadtime_values) {
-			for (const std::string& type : demand_dist_types) {
+	size_t num_exp = p_values.size() * leadtime_values.size() * demand_dist_types.size();
+	std::vector<DynaPlex::VarGroup> varGroupsMDPs;
+	varGroupsMDPs.reserve(num_exp);
+	std::vector<std::vector<DynaPlex::VarGroup>> varGroupsPolicies_Mean;
+	varGroupsPolicies_Mean.reserve(num_exp);
+	std::vector<std::vector<DynaPlex::VarGroup>> varGroupsPolicies_Benchmark;
+	varGroupsPolicies_Benchmark.reserve(num_exp);
+
+	for (const std::string& type : demand_dist_types) {
+		for (double p : p_values) {
+			for (int leadtime : leadtime_values) {
 				config.Set("p", p);
 				config.Set("leadtime", leadtime);
 				config.Set("demand_dist", DynaPlex::VarGroup({
@@ -59,19 +70,30 @@ int main() {
 				dcl.TrainPolicy();
 
 				auto policies = dcl.GetPolicies();
-				auto comparer = dp.GetPolicyComparer(mdp, config);
-				auto relative_comparison = comparer.Compare(policies, 0);
-				for (auto& VarGroup : relative_comparison)
-				{
-					std::cout << VarGroup.Dump() << std::endl;
-				}
-				auto mean_comparison = comparer.Compare(policies);
-				for (auto& VarGroup : mean_comparison)
-				{
-					std::cout << VarGroup.Dump() << std::endl;
-				}
+				auto comparer = dp.GetPolicyComparer(mdp, test_config);
+
+				varGroupsMDPs.push_back(config);
+				varGroupsPolicies_Mean.push_back(comparer.Compare(policies, 0));
+				varGroupsPolicies_Benchmark.push_back(comparer.Compare(policies));
 			}
 		}	
+	}
+
+	for (auto& VarGroup : varGroupsMDPs)
+	{
+		std::cout << std::endl;
+		std::cout << VarGroup.Dump() << std::endl;
+		for (auto& VarGroupPolicy : varGroupsPolicies_Mean.front())
+		{
+			std::cout << VarGroupPolicy.Dump() << std::endl;
+		}
+		varGroupsPolicies_Mean.erase(varGroupsPolicies_Mean.begin());
+		for (auto& VarGroupPolicy : varGroupsPolicies_Benchmark.front())
+		{
+			std::cout << VarGroupPolicy.Dump() << std::endl;
+		}
+		varGroupsPolicies_Benchmark.erase(varGroupsPolicies_Benchmark.begin());
+		std::cout << std::endl;
 	}
 
 	return 0;

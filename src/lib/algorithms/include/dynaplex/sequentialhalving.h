@@ -7,12 +7,12 @@
 
 namespace DynaPlex::DCL {
 	/**
-  * Sequential Halving algorithm. 
-  * A state-of-the-art bandit algorithm for selecting the best alternative out of others.
-  * Automatically kept up-to-date with calls to MDP->func(Trajectories, ...).
-  * See the original paper: https://proceedings.mlr.press/v28/karnin13.pdf
-  * See DCL paper for its implementation: https://arxiv.org/pdf/2011.15122.pdf
-  */
+	* Sequential Halving algorithm. 
+	* A state-of-the-art bandit algorithm for selecting the best alternative out of others.
+	* Automatically kept up-to-date with calls to MDP->func(Trajectories, ...).
+	* See the original paper: https://proceedings.mlr.press/v28/karnin13.pdf
+	* See DCL paper for its implementation: https://arxiv.org/pdf/2011.15122.pdf
+	*/
 	class SequentialHalving {
 
 

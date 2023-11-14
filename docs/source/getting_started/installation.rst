@@ -63,4 +63,13 @@ Linux/Snellius
 
      .. code-block:: bash
 
-        cmake --build out/LinRel --target sometarget
+        cmake --build out/LinRel -- -j12 --target sometarget
+
+**3. Run:**
+    - Executables may be run from a compute node, that can be obtained as follows:
+
+     .. code-block:: bash
+    
+        srun -p genoa -c 192 -n 1 -t 00:59:00 --pty /bin/bash
+    
+    also use srun to then do something on that node.

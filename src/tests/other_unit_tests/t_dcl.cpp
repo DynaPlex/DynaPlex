@@ -40,10 +40,9 @@ namespace DynaPlex::Tests {
 		int64_t num_gens = 2;
 		//Set very low numbers so that the test runs quickly:
 		DynaPlex::VarGroup dcl_config{
-			{"N",6},//number of samples
+			{"N",3},//number of samples
 			{"M",1},//rollouts per action
-			{"H",4},//horizon, i.e. number of steps.
-			{"L",10},//number of warmup periods before collecting samples.
+			{"H",3},//horizon, i.e. number of steps.
 			{"num_gens",num_gens},//number of neural network generations.
 			{"nn_training",nn_training},
 			{"silent",true }//to ensure that DCL does not write any output to console				
@@ -58,6 +57,14 @@ namespace DynaPlex::Tests {
 			EXPECT_NO_THROW(
 				policies =dcl.GetPolicies();
 			);
+
+			// Test sequential halving
+			{
+				dcl_config.Set("M", 10); // M=10 guarantees SH for up to 2^^10 allowed action per state
+				DynaPlex::Algorithms::DCL dcl_sh = dp.GetDCL(mdp, policy,dcl_config);
+				EXPECT_NO_THROW(dcl_sh.TrainPolicy());
+			}
+
 
 			auto loc = system.filepath("test", "t_dcl", "basics", "policy_gen" + std::to_string(0));
 			//note that generation 0 corresponds to a policy type that cannot be saved.

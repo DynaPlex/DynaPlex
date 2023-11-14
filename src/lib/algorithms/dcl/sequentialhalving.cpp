@@ -20,7 +20,7 @@ namespace DynaPlex::DCL {
 	//See uniformactionselector.cpp for changing these values
 	bool adopt_crn_sh = true;
 	int64_t max_chunk_size_sh = 256;
-
+	int64_t max_steps_until_completion_expected_sh = 1000000;
 	void SequentialHalving::SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const
 	{
 		if (!traj.Category.IsAwaitAction())
@@ -28,18 +28,27 @@ namespace DynaPlex::DCL {
 
 		auto root_state = traj.GetState()->Clone();
 		auto root_actions = mdp->AllowedActions(root_state);
+
+		policy->SetAction({ &traj,1 });
+		auto prescribed_action_initial_policy = traj.NextAction;
+		auto it = std::lower_bound(root_actions.begin(), root_actions.end(), prescribed_action_initial_policy);
+		if (it != root_actions.end() && *it == prescribed_action_initial_policy) {
+			prescribed_action_initial_policy = it - root_actions.begin();
+		}
+
 		if (root_actions.size() <= 1)
 			throw DynaPlex::Error("SequentialHalving::SetAction - called for state with only single<=1 allowed actions.");
 
 		std::vector<experiment_info> experiment_information{};
 		std::vector<DynaPlex::Trajectory> trajectories{};
 
-		auto competing_actions = root_actions;
 		double objective = mdp->Objective(root_state);
-		std::vector<double> accumulated_rewards(competing_actions.size(), 0.0);
-		int64_t total_budget_used{ 0 };
+		std::vector<double> accumulated_rewards(root_actions.size(), 0.0);
+		std::vector<std::vector<double>> trajectory_costs(root_actions.size());
+		int64_t total_budget_used_per_action{ 0 };
 		int64_t total_budget = M * root_actions.size();
 		int64_t total_rounds = ceil(log(root_actions.size()) / log(2));
+		auto competing_actions = root_actions;
 
 		for (int64_t iter = 0; iter < total_rounds; iter++)
 		{
@@ -75,6 +84,7 @@ namespace DynaPlex::DCL {
 				std::span<DynaPlex::Trajectory> span(&trajectories[start], end - start);
 				mdp->InitiateState(span, root_state);
 				mdp->IncorporateAction(span);
+				int64_t count = 0;
 				while (true)
 				{
 					if (!mdp->IncorporateUntilAction(span, H))
@@ -87,6 +97,11 @@ namespace DynaPlex::DCL {
 						//new_partition_point is the first element which does not require an action. 
 						//Make the span refer to a set of trajectories each awaiting an action:
 						span = std::span<DynaPlex::Trajectory>(span.begin(), new_partition_point);
+						if (++count > max_steps_until_completion_expected_sh)
+							throw DynaPlex::Error("SequentialHalving::SetAction"
+								"- expected completion of simulation run after max_steps_until_completion_expected: "
+								+ std::to_string(max_steps_until_completion_expected_sh) +
+								" but completion was not reached.");
 					}
 					//This means all trajectories are at period warmup_periods or final. 
 					if (span.size() == 0)
@@ -132,7 +147,7 @@ namespace DynaPlex::DCL {
 				if (it != root_actions.end() && *it == competing_actions.at(info.action_id)) {
 					int64_t action_original_id = it - root_actions.begin();
 					accumulated_rewards.at(action_original_id) += traj.CumulativeReturn * objective;
-					if (action_id_keeper.at(info.action_id) == -1){
+					if (action_id_keeper.at(info.action_id) == -1) {
 						action_id_keeper.at(info.action_id) = action_original_id;
 					}
 				}
@@ -141,18 +156,28 @@ namespace DynaPlex::DCL {
 				}
 			}
 
-			total_budget_used += action_budget;
+			//Append the results
+			for (int64_t action_id = 0; action_id < competing_actions.size(); action_id++) {
+				int64_t action_original_id = action_id_keeper[action_id];
+				trajectory_costs[action_original_id].insert(
+					trajectory_costs[action_original_id].end(),
+					return_results[action_id].begin(),
+					return_results[action_id].end()
+				);
+			}
+
+			total_budget_used_per_action += action_budget;
 			// Pairing the competing actions and mean rewards
 			std::vector<std::pair<int64_t, double>> paired;
 			for (int64_t i = 0; i < competing_actions.size(); ++i) {
-				double mean_reward = accumulated_rewards[action_id_keeper[i]] / total_budget_used;
+				double mean_reward = accumulated_rewards[action_id_keeper[i]] / total_budget_used_per_action;
 				paired.push_back({ competing_actions[i], mean_reward });
 			}
 			// Sorting the competing actions based on mean rewards by arg_max
 			// which because of objective will correspond to minimum or maximum costs as appropriate
 			std::sort(paired.begin(), paired.end(), [](const auto& a, const auto& b) {
 				return a.second > b.second;
-			});
+				});
 			// Extracting the top_m performing actions
 			for (int i = 0; i < top_m; ++i) {
 				competing_actions[i] = paired[i].first;
@@ -165,22 +190,50 @@ namespace DynaPlex::DCL {
 
 			if (iter == total_rounds - 1)
 			{
+				// Sequential halving algorithm ends, collect statistics 
 				traj.NextAction = competing_actions.front();
 				sample.state = traj.GetState()->Clone();
 				sample.sample_number = seed;
 				sample.action_label = traj.NextAction;
 				sample.cost_improvement.reserve(root_actions.size());
 				sample.q_hat_vec.reserve(root_actions.size());
-				sample.z_stat = 1.3;
+				sample.probabilities.reserve(root_actions.size());
 				sample.q_hat = best_reward * objective;
 
-				for (int i = 0; i < root_actions.size(); i++){
-					sample.cost_improvement.push_back(0.0);
-					sample.q_hat_vec.push_back(0.0);
+				int64_t best_action_id = 0;
+				auto it = std::lower_bound(root_actions.begin(), root_actions.end(), traj.NextAction);
+				if (it != root_actions.end() && *it == traj.NextAction) {
+					best_action_id = it - root_actions.begin();
+				}
+
+				DynaPlex::PolicyComparison comp(std::move(trajectory_costs));
+				bool ValueBasedProbability = true;
+				int64_t least_action_budget = floor(total_budget / (root_actions.size() * ceil(log(root_actions.size()) / log(static_cast<double>(2)))));
+				if (least_action_budget > 1) {
+					comp.ComputeZstatistics(best_action_id);
+					comp.ComputeProbabilities(ValueBasedProbability);
+				}
+				else {
+					comp.ComputeProbabilities(false);
+					sample.z_stat = 0.0;
+				}
+
+				double zValueForBestAlternative = 100.0;
+				for (int64_t action_id = 0; action_id < root_actions.size(); action_id++) {
+					sample.cost_improvement.push_back(comp.mean(action_id, prescribed_action_initial_policy) * objective);
+					sample.q_hat_vec.push_back(comp.mean(action_id) * objective);
+					sample.probabilities.push_back(comp.GetProbability(action_id));
+					if (action_id != best_action_id && least_action_budget > 1)
+					{
+						double zValue = comp.GetZstatistic(action_id);
+						zValueForBestAlternative = std::min(zValue, zValueForBestAlternative);
+					}
+				}
+				if (least_action_budget > 1) {
+					sample.z_stat = zValueForBestAlternative;
 				}
 			}
 		}
 	}
-
 
 }  // namespace DynaPlex::DCL

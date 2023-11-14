@@ -5,8 +5,6 @@
 
 namespace DynaPlex::Algorithms {
 
-	//using sample_vec = std::vector<DynaPlex::NN::Sample>;
-
 
 	DCL::DCL(const DynaPlex::System& system, DynaPlex::MDP mdp,DynaPlex::Policy policy_0, const VarGroup& config)
 		: system{ system }, mdp{ mdp }, policy_0{ nullptr }
@@ -20,8 +18,10 @@ namespace DynaPlex::Algorithms {
 		else
 			config.GetOrDefault("H", H, 256);
 
+		config.GetOrDefault("enable_sequential_halving", enable_sequential_halving, true);
 		config.GetOrDefault("silent", silent, false);
 		config.GetOrDefault("retrain_lastgen_only", retrain_lastgen_only, false);
+		config.GetOrDefault("resume_gen", resume_gen,0);
 		config.GetOrDefault("M", M, 1000);
 		config.GetOrDefault("N", N, 5000);
 		if (N<1 || N > static_cast<int64_t>(std::numeric_limits<int32_t>::max() - 1))
@@ -76,14 +76,12 @@ namespace DynaPlex::Algorithms {
 		}
 		else
 		{
-			DynaPlex::Policy policy = policy_0;
-			for (int64_t generation = 0; generation < num_gens; generation++) {
+			for (int64_t generation = resume_gen; generation < num_gens; generation++) {
+				DynaPlex::Policy policy = GetPolicy(generation);
 				GenerateSamples(policy, generation);
 				if(!silent)
 					system << "elapsed time: " << system.Elapsed() << std::endl;
-				trainer.TrainPolicy(nn_architecture, generation + 1, GetPathOfSampleFile(generation),silent);
-		
-				policy = trainer.LoadPolicy(nn_architecture, generation + 1);
+				trainer.TrainPolicy(nn_architecture, generation + 1, GetPathOfSampleFile(generation),silent);		
 			}
 		}
 	}
@@ -158,12 +156,12 @@ namespace DynaPlex::Algorithms {
 					}
 					else {
 						auto& sample = somesamples[num_samples_added];
-						//if (!(M > ceil(log(allowed.size()) / log(2)))) {
-						//	sequentialhalving_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
-						//}
-						//else {
-						uniform_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
-						//}
+						if (enable_sequential_halving&&(M > ceil(log(allowed.size()) / log(2)))) {
+							sequentialhalving_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
+						}
+						else {
+							uniform_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
+						}
 
 						if constexpr (std::atomic<int64_t>::is_always_lock_free)
 						{

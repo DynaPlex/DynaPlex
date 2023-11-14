@@ -25,11 +25,10 @@ namespace DynaPlex::DCL {
 		if (!traj.Category.IsAwaitAction())
 			throw DynaPlex::Error("UniformActionSelector::SetAction - called for trajectory which is not await_action.");
 
-		
 		auto root_state = traj.GetState()->Clone();
 		auto root_actions = mdp->AllowedActions(root_state);
-		policy->SetAction({ &traj,1 });
 
+		policy->SetAction({ &traj,1 });
 		auto prescribed_action_initial_policy = traj.NextAction;
 		auto it = std::lower_bound(root_actions.begin(), root_actions.end(), prescribed_action_initial_policy);
 		if (it != root_actions.end() && *it == prescribed_action_initial_policy) {
@@ -47,8 +46,7 @@ namespace DynaPlex::DCL {
 		//Create M replications for each root_action, with appropriate random seed.
 		for (int64_t replication = 0; replication < M; replication++)
 		{
-			
-			for (int64_t action_id=0;action_id<root_actions.size();action_id++)
+			for (int64_t action_id = 0; action_id < root_actions.size(); action_id++)
 			{
 				auto root_action = root_actions[action_id];
 				trajectories.emplace_back(mdp->NumEventRNGs(), experiment_information.size());
@@ -80,17 +78,20 @@ namespace DynaPlex::DCL {
 					//Make the span refer to a set of trajectories each awaiting an action:
 					span = std::span<DynaPlex::Trajectory>(span.begin(), new_partition_point);
 					if (++count > max_steps_until_completion_expected)
-						throw DynaPlex::Error("UniformActionSelector::SetAction - expected completion of simulation run after max_steps_until_completion_expected: "+ std::to_string(max_steps_until_completion_expected)+ " but completion was not reached.");
+						throw DynaPlex::Error("UniformActionSelector::SetAction"
+							"- expected completion of simulation run after max_steps_until_completion_expected: "
+							+ std::to_string(max_steps_until_completion_expected) +
+							" but completion was not reached.");
 				}
 				//This means all trajectories are at period warmup_periods or final. 
 				if (span.size() == 0)
 					break;
 				//other actions use roll-out policy.
 				mdp->IncorporateAction(span, policy);
-				
+
 			}
 			//reset span to original
-			span = { &trajectories[start], static_cast<size_t>( end - start) };
+			span = { &trajectories[start], static_cast<size_t>(end - start) };
 			//some checks:
 			if (mdp->IsInfiniteHorizon())
 			{
@@ -114,21 +115,21 @@ namespace DynaPlex::DCL {
 		}
 		std::vector<std::vector<double>> return_results(root_actions.size(), std::vector<double>(M, 0.0));
 		double objective = mdp->Objective(root_state);
-	
+
 		//Collect results and draw conclusion:
 		for (auto& traj : trajectories)
 		{
 			//Note that trajectories were possibly reshuffled; recover experiment information safely:
 			auto& info = experiment_information[traj.ExternalIndex];
 			//Since we did not implement sequential halving, we have results for every action and every replication. 
-			return_results.at(info.action_id).at(info.experiment_number) = traj.CumulativeReturn*objective;
+			return_results.at(info.action_id).at(info.experiment_number) = traj.CumulativeReturn * objective;
 		}
-	
-		DynaPlex::PolicyComparison comp(std::move(return_results));	
+
+		DynaPlex::PolicyComparison comp(std::move(return_results));
 		//find arg_max, which because of objective will correspond to minimum or maximum costs as appropriate
 		double best_reward = -std::numeric_limits<double>::infinity();
 		int64_t best_action = 0;
-		int64_t best_action_id = 0; 
+		int64_t best_action_id = 0;
 		for (int64_t action_id = 0; action_id < root_actions.size(); action_id++)
 		{
 			if (comp.mean(action_id) > best_reward)
@@ -148,8 +149,18 @@ namespace DynaPlex::DCL {
 		sample.action_label = traj.NextAction;
 		sample.cost_improvement.reserve(root_actions.size());
 		sample.q_hat_vec.reserve(root_actions.size());
+		sample.probabilities.reserve(root_actions.size());
 		sample.q_hat = best_reward * objective;
 
+		bool ValueBasedProbability = true;
+		if (M > 1){
+			comp.ComputeZstatistics(best_action_id);
+			comp.ComputeProbabilities(ValueBasedProbability);
+		}
+		else{
+			comp.ComputeProbabilities(false);
+			sample.z_stat = 0.0;
+		}
 		double zValueForBestAlternative = 100.0;
 		for (int64_t action_id = 0; action_id < root_actions.size(); action_id++) {
 			sample.cost_improvement.push_back(comp.mean(action_id, prescribed_action_initial_policy) * objective);
@@ -157,24 +168,13 @@ namespace DynaPlex::DCL {
 			sample.probabilities.push_back(comp.GetProbability(action_id));
 			if (action_id != best_action_id && M > 1)
 			{
-				double sigma = comp.standardError(action_id, best_action_id);
-				double mu = comp.mean(action_id, best_action_id) * objective;
-				double zValue = mu / sigma;
-				if (sigma == 0.0)
-				{
-					zValue = 100.0;
-				}
+				double zValue = comp.GetZstatistic(action_id);
 				zValueForBestAlternative = std::min(zValue, zValueForBestAlternative);
 			}
 		}
-		if (M > 1)
-		{
+		if (M > 1){
 			sample.z_stat = zValueForBestAlternative;
 		}
-		else {
-			sample.z_stat = 0.0;
-		}
 	}
-
 
 }  // namespace DynaPlex::DCL

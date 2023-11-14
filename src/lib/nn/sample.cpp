@@ -22,11 +22,11 @@ namespace DynaPlex::NN {
 		}
 		vars.Add("q_hat_vec", q_hat_vec);
 		if (std::isnan(q_hat) || std::isinf(q_hat)) {
-			throw DynaPlex::Error("Sample: Value error, z-statistics must be a real number.");
+			throw DynaPlex::Error("Sample: Value error, best q-value must be a real number.");
 		}
 		vars.Add("q_hat", q_hat);
 		if (std::isnan(z_stat) || std::isinf(z_stat)) {
-			throw DynaPlex::Error("Sample: z-statistics must be a real number.");
+			throw DynaPlex::Error("Sample: Value error, z-statistic must be a real number.");
 		}
 		vars.Add("z_stat", z_stat);
 		for (const auto& value : cost_improvement) {

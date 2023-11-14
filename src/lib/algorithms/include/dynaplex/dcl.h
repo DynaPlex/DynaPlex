@@ -36,9 +36,9 @@ namespace DynaPlex::Algorithms {
 
 		int32_t rng_seed;
 		int32_t node_sampling_offset;
-		int64_t sampling_time_out,H,M,N,num_gens,L,reinitiate_counter,json_save_format;
+		int64_t sampling_time_out,H,M,N,num_gens,L,reinitiate_counter,json_save_format, resume_gen;
 
-		bool retrain_lastgen_only, silent;
+		bool retrain_lastgen_only, silent, enable_sequential_halving;
 
 
 		DynaPlex::NN::PolicyTrainer trainer;

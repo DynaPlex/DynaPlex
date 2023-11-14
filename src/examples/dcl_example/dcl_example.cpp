@@ -38,7 +38,7 @@ int main() {
 		{"type","mlp"},//mlp - multi-layer-perceptron. 
 		{"hidden_layers",DynaPlex::VarGroup::Int64Vec{128,64,64}}//Note: Input/output layer sizes are determined by MDP. 
 	};
-	int64_t num_gens=1;
+	int64_t num_gens=2;
 
 	DynaPlex::VarGroup dcl_config{
 		//use defaults everywhere. 
@@ -48,7 +48,9 @@ int main() {
 		{"H",40 },//horizon, i.e. number of steps for each rollout.
 		{"nn_architecture",nn_architecture},
 		{"nn_training",nn_training},
-		{"retrain_lastgen_only",false}
+		{"enable_sequential_halving",true},
+		{"retrain_lastgen_only",false},
+		{"resume_gen",0}
 	};
 
 	try
