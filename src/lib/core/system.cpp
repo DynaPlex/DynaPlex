@@ -65,6 +65,9 @@ namespace DynaPlex {
         std::function<void()> barrier_callback_;
     };
 
+
+   
+
     std::string System::SetFileExtension(const std::string& filepath, const std::string& extension) {
         fs::path p(filepath);
         p.replace_extension(extension);
@@ -133,6 +136,11 @@ namespace DynaPlex {
     bool System::file_exists(const std::string& subdir, const std::string& subsubdir, const std::string& subsubsubdir, const std::string& subsubsubsubdir, const std::string& filename) const {
         return pimpl->file_exists_impl({ subdir , subsubdir,subsubsubdir, subsubsubsubdir }, filename);
     }
+
+    std::string System::filepath(const std::initializer_list<std::string>& subdirs, const std::string& filename) const {
+        return pimpl->filepath_impl(subdirs, filename);
+    }
+
 
     std::string System::filepath(const std::string& subdir, const std::string& subsubdir, const std::string& subsubsubdir, const std::string& subsubsubsubdir, const std::string& filename) const {
         return pimpl->filepath_impl({ subdir,subsubdir,subsubsubdir,subsubsubsubdir }, filename);

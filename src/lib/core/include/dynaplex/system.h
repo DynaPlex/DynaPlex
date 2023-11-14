@@ -109,6 +109,10 @@ namespace DynaPlex {
             return sys;
         }
     private:
+
+        std::string filepath(const std::initializer_list<std::string>& subdirs, const std::string& filename) const;
+
+
         class Impl;  // Forward declare the implementation class
         std::unique_ptr<Impl> pimpl;  // Pointer to the implementation
     };

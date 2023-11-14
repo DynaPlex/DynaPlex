@@ -13,7 +13,7 @@ include(dynaplex_settings)
 add_subdirectory(src/lib)
 #include examples unless this project is included as part of bigger project.
 if(PROJECT_IS_TOP_LEVEL AND NOT dynaplex_enable_pythonbindings)
-add_subdirectory(src/examples)
+add_subdirectory(src/executables)
 set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 if(dynaplex_enable_tests)
 enable_testing()
