@@ -12,7 +12,7 @@ namespace DynaPlex::NN {
 
 
     std::string PolicyTrainer::PathToPolicy(DynaPlex::VarGroup nn_architecture, int64_t generation) {
-        return system.filepath("dcl", mdp->Identifier(), nn_architecture.Hash(), "nn_policy_gen" + std::to_string(generation));
+        return system.filepath(mdp->Identifier(), "dcl_policy_gen" + std::to_string(generation));
     }
 
     PolicyTrainer::PolicyTrainer(const DynaPlex::System& system, DynaPlex::MDP mdp, const DynaPlex::VarGroup& training_config) :
@@ -166,7 +166,7 @@ namespace DynaPlex::NN {
             if (current_validation_loss < best_validation_loss) {
                 best_validation_loss = current_validation_loss;
                 cost_improvement = relative_cost_improvement;
-                auto saved_model_path = system.filepath("dcl", mdp->Identifier(), "temp", "model_weights.pth");
+                auto saved_model_path = system.filepath(mdp->Identifier(), "temp", "model_weights.pth");
                 torch::save(any_module_as_nn_module, saved_model_path); // Save the model weights
                 epochs_without_improvement = 0; // Reset counter
             }
@@ -208,7 +208,7 @@ namespace DynaPlex::NN {
             << " - Cost Improvement : " << cost_improvement
             << std::endl;
 
-        auto best_weights_path = system.filepath("dcl", mdp->Identifier(), "temp", "model_weights.pth");
+        auto best_weights_path = system.filepath(mdp->Identifier(), "temp", "model_weights.pth");
 
         auto policy = std::make_shared<NN_Policy>(mdp);
         policy->neural_network = std::make_unique<torch::nn::AnyModule>(provider.GetTrainableNN(nn_architecture));

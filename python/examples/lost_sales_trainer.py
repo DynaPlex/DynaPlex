@@ -8,7 +8,6 @@ import torch.nn as nn
 
 from torch.utils.data import DataLoader, TensorDataset
 
-
 parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_directory)
 # noinspection PyUnresolvedReferences
@@ -28,50 +27,51 @@ num_gens = 2
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = torch.device('cpu')
 
-
-# mdp = dp.get_mdp(id="lost_sales",
-#                  p=9.0, h=2.0,
-#                  leadtime=3,
-#                  demand_dist={"type": "poisson", "mean": 3.0})
-
 # This script assumes the desired mdp characteristics are specified in a file with a name of type mdp_config_{MDP_VERSION_NUMBER}.json
-folder_name = "lost_sales" # the name of the folder where the json file is located
+folder_name = "lost_sales"  # the name of the folder where the json file is located
 mdp_version_number = 2
-
-path_to_json = os.path.join(os.path.dirname(__file__), "..", "..", "src", "lib", "models", "models", folder_name, f"mdp_config_{mdp_version_number}.json")
+path_to_json = dp.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
 
 # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
 try:
-    with open( path_to_json , "r" ) as input_file:
-        vars = json.load(input_file) #vars can be initialized manually with something like
+    with open(path_to_json, "r") as input_file:
+        vars = json.load(input_file)  # vars can be initialized manually with something like
 except FileNotFoundError:
     raise FileNotFoundError(f"File {path_to_json} not found. Please make sure the file exists and try again.")
 except:
-    raise Exception("Something went wrong when loading the json file. Have you checked the json file does not contain any comment?")
-#vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
+    raise Exception(
+        "Something went wrong when loading the json file. Have you checked the json file does not contain any comment?")
+# vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
 mdp = dp.get_mdp(**vars)
-
 
 num_valid_actions = mdp.num_valid_actions()
 num_features = mdp.num_flat_features()
 
-base_policy = mdp.get_policy("random")
-dcl = dp.get_dcl(mdp, None, N=100, M=10)
+base_policy = mdp.get_policy("base_stock")
+sample_generator = dp.get_sample_generator(mdp, N=4000, M=1000)
 
-io_path = f"{dp.io_path()}/dcl/{mdp.identifier()}"
-save_filename = 'best_lost_sales_nn'
+save_filename = 'dcl_python'
+
+
+def policy_path(gen):
+    return dp.filepath(mdp.identifier(), f'{save_filename}_{gen}')
+
+
+def sample_path(gen):
+    return dp.filepath(mdp.identifier(), f'samples_{gen}.json')
+
 
 for gen in range(0, num_gens):
 
     if gen > 0:
-        policy = dp.load_policy(mdp, f'{io_path}/{save_filename}_{gen}')
+        policy = dp.load_policy(mdp, policy_path(gen))
     else:
         policy = base_policy
 
-    data_path = dcl.generate_feats_samples(policy, gen)
-    save_model_path = f'{io_path}/{save_filename}_{gen + 1}'
+    sample_generator.generate_samples(policy, sample_path(gen))
+    save_model_path = policy_path(gen + 1)
 
-    with open(data_path, 'r') as json_file:
+    with open(sample_path(gen), 'r') as json_file:
         sample_data = json.load(json_file)['samples']
 
         # tensor_y = torch.FloatTensor([sample['action_label'] for sample in sample_data])
@@ -82,7 +82,7 @@ for gen in range(0, num_gens):
         min_val = torch.finfo(tensor_x.dtype).min
 
         # define model
-        model = SimpleNN(input_dim=num_features, hidden_dim=64, output_dim=num_valid_actions)
+        model = SimpleNN(input_dim=mdp.num_flat_features(), hidden_dim=64, output_dim=num_valid_actions)
 
         if device != torch.device('cpu'):
             tensor_mask = tensor_mask.to(device)
@@ -215,8 +215,8 @@ for gen in range(0, num_gens):
 
 policies = [base_policy]
 
-for i in range(1, num_gens+1):
-    load_path = f'{io_path}/{save_filename}_{i}'
+for i in range(1, num_gens + 1):
+    load_path = policy_path(i)
     policy = dp.load_policy(mdp, load_path)
     policies.append(policy)
 

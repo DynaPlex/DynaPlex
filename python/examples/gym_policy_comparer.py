@@ -15,8 +15,7 @@ sys.path.remove(parent_directory)
 # This script assumes the desired mdp characteristics are specified in a file with a name of type mdp_config_{MDP_VERSION_NUMBER}.json
 folder_name = "lost_sales" # the name of the folder where the json file is located
 mdp_version_number = 2
-
-path_to_json = os.path.join(os.path.dirname(__file__), "..", "..", "src", "lib", "models", "models", folder_name, f"mdp_config_{mdp_version_number}.json")
+path_to_json = dp.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
 
 # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
 try:
@@ -29,25 +28,23 @@ except:
 
 mdp = dp.get_mdp(**vars)
 
-dcl_path = os.path.normpath(f"{dp.io_path()}/dcl/{mdp.identifier()}")
-ppo_path = os.path.normpath(f"{dp.io_path()}/ppo")
-dcl_filename = 'best_lost_sales_nn'
-ppo_filename = 'ppo'
-gen_n = 1
+def dcl_policy(gen):
+    dcl_filename = f'dcl_python_{gen}'
+    dcl_load_path = dp.filepath(mdp.identifier(), dcl_filename)
+    return dp.load_policy(mdp, dcl_load_path)
+
+def ppo_policy():
+    ppo_filename = 'ppo_policy'
+    ppo_load_path = dp.filepath(mdp.identifier(), ppo_filename)
+    return dp.load_policy(mdp, ppo_load_path)
+
 policies = []
+policies.append(mdp.get_policy("base_stock"))
+policies.append(ppo_policy())
+policies.append(dcl_policy(1))
 
-#load dcl
-dcl_load_path = os.path.normpath(f'{dcl_path}/{dcl_filename}_{gen_n}')
-dcl_policy = dp.load_policy(mdp, dcl_load_path)
-policies.append(dcl_policy)
-
-#load ppo
-ppo_load_path = os.path.normpath(f'{ppo_path}/{ppo_filename}')
-ppo_policy = dp.load_policy(mdp, ppo_load_path)
-policies.append(ppo_policy)
-
-comparer = dp.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=1000)
+comparer = dp.get_comparer(mdp)
 comparison = comparer.compare(policies)
-result = [(item['mean'], item['error']) for item in comparison]
+result = [(item['policy']['id'],item['mean'], item['error']) for item in comparison]
 
 print(result)

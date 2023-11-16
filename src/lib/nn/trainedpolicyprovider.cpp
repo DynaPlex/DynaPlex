@@ -51,7 +51,7 @@ namespace DynaPlex {
 
 			auto policy = std::make_shared<NN_Policy>(mdp);
 			// Use the TorchScriptWrapper class to wrap the TorchScript module
-			auto torchscript_wrapper = std::make_shared<DynaPlex::NN::TorchScriptWrapper>(path_to_weights); // Assuming path_to_weights is the path to the .pt file
+			auto torchscript_wrapper = std::make_shared<DynaPlex::NN::TorchScriptWrapper>(path_to_weights); 
 			policy->neural_network = std::make_unique<torch::nn::AnyModule>(torchscript_wrapper);
 			policy->policy_config = policy_config;
 			return policy;

@@ -25,8 +25,8 @@ sys.path.remove(parent_directory)
 # This script assumes the desired mdp characteristics are specified in a file with a name of type mdp_config_{MDP_VERSION_NUMBER}.json
 folder_name = "lost_sales" # the name of the folder where the json file is located
 mdp_version_number = 2
-
-path_to_json = os.path.join(os.path.dirname(__file__), "..", "..", "src", "lib", "models", "models", folder_name, f"mdp_config_{mdp_version_number}.json")
+# this returns path/to/IO_DynaPlex/mdp_config_examples/lost_sales/mdp_config_[..].json:
+path_to_json = dp.filepath("mdp_config_examples",folder_name,f"mdp_config_{mdp_version_number}.json")
 
 # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
 try:
@@ -36,10 +36,9 @@ except FileNotFoundError:
     raise FileNotFoundError(f"File {path_to_json} not found. Please make sure the file exists and try again.")
 except:
     raise Exception("Something went wrong when loading the json file. Have you checked the json file does not contain any comment?")
+#of course, we can also just initiate using a (possibly nested) dict:
 #vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
 mdp = dp.get_mdp(**vars)
-emulator = dp.get_gym_emulator(mdp, num_actions_until_done=0) #only used to get input and output dimensions
-
 
 # Training parameters
 train_args = {"hidden_dim": 64,
@@ -60,19 +59,15 @@ train_args = {"hidden_dim": 64,
               }
 
 
-def save_best_fn(policy, model_name="ppo"):
-    base_path = os.path.normpath(dp.io_path())
+def policy_path():
+    path = os.path.normpath(dp.filepath(mdp.identifier(), "ppo_policy"))
+    return path
 
+def save_best_fn(policy):
+    save_path = policy_path()
     dp.save_policy(policy.actor,
-                   {'num_inputs': emulator.observation_space_size(), 'num_outputs': emulator.action_space_size()},
-                   os.path.join(base_path, model_name, model_name))
-
-    # os.makedirs(os.path.join(base_path, model_name), exist_ok=True)
-    # torch.save(policy.state_dict(), os.path.join(base_path, model_name, model_name+extension))
-    # with open(os.path.join(base_path, model_name, model_name+".json"), "w") as json_file:
-    #     json.dump({'id': "torchscript", 'num_inputs': emulator.observation_space_size(), 'num_outputs': emulator.action_space_size()}, json_file)
-    
-
+                   {'num_inputs': mdp.num_flat_features(), 'num_outputs': mdp.num_valid_actions()},
+                   save_path)
 def get_env():    
     return BaseEnv(mdp, train_args["num_actions_until_done"])
 
@@ -109,17 +104,17 @@ if __name__ == '__main__':
 
     # define actor network structure
     actor_net = ActorMLP(
-        input_dim=emulator.observation_space_size(),
+        input_dim=mdp.num_flat_features(),
         hidden_dim=train_args["hidden_dim"],
-        output_dim=emulator.action_space_size(),
+        output_dim=mdp.num_valid_actions(),
         min_val=torch.finfo(torch.float).min
     ).to(device)
 
     # define critic network structure
     critic_net = CriticMLP(
-        input_dim=emulator.observation_space_size(),
+        input_dim=mdp.num_flat_features(),
         hidden_dim=train_args["hidden_dim"],
-        output_dim=emulator.action_space_size(),
+        output_dim=mdp.num_valid_actions(),
         min_val=torch.finfo(torch.float).min
     ).to(device).share_memory()
 
@@ -144,8 +139,9 @@ if __name__ == '__main__':
                                  )
     policy.action_type = "discrete"
 
-    # a tensorboard logger is available to monitor training results
-    log_path = os.path.join("logs", model_name)
+    # a tensorboard logger is available to monitor training results.
+    # log in the directory where all mdp results are stored:
+    log_path = dp.filepath(mdp.identifier(), "tensorboard_logs", model_name)
     writer = SummaryWriter(log_path)
     logger = TensorboardLogger(writer)
     

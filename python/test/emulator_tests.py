@@ -6,7 +6,6 @@ import pytest
 # Assuming the dp module and DynaPlex are available in the parent directory
 parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_directory)
-
 # noinspection PyUnresolvedReferences
 from dp.loader import DynaPlex as dp
 sys.path.remove(parent_directory)

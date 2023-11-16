@@ -31,6 +31,17 @@ def test_model_factory_tests():
     assert identifier.startswith("lost_sales"), f"Expected identifier to start with 'lost_sales', but got '{identifier}'"
 
 
+def test_filepath():
+    subdirs = ['test', 'folder1', 'folder2']
+    filename = 'myfile.txt'
+    expected_path = os.path.join(dp.io_path(), *subdirs, filename)
+
+    try:
+        actual_path = dp.filepath(subdirs, filename)
+    except Exception as e:
+        pytest.fail(f"Unexpected error: {e}")
+
+    assert actual_path == expected_path, f"Expected path to be {expected_path}, but got {actual_path}"
 
 
 

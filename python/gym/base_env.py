@@ -37,19 +37,21 @@ class BaseEnv(gym.Env):
             seed = seed_gen.item()
 
         # Get initial state from dp MDP
-        self.current_obs = self.emulator.reset(seed=seed) #get_initial_state resets the dp emulator and returns the initial state
-        # return {'obs': np.asarray(self.current_obs[0]), 'mask': np.asarray(self.current_obs[1])}, {} #second return value is empty info
-        return np.concatenate((self.current_obs[1], self.current_obs[0])), {} #second return value is empty info
+        observation, info = self.emulator.reset(seed=seed) #get_initial_state resets the dp emulator and returns the initial state
+
+
+        # return {'obs': np.asarray(self.current_obs[0]), 'mask': np.asarray(self.current_obs[1])}, info #second return value is empty info
+        return np.concatenate((observation[1], observation[0])), info #second return value is empty info
 
     def step(self, action):
         """
         Step gets an action and calls the Dynaplex mdp step function, which evolves the simulation until another action is required.
         """
 
-        observation, reward, done, info = self.emulator.step(action)
+        observation, reward, done, truncated, info = self.emulator.step(action)
 
         # return {'obs': np.asarray(observation[0]), 'mask': np.asarray(observation[1])}, reward, done, False, {'info': info} #False is truncation
-        return np.concatenate((observation[1], observation[0])), reward, done, False, {'info': info} #False is truncation
+        return np.concatenate((observation[1], observation[0])), reward, done, truncated, info
 
     def render(self):
         raise NotImplementedError

@@ -8,6 +8,8 @@ void define_provider_bindings(pybind11::module_& m);
 void define_comparer_bindings(pybind11::module_& m);
 void define_dcl_bindings(pybind11::module_& m);
 void define_gym_emulator_bindings(pybind11::module_& m);
+void define_sample_generator_bindings(pybind11::module_& m);
+
 	
 PYBIND11_MODULE(DP_Bindings, m) {
 	m.doc() = "DynaPlex extension for Python";	
@@ -18,4 +20,5 @@ PYBIND11_MODULE(DP_Bindings, m) {
 	define_provider_bindings(m);
 	define_dcl_bindings(m);
 	define_gym_emulator_bindings(m);
+	define_sample_generator_bindings(m);
 }

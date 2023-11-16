@@ -46,7 +46,6 @@ class CherryAllocationNAGNN(torch.nn.Module):
             input_dim = hidden_dim
 
         self.mid_dim = self.num_features + n_layers * hidden_dim
-
         self.lin1 = Linear(self.mid_dim, 2 * hidden_dim)
         self.batch_norm = BatchNorm1d(2 * hidden_dim)
         self.relu = ReLU()

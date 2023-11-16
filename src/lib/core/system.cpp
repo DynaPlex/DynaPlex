@@ -36,7 +36,7 @@ namespace DynaPlex {
             return fs::exists(file_path);
         }
 
-        std::string filepath_impl(const std::initializer_list<std::string>& subdirs, const std::string& filename) const {
+        std::string filepath_impl(const std::vector<std::string>& subdirs, const std::string& filename) const {
             fs::path curr_path = io_location_;
 
             for (const auto& subdir : subdirs) {
@@ -137,7 +137,7 @@ namespace DynaPlex {
         return pimpl->file_exists_impl({ subdir , subsubdir,subsubsubdir, subsubsubsubdir }, filename);
     }
 
-    std::string System::filepath(const std::initializer_list<std::string>& subdirs, const std::string& filename) const {
+    std::string System::filepath(const std::vector<std::string>& subdirs, const std::string& filename) const {
         return pimpl->filepath_impl(subdirs, filename);
     }
 

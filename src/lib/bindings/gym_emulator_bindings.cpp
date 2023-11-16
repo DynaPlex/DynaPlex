@@ -13,5 +13,6 @@ void define_gym_emulator_bindings(py::module_& m) {
         .def("current_state_as_object", &DynaPlex::GymEmulator::CurrentStateAsObject)
         .def("close", &DynaPlex::GymEmulator::Close)
         .def("action_space_size", &DynaPlex::GymEmulator::ActionSpaceSize)
-        .def("observation_space_size", &DynaPlex::GymEmulator::ObservationSpaceSize);
+        .def("observation_space_size", &DynaPlex::GymEmulator::ObservationSpaceSize)
+        .def("mdp_identifier", &DynaPlex::GymEmulator::GetMDPIdentifier);
 }

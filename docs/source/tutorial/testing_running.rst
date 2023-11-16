@@ -144,8 +144,8 @@ In ``src/examples/airplane_mdp/airplane_mdp.cpp`` add the following code that ru
 			//policies are automatically saved when training, but it may be usefull to save at custom location:
 			auto last_policy = dcl.GetPolicy();
 			//gets a file_path without file extension (file extensions are automatically added when saving): 
-			auto path = dp.System().filepath("dcl", "airplane_mdp", "airplane_mdp_policy_gen" + num_gens);
-			//this is IOLocation/dcl/dcl_example/lost_sales_policy
+			auto path = dp.System().filepath("airplane_mdp", "airplane_mdp_policy_gen" + num_gens);
+			//this is e.g. IOLocation/airplane_mdp/airplane_mdp_policy_gen1
 			//IOLocation is typically specified in CMakeUserPresets.txt
 
 			//saves two files, one .json file with the architecture (e.g. trained_lost_sales_policy.json), and another file with neural network weights (.pth):		

@@ -14,9 +14,14 @@ namespace DynaPlex {
         static DynaPlexProvider instance;  // Guaranteed to be lazy initialized and destroyed correctly
         return instance;
     }
-    void DynaPlexProvider::SavePolicy(DynaPlex::Policy policy, std::string file_path_without_extension) {
-        TrainedPolicyProvider::SavePolicy(policy, file_path_without_extension);
+    std::string DynaPlexProvider::FilePath(const std::vector<std::string>& subdirs, const std::string& filename)
+    {
+        return m_systemInfo.filepath(subdirs, filename);
     }
+    void DynaPlexProvider::SavePolicy(DynaPlex::Policy policy, std::string file_path_without_extension) {
+        TrainedPolicyProvider::SavePolicy(policy, file_path_without_extension);        
+    }
+
 
     DynaPlex::Policy DynaPlexProvider::LoadPolicy(DynaPlex::MDP mdp, std::string file_path_without_extension) {
         return TrainedPolicyProvider::LoadPolicy(mdp, file_path_without_extension);
@@ -27,6 +32,7 @@ namespace DynaPlex {
         return DynaPlex::Algorithms::DCL{ this->System(),mdp, policy,config };
     }
 
+   
     void DynaPlexProvider::SetIORootDirectory(std::string path) {
         m_systemInfo.SetIOLocation(path, "IO_DynaPlex");
     }

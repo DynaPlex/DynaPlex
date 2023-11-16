@@ -44,22 +44,28 @@ mdp = dp.get_mdp(id="order_picking",
 num_valid_actions = mdp.num_valid_actions()
 
 base_policy = mdp.get_policy("random")
-dcl = dp.get_dcl(mdp, None, N=5000, M=100)
+sample_generator = dp.get_sample_generator(mdp, N=4000, M=100)
+save_filename = 'dcl_python'
 
-io_path = f"{dp.io_path()}/{mdp.identifier()}/dcl"
-save_filename = 'best_order_picking_nn'
+def policy_path(gen):
+    return dp.filepath(mdp.identifier(), f'{save_filename}_{gen}')
+
+
+def sample_path(gen):
+    return dp.filepath(mdp.identifier(), f'samples_{gen}.json')
+
 
 for gen in range(0, num_gens):
 
     if gen > 0:
-        policy = dp.load_policy(mdp, f'{io_path}/{save_filename}_{gen}')
+        policy = dp.load_policy(mdp, policy_path(gen))
     else:
         policy = base_policy
 
-    data_path = dcl.generate_feats_samples(policy, gen)
-    save_model_path = f'{io_path}/{save_filename}_{gen + 1}'
+    sample_generator.generate_samples(policy, sample_path(gen))
+    save_model_path = policy_path(gen + 1)
 
-    with open(data_path, 'r') as json_file:
+    with open(sample_path(gen), 'r') as json_file:
         sample_data = json.load(json_file)['samples']
 
         # tensor_y = torch.FloatTensor([sample['action_label'] for sample in sample_data])
@@ -211,10 +217,9 @@ for gen in range(0, num_gens):
 policies = [base_policy]
 
 for i in range(1, num_gens+1):
-    load_path = f'{io_path}/{save_filename}_{i}'
+    load_path = policy_path(i)
     policy = dp.load_policy(mdp, load_path)
     policies.append(policy)
-
 comparer = dp.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100)
 comparison = comparer.compare(policies)
 result = [(item['mean']) for item in comparison]

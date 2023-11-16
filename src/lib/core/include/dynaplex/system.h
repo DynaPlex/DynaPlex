@@ -9,6 +9,8 @@
 namespace DynaPlex {
 
     class System {
+        friend class DynaPlexProvider;
+
     public: 
         System();
         System(bool TorchAvailable, std::uint32_t worldRank, std::uint32_t worldSize, std::function<void()> barrier_cb);
@@ -110,7 +112,7 @@ namespace DynaPlex {
         }
     private:
 
-        std::string filepath(const std::initializer_list<std::string>& subdirs, const std::string& filename) const;
+        std::string filepath(const std::vector<std::string>& subdirs, const std::string& filename) const;
 
 
         class Impl;  // Forward declare the implementation class

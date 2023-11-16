@@ -13,13 +13,19 @@ namespace DynaPlex {
 	class GymEmulator {
 	public:
 		using obs_type = std::tuple<std::vector<float>, std::vector<int>>;
+
+		
+
 		GymEmulator(DynaPlex::System system, MDP mdp, VarGroup& vars);
 
-		obs_type Reset(VarGroup& vars);
+		std::tuple<obs_type,py::dict> Reset(VarGroup& vars);
 
-		std::tuple<obs_type, double, bool, py::dict> Step(int64_t action);
+		std::tuple<obs_type, double, bool,bool, py::dict> Step(int64_t action);
 
 		DynaPlex::VarGroup CurrentStateAsObject() const;
+
+		//gets the identifier of the underlying MDP instance.
+		std::string GetMDPIdentifier() const;
 
 		void Close();
 
@@ -33,13 +39,15 @@ namespace DynaPlex {
 		~GymEmulator();
 
 	private:
+
+		obs_type last_observation;
 		MDP mdp;
 		DynaPlex::Trajectory trajectory;
 		double last_cumulative_return;
 		int64_t actions_taken_since_reset, events_since_reset;
 		int64_t num_valid_actions, num_feats;
 		bool seeded = false;
-		int64_t num_actions_until_done;
+		int64_t num_actions_until_done, num_periods_until_done;
 
 		obs_type GetNextObservation() const{
 			std::vector<float> feats_vec(num_feats);

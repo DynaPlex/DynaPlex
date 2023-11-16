@@ -20,6 +20,10 @@ int main() {
 		{"mean", 5.0}
 		}));
 
+	auto path_to_json = dp.FilePath({ "mdp_config_examples", "lost_sales" }, "mdp_config_2.json");
+	//also possible to use a standard configuration file:
+	//config = VarGroup::LoadFromFile(path_to_json);
+
 	DynaPlex::MDP mdp = dp.GetMDP(config);
 
 
@@ -36,15 +40,15 @@ int main() {
 
 	DynaPlex::VarGroup nn_architecture{
 		{"type","mlp"},//mlp - multi-layer-perceptron. 
-		{"hidden_layers",DynaPlex::VarGroup::Int64Vec{128,64,64}}//Note: Input/output layer sizes are determined by MDP. 
+		{"hidden_layers",DynaPlex::VarGroup::Int64Vec{64}}//Note: Input/output layer sizes are determined by MDP. 
 	};
 	int64_t num_gens=2;
 
 	DynaPlex::VarGroup dcl_config{
 		//use defaults everywhere. 
-		{"N",5000},//number of samples
+		{"N",4000},//number of samples
 		{"num_gens",num_gens},//number of neural network generations.
-		{"M",2000},//rollouts per action, default is 1000. 
+		{"M",1000},//rollouts per action, default is 1000. 
 		{"H",40 },//horizon, i.e. number of steps for each rollout.
 		{"nn_architecture",nn_architecture},
 		{"nn_training",nn_training},
@@ -68,9 +72,6 @@ int main() {
 		//This gets all trained policy, as well as the initial policy, in a vector:
 		auto policies = dcl.GetPolicies();
 
-
-
-
 		//Compare the various trained policies:
 		auto comparer = dp.GetPolicyComparer(mdp);
 		auto comparison = comparer.Compare(policies);
@@ -78,8 +79,7 @@ int main() {
 		{
 			std::cout << VarGroup.Dump() << std::endl;
 		}
-
-
+		
 		//policies are automatically saved when training, but it may be usefull to save at custom location. 
 		//To do so, we retrieve the policy, get a path where to save it, and thens ave it there/ 
 		auto last_policy = dcl.GetPolicy();
