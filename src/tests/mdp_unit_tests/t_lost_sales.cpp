@@ -15,6 +15,8 @@ namespace DynaPlex::Tests {
 		std::string config_name = "mdp_config_0.json";
 		Tester tester{};
 		tester.AssertFlatFeatureAvailability = true;
+		//Opt in for testing the functionality that exposes exact event probabilities. 
+		tester.TestEventProbs = true;
 
 		tester.ExecuteTest(model_name, config_name);
 	}
@@ -26,6 +28,8 @@ namespace DynaPlex::Tests {
 		std::string policy_config_name = "policy_config_1.json";
 		Tester tester{};
 		tester.AssertFlatFeatureAvailability = true;
+		//Opt in for testing the functionality that exposes exact event probabilities. 
+		tester.TestEventProbs = true;
 
 		tester.ExecuteTest(model_name, mdp_config_name, policy_config_name);
 	}

@@ -131,12 +131,19 @@ namespace DynaPlex::Tests {
 			bool finalreached = false;
 			int64_t action_count = 0;
 			int64_t total_event_count = 0;
-		
 			while (trajectory.PeriodCount < max_event_count && !finalreached)
 			{
 				auto& cat = trajectory.Category;
 				if (cat.IsAwaitEvent())
 				{
+					if (TestEventProbs&& seed==0)
+					{
+						std::vector<std::tuple<double, DynaPlex::dp_State>> transitions{};
+						ASSERT_NO_THROW(
+							auto cost = mdp->AllEventTransitions(trajectory.GetState(), transitions);
+						) << info << "did you correctly implement GetEventProbs? If you do not intend to implement this on this MDP, do not enable TestEventProbs";
+						ASSERT_GE(transitions.size(), 1);
+					}
 					total_event_count++;
 					ASSERT_NO_THROW(
 						mdp->IncorporateEvent({ &trajectory,1 });

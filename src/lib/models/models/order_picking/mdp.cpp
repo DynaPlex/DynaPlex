@@ -392,6 +392,8 @@ namespace DynaPlex::Models {
 			return state;
 		}
 
+
+
 		MDP::State MDP::GetInitialState() const
 		{
 			int64_t currentPicker = 0;
@@ -675,6 +677,11 @@ namespace DynaPlex::Models {
 			Event instance(locations, time_windows, confirmedTransitions);
 			return instance;
 		}
+
+		std::vector<std::tuple<MDP::Event, double>> MDP::EventProbabilities() const {
+			throw DynaPlex::NotImplementedError("Left unimplemented :order_picking cannot be solved using exact methods anyhow");
+		}
+
 
 
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {

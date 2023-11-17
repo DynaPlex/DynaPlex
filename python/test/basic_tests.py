@@ -37,7 +37,7 @@ def test_filepath():
     expected_path = os.path.join(dp.io_path(), *subdirs, filename)
 
     try:
-        actual_path = dp.filepath(subdirs, filename)
+        actual_path = dp.filepath(*subdirs, filename)
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")
 

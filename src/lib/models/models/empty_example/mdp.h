@@ -27,6 +27,7 @@ namespace DynaPlex::Models {
 			double ModifyStateWithAction(State&, int64_t action) const;
 			double ModifyStateWithEvent(State&, const Event& ) const;
 			Event GetEvent(DynaPlex::RNG& rng) const;
+			std::vector<std::tuple<Event,double>> EventProbabilities() const;
 			DynaPlex::VarGroup GetStaticInfo() const;
 			DynaPlex::StateCategory GetStateCategory(const State&) const;
 			bool IsAllowedAction(const State& state, int64_t action) const;			

@@ -8,6 +8,8 @@ namespace DynaPlex::Tests {
 		std::string model_name = "bin_packing";
 		std::string mdp_config_name = "mdp_config_0.json";
 		Tester tester{};
+		//Opt in for testing the functionality that exposes exact event probabilities. 
+		tester.TestEventProbs = true;
 		tester.ExecuteTest(model_name, mdp_config_name);
 	}
 
@@ -19,6 +21,8 @@ namespace DynaPlex::Tests {
 		std::string model_name = "bin_packing";
 		std::string mdp_config_name = "mdp_config_0.json";
 		Tester tester{};
+		//Opt in for testing the functionality that exposes exact event probabilities. 
+		tester.TestEventProbs = true;
 		tester.AssertFlatFeatureAvailability = true;
 		tester.ExecuteTest(model_name, mdp_config_name);
 	}

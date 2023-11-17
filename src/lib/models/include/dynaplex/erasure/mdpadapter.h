@@ -38,18 +38,71 @@ namespace DynaPlex::Erasure
 		int64_t num_flat_features, num_allowed_actions;
 
 
-		virtual int64_t NumValidActions() const override {
+		int64_t NumValidActions() const override {
 			return provider.NumValidActions();
 		}
-		virtual bool ProvidesFlatFeatures() const override {
+		bool ProvidesFlatFeatures() const override {
 			return HasGetFlatFeatures<t_MDP, t_State>;
-
 		}
-		virtual int64_t NumFlatFeatures() const override {
+
+		bool ProvidesEventProbs() const override {
+			return HasEventProbabilities<t_MDP, t_Event> || HasStateDependendentEventProbabilities<t_MDP, t_State, t_Event>;
+		}
+
+		double AllEventTransitions(const DynaPlex::dp_State& dp_state, std::vector<std::tuple<double, DynaPlex::dp_State>>& transitions) const override {
+			try {
+				std::vector<std::tuple<t_Event, double>>  eventProbs;
+		
+
+				auto& t_state = ToState(dp_state);
+				const StateCategory cat = mdp->GetStateCategory(t_state);
+				if (!cat.IsAwaitEvent())
+					throw DynaPlex::Error("MDP::AllTransitions - called with state argument that does not await event.");
+
+				if constexpr (HasEventProbabilities<t_MDP, t_Event>)
+				{
+					eventProbs = mdp->EventProbabilities();
+				}
+				else if constexpr (HasStateDependendentEventProbabilities<t_MDP,t_State,t_Event>)
+				{
+					eventProbs = mdp->EventProbabilities(t_state);
+				}
+				else {
+					throw DynaPlex::Error("MDP does not implement EventProbabilities");
+				}
+				transitions.reserve(eventProbs.size());
+				double expected_cost{ 0.0 };
+				for (auto& [Event, prob] : eventProbs)
+				{
+					if (prob > 0.0)
+					{
+						if constexpr (HasModifyStateWithEvent<t_MDP, t_State, t_Event>)
+						{
+							auto clone = dp_state->Clone();
+							auto& t_state = ToState(clone);
+							expected_cost+= mdp->ModifyStateWithEvent(t_state, Event)*prob;
+							transitions.push_back(std::move(std::make_tuple(prob, std::move(clone))));
+						}
+						else
+						{
+							throw DynaPlex::Error("MDP does not implement ModifyStateWithEvent");
+						}
+					}
+				}			
+				return expected_cost;				
+			}
+			catch (const DynaPlex::Error& e) {
+				throw DynaPlex::Error(std::string("Error in MDPAdapter::GetAllTransitions: ") + e.what());
+			}
+		}
+
+		int64_t NumFlatFeatures() const override {
 			if constexpr (HasGetFlatFeatures<t_MDP, t_State>)
 				return num_flat_features;
 			throw DynaPlex::Error("MDP::NumFlatFeatures: mdp " + mdp_type_id + " does not have num_flat_features; underlying mdp does not define void GetFeatures(const DynaPlex::State&, DynaPlex::Features&) const ");
 		}
+
+
 
 
 		void RegisterPolicies()

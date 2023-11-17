@@ -10,9 +10,6 @@ namespace DynaPlex::Models {
 			VarGroup vars;		
 			vars.Add("valid_actions", MaxOrderSize + 1);
 			
-			VarGroup feats{};
-			
-			vars.Add("features", feats);
 			vars.Add("discount_factor", discount_factor);
 
 			//potentially add any stuff that was computed for diagnostics purposes
@@ -69,6 +66,11 @@ namespace DynaPlex::Models {
 
 		MDP::Event MDP::GetEvent(RNG& rng) const {
 			return demand_dist.GetSample(rng);
+		}
+
+
+		std::vector<std::tuple<MDP::Event, double>> MDP::EventProbabilities() const {
+			return demand_dist.QuantityProbabilities();
 		}
 
 		double MDP::ModifyStateWithEvent(State& state,const MDP::Event& event) const

@@ -130,11 +130,23 @@ namespace DynaPlex::Tests {
 			vg.Add("mean", 3.0);
 			DiscreteDist dist(vg);
 			double sum = 0.0;
+			
 			for (const auto& [qty, prob] : dist) {
 				ASSERT_GE(qty, 0);  // Geometric is zero-based, so quantity should be non-negative.
 				sum += prob;
 			}
 			ASSERT_NEAR(sum, 1.0, 0.001); // Total probability should be close to 1.
+
+
+			double expectation{ 0.0 };
+			auto qtyprobs = dist.QuantityProbabilities();
+			for (auto& [qty, prob] : qtyprobs)
+			{
+				expectation += qty * prob;
+			}
+			ASSERT_NEAR(expectation, dist.Expectation(),1.0e-10);
+
+
 		}
 
 		// Test for Add function with non-constant distributions

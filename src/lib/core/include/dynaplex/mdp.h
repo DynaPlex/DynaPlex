@@ -200,6 +200,19 @@ namespace DynaPlex
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories,const DynaPlex::dp_State& state) const = 0;
 
 		/**
+		 * Appends all possible transitions from a certain state that awaits an event to the transitions parameter.
+		 * Throws exception if underlying MDP does not implement GetEventProbs() and ModifyStateWithAction. 
+		 * Returns expected costs of the transition.   
+		 */
+		virtual double AllEventTransitions(const DynaPlex::dp_State& dp_state, std::vector<std::tuple<double, DynaPlex::dp_State>>& transitions) const = 0;
+
+		/**
+		 * Returns whether the underlying MDP provides exact event probabilities, either global or state-depenendent. 
+		 */
+		virtual bool ProvidesEventProbs() const = 0;
+
+
+		/**
 		 * Generates a policy specific to this MDP based on the provided VarGroup.
 		 * Policies are NOT cross-compatible across MDPs, even generic policies like "random".
 		 */

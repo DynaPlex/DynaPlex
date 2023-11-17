@@ -30,5 +30,7 @@ namespace DynaPlex::Tests {
 		bool SkipStateSerializationTests = false;
 		/// If tests are slow, you can bring this number down.  
 		int64_t NumParallelTests = 64;
+
+		bool TestEventProbs = false;
 	};
 }

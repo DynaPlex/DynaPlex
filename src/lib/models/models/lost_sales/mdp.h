@@ -4,8 +4,6 @@
 #include "dynaplex/modelling/queue.h"
 #include <map>
 
-//namespace DynaPlex::Erasure { template <typename MDPType> class PolicyRegistry; }// Forward declaration 
-
 namespace DynaPlex::Models {
 	namespace lost_sales /*must be consistent everywhere for complete mdp definition and associated policies and states.*/
 	{		
@@ -23,31 +21,7 @@ namespace DynaPlex::Models {
 			int64_t MaxOrderSize;
 			int64_t MaxSystemInv;
 			DynaPlex::DiscreteDist demand_dist;
-
-			//struct State : public IStateReflection {
-			//	//State category keeps track of what should happen next to this state:
-			//	// an event, an action, or maybe the MDP reached a final state. It will
-			//	//typically be convenient to have this member variable in the state, as this will
-			//	//make GetStateCategory() trivial to implement. 
-			//	DynaPlex::StateCategory cat;
-
-			//	//Other members depend on the MDP:
-			//	Queue<int64_t> state_vector;
-			//	int64_t total_inv;
-			//	double value;
-
-			//	static std::map<std::string, int64_t State::*> registry;
-			//	void RegisterVars() override {
-			//		registry["total_inv"] = &State::total_inv;
-			//		registry["value"] = &State::value;
-			//	}
-
-			//	//declaration; for definition see mdp.cpp:
-			//	DynaPlex::VarGroup ToVarGroup() const;
-			//	//Defaulting this does not always work. It can be removed as only the exact solver would benefit from this
-			//	bool operator==(const State& other) const = default;
-			//};
-
+	
 			//A state is a struct (or class) that represents state information for the MDP:
 			struct State {
 				//State category keeps track of what should happen next to this state:
@@ -78,19 +52,14 @@ namespace DynaPlex::Models {
 			//Remainder of the DynaPlex API:
 			double ModifyStateWithAction(State&, int64_t action) const;
 			double ModifyStateWithEvent(State&,const Event&) const;
-			Event GetEvent(DynaPlex::RNG&) const;
-		
-			DynaPlex::VarGroup GetStaticInfo() const;
-			
-			DynaPlex::StateCategory GetStateCategory(const State&) const;
-			
-			bool IsAllowedAction(const State&, int64_t action) const;
-			
+			Event GetEvent(DynaPlex::RNG&) const;		
+			std::vector<std::tuple<Event, double>> EventProbabilities() const;
+			DynaPlex::VarGroup GetStaticInfo() const;			
+			DynaPlex::StateCategory GetStateCategory(const State&) const;			
+			bool IsAllowedAction(const State&, int64_t action) const;			
 			//You may also define this with a parameter DynaPlex::RNG&, for random initial states:
 			State GetInitialState() const;
-
-			State GetState(const VarGroup&) const;
-		
+			State GetState(const VarGroup&) const;		
 			void GetFeatures(const State&, DynaPlex::Features&) const;			
 			//Enables all MDPs to be constructer in a uniform manner. e
 			explicit MDP(const DynaPlex::VarGroup&);

@@ -17,6 +17,23 @@ namespace DynaPlex
 		UNKNOWN
 	};
 
+	int64_t DiscreteDist::DistinctValueCount() const {
+		return static_cast<int64_t>( translatedPMF.size());
+	}
+
+
+
+	std::vector<DiscreteDist::QtyProb> DiscreteDist::QuantityProbabilities() const {
+		std::vector<DiscreteDist::QtyProb> quantityProbabilities;
+		quantityProbabilities.reserve(DistinctValueCount());
+		for (auto qtyprob : *this)
+		{
+			quantityProbabilities.push_back(qtyprob);
+		}
+		return quantityProbabilities;
+	}
+
+
 	DiscreteDist::DiscreteDist(const DynaPlex::VarGroup& vars) 
 	{
 		std::string type;
@@ -374,8 +391,8 @@ namespace DynaPlex
 
 	double DiscreteDist::Expectation() const {
 		double expectation = 0.0;
-		for (const auto& qp : *this) {
-			expectation += qp.qty * qp.prob;
+		for (const auto& [qty,prob] : *this) {
+			expectation += qty * prob;
 		}
 		return expectation;
 	}
@@ -383,16 +400,17 @@ namespace DynaPlex
 	double DiscreteDist::Variance() const {
 		double expectation = Expectation();
 		double variance = 0.0;
-		for (const auto& qp : *this) {
-			variance += qp.prob * (qp.qty - expectation) * (qp.qty - expectation);
+		for (const auto& [qty, prob] : *this) {
+			variance += prob * (qty - expectation) * (qty - expectation);
 		}
 		return variance;
 	}
 
 	double DiscreteDist::Entropy() const {
 		double entropy = 0.0;
-		for (const auto& qp : *this) {
-			entropy -= qp.prob * std::log(qp.prob);
+		for (const auto& [qty, prob] : *this) {
+			if (prob > 0.0)
+				entropy -= prob * std::log(prob);
 		}
 		return entropy;
 	}

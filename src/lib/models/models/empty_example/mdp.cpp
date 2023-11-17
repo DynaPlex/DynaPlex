@@ -11,9 +11,6 @@ namespace DynaPlex::Models {
 			VarGroup vars;
 			//Needs to update later:
 			vars.Add("valid_actions", 1);
-			//VarGroup feats{};
-			//vars.Add("features", feats);
-			vars.Add("discount_factor", discount_factor);
 			return vars;
 		}
 
@@ -77,7 +74,14 @@ namespace DynaPlex::Models {
 			throw DynaPlex::NotImplementedError();
 		}
 
-		
+		std::vector<std::tuple<MDP::Event, double>> MDP::EventProbabilities() const
+		{
+			//This is optional to implement. You only need to implement it if you intend to solve versions of your problem
+			//using exact methods that need access to the exact event probabilities.
+			//Note that this is typically only feasible if the state space if finite and not too big, i.e. at most a few million states.
+			throw DynaPlex::NotImplementedError();
+		}
+
 
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {
 			throw DynaPlex::NotImplementedError();

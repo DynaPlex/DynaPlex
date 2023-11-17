@@ -3,6 +3,8 @@
 #include "dynaplex/vargroup.h"
 #include "dynaplex/features.h"
 #include "dynaplex/statecategory.h"
+#include <vector>
+#include <tuple>
 namespace DynaPlex::Erasure
 {
 	template <typename t_MDP,typename t_State>
@@ -10,6 +12,15 @@ namespace DynaPlex::Erasure
 		mdp.GetFeatures(state, feats);
 	};
 
+	template <typename t_MDP, typename t_Event>
+	concept HasEventProbabilities = requires (const t_MDP & mdp) {
+		{mdp.EventProbabilities()} -> std::same_as<std::vector<std::tuple<t_Event, double>>>;
+	};
+
+	template <typename t_MDP, typename t_State, typename t_Event>
+	concept HasStateDependendentEventProbabilities = requires (const t_MDP & mdp,const t_State & state) {
+		{mdp.EventProbabilities(state)} -> std::same_as<std::vector<std::tuple<t_Event, double>>>;
+	};
 
 	template <typename t_MDP,typename t_State>
 	concept HasGetStateFromVars = requires(const t_MDP & mdp, const VarGroup & vars) {

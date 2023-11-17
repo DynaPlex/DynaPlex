@@ -10,14 +10,13 @@ namespace DynaPlex::Models {
 			VarGroup vars;
 			vars.Add("valid_actions", number_of_bins);
 
-			VarGroup feats{};
-			vars.Add("features", feats);
 			vars.Add("discount_factor", discount_factor);
 
 			//This indicates that the MDP never terminates. 
 			//It may be used by various algorithms. 
 			//infinite is default, other value is finite for algorithms that are guaranteed to reach a final state at some point. 
 			vars.Add("horizon_type", "infinite");
+
 
 
 			return vars;
@@ -87,10 +86,13 @@ namespace DynaPlex::Models {
 
 
 		MDP::Event MDP::GetEvent(DynaPlex::RNG& rng) const {
-			return weight_dist.GetSample(rng);
+			return weight_dist.GetSample(rng); 
 		}
 
-		
+		std::vector<std::tuple<MDP::Event, double>> MDP::EventProbabilities() const {
+			return weight_dist.QuantityProbabilities();
+		}
+
 
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {
 			features.Add(state.weight_vector);

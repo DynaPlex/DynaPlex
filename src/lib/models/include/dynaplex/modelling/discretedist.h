@@ -8,13 +8,9 @@ namespace DynaPlex
 	class DiscreteDist
 	{
 	public:
-		struct QtyProb
-		{
-			int64_t qty;
-			double prob;
-
-		};
-
+		
+		using QtyProb = std::tuple<int64_t, double>;
+		
 		using value_type = QtyProb;
 		using size_type = std::size_t;
 		using reference = value_type&;
@@ -113,16 +109,28 @@ namespace DynaPlex
 		 * equal to `i` is approximately equal to the provided `alpha`.
 		 */
 		int64_t Fractile(double alpha) const;
+		/**
+		 * Returns the probability that the rv takes on this specific value. 
+		 */
 		double ProbabilityAt(int64_t value) const;
+		///Returns expectation of the rv. 
 		double Expectation() const;
+		///Returns variance of the rv.
 		double Variance() const;
+		///Returns standard deviation of the rv.
 		double StandardDeviation() const;
+		///Returns entropy of the rv.
 		double Entropy() const;
+		///returns the values for which probabilities are stored in this r.v.. Note some of these probabilities may be zero.
+		int64_t DistinctValueCount() const;
+
+		//Gets a vector that contains pairs of quantities and probabilities, together representing this probability distribution. 
+		std::vector<QtyProb> QuantityProbabilities() const;
 
 		DiscreteDist();
 
 		DiscreteDist(const DynaPlex::VarGroup& vars);
-
+		/// Returns a sample of the rv, using the rng as random number generator. 
 		int64_t GetSample(DynaPlex::RNG& rng) const;
 
 	};
