@@ -11,10 +11,10 @@ DynaPlex focuses on solving problems arising in Operations Management: Supply Ch
 
 - **`LICENSES/`**: Contains the licenses to used libraries and packages.
 - **`bash/`**: Contains the files used for running on a Linux HPC.
-- **`cmake/`**: Contains main fucntionality for building with CMake.
+- **`cmake/`**: Contains support functionality for building with CMake. 
 - **`docs/`**: Contains the documentation.
-- **`python/`**: Contains all functionality for pybindings.
-- **`src/`**: Contains the main code, users will only work in this folder.
+- **`python/`**: Contains example python scripts, that can be used after building the python bindings.
+- **`src/`**: Contains the main code base
   - **`executables/`**: Contains all executables you can run (you can add additional executables yourself here, that use the library).
   - **`extern/`**: Contains all external libraries used (e.g., googletest).
   - **`lib/`**: Contains all algorithms and all MDP models, you can implement your MDP in src/lib/models/models.
@@ -33,16 +33,24 @@ git clone --recurse-submodules https://github.com/WillemvJ/DynaPlexPrivate.git
 if you did not recurse submodules, or if you use other tools for cloning repos, please somehow ensure that submodules (especially googletest) are available. 
 
 ### Prerequisites
-
+For defining new models, you will need:
 - **CMake**: Building is supported with a modern CMake version (>= 3.21), often supplied with modern C++ IDEs.
-- **PyTorch**: Tests were conducted with a recent version. 
-- **Python Bindings**: With pybind11 - we provide an anaconda python/environment.yml that can be used to create appropriate environment. 
+
+For actually training models, you have two choices. Either go all c++, in which case you need to select C++ in the [PyTorch Installation Guide](https://pytorch.org/get-started/locally/) to download:
+- **LibTorch**: Tests were conducted with version 2.1.0.
+
+Alternatively, if you prefer to use python for training scripts:  
+- **Python Bindings**: With pybind11 - we provide an anaconda python/environment.yml that can be used to create appropriate environment for using those bindings. 
+
+In either case, you must provide a CMakeUserLists.txt in the root directory that provides the paths to the appropriate folders. An example (that you could copy to root where it will be ignored by git and by default invisible in some IDE) can be found in cmake/resources/CmakeUserPresets.txt
 
 ---
 
+
+
 ## Documentation
 
-The documentation can be found in the [docs](docs/) folder in this repo.
+Complete documentation can be found in the [docs](docs/) folder in this repo.
 
 ---
 
