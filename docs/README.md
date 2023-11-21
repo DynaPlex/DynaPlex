@@ -1,8 +1,8 @@
 # Documentation
 
 Here we host the documentation for readthedocs.
-As long as the GitHub project is still `private`, the documentation is not directly available.
-Only way to see the visualized docs page is by building it (see build_docs.md)
+As long as the GitHub project is still `private`.
+To build documentation yourself, see the instructions in build_docs.md
 
 
 ## Table of Contents:

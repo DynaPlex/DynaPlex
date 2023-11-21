@@ -50,9 +50,15 @@ Contents
 
 .. toctree::
    :maxdepth: 0
-   :caption: API reference
+   :caption: Reference
 
-   reference/api_refs
+   reference/model_ref
+   reference/policy_ref
+   reference/exact_ref
+   reference/event
+   reference/mdp
+   reference/state
+   reference/tester
 
 .. toctree::
    :maxdepth: 0

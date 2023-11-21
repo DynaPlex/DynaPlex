@@ -2,5 +2,6 @@ Algorithms
 ==========
 
 
-We will add a full explanation of the DCL algorithm later.
-For now, we refer to: `ArXiv paper <https://arxiv.org/abs/2011.15122>`_
+For a full explanation of the DCL algorithm we refer to: `ArXiv paper <https://arxiv.org/abs/2011.15122>`_
+
+Using PyBindings, PPO and other traditional RL algorithms are available. 

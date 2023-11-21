@@ -11,10 +11,10 @@ Testing
 
 Using tests to check whether code is following intended logic is a good way to verify that an MDP implements all required logic and to quickly identify oversights.
 
-	Got to ``src/tests/mdp_unit_tests/`` and make a new file called ``t_airplane.cpp``.
+	Go to ``src/tests/mdp_unit_tests/`` and make a new file called ``t_airplane.cpp``.
 
 
-We will add a simple test that loads JSON from `IORootDir/IO_DynaPlex/defaults/airplane/mdp_config_0`` - Attempts to configure MDP from that JSON file - Sets the ``rule_base`` policy - Performs a range of tests using the MDP and the Policy, i.e., checks whether a number of simulation steps can be run and whether all things work appropriately.
+We will add a simple test that loads JSON from ``IORootDir/IO_DynaPlex/defaults/airplane/mdp_config_0`` - Attempts to configure MDP from that JSON file - Sets the ``rule_base`` policy - Performs a range of tests using the MDP and the Policy, i.e., checks whether a number of simulation steps can be run and whether all things work appropriately.
 
 .. code-block:: cpp
 

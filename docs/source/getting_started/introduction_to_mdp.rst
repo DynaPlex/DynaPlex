@@ -24,6 +24,12 @@ Key Components of an MDP
 .. figure:: ../assets/images/mdp_illustration.png
    :alt: MDP illustration
 
+DynaPlex builds on the MDP-EI (MDP with exogenous inputs) framework, which is illustrated below. Here, :math:`s_t` represents the state at time :math:`t`, :math:`\pi` represent the policy, :math:`a_t` the decision, and :math:`c_t` the costs, the exogenous event is denoted by :math:`\xi_t` and the transition function is :math:`f`.
+For more information, we refer to: `ArXiv paper <https://arxiv.org/abs/2011.15122>`_ and `A unified framework for stochastic optimization <https://doi.org/10.1016/j.ejor.2018.07.014>`_
+
+.. figure:: ../assets/images/mdpei.png
+   :alt: MDP-EI illustration
+
 Why MDPs are Important
 -----------------------
 

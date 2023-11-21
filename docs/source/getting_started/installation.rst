@@ -4,7 +4,7 @@ Installation instructions
 Prerequisites
 -------------
 
-We assume that you already have installed a C++ IDE and if you want to run locally, a local version of LibTorch. You also need to install CMake (version >=3.21).
+We assume that you already have installed a C++ IDE and if you want to run locally, a local version of LibTorch. You also need CMake (version >=3.21). Most IDEs (e.g., Visual Studio) are supplied with CMake, if you install the right plugins.
 
 Setup
 -----

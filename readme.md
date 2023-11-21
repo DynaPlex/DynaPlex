@@ -15,7 +15,7 @@ DynaPlex focuses on solving problems arising in Operations Management: Supply Ch
 - **`docs/`**: Contains the documentation.
 - **`python/`**: Contains all functionality for pybindings.
 - **`src/`**: Contains the main code, users will only work in this folder.
-  - **`examples/`**: Contains all executables you can run (you can add additional executables yourself here, that use the library).
+  - **`executables/`**: Contains all executables you can run (you can add additional executables yourself here, that use the library).
   - **`extern/`**: Contains all external libraries used (e.g., googletest).
   - **`lib/`**: Contains all algorithms and all MDP models, you can implement your MDP in src/lib/models/models.
   - **`tests/`**: Contains all code for unit testing (supported by googletest).
@@ -34,7 +34,7 @@ if you did not recurse submodules, or if you use other tools for cloning repos, 
 
 ### Prerequisites
 
-- **CMake**: Building is supported with a modern CMake version (>= 3.21).
+- **CMake**: Building is supported with a modern CMake version (>= 3.21), often supplied with modern C++ IDEs.
 - **PyTorch**: Tests were conducted with a recent version. 
 - **Python Bindings**: With pybind11 - we provide an anaconda python/environment.yml that can be used to create appropriate environment. 
 
@@ -42,7 +42,7 @@ if you did not recurse submodules, or if you use other tools for cloning repos, 
 
 ## Documentation
 
-The documentation has moved to the docs/ folder in this repo.
+The documentation can be found in the [docs](docs/) folder in this repo.
 
 ---
 
