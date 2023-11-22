@@ -50,7 +50,7 @@ In either case, you must provide a CMakeUserLists.txt in the root directory that
 
 ## Documentation
 
-Complete documentation can be found in the [docs](docs/) folder in this repo.
+Complete documentation can be found on the website: https://dynaplex-documentation.readthedocs.io
 
 ---
 
