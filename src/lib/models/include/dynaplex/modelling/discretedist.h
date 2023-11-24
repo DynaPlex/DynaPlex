@@ -63,22 +63,40 @@ namespace DynaPlex
 
 		static bool IsProbMassFunction(const std::vector<double>& PMF);
 
-
+		
 	public:
+		
+		/// returns the least variance required for a certain mean, such that AER can be succesfully fit.
+		static double LeastVarianceRequiredForAERFit(double mean);
+
+
+		static DiscreteDist GetAdanEenigeResingDist(double mean, double stdev);
+		static DiscreteDist GetBinomialDist(double n, double p);
+		static DiscreteDist GetNegativeBinomialDist(double r, double p);
 		static DiscreteDist GetConstantDist(int64_t value);
 		static DiscreteDist GetZeroDist();
 		static DiscreteDist GetPoissonDist(double mean);
 		static DiscreteDist GetGeometricDist(double mean);
-		
+		static DiscreteDist GetGeometricDistFromProb(double p);
+
+
+		static int64_t GetAdanEenigeResingSample(double mean, double stdev, DynaPlex::RNG&);
+		static int64_t GetBinomialSample(int64_t n, double p, DynaPlex::RNG&);
+		static int64_t GetNegativeBinomialSample(int64_t r, double p, DynaPlex::RNG&);
+		static int64_t GetPoissonSample(double mean, DynaPlex::RNG&);
+		static int64_t GetGeometricSample(double mean, DynaPlex::RNG&);
+		static int64_t GetGeometricSampleFromProb(double p, DynaPlex::RNG&);
+
+
 		/**
-		 * Example: GetCumtomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2 
+		 * Example: GetCustomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2 
 		 * corresponds to -2 with prob 0.1, -1 with prob 0.2, 0 with prob 0.3 and 1 with prob 0.4.
 		 */
 		static DiscreteDist GetCustomDist(const std::vector<double>& probs, int64_t offset = 0);
 			
 
 		/**
-		 * Example: GetCumtomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2
+		 * Example: GetCustomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2
 		 * corresponds to -2 with prob 0.1, -1 with prob 0.2, 0 with prob 0.3 and 1 with prob 0.4.
 		 */
 		static DiscreteDist GetCustomDist(std::vector<double>&& probs, int64_t offset = 0);
@@ -91,6 +109,11 @@ namespace DynaPlex
 		{
 			return min;
 		}
+		
+		/**Returns a distribution that corresponds to a mix of this distribution (with probability 1.0-prob_of_other)
+		 * and the other distribution, with probability prob_of_other. 
+		 */
+		DiscreteDist Mix(const DiscreteDist& other, double prob_of_other) const;
 
 
 		/// returns distribution that corresponds to the sum of this and another distribution (assuming the two distributions are independent)

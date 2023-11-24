@@ -28,6 +28,7 @@ Acknowledgements:
 
 This software incorporates portions of the following projects:
 
+
 - pcg-cpp:
   - Copyright (c) 2014-2017 Melissa E. O'Neill and the PCG Project Contributors
   - Licenced under the MIT Licence, found under the LICENCES subfolder.
@@ -45,4 +46,9 @@ This software incorporates portions of the following projects:
   - Copyright (c) 2019 Martin Renou
   - Licensed under the BSD 3-Clause License.
 
+- Boost.Math
+  - Licensed under the Boost Software Licence.
+
 Full licensing texts for the above projects can be found in the LICENSES subfolder.
+
+googletest is included as submodule, licence can be found there. 

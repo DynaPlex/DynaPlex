@@ -5,7 +5,8 @@
   "leadtime": 3,
   "discount_factor": 1.0,
   "demand_dist": {
-    "type": "poisson",
-    "mean": 4.0
+    "type": "adan_eenige_resing",
+    "mean": 4.0,
+    "stdev": 1
   }
 }

@@ -34,6 +34,20 @@ namespace DynaPlex::Tests {
 		tester.ExecuteTest(model_name, mdp_config_name, policy_config_name);
 	}
 
+	TEST(lost_sales, mdp_config_2) {
+		std::string model_name = "lost_sales";
+		//Note: models/model_name/mdp_config_name is valid json config file for mdp "model_name". 
+		std::string mdp_config_name = "mdp_config_2.json";
+		//Note: models/model_name/policy_config_name is valid json config file for a policy for "model_name".  
+		std::string policy_config_name = "policy_config_1.json";
+		Tester tester{};
+		tester.AssertFlatFeatureAvailability = true;
+		//Opt in for testing the functionality that exposes exact event probabilities. 
+		tester.TestEventProbs = true;
+
+		tester.ExecuteTest(model_name, mdp_config_name, policy_config_name);
+	}
+
 	TEST(lost_sales, Basics) {
 		auto& dp = DynaPlexProvider::Get();
 		DynaPlex::VarGroup vars;

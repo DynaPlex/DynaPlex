@@ -21,7 +21,7 @@ add_dependencies(DP_${targetname} DP_copy_model_config_files)
 
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
 
-target_link_libraries(DP_${targetname} PRIVATE gtest gtest_main DynaPlex::DynaPlex DynaPlex::NN)
+target_link_libraries(DP_${targetname} PRIVATE gtest gtest_main DynaPlex::DynaPlex DynaPlex::NN Boost::math)
 
 if(dynaplex_all_warnings)
 target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3> $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>)

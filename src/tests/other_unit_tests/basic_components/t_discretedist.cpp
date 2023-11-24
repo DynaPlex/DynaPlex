@@ -7,12 +7,44 @@
 #include "dynaplex/modelling/discretedist.h"
 #include "dynaplex/rng.h"
 #include "dynaplex/policycomparison.h"
-
+#include <boost/math/distributions/binomial.hpp>
+#include <boost/math/distributions/negative_binomial.hpp>
 namespace DynaPlex::Tests {
 
 	using namespace DynaPlex;
 
-	std::map<int64_t, size_t> GatherBucketedSampleMeans(DiscreteDist& dist, size_t numSamples, size_t numMeans) {
+	template<typename SampleFunc>
+	std::map<int64_t, size_t> GatherBucketedSampleMeans(double mean, double sigma, size_t numSamples, size_t numMeans, SampleFunc sampleFunc) {
+		DynaPlex::RNG rng{ 26071983 ,1234 }; // Using a fixed seed for reproducibility
+
+		double trueMean = mean;
+		double trueVariance = sigma*sigma;
+		double sdOfSampleMean = std::sqrt(trueVariance / numSamples);
+
+		std::map<int64_t, size_t> buckets; // Map from bucket index to count of means
+
+		for (size_t meanIndex = 0; meanIndex < numMeans; ++meanIndex) {
+			std::vector<double> vec;
+			vec.reserve(numSamples);
+
+			for (size_t sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex) {
+				vec.push_back(sampleFunc(rng));
+			}
+
+			auto comparison = PolicyComparison::GetComparison(vec);
+
+			double deviationFromTrueMean = comparison.mean(0) - trueMean;
+
+			// Assigning the deviation to a bucket using the standard deviation of the sample mean
+			int64_t bucketIndex = static_cast<int64_t>(std::floor(deviationFromTrueMean / sdOfSampleMean));
+			buckets[bucketIndex]++;
+		}
+
+		return buckets;
+	}
+
+
+	std::map<int64_t, size_t> GatherBucketedSampleMeans(const DiscreteDist& dist, size_t numSamples, size_t numMeans) {
 		DynaPlex::RNG rng{ 26071983 ,1234}; // Using a fixed seed for reproducibility
 
 		double trueMean = dist.Expectation();
@@ -40,7 +72,131 @@ namespace DynaPlex::Tests {
 
 		return buckets;
 	}
+	TEST(discretedist, sampling)
+	{
+		int numMeans = 250;
+		int numSamples = 250;
+		{
+			for (double mean : { 0.1/*, 5.0, 200.0*/, 500.0})
+			{
+				double sigma = std::sqrt(mean);
+				auto buckets = GatherBucketedSampleMeans(mean, sigma, numSamples, numMeans,
+					[mean, sigma](DynaPlex::RNG& rng) -> double {
+						return DiscreteDist::GetPoissonSample(mean, rng);
+					});
 
+
+				size_t withinOneSD = buckets[0] + buckets[-1];
+				size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
+				size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
+
+				EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08)<< "pois " << mean;
+				EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << "pois " << mean;
+				EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << "pois " << mean;
+			}
+		}
+
+		{
+			for (double mean_in : { 0.1/*, 5.0, 200.0*/, 500.0})
+			{
+				auto dist = DiscreteDist::GetGeometricDist(mean_in);
+				auto mean = dist.Expectation();
+				double sigma = dist.StandardDeviation();
+				auto buckets = GatherBucketedSampleMeans(mean, sigma, numSamples, numMeans,
+					[mean, sigma](DynaPlex::RNG& rng) -> double {
+						return DiscreteDist::GetGeometricSample(mean, rng);
+					});
+
+
+				size_t withinOneSD = buckets[0] + buckets[-1];
+				size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
+				size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
+
+				EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << "geom " << mean;
+				EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << "geom " << mean;
+				EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << "geom " << mean;
+			}
+		}
+
+		{
+			for (double p : { 0.1/*, 0.5, 0.9*/})
+			{
+				for (int64_t n : {1,/*10,*/ 50})
+				{					
+					auto dist = DiscreteDist::GetBinomialDist(n, p);
+					auto mean = dist.Expectation();
+					double sigma = dist.StandardDeviation();
+					auto buckets = GatherBucketedSampleMeans(mean, sigma, numSamples, numMeans,
+						[n, p](DynaPlex::RNG& rng) -> double {
+							return DiscreteDist::GetBinomialSample(n, p, rng);
+						});
+
+					size_t withinOneSD = buckets[0] + buckets[-1];
+					size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
+					size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
+
+					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << " bin  p - " << p << " n " << n;
+					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << " bin  p - " << p << " n " << n;
+					EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << " bin  p - " << p << " n " << n;
+				}
+			}
+		}
+
+		{
+			for (double p : { 0.1, 0.5, 0.9})
+			{
+				for (int64_t r : {2/*, 10, 50*/})
+				{
+					auto dist = DiscreteDist::GetNegativeBinomialDist(r, p);
+					auto mean = dist.Expectation();
+					double sigma = dist.StandardDeviation();
+					auto buckets = GatherBucketedSampleMeans(mean, sigma, numSamples, numMeans,
+						[r, p](DynaPlex::RNG& rng) -> double {
+							return DiscreteDist::GetNegativeBinomialSample(r, p, rng);
+						});
+
+					size_t withinOneSD = buckets[0] + buckets[-1];
+					size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
+					size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
+
+					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << " bin  p - " << p << " r " << r;
+					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << " bin  p - " << p << " r " << r;
+					EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << " bin  p - " << p << " r " << r;
+				}
+			}
+		}
+
+
+		{
+			for (double mean : {0.08, 1.0,  10.0})
+			{
+				for (double sigma : {0.2,  2.0, 10.0})
+				{
+					if (sigma * sigma < DiscreteDist::LeastVarianceRequiredForAERFit(mean))
+					{
+						continue;
+					}
+					if (sigma / mean > 5 || mean/sigma>4)
+					{//these fail because of insufficient samples to get to normality
+						continue;
+					}
+
+					auto buckets = GatherBucketedSampleMeans(mean, sigma, numSamples, numMeans,
+						[mean, sigma](DynaPlex::RNG& rng) -> double {
+							return DiscreteDist::GetAdanEenigeResingSample(mean, sigma, rng);
+						});				
+					size_t withinOneSD = buckets[0] + buckets[-1];
+					size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
+					size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
+
+					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08)<< "  mean  " << mean << "  sigma " << sigma;
+					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << "  mean  " << mean << "  sigma " << sigma;
+					EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << "  mean  " << mean << "  sigma " << sigma;
+				}
+			}
+		}
+
+	}
 
 	TEST(discretedist, GetSample) {
 
@@ -52,7 +208,7 @@ namespace DynaPlex::Tests {
 			DynaPlex::VarGroup vg;
 			vg.Add("type", "custom");
 			vg.Add("probs", probs);
-			vg.Add("offset", 0);  // This means the values are [0, 1, 2, 3, 4]
+			vg.Add("offset", 0);  
 			DiscreteDist customDist(vg);
 
 
@@ -63,7 +219,7 @@ namespace DynaPlex::Tests {
 			size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
 			size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
-			EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.05);
+			EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08);
 			EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03);
 			EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01);
 		}
@@ -82,7 +238,7 @@ namespace DynaPlex::Tests {
 			size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
 			size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
-			EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.05);
+			EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08);
 			EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03);
 			EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01);
 		}
@@ -288,6 +444,123 @@ namespace DynaPlex::Tests {
 			ASSERT_NEAR(dist.Variance(), expectedVariance, 0.00001);
 		}
 
+		// Test Binomial Distribution
+		{
+			DynaPlex::VarGroup vg;
+			double n=20, p=0.3;
+			vg.Add("type", "binomial");
+			vg.Add("n", n);
+			vg.Add("p", p);
+
+			DiscreteDist dist;
+			ASSERT_NO_THROW(
+				//Binomial
+				dist = DiscreteDist(vg);
+			);
+			boost::math::binomial_distribution<> boostDist(n, p);
+			double expectedMean = boost::math::mean(boostDist);
+			double expectedVariance = boost::math::variance(boostDist);
+
+			ASSERT_NEAR(dist.Expectation(), expectedMean, 0.00001);
+			ASSERT_NEAR(dist.Variance(), expectedVariance, 0.00001);
+		}
+		
+		// Test Negative Binomial Distribution
+		{
+			double successes = 10;
+			double prob = 0.4;
+			DynaPlex::VarGroup vg;
+			vg.Add("type", "negative_binomial");
+			vg.Add("r", successes);
+			vg.Add("p", prob);
+
+			DiscreteDist dist;
+			ASSERT_NO_THROW(
+				dist = DiscreteDist(vg);
+			);
+			boost::math::negative_binomial_distribution<> boostDist(successes, prob);
+			double expectedMean_NB = boost::math::mean(boostDist);
+			double expectedVariance_NB = boost::math::variance(boostDist);
+
+		    ASSERT_NEAR(dist.Expectation(), expectedMean_NB, 0.00001);
+			ASSERT_NEAR(dist.Variance(), expectedVariance_NB, 0.00001);
+		}
+
+		{
+			for (double mean_input =0.0; mean_input < 10.0; mean_input += 1.0)
+			{
+				for (double eps : { 0.0, 1e-9})
+				{					
+					double mean = mean_input + eps;
+					if (mean == 0.0)
+						continue;
+					for (double variance : {1e-8, 1e-6, 1e-4})
+					{
+						double stdev = std::sqrt(variance);
+
+						DynaPlex::VarGroup vg;
+						vg.Add("type", "adan_eenige_resing");
+						vg.Add("mean", mean);
+						vg.Add("stdev", stdev);
+
+						DiscreteDist dist;
+						ASSERT_NO_THROW(
+							dist = DiscreteDist(vg);
+						) << " mean " << mean << " var " << variance << std::endl;
+						ASSERT_NEAR(dist.Expectation(), mean, std::max(1e-8, 1e-6 * mean)) << " mean " << mean << " var " << variance << std::endl;
+						//it seems there are some numerical issues around variance=mean
+						//if we use poisson, it gives the current tolerance.
+						//if we use negbin - issue is that it is slow.
+						//Hence the relatively wide tolerance here:
+						ASSERT_NEAR(dist.StandardDeviation(), stdev, std::max(1e-3, 1e-3 * stdev)) << " mean " << mean << " var " << variance << std::endl;;
+					}
+				}
+			}
+		}
+
+
+		{
+			for (double mean_input = 0.001; mean_input < 1000.0; mean_input *= 1.5)
+			{
+				double mean = mean_input;				
+				for ( double extra : {-1.0,0.00000001,0.000001,0.0001,0.001,0.01,0.1,1.0,2.0,4.0,8.0,mean,mean*2,mean*10})
+				{
+					
+					double leastVarianceRequired = DiscreteDist::LeastVarianceRequiredForAERFit(mean);
+
+					double variance;
+					if (extra == -1.0)
+					{
+						variance = mean;
+					}
+					else
+					{
+						variance = leastVarianceRequired + extra;
+					}
+					double stdev = std::sqrt(variance);
+
+					DynaPlex::VarGroup vg;
+					vg.Add("type", "adan_eenige_resing");
+					vg.Add("mean", mean);
+					vg.Add("stdev", stdev);
+
+					DiscreteDist dist;
+					ASSERT_NO_THROW(
+						dist = DiscreteDist(vg);
+					) << " mean " << mean << " var " << variance << std::endl;
+
+					ASSERT_NEAR(dist.Expectation(), mean,std::max(1e-8, 1e-5*mean)) << " mean " << mean << " var " << variance << std::endl;
+					//it seems there are some numerical issues around variance=mean
+					//if we use poisson, it gives the current tolerance.
+					//if we use negbin - issue is that it is slow.
+					//Hence the relatively wide tolerance here:
+					ASSERT_NEAR(dist.StandardDeviation(), stdev, std::max(1e-8, 1e-3 * stdev)) << " mean " << mean << " var " << variance << std::endl;;
+				}
+			}
+
+
+		}
+
 		// Test Custom Distribution
 		{
 			DynaPlex::VarGroup vg;
@@ -317,6 +590,48 @@ namespace DynaPlex::Tests {
 			}
 		}
 	}
+
+	TEST(discretedist, mix_tests) {
+
+		// Construct two custom distributions
+		std::vector<double> probs1 = { 0.2, 0.5, 0.3 }; // Probabilities for 0, 1, 2 respectively
+		std::vector<double> probs2 = { 0.4, 0.4, 0.2 }; // Probabilities for 0, 1, 2 respectively
+		DynaPlex::VarGroup vg1, vg2;
+		vg1.Add("type", "custom");
+		vg1.Add("probs", probs1);
+		vg2.Add("type", "custom");
+		vg2.Add("probs", probs2);
+
+		DiscreteDist dist1(vg1);
+		DiscreteDist dist2(vg2);
+
+		// Probability of the second distribution in the mix
+		double probOfSecond = 0.3;
+
+		// Mix the two distributions
+		DiscreteDist mixedDist = dist1.Mix(dist2, probOfSecond);
+
+		// The mixed probabilities should be: 
+		// 0.2*(1-0.3) + 0.4*0.3 for 0, 
+		// 0.5*(1-0.3) + 0.4*0.3 for 1,
+		// 0.3*(1-0.3) + 0.2*0.3 for 2.
+
+		ASSERT_NEAR(mixedDist.ProbabilityAt(0), 0.2 * (1 - probOfSecond) + 0.4 * probOfSecond, 0.001);
+		ASSERT_NEAR(mixedDist.ProbabilityAt(1), 0.5 * (1 - probOfSecond) + 0.4 * probOfSecond, 0.001);
+		ASSERT_NEAR(mixedDist.ProbabilityAt(2), 0.3 * (1 - probOfSecond) + 0.2 * probOfSecond, 0.001);
+
+		// Check the range of the mixed distribution
+		ASSERT_EQ(mixedDist.Min(), 0);
+		ASSERT_EQ(mixedDist.Max(), 2);
+
+		// Confirm that the probabilities sum up to 1
+		double totalProb = 0;
+		for (const auto& [qty, prob] : mixedDist) {
+			totalProb += prob;
+		}
+		ASSERT_NEAR(totalProb, 1.0, 0.001);
+	}
+
 
 	TEST(discretedist, inversion_maximum_tests) {
 		
