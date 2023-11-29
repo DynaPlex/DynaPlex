@@ -66,7 +66,7 @@ int main() {
 				auto policy = mdp->GetPolicy("base_stock");
 
 				// Call and train DCL with specified instance to solve
-				auto dcl = dp.GetDCL(mdp, dcl_config, policy);
+				auto dcl = dp.GetDCL(mdp, policy, dcl_config);
 				dcl.TrainPolicy();
 
 				auto policies = dcl.GetPolicies();
