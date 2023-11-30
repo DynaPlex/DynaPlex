@@ -113,6 +113,10 @@ namespace DynaPlex::Tests {
 		for (int seed = 0; seed < numSeeds; seed++)
 		{
 			ASSERT_NO_THROW(
+				trajectory.SeedRNGProvider(true, seed);
+			) << info;
+
+			ASSERT_NO_THROW(
 				mdp->InitiateState({ &trajectory,1 });
 			) << info << "Did you correctly implement GetInitialState() const or GetInitialState(DynaPlex::RNG&) const";
 
@@ -123,9 +127,6 @@ namespace DynaPlex::Tests {
 					someStates.push_back(trajectory.GetState()->Clone())
 				) << info << "Error while cloning state. Does mdp::State support copying?";
 			}
-			ASSERT_NO_THROW(
-				trajectory.SeedRNGProvider( true, seed);
-			) << info;
 
 			int64_t max_event_count = 128;
 			bool finalreached = false;
@@ -246,10 +247,10 @@ namespace DynaPlex::Tests {
 					
 				} 
 
+				trajVec[0].SeedRNGProvider(false, 12, 0);
+				trajVec[1].SeedRNGProvider(false, 12, 0);
 				mdp->InitiateState({ &trajVec[0] ,1 }, state);
 				mdp->InitiateState({ &trajVec[1] ,1 }, loaded_state);
-				trajVec[0].SeedRNGProvider(false,12,0);
-				trajVec[1].SeedRNGProvider(false, 12, 0);
 
 				int64_t max_period_count = 10;
 				int64_t action_count = 0;
