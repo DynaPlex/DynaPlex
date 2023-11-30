@@ -51,8 +51,15 @@ namespace DynaPlex::NN {
             std::vector<int64_t> AllowedActions = mdp->AllowedActions(sample.state);
             for (int64_t action : AllowedActions) {
                 mask_ptr[idx * output_dim + action] = 0.0f;
-                cost_ptr[idx * output_dim + action] = sample.cost_improvement[action];
-                probs_ptr[idx * output_dim + action] = sample.probabilities[action];
+                auto it = std::lower_bound(AllowedActions.begin(), AllowedActions.end(), action);
+                if (it != AllowedActions.end() && *it == action) {
+                    size_t index = it - AllowedActions.begin();
+                    cost_ptr[idx * output_dim + action] = sample.cost_improvement[index];
+                    probs_ptr[idx * output_dim + action] = sample.probabilities[index];
+                }
+                else {
+                    throw DynaPlex::Error("PolicyTrainer::prepare_batch - cannot find action index.");
+                }
             }
         }
 
@@ -81,7 +88,7 @@ namespace DynaPlex::NN {
             system << nn_architecture.Dump() << std::endl;
          // Set up the optimizer (for example, Adam optimizer).
       
-        torch::optim::Adam optimizer(any_module_as_nn_module->parameters(), torch::optim::AdamOptions(2e-4).betas({ 0.5,0.999 }).weight_decay(0.0));
+        torch::optim::Adam optimizer(any_module_as_nn_module->parameters(), torch::optim::AdamOptions(1e-3).betas({ 0.9,0.999 }).weight_decay(0.0));
             
         int64_t validation_size = std::max(static_cast<int64_t>(0.05 * data.Samples.size()), static_cast<int64_t>(1));
         int64_t training_size = static_cast<int64_t>(data.Samples.size()) - validation_size;

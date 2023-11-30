@@ -17,7 +17,6 @@ namespace DynaPlex::DCL {
 
 	}
 
-	//See uniformactionselector.cpp for changing these values
 	bool adopt_crn_sh = true;
 	int64_t max_chunk_size_sh = 256;
 	int64_t max_steps_until_completion_expected_sh = 1000000;
@@ -31,9 +30,13 @@ namespace DynaPlex::DCL {
 
 		policy->SetAction({ &traj,1 });
 		auto prescribed_action_initial_policy = traj.NextAction;
+		bool prescribed_action_allowed = true;
 		auto it = std::lower_bound(root_actions.begin(), root_actions.end(), prescribed_action_initial_policy);
 		if (it != root_actions.end() && *it == prescribed_action_initial_policy) {
 			prescribed_action_initial_policy = it - root_actions.begin();
+		}
+		else {
+			prescribed_action_allowed = false;
 		}
 
 		if (root_actions.size() <= 1)
@@ -182,6 +185,9 @@ namespace DynaPlex::DCL {
 			for (int i = 0; i < top_m; ++i) {
 				competing_actions[i] = paired[i].first;
 			}
+			if (iter == 0 && !prescribed_action_allowed) {
+				prescribed_action_initial_policy = competing_actions.back();
+			}
 			competing_actions.resize(top_m); // keep only top_m performing actions
 
 			double best_reward = paired[0].second;
@@ -204,6 +210,9 @@ namespace DynaPlex::DCL {
 				auto it = std::lower_bound(root_actions.begin(), root_actions.end(), traj.NextAction);
 				if (it != root_actions.end() && *it == traj.NextAction) {
 					best_action_id = it - root_actions.begin();
+				}
+				else {
+					throw DynaPlex::Error("SequentialHalving::SetAction - cannot find best_action_id.");
 				}
 
 				DynaPlex::PolicyComparison comp(std::move(trajectory_costs));

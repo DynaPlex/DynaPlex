@@ -47,8 +47,6 @@ namespace DynaPlex::NN {
 			DynaPlex::Error("Sample: Value error, the sum of probabilities is not 1.0.");
 		}
 		vars.Add("probabilities", probabilities);
-
-		return vars;
 		
 		return vars;		
 	}

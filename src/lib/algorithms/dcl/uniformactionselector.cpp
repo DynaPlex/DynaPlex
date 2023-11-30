@@ -30,9 +30,13 @@ namespace DynaPlex::DCL {
 
 		policy->SetAction({ &traj,1 });
 		auto prescribed_action_initial_policy = traj.NextAction;
+		bool prescribed_action_allowed = true;
 		auto it = std::lower_bound(root_actions.begin(), root_actions.end(), prescribed_action_initial_policy);
 		if (it != root_actions.end() && *it == prescribed_action_initial_policy) {
 			prescribed_action_initial_policy = it - root_actions.begin();
+		}
+		else {
+			prescribed_action_allowed = false;
 		}
 
 		if (root_actions.size() <= 1)
@@ -141,6 +145,20 @@ namespace DynaPlex::DCL {
 		}
 		if (best_reward == -std::numeric_limits<double>::infinity())
 			throw DynaPlex::Error("UniformActionSelector::SetAction - error in logic");
+
+		double worst_reward = std::numeric_limits<double>::infinity();
+		if (!prescribed_action_allowed) {
+			for (int64_t action_id = 0; action_id < root_actions.size(); action_id++)
+			{
+				if (comp.mean(action_id) < worst_reward)
+				{
+					worst_reward = comp.mean(action_id);
+					prescribed_action_initial_policy = action_id;
+				}
+			}
+			if (worst_reward == std::numeric_limits<double>::infinity())
+				throw DynaPlex::Error("UniformActionSelector::SetAction - error in logic");
+		}
 
 		traj.NextAction = best_action;
 
