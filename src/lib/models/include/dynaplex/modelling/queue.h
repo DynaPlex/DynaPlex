@@ -9,12 +9,12 @@
 
 
 namespace DynaPlex {
-    template<typename T>
+	template<typename T>
 	class Queue
 	{
 		static_assert(DynaPlex::Concepts::DP_ElementType<T>, " DynaPlex::Queue<T> - T must be of DP_ElementType, i.e. double, int64_t, string, or DynaPlex::VarGroupConvertible.");
 
-	public: 
+	public:
 
 		using value_type = T;
 		using size_type = std::size_t;
@@ -104,14 +104,14 @@ namespace DynaPlex {
 			other.num_items = 0;
 		}
 
-		Queue& operator=(const Queue& other) = default;  
+		Queue& operator=(const Queue& other) = default;
 
 		Queue& operator=(Queue&& other) noexcept {
-			if (this != &other) { 
+			if (this != &other) {
 				first_item = other.first_item;
 				num_items = other.num_items;
-				items = std::move(other.items); 
-				other.num_items = 0;  
+				items = std::move(other.items);
+				other.num_items = 0;
 			}
 			return *this;
 		}
@@ -137,7 +137,7 @@ namespace DynaPlex {
 				//Expand the vector
 				size_t new_capacity = (items.size() == 0) ? 4 : items.size() * 2;
 				reserve(new_capacity);
-				
+
 			}
 			items[GetVectorIndex(first_item + num_items++)] = item;
 		}
@@ -187,7 +187,28 @@ namespace DynaPlex {
 			return items[first_item];
 		}
 
-		
+		T& at(size_t loc)
+		{
+			if (IsEmpty()) {
+				throw DynaPlex::Error("Queue: queue is empty");
+			}
+			if (loc >= num_items) {
+				throw DynaPlex::Error("Queue: length error");
+			}
+			return items[GetVectorIndex(first_item + loc)];
+		}
+
+		const T& at(size_t loc) const
+		{
+			if (IsEmpty()) {
+				throw DynaPlex::Error("Queue: queue is empty");
+			}
+			if (loc >= num_items) {
+				throw DynaPlex::Error("Queue: length error");
+			}
+			return items[GetVectorIndex(first_item + loc)];
+		}
+
 		T sum()
 		{
 			static_assert(std::is_same_v<T, double> || std::is_same_v<T, int64_t>, "dynaplex::queue::sum can only be called when T is double or int64_t");

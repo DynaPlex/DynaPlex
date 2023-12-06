@@ -12,10 +12,14 @@ namespace DynaPlex::Models {
 	namespace order_picking {
 		void Register(DynaPlex::Registry&);
 	}
-	
+	namespace perishable_systems {
+		void Register(DynaPlex::Registry&);
+	}
+
 	void RegistrationManager::RegisterAll(DynaPlex::Registry& registry) {
 		lost_sales::Register(registry);
 		bin_packing::Register(registry);
 		order_picking::Register(registry);
+		perishable_systems::Register(registry);
 	}
 }

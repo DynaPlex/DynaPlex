@@ -8,9 +8,9 @@ namespace DynaPlex
 	class DiscreteDist
 	{
 	public:
-		
+
 		using QtyProb = std::tuple<int64_t, double>;
-		
+
 		using value_type = QtyProb;
 		using size_type = std::size_t;
 		using reference = value_type&;
@@ -41,7 +41,7 @@ namespace DynaPlex
 		Iterator end() const;
 
 		bool operator==(const DiscreteDist& other) const = default;
-	
+
 	private:
 		std::vector<double> translatedPMF{};
 		int64_t min{ 0 };
@@ -63,9 +63,9 @@ namespace DynaPlex
 
 		static bool IsProbMassFunction(const std::vector<double>& PMF);
 
-		
+
 	public:
-		
+
 		/// returns the least variance required for a certain mean, such that AER can be succesfully fit.
 		static double LeastVarianceRequiredForAERFit(double mean);
 
@@ -89,11 +89,11 @@ namespace DynaPlex
 
 
 		/**
-		 * Example: GetCustomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2 
+		 * Example: GetCustomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2
 		 * corresponds to -2 with prob 0.1, -1 with prob 0.2, 0 with prob 0.3 and 1 with prob 0.4.
 		 */
 		static DiscreteDist GetCustomDist(const std::vector<double>& probs, int64_t offset = 0);
-			
+
 
 		/**
 		 * Example: GetCustomDist with probs = {0.1 0.2, 0.3, 0.4} and offset = -2
@@ -109,9 +109,9 @@ namespace DynaPlex
 		{
 			return min;
 		}
-		
+
 		/**Returns a distribution that corresponds to a mix of this distribution (with probability 1.0-prob_of_other)
-		 * and the other distribution, with probability prob_of_other. 
+		 * and the other distribution, with probability prob_of_other.
 		 */
 		DiscreteDist Mix(const DiscreteDist& other, double prob_of_other) const;
 
@@ -133,7 +133,7 @@ namespace DynaPlex
 		 */
 		int64_t Fractile(double alpha) const;
 		/**
-		 * Returns the probability that the rv takes on this specific value. 
+		 * Returns the probability that the rv takes on this specific value.
 		 */
 		double ProbabilityAt(int64_t value) const;
 		///Returns expectation of the rv. 

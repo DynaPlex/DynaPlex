@@ -1,0 +1,13 @@
+{
+  "id": "perishable_systems",
+  "o": 100.0,
+  "h": 0.0,
+  "c": 0.0,
+  "p": 100.0,
+  "mu": 4.0,
+  "cvr": 1.0,
+  "f": 1.0,
+  "LeadTime": 1,
+  "ProductLife": 3,
+  "discount_factor": 1.0
+}

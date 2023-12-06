@@ -10,7 +10,7 @@ int main() {
 		{"early_stopping_patience",15},
 		{"mini_batch_size", 64},
 		{"max_training_epochs", 1000},
-		{"train_based_on_probs", true}
+		{"train_based_on_probs", false}
 	};
 
 	DynaPlex::VarGroup nn_architecture{
@@ -64,6 +64,7 @@ int main() {
 
 				DynaPlex::MDP mdp = dp.GetMDP(config);
 				auto policy = mdp->GetPolicy("base_stock");
+				std::cout << config.Dump() << std::endl;
 
 				// Call and train DCL with specified instance to solve
 				auto dcl = dp.GetDCL(mdp, policy, dcl_config);

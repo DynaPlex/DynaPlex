@@ -12,7 +12,7 @@
 
 namespace DynaPlex
 {
-	
+
 	enum class DistType {
 		CONSTANT,
 		ZERO,
@@ -27,7 +27,7 @@ namespace DynaPlex
 
 
 	int64_t DiscreteDist::DistinctValueCount() const {
-		return static_cast<int64_t>( translatedPMF.size());
+		return static_cast<int64_t>(translatedPMF.size());
 	}
 
 
@@ -43,7 +43,7 @@ namespace DynaPlex
 	}
 
 
-	DiscreteDist::DiscreteDist(const DynaPlex::VarGroup& vars) 
+	DiscreteDist::DiscreteDist(const DynaPlex::VarGroup& vars)
 	{
 		std::string type;
 		vars.Get("type", type);
@@ -123,7 +123,7 @@ namespace DynaPlex
 		{
 			std::vector<double> probs;
 			vars.Get("probs", probs);
-			
+
 			int64_t offset;
 			if (vars.HasKey("offset"))
 			{
@@ -238,13 +238,13 @@ namespace DynaPlex
 		// Adan, Eenige & Resing (1995)
 		const double epsilon = 1e-8; // Tolerance level
 		bool nearInteger = std::abs(mean - std::round(mean)) < epsilon;
-		bool nearZeroSigma = std::abs(stdev) < epsilon;	
+		bool nearZeroSigma = std::abs(stdev) < epsilon;
 		if (mean <= 0.0)
 			throw DynaPlex::Error("DiscreteDist: AdanEenigeResing - mean should be strictly positive");
 		if (stdev < 0.0)
 			throw DynaPlex::Error("DiscreteDist: AdanEenigeResing - sigma should be non-negative");
-		double delta = mean- std::floor(mean);
-		bool condition = stdev * stdev > (delta) * (1.0 - delta);	
+		double delta = mean - std::floor(mean);
+		bool condition = stdev * stdev > (delta) * (1.0 - delta);
 		return (condition || (nearInteger && nearZeroSigma));
 	}
 
@@ -266,21 +266,21 @@ namespace DynaPlex
 	}
 	DiscreteDist DiscreteDist::GetGeometricDistFromProb(double p)
 	{
-		if(p>1.0 || p<0.0)
-			throw DynaPlex::Error("DiscreteDist: GetGeometricDistFromProb must be in [0.0,1.0).");		
+		if (p > 1.0 || p < 0.0)
+			throw DynaPlex::Error("DiscreteDist: GetGeometricDistFromProb must be in [0.0,1.0).");
 		std::vector<double> probVec;
-		int64_t max =3+ boost::math::geometric_distribution<double>::find_maximum_number_of_trials(0, 1.0-p,1.0- epsilon);
-		probVec.reserve(max);		
+		int64_t max = 3 + boost::math::geometric_distribution<double>::find_maximum_number_of_trials(0, 1.0 - p, 1.0 - epsilon);
+		probVec.reserve(max);
 		double mult = 1.0 - p;
 		double prob = p;
 		while (prob > epsilon)
 		{
-    		probVec.push_back(prob);
-			prob *= mult;			
+			probVec.push_back(prob);
+			prob *= mult;
 		}
 		if (probVec.size() > max)
 			throw DynaPlex::Error("GetGeometricDistFromProb - Invalid maximum: p=" + std::to_string(p) + " computed max=" + std::to_string(max) + " actual=" + std::to_string(probVec.size()));
-	    if (!IsProbMassFunction(probVec))
+		if (!IsProbMassFunction(probVec))
 		{
 			throw DynaPlex::Error("Input vector is not a probability mass function.");
 		}
@@ -294,7 +294,7 @@ namespace DynaPlex
 			throw DynaPlex::Error("DiscreteDist: mean must be non-negative.");
 		}
 		double p = 1.0 / (1.0 + mean);
-		return GetGeometricSampleFromProb(p,rng);
+		return GetGeometricSampleFromProb(p, rng);
 	}
 
 	int64_t DiscreteDist::GetGeometricSampleFromProb(double p, DynaPlex::RNG& rng)
@@ -313,11 +313,11 @@ namespace DynaPlex
 
 		double a = (stdev / mean) * (stdev / mean) - 1 / mean;
 		if (std::abs(a) < 1e-6) // Poisson distribution
-		{			
-			return GetPoissonSample(mean,rng);
+		{
+			return GetPoissonSample(mean, rng);
 		}
 		else if (a < 0) // Binomial mixture distribution
-		{			
+		{
 			if (std::abs(a + 1) < 1e-10)
 			{
 				if (a > -1)
@@ -334,30 +334,30 @@ namespace DynaPlex
 				return DiscreteDist::GetBinomialSample(k + 1, p, rng);
 		}
 		else if (a < 1) // Negative binomial mixture
-		{			
+		{
 			int64_t k = static_cast<int64_t>(std::floor(1.0 / a));
 			double q = ((1.0 + k) * a - std::sqrt((1.0 + k) * (1.0 - a * k))) / (1.0 + a);
 			double p = mean / (k + 1.0 - q + mean);
 
 			if (rng.genUniform() < q)
-				return DiscreteDist::GetNegativeBinomialSample(k, 1-p, rng);
+				return DiscreteDist::GetNegativeBinomialSample(k, 1 - p, rng);
 			else
-				return DiscreteDist::GetNegativeBinomialSample(k + 1,1-p, rng);
+				return DiscreteDist::GetNegativeBinomialSample(k + 1, 1 - p, rng);
 		}
 		else // Geometric mixture: a>1
-		{			
+		{
 			double var_positive = 1.0 + a + std::sqrt(a * a - 1.0);
 			double var_negative = 1.0 + a - std::sqrt(a * a - 1.0);
 			double p1 = (mean * var_positive) / (2.0 + mean * var_positive);
 			double q1 = 1.0 / var_positive;
 			double p2 = (mean * var_negative) / (2.0 + mean * var_negative);
 			if (rng.genUniform() < q1)
-				return DiscreteDist::GetGeometricSampleFromProb(1.0-p1, rng);
+				return DiscreteDist::GetGeometricSampleFromProb(1.0 - p1, rng);
 			else
 				return DiscreteDist::GetGeometricSampleFromProb(1.0 - p2, rng);
 		}
 	}
-	
+
 	DiscreteDist DiscreteDist::GetAdanEenigeResingDist(double mean, double stdev)
 	{
 		// Check if it is even a feasible distribution, satisfying Adan's demand condition
@@ -458,7 +458,7 @@ namespace DynaPlex
 		{
 			PMFResult[0] += translatedPMF[i];
 		}
-		
+
 
 		for (int64_t i = delta + 1ll; i <= max - min; i++)
 		{
@@ -482,7 +482,7 @@ namespace DynaPlex
 		return DiscreteDist(PMFResult, minResult);
 	}
 
-	
+
 	int64_t DiscreteDist::Fractile(double alpha) const
 	{
 		double resProb = 1.0;
@@ -504,12 +504,12 @@ namespace DynaPlex
 
 	DiscreteDist::DiscreteDist(std::vector<double>&& TranslatedProbMF, int64_t offSet)
 		: translatedPMF(std::move(TranslatedProbMF)), min(offSet)
-	{	
+	{
 	}
 
 	DiscreteDist::DiscreteDist(const std::vector<double>& TranslatedProbMF, int64_t offSet)
 		: translatedPMF(TranslatedProbMF), min(offSet)
-	{		
+	{
 	}
 
 	DiscreteDist DiscreteDist::GetConstantDist(int64_t constant)
@@ -543,14 +543,14 @@ namespace DynaPlex
 
 	int64_t DiscreteDist::GetBinomialSample(int64_t n, double p, DynaPlex::RNG& rng)
 	{
-		if (p < 0.0||p>1.0)
+		if (p < 0.0 || p>1.0)
 		{
 			throw DynaPlex::Error("DiscreteDist: p must be in [0,1].");
 		}
-		if(n<0)
+		if (n < 0)
 			throw DynaPlex::Error("DiscreteDist: n must be nonnegative.");
 
-		std::binomial_distribution<> dist(n,p);
+		std::binomial_distribution<> dist(n, p);
 		return dist(rng.gen());
 	}
 
@@ -560,21 +560,21 @@ namespace DynaPlex
 		{
 			throw DynaPlex::Error("DiscreteDist: p must be in [0,1].");
 		}
-		if(r<0)
+		if (r < 0)
 			throw DynaPlex::Error("DiscreteDist: r must be nonnegative.");
 
 		std::negative_binomial_distribution<> dist(r, p);
-	/*	boost::math::negative_binomial_distribution<> bdist(static_cast<double>(r), p);
-		int64_t i = 0;
-		double prob = boost::math::pdf(bdist, i);
-		double prob_left = rng.genUniform();
-		while (prob_left > prob)
-		{
-			prob_left -= prob;
-			prob = boost::math::pdf(bdist, ++i);
+		/*	boost::math::negative_binomial_distribution<> bdist(static_cast<double>(r), p);
+			int64_t i = 0;
+			double prob = boost::math::pdf(bdist, i);
+			double prob_left = rng.genUniform();
+			while (prob_left > prob)
+			{
+				prob_left -= prob;
+				prob = boost::math::pdf(bdist, ++i);
 
-		}
-		return i;*/
+			}
+			return i;*/
 
 
 		return dist(rng.gen());
@@ -586,11 +586,11 @@ namespace DynaPlex
 		{
 			throw DynaPlex::Error("DiscreteDist: mean must be non-negative.");
 		}
-		std::poisson_distribution<> dist(mean); 
+		std::poisson_distribution<> dist(mean);
 		return dist(rng.gen());
 	}
 
-	
+
 	DiscreteDist DiscreteDist::GetPoissonDist(double mean)
 	{
 		if (mean < 0.0)
@@ -617,27 +617,27 @@ namespace DynaPlex
 			{
 				probVec.push_back(boost::math::pdf(pois_dist, i));
 			}
-		}		
+		}
 		int64_t min = 0;
 		Trim(probVec, min);
 		return DiscreteDist(std::move(probVec), min);
-	}	 
+	}
 
 
 	DiscreteDist DiscreteDist::GetBinomialDist(double n, double p) {
 		if (n < 0 || p < 0.0 || p > 1.0) {
 			throw DynaPlex::Error("Invalid parameters for binomial distribution.");
 		}
-		
+
 		boost::math::binomial_distribution<> binomDist(n, p);
 		std::vector<double> probs;
-		probs.reserve(n+1);
+		probs.reserve(n + 1);
 		for (int64_t i = 0; i <= n; ++i) {
 			probs.push_back(boost::math::pdf(binomDist, i));
 		}
 		int64_t min = 0;
 		Trim(probs, min);
-		return DiscreteDist::GetCustomDist(probs,min);
+		return DiscreteDist::GetCustomDist(probs, min);
 	}
 
 	DiscreteDist DiscreteDist::GetNegativeBinomialDist(double r, double p) {
@@ -655,7 +655,7 @@ namespace DynaPlex
 		Trim(probs, min);
 		return DiscreteDist::GetCustomDist(probs, min);
 	}
-	
+
 	DiscreteDist DiscreteDist::Mix(const DiscreteDist& other, double prob_of_other) const {
 		// Check if the mixing probability is valid
 		if (prob_of_other < 0.0 || prob_of_other > 1.0) {
@@ -685,7 +685,7 @@ namespace DynaPlex
 		return DiscreteDist(mixedPMF, mixedMin);
 	}
 
-	double DiscreteDist::ProbabilityAt(int64_t value) const 
+	double DiscreteDist::ProbabilityAt(int64_t value) const
 	{
 		if (value < min || value > Max())
 		{
@@ -696,7 +696,7 @@ namespace DynaPlex
 
 	double DiscreteDist::Expectation() const {
 		double expectation = 0.0;
-		for (const auto& [qty,prob] : *this) {
+		for (const auto& [qty, prob] : *this) {
 			expectation += qty * prob;
 		}
 		return expectation;
@@ -720,7 +720,7 @@ namespace DynaPlex
 		return entropy;
 	}
 
-	
+
 
 	double DiscreteDist::StandardDeviation() const {
 		return std::sqrt(Variance());
@@ -743,6 +743,6 @@ namespace DynaPlex
 		// but it handles potential numerical inaccuracies.
 		return Max();
 	}
-	
+
 
 }

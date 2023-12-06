@@ -35,6 +35,10 @@ namespace DynaPlex::Tests {
 		// Test back method
 		EXPECT_EQ(queue.back().ToVarGroup(), instance2.ToVarGroup());
 
+		// Test at
+		EXPECT_EQ(queue.at(0).ToVarGroup(), instance1.ToVarGroup());
+		EXPECT_EQ(queue.at(1).ToVarGroup(), instance2.ToVarGroup());
+
 		// Test pop_front
 		SmallClass poppedValue = queue.pop_front();
 		EXPECT_EQ(poppedValue.ToVarGroup(), instance1.ToVarGroup());
@@ -80,6 +84,10 @@ namespace DynaPlex::Tests {
 		// Test size
 		EXPECT_EQ(queue.front(), "apple");
 
+		// Test at
+		EXPECT_EQ(queue.at(0), "apple");
+		EXPECT_EQ(queue.at(1), "banana");
+
 		// Test pop_front
 		std::string poppedValue = queue.pop_front();
 		EXPECT_EQ(poppedValue, "apple");
@@ -123,6 +131,7 @@ namespace DynaPlex::Tests {
 		// Check for exception when popping from an empty queue
 		queue.pop_front();
 		EXPECT_THROW(queue.pop_front(), DynaPlex::Error);
+		EXPECT_THROW(queue.at(0), DynaPlex::Error);
 
 		// Test copy constructor
 		Queue<int64_t> q1 = { 1, 2, 3 };
@@ -133,6 +142,16 @@ namespace DynaPlex::Tests {
 		Queue<int64_t> q3 = { 4, 5, 6 };
 		q3.push_back(7);
 		EXPECT_EQ(q3.back(), 7);
+
+		// Test at
+		EXPECT_EQ(q3.at(0), 4);
+		EXPECT_EQ(q3.at(1), 5);
+		EXPECT_EQ(q3.at(2), 6);
+		EXPECT_EQ(q3.at(3), 7);
+
+		// Check for exception for queue length when calling at
+		EXPECT_THROW(queue.at(4), DynaPlex::Error);
+		EXPECT_THROW(queue.at(5), DynaPlex::Error);
 
 		// Test move constructor
 		Queue<int64_t> q4(std::move(q3));
@@ -178,9 +197,17 @@ namespace DynaPlex::Tests {
 		q2.push_back(4);
 		q2.push_back(5);  // { 0, 0, 0, 1, 2, 3, 4, 5 }
 
+		EXPECT_EQ(q2.at(1), 0);
+		EXPECT_EQ(q2.at(4), 2);
+		EXPECT_EQ(q2.at(7), 5);
+
 		q2.pop_front();  // Remove first 0
 		q2.pop_front();  // Remove second 0
 		q2.pop_front();  // Remove third 0
+
+		EXPECT_THROW(q2.at(5), DynaPlex::Error);
+		EXPECT_THROW(q2.at(6), DynaPlex::Error);
+		EXPECT_THROW(q2.at(7), DynaPlex::Error);
 
 		// Validate again
 		std::vector<int64_t> expected3 = { 1, 2, 3, 4, 5 };
@@ -198,7 +225,7 @@ namespace DynaPlex::Tests {
 		EXPECT_TRUE(q3 != q2);
 	}
 
-	
+
 
 
 } // namespace DynaPlex::Tests
