@@ -47,9 +47,9 @@ If all unit testing has passed, we can add the executable. We will add an execut
 Setup
 ~~~~~
 
-Go to ``src/examples/executable_example`` and copy and paste the directory with its contents.
+Go to ``src/executables/executable_example`` and copy and paste the directory with its contents.
 Change the directory name to ``airplane_mdp``.
-In ``src/examples/CMakeLists.txt`` change the following:
+In ``src/executables/CMakeLists.txt`` change the following:
 
 .. code-block:: cmake
 
@@ -57,7 +57,7 @@ In ``src/examples/CMakeLists.txt`` change the following:
 	add_subdirectory(airplane_mdp) # Added
 
 
-Next go to ``src/examples/airplane_mdp/CMakeLists.txt`` and change:
+Next go to ``src/executables/airplane_mdp/CMakeLists.txt`` and change:
 
 
 .. code-block:: cmake
@@ -70,7 +70,7 @@ Rerunning cmake should enable you to select the target ``dp_airplane_mdp``. Note
 Define a run script
 ~~~~~~~~~~~~~~~~~~~
 
-In ``src/examples/airplane_mdp/airplane_mdp.cpp`` add the following code that runs DCL:
+In ``src/executables/airplane_mdp/airplane_mdp.cpp`` add the following code that runs DCL:
 
 .. code-block:: cpp
 
@@ -120,7 +120,7 @@ In ``src/examples/airplane_mdp/airplane_mdp.cpp`` add the following code that ru
 		try
 		{
 			//Create a trainer for the mdp, with appropriate configuratoin. 
-			auto dcl = dp.GetDCL(mdp, dcl_config, policy);
+			auto dcl = dp.GetDCL(mdp, policy, dcl_config);
 			//this trains the policy, and saves it to disk.
 			dcl.TrainPolicy();
 			//using a dcl instance that has same parameterization (i.e. same dcl_config, same mdp), we may recover the trained polciies.
@@ -144,8 +144,8 @@ In ``src/examples/airplane_mdp/airplane_mdp.cpp`` add the following code that ru
 			//policies are automatically saved when training, but it may be usefull to save at custom location:
 			auto last_policy = dcl.GetPolicy();
 			//gets a file_path without file extension (file extensions are automatically added when saving): 
-			auto path = dp.System().filepath("airplane_mdp", "airplane_mdp_policy_gen" + num_gens);
-			//this is e.g. IOLocation/airplane_mdp/airplane_mdp_policy_gen1
+			auto path = dp.System().filepath("dcl", "airplane_mdp", "airplane_mdp_policy_gen" + num_gens);
+			//this is IOLocation/dcl/dcl_example/lost_sales_policy
 			//IOLocation is typically specified in CMakeUserPresets.txt
 
 			//saves two files, one .json file with the architecture (e.g. trained_lost_sales_policy.json), and another file with neural network weights (.pth):		

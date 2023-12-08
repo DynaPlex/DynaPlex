@@ -46,7 +46,6 @@ Contents
    tutorial/adding_mdp
    tutorial/policy
    tutorial/testing_running
-   tutorial/python
 
 .. toctree::
    :maxdepth: 0

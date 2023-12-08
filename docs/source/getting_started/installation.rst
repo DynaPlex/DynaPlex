@@ -28,12 +28,22 @@ After this, update the ``CMakeUserPresets.txt`` for WinPB to point to the releva
 Linux/Snellius
 --------------
 
+**0. Download and unzip LibTorch (Only on Snellius):**
+
+    Easiest way to link LibTorch: tou can download the LibTorch version for Linux and upload it (still zipped) to your home folder. Next, you can unzip the library:
+
+    .. code-block:: bash
+
+      unzip libtorch-version-name.zip
+    
+
 **1. Initialize Environment and Load Modules (Only on Snellius):**
 
    .. code-block:: bash
 
       cd bash
       source loadmodules.sh
+      cd .. #back to root
 
 **2. Build:**
 
@@ -43,7 +53,7 @@ Linux/Snellius
 
         cmake --preset=LinRel  # Other options: LinDeb/ LinDB
 
-   - Compile:
+   - Compile all code:
 
      .. code-block:: bash
 
@@ -59,11 +69,11 @@ Linux/Snellius
 
      Your CMake version is not recent enough. On Snellius, you may have forgotten to ``source loadmodules.sh`` to bring the recent CMake version into scope.
 
-   - Compile a specific target (e.g., ``sometarget``) that is not included in all:
+   - Compile a specific target (e.g., ``sometarget``). This will only build you specific target, e.g., a target in the ``src``
 
      .. code-block:: bash
 
-        cmake --build out/LinRel -- -j12 --target sometarget
+        cmake --build out/LinRel --target sometarget -j12
 
 **3. Run:**
     - Executables may be run from a compute node, that can be obtained as follows:
@@ -72,4 +82,4 @@ Linux/Snellius
     
         srun -p genoa -c 192 -n 1 -t 00:59:00 --pty /bin/bash
     
-    also use srun to then do something on that node.
+    also use srun to then do something on that node. You can alternatively run using the sbatch command, see `CPU.job` in the 'bash/' folder for an example file.
