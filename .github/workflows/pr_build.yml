@@ -1,0 +1,33 @@
+name: C++ Build Check
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Copy CMake User Presets to root
+        run: cp cmake/resources/CMakeUserPresets.json CMakeUserPresets.json
+        working-directory: ${{ github.workspace }}
+
+      - name: Create io_root directory
+        run: mkdir -p ${{ github.workspace }}/io_root
+
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Run CMake with DynaPLex_IOR_root_dir
+        run: cmake -B build -S . -DDYNAPLEX_IO_ROOT_DIR=${{ github.workspace }}/io_root
+        working-directory: ${{ github.workspace }}
+
+      - name: Build project
+        run: cmake --build build
+        working-directory: ${{ github.workspace }}
