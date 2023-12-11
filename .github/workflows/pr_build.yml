@@ -23,7 +23,7 @@ jobs:
       - name: Create io_root directory
         run: mkdir -p ${{ github.workspace }}/io_root
         
-      - name: Run CMake with DynaPLex_IOR_root_dir and tests
+      - name: Run CMake with DynaPLex_IOR_root_dir
         run: cmake -B out/LinRel -S . -DCMAKE_BUILD_TYPE=Release -DDYNAPLEX_IO_ROOT_DIR=${{ github.workspace }}/io_root -Ddynaplex_enable_tests=true
         working-directory: ${{ github.workspace }}
 
