@@ -77,7 +77,7 @@ namespace DynaPlex::DCL {
 			while (!final_reached) {
 				if (mdp->IncorporateUntilAction({ &trajectory,1 }))
 				{
-					if (mdp->IsInfiniteHorizon() && trajectory.PeriodCount == reinitiate_counter)
+					if (mdp->IsInfiniteHorizon() && trajectory.PeriodCount == reinitiate_counter + L)
 					{
 						break;//the while(!final_reached) loop, to start trajectory afresh. 
 					}

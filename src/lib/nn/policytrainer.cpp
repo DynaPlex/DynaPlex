@@ -99,17 +99,21 @@ namespace DynaPlex::NN {
         }
         // Round the training data down to a multiple of the mini_batch_size
         training_size = (training_size / mini_batch_size) * mini_batch_size;
+
+        DynaPlex::RNG rng{ 26071983 };
+        std::shuffle(data.Samples.begin(), data.Samples.end(), rng.gen());
         std::span<DynaPlex::NN::Sample> training_data(data.Samples.begin(), data.Samples.begin() + training_size);
         std::span<DynaPlex::NN::Sample> validation_data(data.Samples.begin() + training_size, data.Samples.end());
+        auto [validation_samples, validation_targets, validation_mask, validation_probs, validation_relative_costs] = prepare_batch(validation_data, mdp);
 
         int64_t num_batches = training_size / mini_batch_size;
         float best_validation_loss = std::numeric_limits<float>::max();
-        float cost_improvement = std::numeric_limits<float>::max();
+        float best_training_loss = std::numeric_limits<float>::max();
+        float best_cost_improvement = std::numeric_limits<float>::max();
         int64_t epoch = 0;
         int64_t epochs_without_improvement = 0;
-        float average_training_loss{ 0.0f };
-        DynaPlex::RNG rng{ 26071983 };
-
+        float training_loss{ 0.0f };
+        float cost_improvement{ 0.0f };
      
         auto start_time = std::chrono::steady_clock::now();
 
@@ -125,28 +129,26 @@ namespace DynaPlex::NN {
 
                 if (!train_based_on_probs)
                 {
-                // Calculate the loss.
-                torch::Tensor loss = torch::nll_loss(torch::log_softmax(output, 1), batched_targets);
+                    // Calculate the loss.
+                    torch::Tensor loss = torch::nll_loss(torch::log_softmax(output, 1), batched_targets);
                     total_training_loss += loss.item<float>();
                     // Backward pass and optimize.
                     loss.backward();
                 }
                 else {
                     torch::Tensor probs = torch::softmax(output, /*dim=*/1);
-                
                     // Compute cross-entropy loss manually for soft labels.
                     torch::Tensor loss = -batched_probs * torch::log(probs + 1e-8); // Adding epsilon to avoid log(0)
                     loss = loss.sum(1).mean(); // Sum over classes, then average over the batch.
-                total_training_loss += loss.item<float>();
+                    total_training_loss += loss.item<float>();
                     // Backward pass.
-                loss.backward();
+                    loss.backward();
                 }
 
                 optimizer.step();
             }
-            average_training_loss = total_training_loss / num_batches;
-
-            auto [validation_samples, validation_targets, validation_mask, validation_probs, validation_relative_costs] = prepare_batch(validation_data, mdp);
+            float average_training_loss = total_training_loss / num_batches;
+            best_training_loss = std::min(average_training_loss, best_training_loss);
 
             // Disable gradient computation for validation
             torch::NoGradGuard no_grad;
@@ -155,7 +157,7 @@ namespace DynaPlex::NN {
             torch::Tensor validation_output = any_module.forward(validation_samples) - validation_mask;
 
             if (!train_based_on_probs){
-            torch::Tensor validation_loss = torch::nll_loss(torch::log_softmax(validation_output, 1), validation_targets);
+                torch::Tensor validation_loss = torch::nll_loss(torch::log_softmax(validation_output, 1), validation_targets);
                 current_validation_loss = validation_loss.item<float>();
             }
             else {
@@ -168,10 +170,12 @@ namespace DynaPlex::NN {
 
             torch::Tensor costs = torch::sum(torch::softmax(validation_output / 0.001, 1) * validation_relative_costs);
             auto relative_cost_improvement= costs.item<float>() / validation_data.size();
-        
+            best_cost_improvement = std::min(best_cost_improvement, relative_cost_improvement);
+
             // Check for improvement in validation loss
             if (current_validation_loss < best_validation_loss) {
                 best_validation_loss = current_validation_loss;
+                training_loss = average_training_loss;
                 cost_improvement = relative_cost_improvement;
                 auto saved_model_path = system.filepath(mdp->Identifier(), "temp", "model_weights.pth");
                 torch::save(any_module_as_nn_module, saved_model_path); // Save the model weights
@@ -206,14 +210,23 @@ namespace DynaPlex::NN {
             epoch++;
         } while (epoch < max_training_epochs && epochs_without_improvement < early_stopping_patience);
 
-        if (!silent)
+        if (!silent) {
             system << "Actual Epochs/Max Epochs: " << epoch << "/" << max_training_epochs
-            << " - Best Training Loss: " << average_training_loss
-            << " (" << (int)(100 * std::exp(-average_training_loss)) << "%)"
-            << " - Best Validation Loss: " << best_validation_loss
-            << " (" << (int)(100 * std::exp(-best_validation_loss)) << "%)"
-            << " - Cost Improvement : " << cost_improvement
-            << std::endl;
+                << " - Best Training Loss: " << best_training_loss
+                << " (" << (int)(100 * std::exp(-best_training_loss)) << "%)"
+                << " - Best Validation Loss: " << best_validation_loss
+                << " (" << (int)(100 * std::exp(-best_validation_loss)) << "%)"
+                << " - Best Cost Improvement : " << best_cost_improvement
+                << std::endl;
+            system << "Saved policy statistics: "
+                << " - Training Loss: " << training_loss
+                << " (" << (int)(100 * std::exp(-training_loss)) << "%)"
+                << " - Validation Loss: " << best_validation_loss
+                << " (" << (int)(100 * std::exp(-best_validation_loss)) << "%)"
+                << " - Cost Improvement : " << cost_improvement
+                << std::endl;
+        }
+
 
         auto best_weights_path = system.filepath(mdp->Identifier(), "temp", "model_weights.pth");
 
