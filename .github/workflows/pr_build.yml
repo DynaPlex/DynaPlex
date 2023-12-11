@@ -31,3 +31,7 @@ jobs:
       - name: Build project
         run: cmake --build build
         working-directory: ${{ github.workspace }}
+
+      - name: Run Tests
+        run: ./bin/DP_mdp_unit_tests
+        working-directory: ${{ github.workspace }}
