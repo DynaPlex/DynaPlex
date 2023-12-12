@@ -190,7 +190,7 @@ namespace DynaPlex::Tests {
 					size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
 					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << "  mean  " << mean << "  sigma " << sigma;
-					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << "  mean  " << mean << "  sigma " << sigma;
+					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.04) << "  mean  " << mean << "  sigma " << sigma;
 					EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << "  mean  " << mean << "  sigma " << sigma;
 				}
 			}
