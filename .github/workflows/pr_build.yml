@@ -7,14 +7,14 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
     inputs:
-      operating_system:
-        description: 'Choose the operating system(s) to run the workflow on'
-        required: false
-        type: choice
-        options:
-          - linux
-          - both
-        default: 'linux'
+        additional_os:
+            description: 'Optionally run on additional OS'
+            required: false
+            type: choice
+            options:
+                - none
+                - windows
+            default: 'none'
 
 jobs:
   build-linux:
@@ -55,13 +55,20 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.operating_system == 'both' }}
+    if: ${{ github.event.inputs.additional_os == 'windows' }}
     
     steps:
       - name: Check out code
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+
+      - name: Copy CMake User Presets to root
+        run: cp cmake/resources/CMakeUserPresets.json CMakeUserPresets.json
+        working-directory: ${{ github.workspace }}
+      
+      - name: Create io_root directory
+        run: mkdir -p ${{ github.workspace }}/io_root
         
       - name: Run CMake with DynaPLex_IOR_root_dir
         run: cmake -B out/WinRel -S . -DCMAKE_BUILD_TYPE=Release -DDYNAPLEX_IO_ROOT_DIR=${{ github.workspace }}/io_root -Ddynaplex_enable_tests=true
