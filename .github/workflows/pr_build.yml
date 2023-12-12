@@ -5,40 +5,61 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      operating_system:
+        description: 'Choose the operating system(s) to run the workflow on'
+        required: false
+        type: choice
+        options:
+          - linux
+          - windows
+          - both
+        default: 'linux'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            run_on: 'linux'
+          - os: windows-latest
+            run_on: 'windows'
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.operating_system == matrix.run_on || github.event.inputs.operating_system == 'both' }}
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-          
+
       - name: Copy CMake User Presets to root
         run: cp cmake/resources/CMakeUserPresets.json CMakeUserPresets.json
         working-directory: ${{ github.workspace }}
         
       - name: Create io_root directory
         run: mkdir -p ${{ github.workspace }}/io_root
-        
+
       - name: Run CMake with DynaPLex_IOR_root_dir
-        run: cmake -B out/LinRel -S . -DCMAKE_BUILD_TYPE=Release -DDYNAPLEX_IO_ROOT_DIR=${{ github.workspace }}/io_root -Ddynaplex_enable_tests=true
+        run: cmake -B out/${{ matrix.os == 'ubuntu-latest' && 'LinRel' || 'WinRel' }} -S . -DCMAKE_BUILD_TYPE=Release -DDYNAPLEX_IO_ROOT_DIR=${{ github.workspace }}/io_root -Ddynaplex_enable_tests=true
         working-directory: ${{ github.workspace }}
 
       - name: Build mdp unit tests
-        run: cmake --build out/LinRel --target DP_mdp_unit_tests
+        run: cmake --build out/${{ matrix.os == 'ubuntu-latest' && 'LinRel' || 'WinRel' }} --target DP_mdp_unit_tests
         working-directory: ${{ github.workspace }}
 
       - name: Build other unit tests
-        run: cmake --build out/LinRel --target DP_other_unit_tests
+        run: cmake --build out/${{ matrix.os == 'ubuntu-latest' && 'LinRel' || 'WinRel' }} --target DP_other_unit_tests
         working-directory: ${{ github.workspace }}
 
       - name: Run mdp tests
-        run: out/LinRel/bin/DP_mdp_unit_tests
+        run: out/${{ matrix.os == 'ubuntu-latest' && 'LinRel' || 'WinRel' }}/bin/DP_mdp_unit_tests
         working-directory: ${{ github.workspace }}
 
       - name: Run other tests
-        run: out/LinRel/bin/DP_other_unit_tests
+        run: out/${{ matrix.os == 'ubuntu-latest' && 'LinRel' || 'WinRel' }}/bin/DP_other_unit_tests
         working-directory: ${{ github.workspace }}
