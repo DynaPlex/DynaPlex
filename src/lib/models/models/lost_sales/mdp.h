@@ -3,14 +3,6 @@
 #include "dynaplex/modelling/discretedist.h"
 #include "dynaplex/modelling/queue.h"
 
-//namespace DynaPlex::Erasure { template <typename MDPType> class PolicyRegistry; }// Forward declaration 
-
-#pragma once
-#include "dynaplex/dynaplex_model_includes.h"
-#include "dynaplex/modelling/discretedist.h"
-#include "dynaplex/modelling/queue.h"
-#include <map>
-
 namespace DynaPlex::Models {
 	namespace lost_sales /*must be consistent everywhere for complete mdp definition and associated policies and states.*/
 	{

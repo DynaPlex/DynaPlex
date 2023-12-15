@@ -1,7 +1,7 @@
 ﻿
 cmake_minimum_required (VERSION 3.20)
 
-set(targetname lostsales_evaluate)
+set(targetname binpacking_evaluate)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "*.cpp")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "*.h")
