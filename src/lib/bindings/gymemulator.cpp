@@ -110,7 +110,7 @@ namespace DynaPlex {
         last_cumulative_return = trajectory.CumulativeReturn;
         double as_reward = additional_return_obtained * mdp->Objective();
         py::dict info{};
-        if (!period_truncation)
+        if (!period_truncation && !done)
         {//note that if the trajectory was truncated because a certain number events passed, 
             //then the trajectory may not be in a state where we can get an observation.
             //hence, since the system is truncated/done anyhow, we do not update the observation
