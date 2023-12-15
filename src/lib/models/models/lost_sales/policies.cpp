@@ -1,5 +1,5 @@
 #include "policies.h"
-#include "mdp.h"
+#include "dynaplex/models/lost_sales/mdp.h"
 #include "dynaplex/error.h"
 namespace DynaPlex::Models {
 	namespace lost_sales /*keep this namespace name in line with the name space in which the mdp corresponding to this policy is defined*/
