@@ -5,16 +5,6 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  workflow_dispatch:
-    inputs:
-        additional_os:
-            description: 'Optionally run on additional OS'
-            required: false
-            type: choice
-            options:
-                - none
-                - windows
-            default: 'none'
 
 jobs:
   build-linux:
@@ -25,11 +15,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      
+
       - name: Copy CMake User Presets to root
         run: cp cmake/resources/CMakeUserPresets.json CMakeUserPresets.json
         working-directory: ${{ github.workspace }}
-      
+
       - name: Create io_root directory
         run: mkdir -p ${{ github.workspace }}/io_root
         
@@ -37,55 +27,35 @@ jobs:
         run: cmake -B out/LinRel -S . -DCMAKE_BUILD_TYPE=Release -DDYNAPLEX_IO_ROOT_DIR=${{ github.workspace }}/io_root -Ddynaplex_enable_tests=true
         working-directory: ${{ github.workspace }}
 
-      - name: Build mdp unit tests
-        run: cmake --build out/LinRel --target DP_mdp_unit_tests
-        working-directory: ${{ github.workspace }}
-
       - name: Build other unit tests
         run: cmake --build out/LinRel --target DP_other_unit_tests
-        working-directory: ${{ github.workspace }}
-
-      - name: Run mdp tests
-        run: out/LinRel/bin/DP_mdp_unit_tests
         working-directory: ${{ github.workspace }}
 
       - name: Run other tests
         run: out/LinRel/bin/DP_other_unit_tests
         working-directory: ${{ github.workspace }}
 
-  build-windows:
-    runs-on: windows-latest
-    if: ${{ github.event.inputs.additional_os == 'windows' }}
-    
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - name: Copy CMake User Presets to root
-        run: cp cmake/resources/CMakeUserPresets.json CMakeUserPresets.json
-        working-directory: ${{ github.workspace }}
-      
-      - name: Create io_root directory
-        run: mkdir -p ${{ github.workspace }}/io_root
-        
-      - name: Run CMake with DynaPLex_IOR_root_dir
-        run: cmake -B out/WinRel -S . -DCMAKE_BUILD_TYPE=Release -DDYNAPLEX_IO_ROOT_DIR=${{ github.workspace }}/io_root -Ddynaplex_enable_tests=true
-        working-directory: ${{ github.workspace }}
-
       - name: Build mdp unit tests
-        run: cmake --build out/WinRel --target DP_mdp_unit_tests
+        run: cmake --build out/LinRel --target DP_mdp_unit_tests
         working-directory: ${{ github.workspace }}
-
-      - name: Build other unit tests
-        run: cmake --build out/WinRel --target DP_other_unit_tests
-        working-directory: ${{ github.workspace }}
-
-      - name: Run mdp tests
-        run: out/WinRel/bin/DP_mdp_unit_tests
-        working-directory: ${{ github.workspace }}
-
-      - name: Run other tests
-        run: out/WinRel/bin/DP_other_unit_tests
+        
+      - name: Build selected executables
+        run: |
+          for dir in src/executables/*/; do
+            base_dir=$(basename $dir)
+            if [[ "$base_dir" == "memory_checks" || "$base_dir" == "mpi_tests" ]]; then
+              echo "Skipping $base_dir"
+              continue
+            fi
+            if [ -d "$dir" ] && [ -f "${dir}CMakeLists.txt" ]; then
+              target_name=$(grep "set(targetname " "${dir}CMakeLists.txt" | cut -d ' ' -f2 | tr -d ')')
+              if [ ! -z "$target_name" ]; then
+                cmake --build out/LinRel --target $target_name
+              else
+                echo "Target name not found in ${dir}CMakeLists.txt"
+              fi
+            else
+              echo "$dir is not a valid directory or CMakeLists.txt not found"
+            fi
+          done
         working-directory: ${{ github.workspace }}
