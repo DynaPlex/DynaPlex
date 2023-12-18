@@ -31,7 +31,9 @@ namespace DynaPlex::DCL {
 		int64_t sampling_time_out, H, M, N, L, reinitiate_counter, json_save_format;
 
 		bool enable_sequential_halving,silent;
-	
+		//probability that a sample is taken on a specific action-awaiting state. 
+		double sampling_probability;
+
 		DynaPlex::MDP mdp;
 		DynaPlex::System system;
 		DynaPlex::DCL::UniformActionSelector uniform_action_selector;

@@ -22,6 +22,7 @@ namespace DynaPlex::NN {
         training_config.GetOrDefault("early_stopping_patience", early_stopping_patience, 10);
         training_config.GetOrDefault("max_training_epochs", max_training_epochs, 1000);        
         training_config.GetOrDefault("train_based_on_probs", train_based_on_probs, false);
+
     }
 #if DP_TORCH_AVAILABLE
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> prepare_batch(const std::span<DynaPlex::NN::Sample> samples, const DynaPlex::MDP& mdp) {

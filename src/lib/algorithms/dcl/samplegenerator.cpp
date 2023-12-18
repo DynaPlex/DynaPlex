@@ -3,7 +3,7 @@
 #include "dynaplex/policytrainer.h"
 #include "dynaplex/sampledata.h"
 #include "dynaplex/sample.h"
-
+#include <algorithm>
 namespace DynaPlex::DCL {
 
 
@@ -23,6 +23,7 @@ namespace DynaPlex::DCL {
 		config.GetOrDefault("silent", silent, false);
 		config.GetOrDefault("M", M, 1000);
 		config.GetOrDefault("N", N, 5000);
+		config.GetOrDefault("sampling_probability", sampling_probability, 1.0);
 		if (N<1 || N > static_cast<int64_t>(std::numeric_limits<int32_t>::max() - 1))
 			throw DynaPlex::Error("Value of N is invalid: " + std::to_string(N) + ". Must be positive and smaller than 2147483646");
 	
@@ -49,8 +50,9 @@ namespace DynaPlex::DCL {
 		int32_t num_samples_added = 0;
 		Trajectory trajectory{ mdp->NumEventRNGs() };
 		trajectory.SeedRNGProvider(false, -offset, offset);
-
+		DynaPlex::RNG rng({ static_cast<uint32_t>( offset + 1) });
 	
+		bool final_reached_once = false;
 		while (num_samples_added < somesamples.size())
 		{
 			mdp->InitiateState({ &trajectory,1 });
@@ -88,20 +90,27 @@ namespace DynaPlex::DCL {
 						trajectory.NextAction = allowed.front();
 					}
 					else {
-						auto& sample = somesamples[num_samples_added];
-						if (enable_sequential_halving&&(M > ceil(log(allowed.size()) / log(2)))) {
-							sequentialhalving_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
-						}
-						else {
-							uniform_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
-						}
-
-						if constexpr (std::atomic<int64_t>::is_always_lock_free)
+						if (rng.genUniform() < sampling_probability)
 						{
-							(*total_samples_collected.get())++;
+							auto& sample = somesamples[num_samples_added];
+							if (enable_sequential_halving && (M > ceil(log(allowed.size()) / log(2)))) {
+								sequentialhalving_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
+							}
+							else {
+								uniform_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
+							}
+
+							if constexpr (std::atomic<int64_t>::is_always_lock_free)
+							{
+								(*total_samples_collected.get())++;
+							}
+							if (++num_samples_added == somesamples.size())
+								break;//the while(!final_reached) loop, to eventually stop executution. 
 						}
-						if (++num_samples_added == somesamples.size())
-							break;//the while(!final_reached) loop, to eventually stop executution. 
+						else
+						{
+							policy->SetAction({ &trajectory,1 });
+						}
 					}
 					mdp->IncorporateAction({ &trajectory,1 });
 				}
@@ -110,6 +119,7 @@ namespace DynaPlex::DCL {
 					if (trajectory.Category.IsFinal())
 					{
 						final_reached = true;
+						final_reached_once = true;
 						if (mdp->IsInfiniteHorizon())
 							throw DynaPlex::Error("DCL: GenerateSamplesOnThread - trajectory has Category.IsFinal() but mdp IsInfiniteHorizon(). ");
 					}
@@ -117,8 +127,11 @@ namespace DynaPlex::DCL {
 						if (trajectory.Category.IsAwaitEvent())
 							throw DynaPlex::Error("DCL: GenerateSamplesOnThread - trajectory is AwaitEvent after calling mdp->IncorporateUntilAction (without MaxPeriodCount.)");
 				}
-			}
+			}			
 		}
+		if(!silent)
+			if (!mdp->IsInfiniteHorizon() && !final_reached_once && thread_offset==0)
+				system <<std::endl << "WARNING possible data skew:  sampling collection did not reach the final state even once for this finite horizon MDP" << std::endl;
 		return;
 	}
 
@@ -255,6 +268,8 @@ namespace DynaPlex::DCL {
 				sample_data.AddFromFile(mdp, GetPathOfTempSampleFile(rank));
 				system.remove_file(GetPathOfTempSampleFile(rank));
 			}
+			DynaPlex::RNG rng( { 11112014 } );
+			std::shuffle(sample_data.Samples.begin(), sample_data.Samples.end(), rng.gen());
 			sample_data.SaveToFile(mdp, path, json_save_format, silent);
 		}
 	}
