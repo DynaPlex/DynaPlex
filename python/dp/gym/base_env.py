@@ -7,11 +7,7 @@ import gymnasium as gym
 from gymnasium import spaces
 from gymnasium.utils import seeding
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-sys.path.remove(parent_directory)
+from dp import dynaplex
 
 #The BaseEnv class extends the basic gymnasium AECEnv class to interact with a Dynaplex MDP
 class BaseEnv(gym.Env):
@@ -20,7 +16,7 @@ class BaseEnv(gym.Env):
 
     def __init__(self, mdp, num_actions_until_done = 0, **kwargs):
         # Emulator holds the current state of the mdp
-        self.emulator = dp.get_gym_emulator(mdp=mdp, num_actions_until_done=num_actions_until_done)
+        self.emulator = dynaplex.get_gym_emulator(mdp=mdp, num_actions_until_done=num_actions_until_done)
         
         # Observations are a dictionary containing a Box (a vector of length self.emulator.observation_space_size()) which can contain unbounded values, and the action mask
         self.observation_space = spaces.Dict({'obs': spaces.Box(low=-float('inf'), high=float('inf'), shape=(self.emulator.observation_space_size(),), dtype=float), #Coordinates of agent

@@ -1,24 +1,17 @@
 import torch
 import os
-import gymnasium as gym
 import json
 import sys
-import numpy as np
 import tianshou as ts
 
 from torch.utils.tensorboard import SummaryWriter
 from tianshou.utils import TensorboardLogger
-from tianshou.env import DummyVectorEnv
 
-from torch.optim.lr_scheduler import ExponentialLR, LinearLR
+from torch.optim.lr_scheduler import ExponentialLR
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-from networks.actor_critic import ActorCriticMLP, CriticMLP, ActorMLP
-from gym.base_env import BaseEnv
-sys.path.remove(parent_directory)
+from dp import dynaplex
+from networks.actor_critic import CriticMLP, ActorMLP
+from dp.gym.base_env import BaseEnv
 
 
 
@@ -26,7 +19,7 @@ sys.path.remove(parent_directory)
 folder_name = "lost_sales" # the name of the folder where the json file is located
 mdp_version_number = 2
 # this returns path/to/IO_DynaPlex/mdp_config_examples/lost_sales/mdp_config_[..].json:
-path_to_json = dp.filepath("mdp_config_examples",folder_name,f"mdp_config_{mdp_version_number}.json")
+path_to_json = dynaplex.filepath("mdp_config_examples",folder_name,f"mdp_config_{mdp_version_number}.json")
 
 # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
 try:
@@ -38,7 +31,7 @@ except:
     raise Exception("Something went wrong when loading the json file. Have you checked the json file does not contain any comment?")
 #of course, we can also just initiate using a (possibly nested) dict:
 #vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
-mdp = dp.get_mdp(**vars)
+mdp = dynaplex.get_mdp(**vars)
 
 # Training parameters
 train_args = {"hidden_dim": 64,
@@ -60,15 +53,18 @@ train_args = {"hidden_dim": 64,
 
 
 def policy_path():
-    path = os.path.normpath(dp.filepath(mdp.identifier(), "ppo_policy"))
+    path = os.path.normpath(dynaplex.filepath(mdp.identifier(), "ppo_policy"))
     return path
+
 
 def save_best_fn(policy):
     save_path = policy_path()
-    dp.save_policy(policy.actor,
+    dynaplex.save_policy(policy.actor,
                    {'num_inputs': mdp.num_flat_features(), 'num_outputs': mdp.num_valid_actions()},
                    save_path)
-def get_env():    
+
+
+def get_env():
     return BaseEnv(mdp, train_args["num_actions_until_done"])
 
 
@@ -141,7 +137,7 @@ if __name__ == '__main__':
 
     # a tensorboard logger is available to monitor training results.
     # log in the directory where all mdp results are stored:
-    log_path = dp.filepath(mdp.identifier(), "tensorboard_logs", model_name)
+    log_path = dynaplex.filepath(mdp.identifier(), "tensorboard_logs", model_name)
     writer = SummaryWriter(log_path)
     logger = TensorboardLogger(writer)
     
@@ -168,7 +164,7 @@ if __name__ == '__main__':
         max_epoch=train_args["max_epoch"],
         step_per_epoch=train_args["step_per_epoch"],
         step_per_collect=train_args["step_per_collect"],
-        episode_per_test=100, batch_size=train_args["batch_size"],
+        episode_per_test=1, batch_size=train_args["batch_size"],
         repeat_per_collect=train_args["repeat_per_collect"],
         logger=logger, test_in_train=True,
         save_best_fn=save_best_fn)

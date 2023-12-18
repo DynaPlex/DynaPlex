@@ -1,23 +1,20 @@
 import torch
 import os
-import gymnasium as gym
 import json
 import sys
-import numpy as np
 import tianshou as ts
 
 from torch.utils.tensorboard import SummaryWriter
 from tianshou.utils import TensorboardLogger
-from tianshou.env import DummyVectorEnv
 
-from torch.optim.lr_scheduler import ExponentialLR, LinearLR
+from torch.optim.lr_scheduler import ExponentialLR
 
 parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_directory)
 # noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-from networks.actor_critic import CriticMLP, ActorMLP
-from gym.base_env import BaseEnv
+from dp import dynaplex
+from scripts.networks.actor_critic import CriticMLP, ActorMLP
+from dp.gym.base_env import BaseEnv
 sys.path.remove(parent_directory)
 
 
@@ -25,7 +22,7 @@ sys.path.remove(parent_directory)
 # This script assumes the desired mdp characteristics are specified in a file with a name of type mdp_config_{MDP_VERSION_NUMBER}.json
 folder_name = "lost_sales" # the name of the folder where the json file is located
 mdp_version_number = 2
-path_to_json = dp.filepath("mdp_config_examples",folder_name,f"mdp_config_{mdp_version_number}.json")
+path_to_json = dynaplex.filepath("mdp_config_examples",folder_name,f"mdp_config_{mdp_version_number}.json")
 
 # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
 try:

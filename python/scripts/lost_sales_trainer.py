@@ -8,16 +8,12 @@ import torch.nn as nn
 
 from torch.utils.data import DataLoader, TensorDataset
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-from utils.early_stopping import EarlyStopping
-from networks.simple_nn import SimpleNN
-sys.path.remove(parent_directory)
+from dp import dynaplex
+from dp.utils.early_stopping import EarlyStopping
+from scripts.networks.simple_nn import SimpleNN
 
 # when compiling and running the library - it is important that the python version matches
-# the version that the dynaplex library was compiled against.
+# the version that the dp library was compiled against.
 # print("Current version of Python is ", sys.version)
 
 MAX_EPOCH = 100
@@ -30,7 +26,7 @@ device = torch.device('cpu')
 # This script assumes the desired mdp characteristics are specified in a file with a name of type mdp_config_{MDP_VERSION_NUMBER}.json
 folder_name = "lost_sales"  # the name of the folder where the json file is located
 mdp_version_number = 2
-path_to_json = dp.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
+path_to_json = dynaplex.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
 
 # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
 try:
@@ -42,29 +38,29 @@ except:
     raise Exception(
         "Something went wrong when loading the json file. Have you checked the json file does not contain any comment?")
 # vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
-mdp = dp.get_mdp(**vars)
+mdp = dynaplex.get_mdp(**vars)
 
 num_valid_actions = mdp.num_valid_actions()
 num_features = mdp.num_flat_features()
 
 base_policy = mdp.get_policy("base_stock")
-sample_generator = dp.get_sample_generator(mdp, N=4000, M=1000)
+sample_generator = dynaplex.get_sample_generator(mdp, N=4000, M=1000)
 
 save_filename = 'dcl_python'
 
 
 def policy_path(gen):
-    return dp.filepath(mdp.identifier(), f'{save_filename}_{gen}')
+    return dynaplex.filepath(mdp.identifier(), f'{save_filename}_{gen}')
 
 
 def sample_path(gen):
-    return dp.filepath(mdp.identifier(), f'samples_{gen}.json')
+    return dynaplex.filepath(mdp.identifier(), f'samples_{gen}.json')
 
 
 for gen in range(0, num_gens):
 
     if gen > 0:
-        policy = dp.load_policy(mdp, policy_path(gen))
+        policy = dynaplex.load_policy(mdp, policy_path(gen))
     else:
         policy = base_policy
 
@@ -217,10 +213,10 @@ policies = [base_policy]
 
 for i in range(1, num_gens + 1):
     load_path = policy_path(i)
-    policy = dp.load_policy(mdp, load_path)
+    policy = dynaplex.load_policy(mdp, load_path)
     policies.append(policy)
 
-comparer = dp.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100)
+comparer = dynaplex.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100)
 comparison = comparer.compare(policies)
 result = [(item['mean']) for item in comparison]
 

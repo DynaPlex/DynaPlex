@@ -6,17 +6,13 @@ import numpy as np
 import torch.nn as nn
 import os
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-from networks.MLPNew import MLPNew
-from networks.CherryAllocationNAGNN import CherryAllocationNAGNN
-from utils.early_stopping import EarlyStopping
-sys.path.remove(parent_directory)
+from dp import dynaplex
+from scripts.networks.MLPNew import MLPNew
+from scripts.networks.CherryAllocationNAGNN import CherryAllocationNAGNN
+from dp.utils.early_stopping import EarlyStopping
 
 # when compiling and running the library - it is important that the python version matches
-# the version that the dynaplex library was compiled against.
+# the version that the dp library was compiled against.
 # print("Current version of Python is ", sys.version)
 
 MAX_EPOCH = 100
@@ -36,29 +32,29 @@ device = torch.device('cpu')
 
 gridsize = 6
 n_pickers = 2
-mdp = dp.get_mdp(id="order_picking",
-                 grid_size=gridsize,
-                 n_pickers=n_pickers,
-                 max_orders_per_event=1)
+mdp = dynaplex.get_mdp(id="order_picking",
+                       grid_size=gridsize,
+                       n_pickers=n_pickers,
+                       max_orders_per_event=1)
 
 num_valid_actions = mdp.num_valid_actions()
 
 base_policy = mdp.get_policy("random")
-sample_generator = dp.get_sample_generator(mdp, N=4000, M=100)
+sample_generator = dynaplex.get_sample_generator(mdp, N=4000, M=100)
 save_filename = 'dcl_python'
 
 def policy_path(gen):
-    return dp.filepath(mdp.identifier(), f'{save_filename}_{gen}')
+    return dynaplex.filepath(mdp.identifier(), f'{save_filename}_{gen}')
 
 
 def sample_path(gen):
-    return dp.filepath(mdp.identifier(), f'samples_{gen}.json')
+    return dynaplex.filepath(mdp.identifier(), f'samples_{gen}.json')
 
 
 for gen in range(0, num_gens):
 
     if gen > 0:
-        policy = dp.load_policy(mdp, policy_path(gen))
+        policy = dynaplex.load_policy(mdp, policy_path(gen))
     else:
         policy = base_policy
 
@@ -207,7 +203,7 @@ for gen in range(0, num_gens):
 
             if save_model:
                 json_info = {'gen': gen + 1}
-                dp.save_policy(model, json_info, save_model_path, device)
+                dynaplex.save_policy(model, json_info, save_model_path, device)
                 print(f"Saved model with name {save_model_path} \n")
 
             if early_stop:
@@ -218,9 +214,9 @@ policies = [base_policy]
 
 for i in range(1, num_gens+1):
     load_path = policy_path(i)
-    policy = dp.load_policy(mdp, load_path)
+    policy = dynaplex.load_policy(mdp, load_path)
     policies.append(policy)
-comparer = dp.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100)
+comparer = dynaplex.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100)
 comparison = comparer.compare(policies)
 result = [(item['mean']) for item in comparison]
 
