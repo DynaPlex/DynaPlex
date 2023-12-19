@@ -120,7 +120,6 @@ namespace DynaPlex::Tests {
 				mdp->InitiateState({ &trajectory,1 });
 			) << info << "Did you correctly implement GetInitialState() const or GetInitialState(DynaPlex::RNG&) const";
 
-
 			if (seed == 0)
 			{
 				ASSERT_NO_THROW(

@@ -121,7 +121,7 @@ namespace DynaPlex::Models {
 		{
 			auto queue = Queue<int64_t>{};
 			queue.reserve(leadtime + 1);
-			queue.push_back(MaxSystemInv);//<- initial on-hand
+			queue.push_back(0);//<- initial on-hand
 			for (size_t i = 0; i < leadtime - 1; i++)
 			{
 				queue.push_back(0);

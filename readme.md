@@ -5,6 +5,8 @@ deep reinforcement learning, approximate dynamic programming, classical paramete
 
 DynaPlex focuses on solving problems arising in Operations Management: Supply Chain, Transportation and Logistics, Manufacturing, etc. 
 
+https://discuss.pytorch.org/t/dictionary-input-to-scripted-model/159180
+
 ---
 
 ## High-level overview of folder structure

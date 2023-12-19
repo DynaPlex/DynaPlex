@@ -10,7 +10,7 @@ namespace DynaPlex {
 		
 		//Attempts to load a policy from the mentioned path. 
 		static DynaPlex::Policy LoadPolicy(DynaPlex::MDP mdp, std::string path_to_policy_without_extension);
-		//Attempts to save the policy, assuming it is a neural network policy.
+		//Attempts to save the policy, assuming it is a neural network policy trained in c++. 
 		static void SavePolicy(DynaPlex::Policy, std::string path_to_policy_without_extension);
 	};
 

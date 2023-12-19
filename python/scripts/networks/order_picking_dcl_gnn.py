@@ -1,10 +1,12 @@
+from typing import Dict
+
 import torch
 import torch.nn.functional as F
 from torch.nn import Linear, ReLU, Sequential, BatchNorm1d, LayerNorm
-from torch_geometric.nn import GINConv
+from torch_geometric.nn.conv import GINConv
 
 
-class CherryAllocationNAGNN(torch.nn.Module):
+class NAGNNActor(torch.nn.Module):
     def __init__(self, input_dim: int, hidden_dim: int, n_layers: int,
                  gridsize: int, dist_matrix: torch.Tensor, min_val: float):
 
@@ -18,51 +20,44 @@ class CherryAllocationNAGNN(torch.nn.Module):
 
         self.n_layers = n_layers
 
-        self.forward_time = 0.0
-        self.reshape_time = 0.0
-        self.reshape_mask_time = 0.0
-        self.reshape_idx_time = 0.0
-        self.reshape_edge_feats_time = 0.0
-        self.reshape_node_feats_time = 0.0
-
-        self.num_edges = 0
-
         self.min_val = min_val
 
         self.convs = torch.nn.ModuleList()
-        self.econvs = torch.nn.ModuleList()
 
         for _ in range(n_layers):
             mlp = Sequential(
                 Linear(input_dim, hidden_dim),
                 LayerNorm(hidden_dim),
                 ReLU(),
-                # Linear(hidden_channels, hidden_channels),
             )
             # fully connected graph contains self-loops:
             # eps=-1 avoids considering nodes' features twice as they are already in the neighborhood
-            # self.convs.append(GINConv(mlp, eps=-1).jittable())
             self.convs.append(GINConv(mlp, eps=-1, node_dim=1).jittable())
             input_dim = hidden_dim
 
         self.mid_dim = self.num_features + n_layers * hidden_dim
+
         self.lin1 = Linear(self.mid_dim, 2 * hidden_dim)
         self.batch_norm = BatchNorm1d(2 * hidden_dim)
         self.relu = ReLU()
         self.lin2 = Linear(2 * hidden_dim, 1)
+        self.softmax = torch.nn.Softmax(dim=1)
 
-    def forward(self, observations: torch.Tensor) -> torch.Tensor:
+    def forward(self, observations: Dict[str, torch.Tensor]) -> torch.Tensor:
 
         num_nodes = self.gridsize * self.gridsize
-        batch_size = observations.shape[0]
 
-        x = observations[:, num_nodes:].reshape(-1, num_nodes, self.num_features)
+        x = observations['obs'].reshape(-1, num_nodes, self.num_features)
+        batch_size = x.shape[0]
 
-        action_masks = observations[:, :num_nodes].to(torch.bool)
+        # The mask is always expected, even in inference mode to apply the decoder to fewer nodes
+        action_masks = observations['mask'].to(torch.bool)
 
         dist_matrix = self.dist_matrix
-        dist_matrix = dist_matrix[:-1, :-1]
 
+        # Extracts the sparse edge_index required by torch_geometric from the provided distance matrix
+        # Note that the distance matrix can be changed for inference:
+        # in that case, self.edge_index is set to empty and re-extracted
         if self.edge_index_adj.numel() == 0:
             adj_matrix = (dist_matrix == 1)
             adj_matrix = adj_matrix.to(torch.int)
@@ -104,12 +99,9 @@ class CherryAllocationNAGNN(torch.nn.Module):
         if not self.training:
             action_masks = action_masks.flatten()
             out[action_masks] = x
-
-            out = out.reshape(-1, num_nodes)
-
-            return out
+            x = out.reshape(-1, num_nodes)
 
         else:
             x = x.reshape(-1, num_nodes)
 
-            return x
+        return x

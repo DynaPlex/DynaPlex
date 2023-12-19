@@ -2,7 +2,71 @@
 #include "dynaplex/dynaplexprovider.h"
 
 using namespace DynaPlex;
-int main() {
+
+void TestEarlyStopping() {
+
+	auto& dp = DynaPlexProvider::Get();
+
+	DynaPlex::VarGroup nn_architecture{
+		{"type","mlp"},
+		{"hidden_layers",DynaPlex::VarGroup::Int64Vec{256,128,128,128}}
+	};
+
+	DynaPlex::VarGroup config;
+	//retrieve MDP registered under the id string "lost_sales":
+	config.Add("id", "lost_sales");
+	config.Add("h", 1.0);
+	config.Set("p", 39.0);
+	config.Set("leadtime", 10);
+	config.Set("demand_dist", DynaPlex::VarGroup({
+		{"type", "geometric"},
+		{"mean", 5.0}
+		}));
+
+	DynaPlex::VarGroup test_config;
+	test_config.Add("number_of_trajectories", 100);
+	test_config.Add("periods_per_trajectory", 10000);
+
+	DynaPlex::MDP mdp = dp.GetMDP(config);
+	auto policy = mdp->GetPolicy("base_stock");
+
+	std::vector<int64_t> earlystoppingvec = { 10, 15, 20, 30, 50 };
+	for (int64_t stopcond : earlystoppingvec) {
+
+		DynaPlex::VarGroup nn_training{
+			{"early_stopping_patience",stopcond},
+			{"mini_batch_size", 64},
+			{"max_training_epochs", 1000},
+			{"train_based_on_probs", false}
+		};
+
+		DynaPlex::VarGroup dcl_config{
+			//use paper hyperparameters everywhere. 
+			{"N",5000},
+			{"num_gens",3},
+			{"M",1000},
+			{"H", 40},
+			{"L", 100},
+			{"nn_architecture",nn_architecture},
+			{"nn_training",nn_training},
+			{"retrain_lastgen_only",false}
+		};
+
+		// Call and train DCL with specified instance to solve
+		auto dcl = dp.GetDCL(mdp, policy, dcl_config);
+		dcl.TrainPolicy();
+
+		auto policies = dcl.GetPolicies();
+		auto comparer = dp.GetPolicyComparer(mdp, test_config);
+		auto comparison = comparer.Compare(policies);
+		for (auto& VarGroup : comparison)
+		{
+			std::cout << VarGroup.Dump() << std::endl;
+		}
+	}
+}
+
+void TestPaperInstances() {
 
 	auto& dp = DynaPlexProvider::Get();
 
@@ -18,17 +82,16 @@ int main() {
 		{"hidden_layers",DynaPlex::VarGroup::Int64Vec{256,128,128,128}}
 	};
 
-	int64_t num_gens=3;
 	DynaPlex::VarGroup dcl_config{
 		//use paper hyperparameters everywhere. 
 		{"N",5000},
-		{"num_gens",num_gens},
+		{"num_gens",3},
 		{"M",1000},
 		{"H", 40},
 		{"L", 100},
 		{"nn_architecture",nn_architecture},
 		{"nn_training",nn_training},
-		{"retrain_lastgen_only",false}
+		{"enable_sequential_halving", true}
 	};
 
 	DynaPlex::VarGroup config;
@@ -40,9 +103,9 @@ int main() {
 	test_config.Add("number_of_trajectories", 100);
 	test_config.Add("periods_per_trajectory", 10000);
 
-	std::vector<double> p_values = { 4.0, 9.0, 19.0, 39.0 };
-	std::vector<int> leadtime_values = { 2, 3, 4, 6, 8, 10 };
-	std::vector<std::string> demand_dist_types = { "poisson", "geometric" };
+	std::vector<double> p_values = { 39.0 };
+	std::vector<int> leadtime_values = { 10 };
+	std::vector<std::string> demand_dist_types = { "geometric" };
 
 	size_t num_exp = p_values.size() * leadtime_values.size() * demand_dist_types.size();
 	std::vector<DynaPlex::VarGroup> varGroupsMDPs;
@@ -96,6 +159,13 @@ int main() {
 		varGroupsPolicies_Benchmark.erase(varGroupsPolicies_Benchmark.begin());
 		std::cout << std::endl;
 	}
+}
+
+int main() {
+
+	//TestEarlyStopping();
+	TestPaperInstances();
 
 	return 0;
+
 }

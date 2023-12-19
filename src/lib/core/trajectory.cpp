@@ -32,11 +32,12 @@ namespace DynaPlex {
 		uint32_t high_bits = static_cast<uint32_t>(experiment_id >> 32);
 		uint32_t low_bits = static_cast<uint32_t>(experiment_id & 0xFFFFFFFF);
 		seeds.push_back(low_bits);
-		if (high_bits)
-		{
-		//	throw DynaPlex::Error("too high value used for seed");
-			seeds.push_back(high_bits);
-		}
+		seeds.push_back(high_bits);
+		//if (high_bits)
+		//{
+		////	throw DynaPlex::Error("too high value used for seed");
+		//	seeds.push_back(high_bits);
+		//}
 
 		//seeds.push_back(experiment_id);
 	

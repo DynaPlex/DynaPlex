@@ -1,47 +1,69 @@
 import json
 import sys
 import torch
-from torch.utils.data import DataLoader, TensorDataset
-import numpy as np
-import torch.nn as nn
 import os
 
+import numpy as np
+import torch.nn as nn
+
+from torch.utils.data import DataLoader, TensorDataset
+
 from dp import dynaplex
-from scripts.networks.MLPNew import MLPNew
-from scripts.networks.CherryAllocationNAGNN import CherryAllocationNAGNN
 from dp.utils.early_stopping import EarlyStopping
+from scripts.networks.lost_sales_dcl_mlp import ActorMLP
 
 # when compiling and running the library - it is important that the python version matches
 # the version that the dp library was compiled against.
 # print("Current version of Python is ", sys.version)
 
 MAX_EPOCH = 100
-num_feature_per_node = 8
-num_gens = 2
-
-train_GNN = True
-
-if train_GNN:
-    arch = "GINPyGFull"
-else:
-    arch = "MLP"
+num_gens = 3
 
 # setting device on GPU if available, else CPU
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = torch.device('cpu')
 
-gridsize = 6
-n_pickers = 2
-mdp = dynaplex.get_mdp(id="order_picking",
-                       grid_size=gridsize,
-                       n_pickers=n_pickers,
-                       max_orders_per_event=1)
+load_mdp_from_file = False
+
+if load_mdp_from_file:
+    # This script assumes the desired mdp characteristics are specified in a file with a name of type mdp_config_{MDP_VERSION_NUMBER}.json
+    folder_name = "lost_sales"  # the name of the folder where the json file is located
+    mdp_version_number = 1
+    # this returns path/to/IO_DynaPlex/mdp_config_examples/lost_sales/mdp_config_[..].json:
+    path_to_json = dynaplex.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
+
+    # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
+    try:
+        with open(path_to_json, "r") as input_file:
+            vars = json.load(input_file)    # vars can be initialized manually with something like
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File {path_to_json} not found. Please make sure the file exists and try again.")
+    except:
+        raise Exception("Something went wrong when loading the json file. Have you checked the json file does not contain any comment?")
+else:
+    # Of course, we can also just initiate using a (possibly nested) dict:
+    vars = {
+        "id": "lost_sales",
+        "p": 4.0,
+        "h": 1.0,
+        "leadtime": 3,
+        "discount_factor": 1.0,
+        "demand_dist": {
+            "type": "poisson",
+            "mean": 4.0
+        }
+    }
+
+mdp = dynaplex.get_mdp(**vars)
 
 num_valid_actions = mdp.num_valid_actions()
+num_features = mdp.num_flat_features()
 
-base_policy = mdp.get_policy("random")
-sample_generator = dynaplex.get_sample_generator(mdp, N=4000, M=100)
+base_policy = mdp.get_policy("base_stock")
+sample_generator = dynaplex.get_sample_generator(mdp, N=4000, M=1000)
+
 save_filename = 'dcl_python'
+
 
 def policy_path(gen):
     return dynaplex.filepath(mdp.identifier(), f'{save_filename}_{gen}')
@@ -58,8 +80,8 @@ for gen in range(0, num_gens):
     else:
         policy = base_policy
 
-    sample_generator.generate_samples(policy, sample_path(gen))
     save_model_path = policy_path(gen + 1)
+    sample_generator.generate_samples(policy, sample_path(gen))
 
     with open(sample_path(gen), 'r') as json_file:
         sample_data = json.load(json_file)['samples']
@@ -71,15 +93,9 @@ for gen in range(0, num_gens):
 
         min_val = torch.finfo(tensor_x.dtype).min
 
-        dist_matrix = mdp.get_static_info()['distance_matrix']
-        dist_mat_tensor = torch.FloatTensor([dist_vec[f'row_{idx}'] for idx, dist_vec in enumerate(dist_matrix)])
-
         # define model
-        if arch == "GINPyGFull":
-            model = CherryAllocationNAGNN(input_dim=num_feature_per_node, hidden_dim=64, n_layers=3,
-                                          gridsize=gridsize, dist_matrix=dist_mat_tensor, min_val=min_val)
-        else:
-            model = MLPNew(input_dim=num_feature_per_node, hidden_dim=64, gridsize=gridsize)
+        model = ActorMLP(input_dim=mdp.num_flat_features(), hidden_dim=64, output_dim=num_valid_actions,
+                         min_val=torch.finfo(torch.float).min)
 
         if device != torch.device('cpu'):
             tensor_mask = tensor_mask.to(device)
@@ -103,7 +119,7 @@ for gen in range(0, num_gens):
 
         # Instantiate two dataloaders
         dataloader = DataLoader(dataset, batch_size=32, shuffle=False,
-                                num_workers=0)  # is shuffling useful? probably no
+                                num_workers=0)
         valid_dataloader = DataLoader(valid_dataset, num_workers=0)
 
         # define optimizer
@@ -111,9 +127,6 @@ for gen in range(0, num_gens):
 
         # define loss function
         loss_function = nn.NLLLoss()
-
-        # Needed for the distribution implementation of DCL
-        # loss_function = nn.CrossEntropyLoss()
         log_softmax = nn.LogSoftmax(dim=-1)
 
         # to track the average training loss per epoch as the model trains
@@ -140,11 +153,14 @@ for gen in range(0, num_gens):
                 # Get inputs
                 inputs, targets, data_mask = data
 
+                observations = {'obs': inputs,
+                                'mask': data_mask}
+
                 # Zero the gradients
                 optimizer.zero_grad()
 
                 # Perform forward pass
-                outputs = model(inputs)
+                outputs = model(observations)
 
                 # apply mask
                 masked_outputs = torch.masked_fill(outputs, ~data_mask, min_val)
@@ -152,8 +168,6 @@ for gen in range(0, num_gens):
 
                 # Compute loss
                 loss = loss_function(log_outputs, targets)
-                # loss = loss_function(masked_outputs, targets)
-                # loss = loss_function(outputs, targets)
 
                 # Perform backward pass
                 loss.backward()
@@ -171,16 +185,18 @@ for gen in range(0, num_gens):
                 # Get inputs
                 inputs, targets, data_mask = data
 
+                observations = {'obs': inputs,
+                                'mask': data_mask}
+
                 # Perform forward pass
-                outputs = model(inputs)
+                outputs = model(observations)
+
                 # apply mask
                 masked_outputs = torch.masked_fill(outputs, ~data_mask, min_val)
                 log_outputs = log_softmax(masked_outputs)
 
                 # Compute loss
                 loss = loss_function(log_outputs, targets)
-                # loss = loss_function(masked_outputs, targets)
-                # loss = loss_function(outputs, targets)
 
                 # Print statistics
                 valid_losses.append(loss.item())
@@ -202,7 +218,9 @@ for gen in range(0, num_gens):
             save_model, early_stop = early_stopping(valid_loss, model)
 
             if save_model:
-                json_info = {'gen': gen + 1}
+                json_info = {'input_type': 'dict', 'gen': gen + 1,
+                             'num_inputs': num_features, 'num_outputs': num_valid_actions}
+
                 dynaplex.save_policy(model, json_info, save_model_path, device)
                 print(f"Saved model with name {save_model_path} \n")
 
@@ -212,10 +230,11 @@ for gen in range(0, num_gens):
 
 policies = [base_policy]
 
-for i in range(1, num_gens+1):
+for i in range(1, num_gens + 1):
     load_path = policy_path(i)
     policy = dynaplex.load_policy(mdp, load_path)
     policies.append(policy)
+
 comparer = dynaplex.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100)
 comparison = comparer.compare(policies)
 result = [(item['mean']) for item in comparison]

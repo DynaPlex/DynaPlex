@@ -49,6 +49,7 @@ namespace DynaPlex::DCL {
 		std::vector<double> accumulated_rewards(root_actions.size(), 0.0);
 		std::vector<std::vector<double>> trajectory_costs(root_actions.size());
 		int64_t total_budget_used_per_action{ 0 };
+		int64_t seed_keeper{ 0 }; // used when disabling CRN
 		int64_t total_budget = M * root_actions.size();
 		int64_t total_rounds = ceil(log(root_actions.size()) / log(2));
 		auto competing_actions = root_actions;
@@ -73,12 +74,13 @@ namespace DynaPlex::DCL {
 				{
 					auto competing_action = competing_actions[action_id];
 					trajectories.emplace_back(mdp->NumEventRNGs(), experiment_information.size());
-					int64_t traj_seed = adopt_crn_sh ? replication : experiment_information.size() + 1;
-					trajectories.back().SeedRNGProvider(false, traj_seed, seed ^ rng_seed);
+					int64_t traj_seed = adopt_crn_sh ? (total_budget_used_per_action + replication) : seed_keeper + experiment_information.size() + 1;
+					trajectories.back().SeedRNGProvider(false, traj_seed, seed + rng_seed);
 					trajectories.back().NextAction = competing_action;
 					experiment_information.emplace_back(action_id, replication);
 				}
 			}
+			seed_keeper += experiment_information.size(); 
 
 			//iterate over chunks of the trajectories list, and process those for H steps or until final state. 
 			auto chunks = DynaPlex::Parallel::get_chunks(trajectories.size(), max_chunk_size_sh);
@@ -229,7 +231,7 @@ namespace DynaPlex::DCL {
 
 				double zValueForBestAlternative = 100.0;
 				for (int64_t action_id = 0; action_id < root_actions.size(); action_id++) {
-					sample.cost_improvement.push_back(comp.mean(action_id, prescribed_action_initial_policy) * objective);
+					sample.cost_improvement.push_back(comp.mean(action_id, prescribed_action_initial_policy, true) * objective);
 					sample.q_hat_vec.push_back(comp.mean(action_id) * objective);
 					sample.probabilities.push_back(comp.GetProbability(action_id));
 					if (action_id != best_action_id && least_action_budget > 1)

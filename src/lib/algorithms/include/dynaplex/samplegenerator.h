@@ -29,6 +29,7 @@ namespace DynaPlex::DCL {
 		int32_t rng_seed;
 		int32_t node_sampling_offset;
 		int64_t sampling_time_out, H, M, N, L, reinitiate_counter, json_save_format;
+		int64_t seed_offset;
 
 		bool enable_sequential_halving,silent;
 		//probability that a sample is taken on a specific action-awaiting state. 

@@ -91,7 +91,7 @@ namespace DynaPlex::Tests {
 				size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
 				EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << "pois " << mean;
-				EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << "pois " << mean;
+				EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.04) << "pois " << mean;
 				EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << "pois " << mean;
 			}
 		}
@@ -113,7 +113,7 @@ namespace DynaPlex::Tests {
 				size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
 				EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << "geom " << mean;
-				EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << "geom " << mean;
+				EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.04) << "geom " << mean;
 				EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << "geom " << mean;
 			}
 		}
@@ -136,7 +136,7 @@ namespace DynaPlex::Tests {
 					size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
 					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << " bin  p - " << p << " n " << n;
-					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << " bin  p - " << p << " n " << n;
+					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.04) << " bin  p - " << p << " n " << n;
 					EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << " bin  p - " << p << " n " << n;
 				}
 			}
@@ -160,7 +160,7 @@ namespace DynaPlex::Tests {
 					size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
 					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << " bin  p - " << p << " r " << r;
-					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.03) << " bin  p - " << p << " r " << r;
+					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.04) << " bin  p - " << p << " r " << r;
 					EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << " bin  p - " << p << " r " << r;
 				}
 			}

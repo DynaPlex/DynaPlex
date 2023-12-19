@@ -22,7 +22,6 @@ namespace DynaPlex::NN {
         training_config.GetOrDefault("early_stopping_patience", early_stopping_patience, 10);
         training_config.GetOrDefault("max_training_epochs", max_training_epochs, 1000);        
         training_config.GetOrDefault("train_based_on_probs", train_based_on_probs, false);
-
     }
 #if DP_TORCH_AVAILABLE
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> prepare_batch(const std::span<DynaPlex::NN::Sample> samples, const DynaPlex::MDP& mdp) {
@@ -98,6 +97,7 @@ namespace DynaPlex::NN {
         if (training_size < mini_batch_size || training_size < 0) {
             throw DynaPlex::Error("PolicyTrainer::TrainPolicy - Insufficient data samples for training and validation: " + std::to_string(data.Samples.size()));
         }
+        
         // Round the training data down to a multiple of the mini_batch_size
         training_size = (training_size / mini_batch_size) * mini_batch_size;
 
@@ -115,7 +115,7 @@ namespace DynaPlex::NN {
         int64_t epochs_without_improvement = 0;
         float training_loss{ 0.0f };
         float cost_improvement{ 0.0f };
-     
+
         auto start_time = std::chrono::steady_clock::now();
 
         do {
@@ -151,48 +151,50 @@ namespace DynaPlex::NN {
             float average_training_loss = total_training_loss / num_batches;
             best_training_loss = std::min(average_training_loss, best_training_loss);
 
-            // Disable gradient computation for validation
-            torch::NoGradGuard no_grad;
-
-            float current_validation_loss = 0.0;
-            torch::Tensor validation_output = any_module.forward(validation_samples) - validation_mask;
-
-            if (!train_based_on_probs){
-                torch::Tensor validation_loss = torch::nll_loss(torch::log_softmax(validation_output, 1), validation_targets);
-                current_validation_loss = validation_loss.item<float>();
-            }
-            else {
-                torch::Tensor probs = torch::softmax(validation_output, /*dim=*/1);
-                // Compute cross-entropy loss manually for soft labels.
-                torch::Tensor validation_loss = -validation_probs * torch::log(probs + 1e-8); // Adding epsilon to avoid log(0)
-                validation_loss = validation_loss.sum(1).mean(); // Sum over classes, then average over the batch.
-                current_validation_loss = validation_loss.item<float>();
-            }
-
-            torch::Tensor costs = torch::sum(torch::softmax(validation_output / 0.001, 1) * validation_relative_costs);
-            auto relative_cost_improvement= costs.item<float>() / validation_data.size();
-            best_cost_improvement = std::min(best_cost_improvement, relative_cost_improvement);
-
-            // Check for improvement in validation loss
-            if (current_validation_loss < best_validation_loss) {
-                best_validation_loss = current_validation_loss;
-                training_loss = average_training_loss;
-                cost_improvement = relative_cost_improvement;
-                auto saved_model_path = system.filepath(mdp->Identifier(), "temp", "model_weights.pth");
-                torch::save(any_module_as_nn_module, saved_model_path); // Save the model weights
-                epochs_without_improvement = 0; // Reset counter
-            }
-            else {
-                epochs_without_improvement++;
-                if (epochs_without_improvement >= early_stopping_patience) {
-                    if (!silent)
-                        system << "Early stopping after " << early_stopping_patience << " epochs without improvement." << std::endl;
-                    break; // Exit the training loop
-                }
-            }
-
             // Reporting losses every 5 epochs
             if (epoch % 5 == 0) {
+
+                // Disable gradient computation for validation
+                torch::NoGradGuard no_grad;
+
+                float current_validation_loss = 0.0;
+                torch::Tensor validation_output = any_module.forward(validation_samples) - validation_mask;
+
+                if (!train_based_on_probs) {
+                    torch::Tensor validation_loss = torch::nll_loss(torch::log_softmax(validation_output, 1), validation_targets);
+                    current_validation_loss = validation_loss.item<float>();
+                }
+                else {
+                    torch::Tensor probs = torch::softmax(validation_output, /*dim=*/1);
+                    // Compute cross-entropy loss manually for soft labels.
+                    torch::Tensor validation_loss = -validation_probs * torch::log(probs + 1e-8); // Adding epsilon to avoid log(0)
+                    validation_loss = validation_loss.sum(1).mean(); // Sum over classes, then average over the batch.
+                    current_validation_loss = validation_loss.item<float>();
+                }
+
+                torch::Tensor costs = torch::sum(torch::softmax(validation_output / 0.001, 1) * validation_relative_costs);
+                auto relative_cost_improvement = costs.item<float>() / validation_data.size();
+                best_cost_improvement = std::min(best_cost_improvement, relative_cost_improvement);
+
+                // Check for improvement in validation loss
+                if (current_validation_loss < best_validation_loss) {
+                    best_validation_loss = current_validation_loss;
+                    training_loss = average_training_loss;
+                    cost_improvement = relative_cost_improvement;
+                    auto saved_model_path = system.filepath(mdp->Identifier(), "temp", "model_weights.pth");
+                    torch::save(any_module_as_nn_module, saved_model_path); // Save the model weights
+                    epochs_without_improvement = 0; // Reset counter
+                }
+                else {
+                    epochs_without_improvement += 5;
+                    if (epochs_without_improvement > early_stopping_patience) {
+                        if (!silent)
+                            system << "Early stopping after " << early_stopping_patience << " epochs without improvement." << std::endl;
+                        break; // Exit the training loop
+                    }
+                }
+
+
                 auto end_time = std::chrono::steady_clock::now();
                 auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
@@ -213,21 +215,21 @@ namespace DynaPlex::NN {
 
         if (!silent) {
             system << "Actual Epochs/Max Epochs: " << epoch << "/" << max_training_epochs
-                << " - Best Training Loss: " << best_training_loss
-                << " (" << (int)(100 * std::exp(-best_training_loss)) << "%)"
-                << " - Best Validation Loss: " << best_validation_loss
-                << " (" << (int)(100 * std::exp(-best_validation_loss)) << "%)"
-                << " - Best Cost Improvement : " << best_cost_improvement
-                << std::endl;
-            system << "Saved policy statistics: "
-                << " - Training Loss: " << training_loss
-                << " (" << (int)(100 * std::exp(-training_loss)) << "%)"
-                << " - Validation Loss: " << best_validation_loss
-                << " (" << (int)(100 * std::exp(-best_validation_loss)) << "%)"
-                << " - Cost Improvement : " << cost_improvement
-                << std::endl;
-        }
+            << " - Best Training Loss: " << best_training_loss
+            << " (" << (int)(100 * std::exp(-best_training_loss)) << "%)"
+            << " - Best Validation Loss: " << best_validation_loss
+            << " (" << (int)(100 * std::exp(-best_validation_loss)) << "%)"
+            << " - Best Cost Improvement : " << best_cost_improvement
+            << std::endl;
 
+            system << "Saved policy stats: " 
+            << " - Training Loss: " << training_loss
+            << " (" << (int)(100 * std::exp(-training_loss)) << "%)"
+            << " - Validation Loss: " << best_validation_loss
+            << " (" << (int)(100 * std::exp(-best_validation_loss)) << "%)"
+            << " - Cost Improvement : " << cost_improvement
+            << std::endl;
+        }
 
         auto best_weights_path = system.filepath(mdp->Identifier(), "temp", "model_weights.pth");
 
