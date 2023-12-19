@@ -32,7 +32,11 @@ This software incorporates portions of the following projects:
 - pcg-cpp:
   - Copyright (c) 2014-2017 Melissa E. O'Neill and the PCG Project Contributors
   - Licenced under the MIT Licence, found under the LICENCES subfolder.
-  (- Also licenced under the Apache License.)
+  (- This code was at some point also licenced under the Apache License.)
+
+- Xoshiro-cpp
+  - Copyright (c) 2020 Ryo Suzuki <reputeless@gmail.com>
+  - Licenced under the MIT Licence.
 
 - Picosha2: 
   - Copyright (c) 2017 okdshin

@@ -42,11 +42,14 @@ namespace DynaPlex::DCL {
 			L = 0;
 			reinitiate_counter = 0;
 		}
+		seed_offset = 0;
 	}
 
 	void SampleGenerator::GenerateSamplesOnThread(std::span<DynaPlex::NN::Sample> somesamples, DynaPlex::Policy policy, int32_t thread_offset)
 	{
-		int32_t offset = thread_offset + node_sampling_offset;
+		bool use_seed_offset = true; // setting it true will secure different seeding between generations 
+		int32_t seed = use_seed_offset ? seed_offset : 0;
+		int32_t offset = thread_offset + node_sampling_offset + 1 + seed;
 		int32_t num_samples_added = 0;
 		Trajectory trajectory{ mdp->NumEventRNGs() };
 		trajectory.SeedRNGProvider(false, -offset, offset);
@@ -235,7 +238,7 @@ namespace DynaPlex::DCL {
 		}
 
 		DynaPlex::Parallel::parallel_compute<DynaPlex::NN::Sample>(sample_vec, work, system.HardwareThreads(), reporter);
-
+		seed_offset += N;
 
 		//gather all the collected samples over the threads into sample_data.
 		DynaPlex::NN::SampleData sample_data{ mdp };

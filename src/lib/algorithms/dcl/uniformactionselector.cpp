@@ -55,7 +55,7 @@ namespace DynaPlex::DCL {
 				auto root_action = root_actions[action_id];
 				trajectories.emplace_back(mdp->NumEventRNGs(), experiment_information.size());
 				int64_t traj_seed = adopt_crn ? replication : experiment_information.size() + 1;
-				trajectories.back().SeedRNGProvider(false, traj_seed, seed ^ rng_seed);
+				trajectories.back().SeedRNGProvider(false, traj_seed, seed + rng_seed);
 				trajectories.back().NextAction = root_action;
 				experiment_information.emplace_back(action_id, replication);
 			}
