@@ -39,14 +39,11 @@ def save_policy(model, json_info, path, device='cpu'):
     # Torchscript model
     if device != torch.device('cpu'):
         model.to('cpu')
-
-    model.dynaplex_eval = True
     traced_script_module = torch.jit.script(model)
     traced_script_module.save(f'{path}.pth')
 
     if device != torch.device('cpu'):
         model.to(device)
-    model.dynaplex_eval = False
 
     # Json file
     # Serializing json

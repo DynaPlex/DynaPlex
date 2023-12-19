@@ -128,8 +128,11 @@ namespace DynaPlex
 		 */
 		virtual void GetFlatFeatures(const DynaPlex::dp_State& state, std::span<float> feats) const = 0;
 
-
-
+		/**
+		 * Writes the mask onto the span. In particular, sets all allowed actions to true, and leaves other actions unchanged.
+		 * mask should have dimension trajectories.Size() * NumValidActions();
+		 */
+		virtual void GetMask(const std::span<DynaPlex::Trajectory> trajectories, std::span<bool> mask) const = 0;
 
 		/**
 		 * For each trajectory, interprets the corresponding portion of values_per_valid_action as scores for the various action. Sets the

@@ -682,18 +682,7 @@ namespace DynaPlex::Models {
 			throw DynaPlex::NotImplementedError("Left unimplemented :order_picking cannot be solved using exact methods anyhow");
 		}
 
-
-
 		void MDP::GetFeatures(const State& state, DynaPlex::Features& features)const {
-
-			//action mask (for inference)
-			for (size_t i = 0; i < n_valid_actions; i++) {
-				if (IsAllowedAction(state, i))
-					features.Add(1);
-				else
-					features.Add(0);
-			}
-
 			state.flattenState(features);
 		}
 		

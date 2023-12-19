@@ -11,9 +11,20 @@ namespace torch {
     }
 }
 
+
 namespace DynaPlex {
+
+
+
     class NN_Policy : public PolicyInterface {
     public:
+        enum class NetworkForwardType {
+            Tensor,
+            TensorDict,
+            TensorDictMask
+        };
+
+        NetworkForwardType fw_type = NetworkForwardType::Tensor;
 
         DynaPlex::MDP mdp;
 #if DP_TORCH_AVAILABLE
@@ -27,6 +38,8 @@ namespace DynaPlex {
         const DynaPlex::VarGroup& GetConfig() const override;
 
         void SetAction(std::span<Trajectory> trajectories) const override;
+
+
     };
 
 }  // namespace DynaPlex

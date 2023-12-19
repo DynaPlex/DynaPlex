@@ -9,9 +9,11 @@ sys.path.append(parent_directory)
 from dp.loader import DynaPlex as dp
 sys.path.remove(parent_directory)
 
+
 def test_non_convertible():
     with pytest.raises(TypeError) as exc_info:
         dp.get_mdp(123)
+
 
 def test_model_factory_missing():
     # Create VarGroup using a Python dictionary. Note typo
@@ -19,6 +21,7 @@ def test_model_factory_missing():
     #Expecting an error when calling get_mdp
     with pytest.raises(RuntimeError, match=re.escape("DynaPlex: No MDP available with identifier \"LosSales\". Use ListMDPs() / list_mdps() to obtain available MDPs.")) as exc_info:
         model = dp.get_mdp(**vars)
+
 
 def test_model_factory_tests():
     # Create VarGroup using a Python dictionary
@@ -44,7 +47,6 @@ def test_filepath():
     assert actual_path == expected_path, f"Expected path to be {expected_path}, but got {actual_path}"
 
 
-
 def test_model_factory_named_args():
     try:
         model = dp.get_mdp(id="lost_sales",p=9.0,h=1.0,leadtime=3,demand_dist={"type":"poisson","mean":3.0})
@@ -52,6 +54,7 @@ def test_model_factory_named_args():
         pytest.fail(f"Unexpected error: {e}")   
     identifier = model.identifier()
     assert identifier.startswith("lost_sales"), f"Expected identifier to start with 'lost_sales', but got '{identifier}'"
+
 
 def test_list_mdps():
     mdp_list = dp.list_mdps()

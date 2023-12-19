@@ -1,34 +1,29 @@
 import json
-import sys
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import torch.nn as nn
 import os
+import sys
 
 parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_directory)
 # noinspection PyUnresolvedReferences
 from dp.loader import DynaPlex as dp
-from networks.MLPNew import MLPNew
-from networks.CherryAllocationNAGNN import CherryAllocationNAGNN
+from networks.order_picking_dcl_gnn import NAGNNActor
 from utils.early_stopping import EarlyStopping
 sys.path.remove(parent_directory)
 
-# when compiling and running the library - it is important that the python version matches
-# the version that the dynaplex library was compiled against.
-# print("Current version of Python is ", sys.version)
-
 MAX_EPOCH = 100
 num_feature_per_node = 8
-num_gens = 2
+num_gens = 1
 
 train_GNN = True
 
 if train_GNN:
-    arch = "GINPyGFull"
+    arch = "GNN"
 else:
-    arch = "MLP"
+    arch = "InvFF"
 
 # setting device on GPU if available, else CPU
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -36,23 +31,25 @@ device = torch.device('cpu')
 
 gridsize = 6
 n_pickers = 2
+max_orders_per_event = 1
 mdp = dp.get_mdp(id="order_picking",
                  grid_size=gridsize,
                  n_pickers=n_pickers,
-                 max_orders_per_event=1)
+                 max_orders_per_event=max_orders_per_event)
 
 num_valid_actions = mdp.num_valid_actions()
 
 base_policy = mdp.get_policy("random")
-sample_generator = dp.get_sample_generator(mdp, N=4000, M=100)
+sample_generator = dp.get_sample_generator(mdp, N=1000, M=100)
 save_filename = 'dcl_python'
 
+
 def policy_path(gen):
-    return dp.filepath(mdp.identifier(), f'{save_filename}_{gen}')
+    return dp.filepath(mdp.identifier(), 'dcl_python', f'{save_filename}_{gen}')
 
 
 def sample_path(gen):
-    return dp.filepath(mdp.identifier(), f'samples_{gen}.json')
+    return dp.filepath(mdp.identifier(), 'dcl_python', f'samples_{gen}.json')
 
 
 for gen in range(0, num_gens):
@@ -62,13 +59,14 @@ for gen in range(0, num_gens):
     else:
         policy = base_policy
 
-    sample_generator.generate_samples(policy, sample_path(gen))
     save_model_path = policy_path(gen + 1)
+    sample_generator.generate_samples(policy, sample_path(gen))
+    # if not os.path.exists(sample_path(gen)):
+    #     sample_generator.generate_samples(policy, sample_path(gen))
 
     with open(sample_path(gen), 'r') as json_file:
         sample_data = json.load(json_file)['samples']
 
-        # tensor_y = torch.FloatTensor([sample['action_label'] for sample in sample_data])
         tensor_y = torch.LongTensor([sample['action_label'] for sample in sample_data])
         tensor_mask = torch.BoolTensor([sample['allowed_actions'] for sample in sample_data])
         tensor_x = torch.FloatTensor([sample['features'] for sample in sample_data])
@@ -79,11 +77,12 @@ for gen in range(0, num_gens):
         dist_mat_tensor = torch.FloatTensor([dist_vec[f'row_{idx}'] for idx, dist_vec in enumerate(dist_matrix)])
 
         # define model
-        if arch == "GINPyGFull":
-            model = CherryAllocationNAGNN(input_dim=num_feature_per_node, hidden_dim=64, n_layers=3,
-                                          gridsize=gridsize, dist_matrix=dist_mat_tensor, min_val=min_val)
-        else:
-            model = MLPNew(input_dim=num_feature_per_node, hidden_dim=64, gridsize=gridsize)
+        if arch == "GNN":
+            model = NAGNNActor(input_dim=num_feature_per_node, hidden_dim=64, n_layers=3,
+                               gridsize=gridsize, dist_matrix=dist_mat_tensor, min_val=min_val)
+        else:   # InvFF
+            model = NAGNNActor(input_dim=num_feature_per_node, hidden_dim=64, n_layers=0,
+                               gridsize=gridsize, dist_matrix=dist_mat_tensor, min_val=min_val)
 
         if device != torch.device('cpu'):
             tensor_mask = tensor_mask.to(device)
@@ -107,7 +106,7 @@ for gen in range(0, num_gens):
 
         # Instantiate two dataloaders
         dataloader = DataLoader(dataset, batch_size=32, shuffle=False,
-                                num_workers=0)  # is shuffling useful? probably no
+                                num_workers=0)
         valid_dataloader = DataLoader(valid_dataset, num_workers=0)
 
         # define optimizer
@@ -115,9 +114,6 @@ for gen in range(0, num_gens):
 
         # define loss function
         loss_function = nn.NLLLoss()
-
-        # Needed for the distribution implementation of DCL
-        # loss_function = nn.CrossEntropyLoss()
         log_softmax = nn.LogSoftmax(dim=-1)
 
         # to track the average training loss per epoch as the model trains
@@ -128,8 +124,6 @@ for gen in range(0, num_gens):
         # initialize the early_stopping object
         early_stopping = EarlyStopping(patience=15, verbose=True, delta=0.0005)
 
-        reshape_times = []
-        forward_times = []
         for ep in range(MAX_EPOCH):
 
             # prepare lists for train loss and validation loss
@@ -144,11 +138,14 @@ for gen in range(0, num_gens):
                 # Get inputs
                 inputs, targets, data_mask = data
 
+                observations = {'obs': inputs,
+                                'mask': data_mask}
+
                 # Zero the gradients
                 optimizer.zero_grad()
 
                 # Perform forward pass
-                outputs = model(inputs)
+                outputs = model(observations)
 
                 # apply mask
                 masked_outputs = torch.masked_fill(outputs, ~data_mask, min_val)
@@ -157,7 +154,6 @@ for gen in range(0, num_gens):
                 # Compute loss
                 loss = loss_function(log_outputs, targets)
                 # loss = loss_function(masked_outputs, targets)
-                # loss = loss_function(outputs, targets)
 
                 # Perform backward pass
                 loss.backward()
@@ -175,8 +171,12 @@ for gen in range(0, num_gens):
                 # Get inputs
                 inputs, targets, data_mask = data
 
+                observations = {'obs': inputs,
+                                'mask': data_mask}
+
                 # Perform forward pass
-                outputs = model(inputs)
+                outputs = model(observations)
+
                 # apply mask
                 masked_outputs = torch.masked_fill(outputs, ~data_mask, min_val)
                 log_outputs = log_softmax(masked_outputs)
@@ -184,7 +184,6 @@ for gen in range(0, num_gens):
                 # Compute loss
                 loss = loss_function(log_outputs, targets)
                 # loss = loss_function(masked_outputs, targets)
-                # loss = loss_function(outputs, targets)
 
                 # Print statistics
                 valid_losses.append(loss.item())
@@ -201,12 +200,13 @@ for gen in range(0, num_gens):
                          f'valid_loss: {valid_loss:.5f}')
             print(print_msg)
 
-            # early_stopping needs the validation loss to check if it has decreased,
-            # and if it has, it will make a checkpoint of the current model
+            # early_stopping needs the validation loss to check if it has decreased
+            # if it has, it will set save_model flag to True
+            # otherwise, if it has not decreased for a fixed number of iterations, early_stop is set to True
             save_model, early_stop = early_stopping(valid_loss, model)
 
             if save_model:
-                json_info = {'gen': gen + 1}
+                json_info = {'input_type': 'dict_with_mask', 'gen': gen + 1}
                 dp.save_policy(model, json_info, save_model_path, device)
                 print(f"Saved model with name {save_model_path} \n")
 
@@ -214,13 +214,14 @@ for gen in range(0, num_gens):
                 print("Early stopping")
                 break
 
-policies = [base_policy]
+policies = [base_policy, mdp.get_policy(id="greedy_heuristic", coordinated=True, cost_based=True)]
 
 for i in range(1, num_gens+1):
     load_path = policy_path(i)
     policy = dp.load_policy(mdp, load_path)
     policies.append(policy)
-comparer = dp.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100)
+
+comparer = dp.get_comparer(mdp, number_of_trajectories=100, periods_per_trajectory=100, warmup_periods=0)
 comparison = comparer.compare(policies)
 result = [(item['mean']) for item in comparison]
 

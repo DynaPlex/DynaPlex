@@ -13,18 +13,21 @@ sys.path.append(parent_directory)
 from dp.loader import DynaPlex as dp
 sys.path.remove(parent_directory)
 
-#The BaseEnv class extends the basic gymnasium AECEnv class to interact with a Dynaplex MDP
+
+# The BaseEnv class extends the basic gymnasium AECEnv class to interact with a Dynaplex MDP
 class BaseEnv(gym.Env):
 
     metadata = {"render_modes": ["human"]}
 
-    def __init__(self, mdp, num_actions_until_done = 0, **kwargs):
+    def __init__(self, mdp, num_actions_until_done=0, num_periods_until_done=0, **kwargs):
         # Emulator holds the current state of the mdp
-        self.emulator = dp.get_gym_emulator(mdp=mdp, num_actions_until_done=num_actions_until_done)
-        
-        # Observations are a dictionary containing a Box (a vector of length self.emulator.observation_space_size()) which can contain unbounded values, and the action mask
-        self.observation_space = spaces.Dict({'obs': spaces.Box(low=-float('inf'), high=float('inf'), shape=(self.emulator.observation_space_size(),), dtype=float), #Coordinates of agent
-                                             'mask': spaces.MultiBinary(self.emulator.action_space_size())})
+        self.emulator = dp.get_gym_emulator(mdp=mdp, num_actions_until_done=num_actions_until_done,
+                                            num_periods_until_done=num_periods_until_done)
+
+        # Observations are a dictionary containing a Box (a vector of length self.emulator.observation_space_size())
+        # which can contain unbounded values, and the action mask
+        self.observation_space = spaces.Dict({'obs': spaces.Box(low=-float('inf'), high=float('inf'), shape=(self.emulator.observation_space_size(),), dtype=float),
+                                              'mask': spaces.MultiBinary(self.emulator.action_space_size())})
 
         # Actions are always discrete
         self.action_space = spaces.Discrete(self.emulator.action_space_size())
@@ -37,21 +40,31 @@ class BaseEnv(gym.Env):
             seed = seed_gen.item()
 
         # Get initial state from dp MDP
-        observation, info = self.emulator.reset(seed=seed) #get_initial_state resets the dp emulator and returns the initial state
+        observation, info = self.emulator.reset(seed=seed)  # get_initial_state resets the dp emulator and returns the initial state
 
+        # Dict input
+        return {'obs': np.asarray(observation[0]), 'mask': np.asarray(observation[1])}, {}  # second return value is empty info
 
-        # return {'obs': np.asarray(self.current_obs[0]), 'mask': np.asarray(self.current_obs[1])}, info #second return value is empty info
-        return np.concatenate((observation[1], observation[0])), info #second return value is empty info
+        # Tensor input
+        # return np.concatenate((observation[1], observation[0])), {}   # second return value is empty info
 
     def step(self, action):
         """
         Step gets an action and calls the Dynaplex mdp step function, which evolves the simulation until another action is required.
         """
+        observation, reward, terminated, truncated, info = self.emulator.step(action)
 
-        observation, reward, done, truncated, info = self.emulator.step(action)
+        # Dict input
+        return (
+            {'obs': np.asarray(observation[0]), 'mask': np.asarray(observation[1])},
+            reward,
+            terminated,
+            truncated,
+            {'info': info}
+        )
 
-        # return {'obs': np.asarray(observation[0]), 'mask': np.asarray(observation[1])}, reward, done, False, {'info': info} #False is truncation
-        return np.concatenate((observation[1], observation[0])), reward, done, truncated, info
+        # Tensor input
+        # return np.concatenate((observation[1], observation[0])), reward, done, truncated, {'info': info}
 
     def render(self):
         raise NotImplementedError

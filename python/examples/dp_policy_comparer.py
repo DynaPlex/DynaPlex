@@ -1,6 +1,5 @@
 import os
 import sys
-import torch
 
 parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_directory)
@@ -21,14 +20,5 @@ trained_policies = dcl.get_policies()
 comparer = dp.get_comparer(mdp, number_of_trajectories=100, rng_seed=12)
 
 comparison = comparer.compare(trained_policies)
-result = [( item['mean']) for item in comparison]
+result = [(item['mean']) for item in comparison]
 print(result)
-
-
-
-#info = mdp.get_static_info()
-#max_system_inv = info['diagnostics']['MaxSystemInv']
-#policies = [mdp.get_policy(id="base_stock", base_stock_level=i) for i in range(max_system_inv + 1)]
-#comparison = comparer.compare(policies)
-#result = [(item['policy']['base_stock_level'], item['mean']) for item in comparison]
-#print(result)

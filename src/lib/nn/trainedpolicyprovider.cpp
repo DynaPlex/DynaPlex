@@ -51,8 +51,38 @@ namespace DynaPlex {
 
 			auto policy = std::make_shared<NN_Policy>(mdp);
 			// Use the TorchScriptWrapper class to wrap the TorchScript module
-			auto torchscript_wrapper = std::make_shared<DynaPlex::NN::TorchScriptWrapper>(path_to_weights); 
-			policy->neural_network = std::make_unique<torch::nn::AnyModule>(torchscript_wrapper);
+			std::string input_type;
+			if (policy_config.HasKey("input_type"))
+			{
+				policy_config.Get("input_type", input_type);
+			}
+			else
+			{			
+				std::cout << "input_type not provided in json for torchscripted file. Note that torchscript .json files without input_type is deprecated. Set to \"tensor\" for torchscripts that expect tensor in forward function. ";
+				input_type = "tensor";
+			}
+			
+			if (input_type == "tensor")
+			{
+				auto torchscript_wrapper = std::make_shared<DynaPlex::NN::TorchScriptWrapper>(path_to_weights);
+				policy->neural_network = std::make_unique<torch::nn::AnyModule>(torchscript_wrapper);
+				policy->fw_type = NN_Policy::NetworkForwardType::Tensor;
+
+			}
+			else if (input_type == "dict" || input_type == "dict_with_mask")
+			{
+				auto torchscript_wrapper = std::make_shared<DynaPlex::NN::TorchScriptDictWrapper>(path_to_weights);
+				policy->neural_network = std::make_unique<torch::nn::AnyModule>(torchscript_wrapper);
+				if (input_type == "dict")
+					policy->fw_type = NN_Policy::NetworkForwardType::TensorDict;
+				else
+					policy->fw_type = NN_Policy::NetworkForwardType::TensorDictMask;
+			}
+			else
+			{
+				throw DynaPlex::Error("NeuralNetworkProvider::LoadPolicy: input_type of neural network is: " + input_type + ". This input_type is not available.");
+
+			}
 			policy->policy_config = policy_config;
 			return policy;
 		}

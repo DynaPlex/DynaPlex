@@ -35,7 +35,7 @@ namespace DynaPlex::Erasure
 		ActionRangeProvider<t_MDP> provider;
 		double discount_factor;
 		bool is_infinite_horizon;
-		int64_t num_flat_features, num_allowed_actions;
+		int64_t num_flat_features;
 
 
 		int64_t NumValidActions() const override {
@@ -248,6 +248,7 @@ namespace DynaPlex::Erasure
 			return std::equality_comparable<t_State>;
 		}
 
+	
 
 		void GetFlatFeatures(const DynaPlex::dp_State& state, std::span<float> feats) const override
 		{
@@ -297,7 +298,24 @@ namespace DynaPlex::Erasure
 			}
 		}
 
-
+		void GetMask(const std::span<DynaPlex::Trajectory> trajectories, std::span<bool> mask) const override
+		{
+			auto num_valid_actions = provider.NumValidActions();
+			if (num_valid_actions * trajectories.size() != mask.size())
+				throw DynaPlex::Error("MDP->GetMask: size of mask argument does not equal NumAllowedActions* trajectories.size()");
+			size_t offset = 0;
+			for (const auto& trajectory : trajectories)
+			{
+				if (!trajectory.Category.IsAwaitAction())
+					throw DynaPlex::Error("MDP->GetMask: trajectory in trajectories does not satisfy Category.IsAwaitAction().");
+				auto& t_state = ToState(trajectory.GetState());
+				for (auto action : provider(t_state))
+				{
+					mask[offset + action] = true;
+				}
+				offset += num_valid_actions;
+			}
+		}
 
 		void GetFlatFeatures(const std::span<DynaPlex::Trajectory> trajectories, std::span<float> feats) const override
 		{
