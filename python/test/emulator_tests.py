@@ -3,22 +3,17 @@ import sys
 import numpy as np
 import pytest
 
-# Assuming the dp module and DynaPlex are available in the parent directory
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-sys.path.remove(parent_directory)
+from dp import dynaplex
 
 
 @pytest.fixture
 def mdp():
-    return dp.get_mdp(id="lost_sales", p=9.0, h=1.0, leadtime=3, demand_dist={"type": "poisson", "mean": 3.0})
+    return dynaplex.get_mdp(id="lost_sales", p=9.0, h=1.0, leadtime=3, demand_dist={"type": "poisson", "mean": 3.0})
 
 
 @pytest.fixture
 def emulator(mdp):
-    return dp.get_gym_emulator(mdp, num_actions_until_done=10, seed=12)
+    return dynaplex.get_gym_emulator(mdp, num_actions_until_done=10, seed=12)
 
 
 def test_action_space_size(emulator):

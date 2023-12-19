@@ -1,5 +1,4 @@
 import os
-import sys
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
@@ -8,22 +7,18 @@ from torch.optim.lr_scheduler import ExponentialLR
 import tianshou as ts
 from tianshou.utils import TensorboardLogger
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-from gym.base_env import BaseEnv
-from networks.order_picking_actor_critic_gnn import NAGNNActor, NAGNNCritic
-from utils.tianshou.network_wrapper import TianshouModuleWrapper
-sys.path.remove(parent_directory)
+from dp import dynaplex
+from dp.gym.base_env import BaseEnv
+from scripts.networks.order_picking_actor_critic_gnn import NAGNNActor, NAGNNCritic
+from dp.utils.tianshou.network_wrapper import TianshouModuleWrapper
 
 gridsize = 6
 n_pickers = 2
 max_orders_per_event = 1
-mdp = dp.get_mdp(id="order_picking",
-                 grid_size=gridsize,
-                 n_pickers=n_pickers,
-                 max_orders_per_event=max_orders_per_event)
+mdp = dynaplex.get_mdp(id="order_picking",
+                       grid_size=gridsize,
+                       n_pickers=n_pickers,
+                       max_orders_per_event=max_orders_per_event)
 
 
 # Training parameters
@@ -32,20 +27,20 @@ train_args = {"hidden_dim": 64,
               "discount_factor": 0.99,
               "batch_size": 64,
               "max_batch_size_ppo": 0,
-              "nr_envs": 1,
+              "nr_envs": 4,
               "max_epoch": 30,
-              "step_per_collect": 500,
-              "step_per_epoch": 1000,
+              "step_per_collect": 5000,
+              "step_per_epoch": 10000,
               "repeat_per_collect": 2,
               "num_periods_until_done": 25,
               }
 
 
 def save_best_fn(policy):
-    path = dp.filepath(mdp.identifier(), 'ppo', f'ppo')
-    dp.save_policy(policy.actor.wrapped_module,
-                   {'input_type': 'dict_with_mask'},
-                   path)
+    path = dynaplex.filepath(mdp.identifier(), 'ppo', f'ppo')
+    dynaplex.save_policy(policy.actor.wrapped_module,
+                         {'input_type': 'dict_with_mask'},
+                         path)
 
 
 def get_env():    

@@ -9,14 +9,10 @@ from tianshou.utils import TensorboardLogger
 
 from torch.optim.lr_scheduler import ExponentialLR
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-from networks.lost_sales_actor_critic_mlp import CriticMLP, ActorMLP
-from utils.tianshou.network_wrapper import TianshouModuleWrapper
-from gym.base_env import BaseEnv
-sys.path.remove(parent_directory)
+from dp import dynaplex
+from dp.utils.tianshou.network_wrapper import TianshouModuleWrapper
+from dp.gym.base_env import BaseEnv
+from scripts.networks.lost_sales_actor_critic_mlp import CriticMLP, ActorMLP
 
 load_mdp_from_file = False
 
@@ -25,7 +21,7 @@ if load_mdp_from_file:
     folder_name = "lost_sales"  # the name of the folder where the json file is located
     mdp_version_number = 1
     # this returns path/to/IO_DynaPlex/mdp_config_examples/lost_sales/mdp_config_[..].json:
-    path_to_json = dp.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
+    path_to_json = dynaplex.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
 
     # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
     try:
@@ -49,7 +45,7 @@ else:
         }
     }
 
-mdp = dp.get_mdp(**vars)
+mdp = dynaplex.get_mdp(**vars)
 
 # Training parameters
 train_args = {"hidden_dim": 64,
@@ -72,13 +68,13 @@ train_args = {"hidden_dim": 64,
 
 
 def policy_path():
-    path = os.path.normpath(dp.filepath(mdp.identifier(), "ppo_policy"))
+    path = os.path.normpath(dynaplex.filepath(mdp.identifier(), "ppo_policy"))
     return path
 
 
 def save_best_fn(policy):
     save_path = policy_path()
-    dp.save_policy(policy.actor.wrapped_module,
+    dynaplex.save_policy(policy.actor.wrapped_module,
                    {'input_type': 'dict', 'num_inputs': mdp.num_flat_features(), 'num_outputs': mdp.num_valid_actions()},
                    save_path)
 
@@ -157,7 +153,7 @@ if __name__ == '__main__':
 
         # a tensorboard logger is available to monitor training results.
         # log in the directory where all mdp results are stored:
-        log_path = dp.filepath(mdp.identifier(), "tensorboard_logs", model_name)
+        log_path = dynaplex.filepath(mdp.identifier(), "tensorboard_logs", model_name)
         writer = SummaryWriter(log_path)
         logger = TensorboardLogger(writer)
 
@@ -193,8 +189,8 @@ if __name__ == '__main__':
         result = trainer.run()
         print(f'Finished training!')
 
-    policies = [dp.load_policy(mdp, policy_path()), mdp.get_policy("random")]
-    comparer = dp.get_comparer(mdp, number_of_trajectories=256, periods_per_trajectory=10000, rng_seed=12)
+    policies = [dynaplex.load_policy(mdp, policy_path()), mdp.get_policy("random")]
+    comparer = dynaplex.get_comparer(mdp, number_of_trajectories=256, periods_per_trajectory=10000, rng_seed=12)
 
     comparison = comparer.compare(policies)
     result = [(item['policy']['id'], item['mean']) for item in comparison]

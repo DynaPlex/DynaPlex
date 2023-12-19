@@ -7,12 +7,7 @@ import gymnasium as gym
 from gymnasium import spaces
 from gymnasium.utils import seeding
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-sys.path.remove(parent_directory)
-
+from dp import dynaplex
 
 # The BaseEnv class extends the basic gymnasium AECEnv class to interact with a Dynaplex MDP
 class BaseEnv(gym.Env):
@@ -21,7 +16,7 @@ class BaseEnv(gym.Env):
 
     def __init__(self, mdp, num_actions_until_done=0, num_periods_until_done=0, **kwargs):
         # Emulator holds the current state of the mdp
-        self.emulator = dp.get_gym_emulator(mdp=mdp, num_actions_until_done=num_actions_until_done,
+        self.emulator = dynaplex.get_gym_emulator(mdp=mdp, num_actions_until_done=num_actions_until_done,
                                             num_periods_until_done=num_periods_until_done)
 
         # Observations are a dictionary containing a Box (a vector of length self.emulator.observation_space_size())
@@ -42,11 +37,7 @@ class BaseEnv(gym.Env):
         # Get initial state from dp MDP
         observation, info = self.emulator.reset(seed=seed)  # get_initial_state resets the dp emulator and returns the initial state
 
-        # Dict input
         return {'obs': np.asarray(observation[0]), 'mask': np.asarray(observation[1])}, {}  # second return value is empty info
-
-        # Tensor input
-        # return np.concatenate((observation[1], observation[0])), {}   # second return value is empty info
 
     def step(self, action):
         """
@@ -54,7 +45,6 @@ class BaseEnv(gym.Env):
         """
         observation, reward, terminated, truncated, info = self.emulator.step(action)
 
-        # Dict input
         return (
             {'obs': np.asarray(observation[0]), 'mask': np.asarray(observation[1])},
             reward,
@@ -62,9 +52,6 @@ class BaseEnv(gym.Env):
             truncated,
             {'info': info}
         )
-
-        # Tensor input
-        # return np.concatenate((observation[1], observation[0])), reward, done, truncated, {'info': info}
 
     def render(self):
         raise NotImplementedError

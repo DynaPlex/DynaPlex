@@ -30,7 +30,6 @@ target_link_libraries(DP_${targetname} PUBLIC MPI::MPI_CXX)
 endif()
 
  add_custom_command(TARGET DP_${targetname} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/python/dp/libs/"
                    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:DP_${targetname}>
-                   ${PROJECT_SOURCE_DIR}/python/dp/libs/
-                   COMMENT "Copying python extension to python/dp/libs/")
+                   ${PROJECT_SOURCE_DIR}/python/dp/
+                   COMMENT "Copying python extension to python/dp/")

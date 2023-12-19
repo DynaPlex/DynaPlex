@@ -3,16 +3,12 @@ import sys
 import re
 import pytest
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-sys.path.remove(parent_directory)
+from dp import dynaplex
 
 
 def test_non_convertible():
     with pytest.raises(TypeError) as exc_info:
-        dp.get_mdp(123)
+        dynaplex.get_mdp(123)
 
 
 def test_model_factory_missing():
@@ -20,14 +16,14 @@ def test_model_factory_missing():
     vars = {"id": "LosSales", "p": 9.0, "h": 1.0, "leadtime": 3}
     #Expecting an error when calling get_mdp
     with pytest.raises(RuntimeError, match=re.escape("DynaPlex: No MDP available with identifier \"LosSales\". Use ListMDPs() / list_mdps() to obtain available MDPs.")) as exc_info:
-        model = dp.get_mdp(**vars)
+        model = dynaplex.get_mdp(**vars)
 
 
 def test_model_factory_tests():
     # Create VarGroup using a Python dictionary
     vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
     try:
-        model = dp.get_mdp(**vars)
+        model = dynaplex.get_mdp(**vars)
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")
     identifier = model.identifier()
@@ -37,10 +33,10 @@ def test_model_factory_tests():
 def test_filepath():
     subdirs = ['test', 'folder1', 'folder2']
     filename = 'myfile.txt'
-    expected_path = os.path.join(dp.io_path(), *subdirs, filename)
+    expected_path = os.path.join(dynaplex.io_path(), *subdirs, filename)
 
     try:
-        actual_path = dp.filepath(*subdirs, filename)
+        actual_path = dynaplex.filepath(*subdirs, filename)
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")
 
@@ -49,7 +45,7 @@ def test_filepath():
 
 def test_model_factory_named_args():
     try:
-        model = dp.get_mdp(id="lost_sales",p=9.0,h=1.0,leadtime=3,demand_dist={"type":"poisson","mean":3.0})
+        model = dynaplex.get_mdp(id="lost_sales",p=9.0,h=1.0,leadtime=3,demand_dist={"type":"poisson","mean":3.0})
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")   
     identifier = model.identifier()
@@ -57,7 +53,7 @@ def test_model_factory_named_args():
 
 
 def test_list_mdps():
-    mdp_list = dp.list_mdps()
+    mdp_list = dynaplex.list_mdps()
     assert isinstance(mdp_list, dict)
     assert len(mdp_list) > 0
     assert "lost_sales" in mdp_list

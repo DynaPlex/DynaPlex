@@ -2,15 +2,10 @@ import torch
 import os
 import json
 import numpy as np
-import sys
 import tianshou
 
-parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_directory)
-# noinspection PyUnresolvedReferences
-from dp.loader import DynaPlex as dp
-from gym.base_env import BaseEnv
-sys.path.remove(parent_directory)
+from dp import dynaplex
+from dp.gym.base_env import BaseEnv
 
 load_mdp_from_file = False
 
@@ -19,7 +14,7 @@ if load_mdp_from_file:
     folder_name = "lost_sales"  # the name of the folder where the json file is located
     mdp_version_number = 1
     # this returns path/to/IO_DynaPlex/mdp_config_examples/lost_sales/mdp_config_[..].json:
-    path_to_json = dp.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
+    path_to_json = dynaplex.filepath("mdp_config_examples", folder_name, f"mdp_config_{mdp_version_number}.json")
 
     # Global variables used to initialize the experiment (notice the parsed json file should not contain any commented line)
     try:
@@ -43,9 +38,10 @@ else:
         }
     }
 
-mdp = dp.get_mdp(**vars)
+mdp = dynaplex.get_mdp(**vars)
 
 device = 'cpu'
+
 
 def preprocess(obs):
     """
@@ -57,7 +53,7 @@ def preprocess(obs):
 
 
 def policy_path():
-    path = os.path.normpath(dp.filepath(mdp.identifier(), "ppo_policy"))
+    path = os.path.normpath(dynaplex.filepath(mdp.identifier(), "ppo_policy"))
     return path
 
 
