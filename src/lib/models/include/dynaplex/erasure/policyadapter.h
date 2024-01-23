@@ -17,7 +17,7 @@ namespace DynaPlex::Erasure
 		using t_State = t_MDP::State;
 
 		static_assert(HasGetAction<t_Policy, t_State> ^ HasGetActionRNG<t_Policy, t_State,  DynaPlex::RNG> ,
-			" t_MDP should implement GetAction(State) or GetAction(State,RNG), but not both!");
+			" t_Policy should implement GetAction(const State&) const _or_ GetAction(const State&,RNG&) const, but not both!");
 
 		t_Policy policy;
 		std::shared_ptr<const t_MDP> mdp;

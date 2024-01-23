@@ -11,7 +11,7 @@ namespace DynaPlex {
     template<typename T>
     class Matrix {
         static_assert(DynaPlex::Concepts::DP_ElementType<T>, " DynaPlex::Matrix<T> - T must be of DP_ElementType, i.e. double, int64_t, string, or DynaPlex::VarGroupConvertible.");
-
+        static_assert(std::equality_comparable<T>, " DynaPlex::Matrix<T> - T must be equality comparable.");
 
     private:
         int64_t rows_;
@@ -67,6 +67,8 @@ namespace DynaPlex {
             vars.Add("data_", data_);
             return vars;
         }
+
+        bool operator==(const Matrix& other) const = default;
 
     };
 }
