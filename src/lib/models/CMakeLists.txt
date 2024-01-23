@@ -22,7 +22,8 @@ else(dynaplex_enable_pythonbindings)
    if(dynaplex_all_warnings)
       target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3> $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>)
    endif()
-
+   install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include)
+   install(TARGETS DP_${targetname} DESTINATION bin)
 
    if(DYNAPLEX_IO_ROOT_DIR)
      if(NOT EXISTS ${DYNAPLEX_IO_ROOT_DIR})
@@ -55,7 +56,7 @@ else(dynaplex_enable_pythonbindings)
       # Create a custom target that depends on all copied JSON files
       add_custom_target(DP_copy_model_config_files ALL DEPENDS ${ALL_JSON_DESTS})
       else(DYNAPLEX_IO_ROOT_DIR)
-         message(FATAL_ERROR "DYNAPLEX_IO_ROOT_DIR not provided")
+         message(STATUS "DYNAPLEX_IO_ROOT_DIR not provided")
     endif(DYNAPLEX_IO_ROOT_DIR)
 
 

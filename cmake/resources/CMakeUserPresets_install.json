@@ -1,0 +1,109 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "win-base",
+      "hidden": true,
+      "cacheVariables": {
+        "dynaplex_all_warnings": false,
+        "DYNAPLEX_IO_ROOT_DIR": "C:/Users/wjaarsveld/OneDrive - TU Eindhoven/Desktop",
+        "CMAKE_INSTALL_PREFIX": "C:/Users/wjaarsveld/OneDrive - TU Eindhoven/Desktop/dp_install"
+      }
+    },
+    {
+      "name": "lin-base",
+      "hidden": true,
+      "cacheVariables": {
+        "dynaplex_all_warnings": false,
+        "DYNAPLEX_IO_ROOT_DIR": "/home/willemvj"
+      }
+    },
+    {
+      "name": "WinDeb",
+      "inherits": [ "x64-debug", "win-base" ],
+      "cacheVariables": {
+        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-2.1.1+cpu/libtorch/share/cmake",
+         "dynaplex_enable_pytorch": false,
+        "dynaplex_enable_pythonbindings": false,
+        "dynaplex_enable_tests": true
+      }
+    },
+    {
+      "name": "WinRel",
+      "inherits": [ "x64-release", "win-base" ],
+      "cacheVariables": {
+        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-2.1.1+cpu/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": true,
+         "dynaplex_enable_tests": true
+      }
+    },
+    {
+      "name": "WinProf",
+      "inherits": [ "x64-release", "win-base" ],
+      "cacheVariables": {
+        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-2.1.1+cpu/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": true,
+       "dynaplex_enable_tests": true,
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "WinPB",
+      "inherits": [ "x64-release", "win-base" ],
+      "cacheVariables": {
+         "dynaplex_pytorch_path": "C:/Users/wjaarsveld/Anaconda3/envs/envDP/Lib/site-packages/torch/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_pythonbindings": true,
+        "dynaplex_pybind_path": "C:/Users/wjaarsveld/Anaconda3/envs/envDP/Lib/site-packages/pybind11/share/cmake/pybind11",
+        "dynaplex_python_path": "C:/Users/wjaarsveld/Anaconda3/envs/envDP"
+      }
+    },
+    {
+      "name": "LinDeb",
+      "inherits": [ "linux-debug", "lin-base" ],
+      "cacheVariables": {
+        "dynaplex_pytorch_path": "/home/willemvj/libtorch2.1.0/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_pythonbindings": false,
+        "dynaplex_enable_tests": true
+      }
+    },
+    {
+      "name": "LinRel",
+      "inherits": [ "linux-release", "lin-base" ],
+      "cacheVariables": {
+        "dynaplex_pytorch_path": "/home/willemvj/libtorch2.1.0/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_pythonbindings": false,
+        "dynaplex_enable_mpi": false,
+        "dynaplex_enable_tests": true
+      }
+    },
+    {
+      "name": "LinPB",
+      "inherits": [ "linux-release", "lin-base" ],
+      "cacheVariables": {
+         "dynaplex_pytorch_path": "/home/willemvj/.conda/envs/envDP/lib/python3.11/site-packages/torch/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_pythonbindings": true,
+        "dynaplex_pybind_path": "/home/willemvj/.conda/envs/envDP/lib/python3.11/site-packages/pybind11/share/cmake/pybind11",
+        "dynaplex_python_path": "/home/willemvj/.conda/envs/envDP",
+        "dynaplex_enable_gurobi": false,
+        "dynaplex_gurobi_path": ""
+      }
+    },
+    {
+      "name": "WinDebCl",
+      "inherits": [ "win-base" ],
+      "cacheVariables": {
+        "dynaplex_enable_pytorch": false,
+        "dynaplex_enable_pythonbindings": false,
+        "dynaplex_enable_tests": true,
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_BUILD_TYPE": "Debug" 
+       }
+    }
+
+  ]
+}

@@ -19,6 +19,8 @@ set_target_properties(DP_${targetname} PROPERTIES OUTPUT_NAME DynaPlex_${targetn
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE ${sources})
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> )
 target_link_libraries(DP_${targetname} PUBLIC DynaPlex::Core DynaPlex::NN DynaPlex::Utilities)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include)
+install(TARGETS DP_${targetname} DESTINATION bin)
 if(dynaplex_all_warnings)
 target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3>  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra> )
 endif() 
