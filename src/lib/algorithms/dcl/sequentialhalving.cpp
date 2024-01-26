@@ -2,6 +2,7 @@
 #include "dynaplex/trajectory.h"
 #include "dynaplex/parallel_execute.h"
 #include "dynaplex/policycomparison.h"
+#include <cmath>
 namespace DynaPlex::DCL {
 
 
@@ -11,7 +12,7 @@ namespace DynaPlex::DCL {
 		int64_t experiment_number;
 	};
 
-	SequentialHalving::SequentialHalving(uint32_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP& mdp, DynaPlex::Policy& policy)
+	SequentialHalving::SequentialHalving(int64_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP& mdp, DynaPlex::Policy& policy)
 		: rng_seed{ rng_seed }, H{ H }, M{ M }, mdp{ mdp }, policy{ policy }
 	{
 
@@ -20,7 +21,7 @@ namespace DynaPlex::DCL {
 	bool adopt_crn_sh = true;
 	int64_t max_chunk_size_sh = 256;
 	int64_t max_steps_until_completion_expected_sh = 1000000;
-	void SequentialHalving::SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const
+	void SequentialHalving::SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, int64_t seed) const
 	{
 		if (!traj.Category.IsAwaitAction())
 			throw DynaPlex::Error("SequentialHalving::SetAction - called for trajectory which is not await_action.");
@@ -57,9 +58,9 @@ namespace DynaPlex::DCL {
 		for (int64_t iter = 0; iter < total_rounds; iter++)
 		{
 			//Number of scenarios assigned for each competing_action at this round.
-			int64_t action_budget = floor(total_budget / (competing_actions.size() * ceil(log(root_actions.size()) / log(static_cast<double>(2)))));
+			int64_t action_budget = std::floor(total_budget / (competing_actions.size() * std::ceil(std::log(root_actions.size()) / std::log(static_cast<double>(2)))));
 			//Number of competing_actions to be kept at the end of this round.
-			int64_t top_m = ceil(competing_actions.size() / static_cast<double>(2));
+			int64_t top_m = std::ceil(competing_actions.size() / static_cast<double>(2));
 
 			//Clearing and reserving resourses.
 			trajectories.clear();
@@ -73,11 +74,11 @@ namespace DynaPlex::DCL {
 				for (int64_t action_id = 0; action_id < competing_actions.size(); action_id++)
 				{
 					auto competing_action = competing_actions[action_id];
-					trajectories.emplace_back(mdp->NumEventRNGs(), experiment_information.size());
+					trajectories.push_back(DynaPlex::Trajectory(experiment_information.size()));
 					int64_t traj_seed = adopt_crn_sh ? (total_budget_used_per_action + replication) : seed_keeper + experiment_information.size() + 1;
-					trajectories.back().SeedRNGProvider(false, traj_seed, seed + rng_seed);
+					trajectories.back().RNGProvider.SeedEventStreams(false,rng_seed,seed, traj_seed);
 					trajectories.back().NextAction = competing_action;
-					experiment_information.emplace_back(action_id, replication);
+					experiment_information.push_back(DynaPlex::DCL::experiment_info(action_id, replication));
 				}
 			}
 			seed_keeper += experiment_information.size(); 

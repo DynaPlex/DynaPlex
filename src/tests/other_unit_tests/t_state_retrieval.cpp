@@ -25,8 +25,8 @@ namespace DynaPlex::Tests {
         using underlying_mdp = DynaPlex::Models::bin_packing::MDP;
 
         std::int64_t rng_seed = 11112014;
-        Trajectory trajectory{ mdp->NumEventRNGs() };
-        trajectory.SeedRNGProvider(true, rng_seed);
+        Trajectory trajectory{};
+        trajectory.RNGProvider.SeedEventStreams(true, rng_seed);
         mdp->InitiateState({ &trajectory,1 });
         auto policy = mdp->GetPolicy("random");
 
@@ -73,8 +73,8 @@ namespace DynaPlex::Tests {
         using underlying_mdp = DynaPlex::Models::bin_packing::MDP;
 
         std::int64_t rng_seed = 11112014;
-        Trajectory trajectory{ mdp->NumEventRNGs() };
-        trajectory.SeedRNGProvider(true, rng_seed);
+        Trajectory trajectory{ };
+        trajectory.RNGProvider.SeedEventStreams(true, rng_seed);
         mdp->InitiateState({ &trajectory,1 });
         auto policy = mdp->GetPolicy("random");
 

@@ -134,9 +134,9 @@ namespace DynaPlex::Erasure
 				{
 					//try to automatically determine the number of flat features, by finding an actions state
 					//and calling GetFeatures to get the features, and counting the number of features returned. 
-					DynaPlex::Trajectory traj(NumEventRNGs());
+					DynaPlex::Trajectory traj{};
 					std::span<DynaPlex::Trajectory> span = { &traj,1 };
-					traj.SeedRNGProvider(false, 24031984, 1);
+					traj.RNGProvider.SeedEventStreams(false);
 					try
 					{
 						InitiateState(span);
@@ -230,12 +230,6 @@ namespace DynaPlex::Erasure
 		double DiscountFactor() const override
 		{
 			return discount_factor;
-		}
-
-		int64_t NumEventRNGs() const override
-		{
-			//At present, multiple event streams not supported.
-			return 1;
 		}
 
 		bool SupportsGetStateFromVarGroup() const override

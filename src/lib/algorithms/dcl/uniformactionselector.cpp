@@ -11,7 +11,7 @@ namespace DynaPlex::DCL {
 		int64_t experiment_number;
 	};
 
-	UniformActionSelector::UniformActionSelector(uint32_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP& mdp, DynaPlex::Policy& policy)
+	UniformActionSelector::UniformActionSelector(int64_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP& mdp, DynaPlex::Policy& policy)
 		: rng_seed{ rng_seed }, H{ H }, M{ M }, mdp{ mdp }, policy{ policy }
 	{
 
@@ -20,7 +20,7 @@ namespace DynaPlex::DCL {
 	bool adopt_crn = true;
 	int64_t max_chunk_size = 256;
 	int64_t max_steps_until_completion_expected = 1000000;
-	void UniformActionSelector::SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const
+	void UniformActionSelector::SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, int64_t seed) const
 	{
 		if (!traj.Category.IsAwaitAction())
 			throw DynaPlex::Error("UniformActionSelector::SetAction - called for trajectory which is not await_action.");
@@ -53,9 +53,9 @@ namespace DynaPlex::DCL {
 			for (int64_t action_id = 0; action_id < root_actions.size(); action_id++)
 			{
 				auto root_action = root_actions[action_id];
-				trajectories.emplace_back(mdp->NumEventRNGs(), experiment_information.size());
+				trajectories.emplace_back(experiment_information.size());
 				int64_t traj_seed = adopt_crn ? replication : experiment_information.size() + 1;
-				trajectories.back().SeedRNGProvider(false, traj_seed, seed + rng_seed);
+				trajectories.back().RNGProvider.SeedEventStreams(false, rng_seed,seed, traj_seed);
 				trajectories.back().NextAction = root_action;
 				experiment_information.emplace_back(action_id, replication);
 			}

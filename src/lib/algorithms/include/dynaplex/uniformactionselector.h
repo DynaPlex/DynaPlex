@@ -11,15 +11,15 @@ namespace DynaPlex::DCL {
 	
 	public:
 		UniformActionSelector() = default;
-		UniformActionSelector(uint32_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP&, DynaPlex::Policy&);
+		UniformActionSelector(int64_t rng_seed, int64_t H, int64_t M, DynaPlex::MDP&, DynaPlex::Policy&);
 
-		void SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, const int32_t seed) const;
+		void SetAction(DynaPlex::Trajectory& traj, DynaPlex::NN::Sample& sample, int64_t seed) const;
 
 
 	
 
 	private:
-		uint32_t rng_seed;
+		int64_t rng_seed;
 		int64_t H, M;
 		DynaPlex::Policy policy;
 		DynaPlex::MDP mdp;

@@ -21,10 +21,9 @@ namespace DynaPlex :: Utilities{
 		:system{system}
 	{
 		config.GetOrDefault("max_period_count", max_period_count, 3);
-		int64_t rng_seed_base;
-		config.GetOrDefault("rng_seed", rng_seed_base, 11112014);
-		rng_seed = RNG::ToSeed(rng_seed_base, "Demonstrator");
-		
+		config.GetOrDefault("rng_seed", rng_seed, 11112014);
+		if (rng_seed < 0)
+			throw DynaPlex::Error("Demonstrator :: Invalid rng_seed - should be non-negative");		
 	}
 
 	std::vector<TraceElement> Demonstrator::GetObjectTrace(DynaPlex::MDP mdp, DynaPlex::Policy policy) {
@@ -40,8 +39,8 @@ namespace DynaPlex :: Utilities{
 		}
 
 		// Vector that will hold a single trajectory.
-		Trajectory trajectory{ mdp->NumEventRNGs() };
-		trajectory.SeedRNGProvider(true, rng_seed);
+		Trajectory trajectory{};
+		trajectory.RNGProvider.SeedEventStreams(true, rng_seed);
 		mdp->InitiateState({ &trajectory,1 });
 		
 		double cumulative_return = 0.0;

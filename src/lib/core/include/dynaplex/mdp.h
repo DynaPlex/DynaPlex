@@ -69,9 +69,6 @@ namespace DynaPlex
 		/// Provides information about the MDP.
 		virtual DynaPlex::VarGroup GetStaticInfo() const = 0;
 
-		/// Retrieves the number of event random number generators used by this MDP
-		virtual int64_t NumEventRNGs() const = 0;
-
 		/// Retrieves the discount factor
 		virtual double DiscountFactor() const = 0;
 

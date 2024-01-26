@@ -74,11 +74,8 @@ namespace DynaPlex::Tests {
 			policy = mdp->GetPolicy("random");
 		);
 
-		int64_t numEventTrajectories;
-		ASSERT_NO_THROW(
-			numEventTrajectories = mdp->NumEventRNGs();
-		);
-		Trajectory trajectory{numEventTrajectories};
+	
+		Trajectory trajectory{};
 
 
 		
@@ -86,7 +83,7 @@ namespace DynaPlex::Tests {
 			mdp->InitiateState({ &trajectory,1 });
 		);
 		ASSERT_NO_THROW(
-			trajectory.SeedRNGProvider(true, 123);
+			trajectory.RNGProvider.SeedEventStreams(true, 123);
 		);
 
 	    int64_t max_period_count = 10;

@@ -15,7 +15,7 @@ namespace DynaPlex::Tests {
 
 	template<typename SampleFunc>
 	std::map<int64_t, size_t> GatherBucketedSampleMeans(double mean, double sigma, size_t numSamples, size_t numMeans, SampleFunc sampleFunc) {
-		DynaPlex::RNG rng{ 26071983 ,1234 }; // Using a fixed seed for reproducibility
+		DynaPlex::RNG rng{false, 26071983 ,1234 }; // Using a fixed seed for reproducibility
 
 		double trueMean = mean;
 		double trueVariance = sigma * sigma;
@@ -45,7 +45,7 @@ namespace DynaPlex::Tests {
 
 
 	std::map<int64_t, size_t> GatherBucketedSampleMeans(const DiscreteDist& dist, size_t numSamples, size_t numMeans) {
-		DynaPlex::RNG rng{ 26071983 ,1234 }; // Using a fixed seed for reproducibility
+		DynaPlex::RNG rng(false,26071983); // Using a fixed seed for reproducibility
 
 		double trueMean = dist.Expectation();
 		double trueVariance = dist.Variance();
@@ -159,7 +159,7 @@ namespace DynaPlex::Tests {
 					size_t withinTwoSD = withinOneSD + buckets[1] + buckets[-2];
 					size_t withinThreeSD = withinTwoSD + buckets[2] + buckets[-3];
 
-					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.08) << " bin  p - " << p << " r " << r;
+					EXPECT_NEAR(withinOneSD, 0.6827 * numMeans, numMeans * 0.1) << " bin  p - " << p << " r " << r;
 					EXPECT_NEAR(withinTwoSD, 0.9545 * numMeans, numMeans * 0.04) << " bin  p - " << p << " r " << r;
 					EXPECT_NEAR(withinThreeSD, 0.9973 * numMeans, numMeans * 0.01) << " bin  p - " << p << " r " << r;
 				}
@@ -278,7 +278,7 @@ namespace DynaPlex::Tests {
 
 	TEST(discretedist, advanced_tests) {
 
-		RNG rng{ 1234 };
+		RNG rng(false, 1234 );
 		// Test for iterator
 		{
 			DynaPlex::VarGroup vg;

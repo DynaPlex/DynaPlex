@@ -1,5 +1,6 @@
 ﻿#include "dynaplex/modelling/jointdiscretedist.h"
 #include "dynaplex/error.h"
+#include <algorithm>
 
 namespace DynaPlex
 {

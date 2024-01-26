@@ -54,6 +54,8 @@ void TestEarlyStopping() {
 
 		// Call and train DCL with specified instance to solve
 		auto dcl = dp.GetDCL(mdp, policy, dcl_config);
+		std::cout << "hello from " << dp.System().WorldRank() << std::endl;
+		dp.System().AddBarrier();
 		dcl.TrainPolicy();
 
 		auto policies = dcl.GetPolicies();
@@ -66,7 +68,7 @@ void TestEarlyStopping() {
 	}
 }
 
-void TestPaperInstances() {
+void TestPaperInstances(int64_t rng_seed) {
 
 	auto& dp = DynaPlexProvider::Get();
 
@@ -91,7 +93,8 @@ void TestPaperInstances() {
 		{"L", 100},
 		{"nn_architecture",nn_architecture},
 		{"nn_training",nn_training},
-		{"enable_sequential_halving", true}
+		{"enable_sequential_halving", true},
+		{"rng_seed",rng_seed}
 	};
 
 	DynaPlex::VarGroup config;
@@ -164,7 +167,20 @@ void TestPaperInstances() {
 int main() {
 
 	//TestEarlyStopping();
-	TestPaperInstances();
+	//TestPaperInstances(12);
+	//TestPaperInstances(17);
+
+//	TestPaperInstances(127);
+
+//	TestPaperInstances(112337);
+
+//	TestPaperInstances(194);
+//	TestPaperInstances(123123);
+//	TestPaperInstances(26071983);
+//	TestPaperInstances(12131415);
+//	TestPaperInstances(4194);
+	TestPaperInstances(4123122);
+
 
 	return 0;
 

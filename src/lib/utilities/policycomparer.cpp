@@ -12,8 +12,8 @@ namespace DynaPlex::Utilities {
 		
 		for (int64_t experiment_number = 0; experiment_number < ReturnPerTrajectory.size(); experiment_number++)
 		{
-			trajectories.emplace_back(mdp->NumEventRNGs(), experiment_number + offset);
-			trajectories.back().SeedRNGProvider(true, experiment_number + offset,rng_seed);
+			trajectories.emplace_back(experiment_number + offset);
+			trajectories.back().RNGProvider.SeedEventStreams(true, rng_seed, experiment_number + offset);
 		}
 
 		//Initiate each trajectory with a random state. 
@@ -89,9 +89,9 @@ namespace DynaPlex::Utilities {
 			periods_per_trajectory = 0;  // Unused for finite horizon MDP
 			warmup_periods = 0; //also unused. 
 		}
-		int64_t rng_seed_base;
-		config.GetOrDefault("rng_seed", rng_seed_base, 13021984);
-		rng_seed = RNG::ToSeed(rng_seed_base, "PolicyComparer");
+		config.GetOrDefault("rng_seed", rng_seed, 13021984);
+		if (rng_seed < 0)
+			throw DynaPlex::Error("PolicyComparer :: Invalid rng_seed - should be non-negative");
 	}
 
 	void PolicyComparer::CheckTrajectoriesInfiniteHorizon(std::span<DynaPlex::Trajectory> trajectories, int64_t cumulative_periods) const {

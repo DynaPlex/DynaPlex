@@ -1,5 +1,5 @@
 	#pragma once
-	#include <initializer_list>
+	#include <vector>
 	#include "rng.h"
 	#include "error.h"
 
@@ -10,59 +10,53 @@
 			RNG& GetPolicyRNG()
 			{
 				if (rng_vec.empty())
-				{
 					throw DynaPlex::Error("RNGProvider: Attempt to get RNG from empty provider. Did you forget to Seed?");
-				}
-				return rng_vec.back();
+				return rng_vec.at(0);
 			}
 			///returns the RNG stream to be used for getting initial states. 
 			RNG& GetInitiationRNG()
 			{
 				if (rng_vec.empty())
-				{
 					throw DynaPlex::Error("RNGProvider: Attempt to get RNG from empty provider. Did you forget to Seed?");
-				}
-				return rng_vec.back();
+				return rng_vec.at(1);
 			}
 
 			///Returns the rng associated with the a specific event/rng stream 0,1,etc.
-			RNG& GetEventRNG(uint32_t number)
+			RNG& GetEventRNG(int64_t number)
 			{			
-				if (number >= rng_vec.size())
-				{ //note that last element is reserved for initial states and policy
-					std::string message = "RNGProvider: No rng available for event number " + std::to_string(number);
-					if (number == 0)
-						message += "\nDid you forget to Seed?";
-					throw DynaPlex::Error(message);
-				}
-				return rng_vec[number];
+				if (rng_vec.empty())
+					throw DynaPlex::Error("RNGProvider: Attempt to get RNG from empty provider. Did you forget to Seed?");
+			
+				if (number < 0 || number>1000)
+					//Requirement of below 1000 should not be an issue for most designs, and having so many event streams
+					//would be a strange design anyhow. The limit is not a hard limit, but going over the limit would require a redesign
+					//of the seeding strategy. 
+					throw DynaPlex::Error("RNGProvider: eventstream must be non-negative and below 1000");
+
+				Expand(number + 3);
+				return rng_vec.at(number+2);
 			}
 
-			RNGProvider() :
-				RNGProvider(1)
+			RNGProvider() :rng_vec{}, global_seed{ 0 }, sample{ 0 }, trajectory{ 0 }, eval{ false }
 			{}
-
-			
-			RNGProvider(int64_t NumEventRNGs) :
-				number_of_rngs{ NumEventRNGs + 1 } 
-			{
-				if (NumEventRNGs < 0)
-				{
-					throw DynaPlex::Error("RNGProvider: NumEventRNGs cannot be negative");
-				}
-			}
 			
 			
-			/** 
-			 *Resets the event streams using some seed_base_list
-			 */
-			void SeedEventStreams(const std::vector<uint32_t>& seed_base_list);
+			void SeedEventStreams(bool evaluation, int64_t rng_seed=13021985, int64_t sample = (1ll << 30)-1, int64_t trajectory = (1ll << 22 ) -1 );
 			
 
 		private:
-			int64_t number_of_rngs; 
+			inline void Expand(int64_t size)
+			{
+				while (rng_vec.size() < size)
+				{
+					rng_vec.reserve(size);
+					rng_vec.push_back(DynaPlex::RNG(eval, global_seed, sample, trajectory, rng_vec.size()));
+				}
+			}
 			std::vector<DynaPlex::RNG> rng_vec;
-			std::vector<uint32_t> list;
+
+			bool eval;
+			int64_t global_seed, sample, trajectory;
 
 		};
 	}

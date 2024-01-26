@@ -21,13 +21,13 @@ namespace DynaPlex::DCL {
 
 		std::string GetPathOfTempSampleFile(int rank);
 
-		void GenerateSamplesOnThread(std::span<DynaPlex::NN::Sample>, DynaPlex::Policy, int32_t);
+		void GenerateSamplesOnThread(std::span<DynaPlex::NN::Sample>, DynaPlex::Policy, int64_t);
 
 		//for a progress count when generating samples accross threads. 
 		std::shared_ptr<std::atomic<int64_t>> total_samples_collected;
 
-		int32_t rng_seed;
-		int32_t node_sampling_offset;
+		int64_t rng_seed;
+		int64_t node_sampling_offset;
 		int64_t sampling_time_out, H, M, N, L, reinitiate_counter, json_save_format;
 		int64_t seed_offset;
 

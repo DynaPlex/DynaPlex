@@ -6,6 +6,9 @@
 #include <psapi.h>
 #include "dynaplex/modelling/queue.h"
 #include "dynaplex/rng.h"
+#include "pcg_random/pcg_random.hpp"
+#include <random>
+#include "xoshiro/xoshiro256plusplus.hpp"
 
 size_t getMemoryUsage() {
     PROCESS_MEMORY_COUNTERS_EX pmc;
@@ -87,11 +90,10 @@ void CheckMemRNG()
     // Measure memory usage for pcg64
     size_t startpcgMem = getMemoryUsage();
 
-    std::vector<pcg_cpp::pcg64> pcg;
-    pcg.reserve(num);
+    std::vector<XoshiroCpp::Xoshiro256PlusPlus> xo128;
+    xo128.reserve(num);
     for (size_t i = 0; i < num; i++) {
-        std::seed_seq seq{ i,i + 1,i + 123 };
-        pcg.push_back(pcg_cpp::pcg64(seq));
+         xo128.push_back(XoshiroCpp::Xoshiro256PlusPlus(i));
     }
     size_t endpcgMem = getMemoryUsage();
 
@@ -113,13 +115,13 @@ void CheckMemRNG()
 
 
     std::cout << "Average memory used by a mt19937: " << 1.0 * (endmtMem - startmtMem) / num << " bytes" << std::endl;
-    std::cout << "Average memory used by a pcg64: " << 1.0 * (endpcgMem - startpcgMem) / num << " bytes" << std::endl;
+    std::cout << "Average memory used by a Xoshiro128Plus: " << 1.0 * (endpcgMem - startpcgMem) / num << " bytes" << std::endl;
     std::cout << "Average memory used by a ranlux48: " << 1.0 * (endranluxMem - startranluxMem) / num << " bytes" << std::endl;
 
 }
 
 int main() {
-    CheckMemContainers();
+ //   CheckMemContainers();
 
     CheckMemRNG();
 

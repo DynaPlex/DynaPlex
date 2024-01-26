@@ -73,14 +73,9 @@ namespace DynaPlex::Tests {
 
 		//policy must now be initiated. 
 		ASSERT_TRUE(policy) <<info;		
+			
 
-		int64_t numEventTrajectories{};
-		ASSERT_NO_THROW(
-			numEventTrajectories = mdp->NumEventRNGs();
-		);
-		ASSERT_GE(numEventTrajectories, 1);
-
-		Trajectory trajectory{ numEventTrajectories };
+		Trajectory trajectory{ };
 
 
 		ASSERT_GE(NumParallelTests, 1) << info << "tester.NumParallelTests should be >=1";
@@ -113,7 +108,7 @@ namespace DynaPlex::Tests {
 		for (int seed = 0; seed < numSeeds; seed++)
 		{
 			ASSERT_NO_THROW(
-				trajectory.SeedRNGProvider(true, seed);
+				trajectory.RNGProvider.SeedEventStreams(true, seed);
 			) << info;
 
 			ASSERT_NO_THROW(
@@ -242,12 +237,12 @@ namespace DynaPlex::Tests {
 				std::vector<Trajectory> trajVec{};
 				for (size_t i = 0; i < 2; i++)
 				{
-					trajVec.push_back(std::move(Trajectory(mdp->NumEventRNGs(),0)));
+					trajVec.push_back(std::move(Trajectory(0)));
 					
 				} 
 
-				trajVec[0].SeedRNGProvider(false, 12, 0);
-				trajVec[1].SeedRNGProvider(false, 12, 0);
+				trajVec[0].RNGProvider.SeedEventStreams(false, 12, 0);
+				trajVec[1].RNGProvider.SeedEventStreams(false, 12, 0);
 				mdp->InitiateState({ &trajVec[0] ,1 }, state);
 				mdp->InitiateState({ &trajVec[1] ,1 }, loaded_state);
 

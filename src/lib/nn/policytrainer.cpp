@@ -15,13 +15,17 @@ namespace DynaPlex::NN {
         return system.filepath(mdp->Identifier(), "dcl_policy_gen" + std::to_string(generation));
     }
 
-    PolicyTrainer::PolicyTrainer(const DynaPlex::System& system, DynaPlex::MDP mdp, const DynaPlex::VarGroup& training_config) :
-        system{ system }, mdp{ mdp }
+    PolicyTrainer::PolicyTrainer(const DynaPlex::System& system, DynaPlex::MDP mdp, const DynaPlex::VarGroup& training_config, int64_t rng_seed) :
+        system{ system }, mdp{ mdp }, rng_seed{rng_seed}
 	{
         training_config.GetOrDefault("mini_batch_size", mini_batch_size, 64);
         training_config.GetOrDefault("early_stopping_patience", early_stopping_patience, 10);
         training_config.GetOrDefault("max_training_epochs", max_training_epochs, 1000);        
         training_config.GetOrDefault("train_based_on_probs", train_based_on_probs, false);
+#if DP_TORCH_AVAILABLE
+        torch::manual_seed(static_cast<uint64_t>(rng_seed));
+#endif
+
     }
 #if DP_TORCH_AVAILABLE
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> prepare_batch(const std::span<DynaPlex::NN::Sample> samples, const DynaPlex::MDP& mdp) {
@@ -101,7 +105,7 @@ namespace DynaPlex::NN {
         // Round the training data down to a multiple of the mini_batch_size
         training_size = (training_size / mini_batch_size) * mini_batch_size;
 
-        DynaPlex::RNG rng{ 26071983 };
+        DynaPlex::RNG rng{false, 26071983 };
         std::shuffle(data.Samples.begin(), data.Samples.end(), rng.gen());
         std::span<DynaPlex::NN::Sample> training_data(data.Samples.begin(), data.Samples.begin() + training_size);
         std::span<DynaPlex::NN::Sample> validation_data(data.Samples.begin() + training_size, data.Samples.end());

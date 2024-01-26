@@ -110,12 +110,12 @@ namespace DynaPlex {
 			state.reset(); 			
 		}
 
-		/// moves the state into the trajectory, and resets CumulativeReturn, EffectiveDiscountFactor, and PeriodCount. 
+		/// moves the state into the trajectory, and re-initiates CumulativeReturn, EffectiveDiscountFactor, and PeriodCount. 
 		void Reset(DynaPlex::dp_State&&);
 		
 		/// re-initiates PeriodCount, EffectiveDiscountFactor, CumulativeReturn.  
 		void Reset();
-		/// provider of random sequences for use in MDP. May be reset by calling Trajectory::Reset. 
+		/// provider of random sequences for use in MDP. 
 		DynaPlex::RNGProvider RNGProvider;
 		/**
 		 * Convenience member that may be used to store the (index of) an object in a container that contains more information
@@ -123,15 +123,12 @@ namespace DynaPlex {
 		 */
 		int64_t ExternalIndex;	
 	
-
-		/// resets the RNGProvider, ensuring consistent random numbers when comparing things.
-		void SeedRNGProvider(bool eval, int64_t experiment_id =-1, uint32_t secondary_id =0);
-
 		/**
-		 * Creates a trajectory that supports NumEventRNGs, without initial state.
+		 * Creates a trajectory without initial state, and with uninitialized RNGProvider.
+		 * must set initial state and seed RNGProvider before using. 
 		 * external_index is some context_defined item that is not muted by MDPAdapter. 
 		 */
-		explicit Trajectory(int64_t NumEventRNGs, int64_t externalIndex = 0);
+		explicit Trajectory(int64_t externalIndex = 0);
 
 
 

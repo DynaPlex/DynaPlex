@@ -22,7 +22,7 @@ namespace DynaPlex::Algorithms {
 		std::string GetPathOfSampleFile(int64_t generation);	
 	
 
-		int64_t num_gens,resume_gen;
+		int64_t num_gens,resume_gen, rng_seed;
 		bool retrain_lastgen_only, silent;
 		DynaPlex::NN::PolicyTrainer trainer;
 		DynaPlex::VarGroup nn_architecture = DynaPlex::VarGroup{};

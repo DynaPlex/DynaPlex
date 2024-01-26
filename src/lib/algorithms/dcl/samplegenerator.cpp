@@ -4,11 +4,12 @@
 #include "dynaplex/sampledata.h"
 #include "dynaplex/sample.h"
 #include <algorithm>
+#include <cmath>
 namespace DynaPlex::DCL {
 
 
 	SampleGenerator::SampleGenerator(const DynaPlex::System& system, DynaPlex::MDP mdp, const VarGroup& config)
-		: system{ system }, mdp{ mdp }
+		: system{ system }, mdp{ mdp }, node_sampling_offset{}
 	{
 		if (!mdp)
 			throw DynaPlex::Error("SampleGenerator: mdp should not be null");
@@ -24,14 +25,16 @@ namespace DynaPlex::DCL {
 		config.GetOrDefault("M", M, 1000);
 		config.GetOrDefault("N", N, 5000);
 		config.GetOrDefault("sampling_probability", sampling_probability, 1.0);
-		if (N<1 || N > static_cast<int64_t>(std::numeric_limits<int32_t>::max() - 1))
-			throw DynaPlex::Error("Value of N is invalid: " + std::to_string(N) + ". Must be positive and smaller than 2147483646");
+		if (N<1 || N >= (1ll<<30))
+			throw DynaPlex::Error("Value of N is invalid: " + std::to_string(N) + ". Must be positive and smaller than " + std::to_string(1<<30));
 	
 
 		config.GetOrDefault("json_save_format", json_save_format, -1);
-		int64_t rng_seed_base;
-		config.GetOrDefault("rng_seed", rng_seed_base, 15112017);
-		rng_seed = RNG::ToSeed(rng_seed_base, "SampleGenerator");
+		config.GetOrDefault("rng_seed", rng_seed, 15112017);
+		if (rng_seed < 0)
+			throw DynaPlex::Error("SampleGenerator :: Invalid rng_seed - should be non-negative");
+
+
 		if (mdp->IsInfiniteHorizon())
 		{
 			config.GetOrDefault("L", L, 100);
@@ -45,15 +48,15 @@ namespace DynaPlex::DCL {
 		seed_offset = 0;
 	}
 
-	void SampleGenerator::GenerateSamplesOnThread(std::span<DynaPlex::NN::Sample> somesamples, DynaPlex::Policy policy, int32_t thread_offset)
+	void SampleGenerator::GenerateSamplesOnThread(std::span<DynaPlex::NN::Sample> somesamples, DynaPlex::Policy policy, int64_t thread_offset)
 	{
 		bool use_seed_offset = true; // setting it true will secure different seeding between generations 
-		int32_t seed = use_seed_offset ? seed_offset : 0;
-		int32_t offset = thread_offset + node_sampling_offset + 1 + seed;
-		int32_t num_samples_added = 0;
-		Trajectory trajectory{ mdp->NumEventRNGs() };
-		trajectory.SeedRNGProvider(false, -offset, offset);
-		DynaPlex::RNG rng({ static_cast<uint32_t>( offset + 1) });
+		int64_t seed = use_seed_offset ? seed_offset : 0;
+		int64_t offset = thread_offset + node_sampling_offset + 1 + seed;
+		int64_t num_samples_added = 0;
+		Trajectory trajectory{};
+		trajectory.RNGProvider.SeedEventStreams(false,rng_seed,offset);
+		DynaPlex::RNG rng(false,rng_seed,offset);
 	
 		bool final_reached_once = false;
 		while (num_samples_added < somesamples.size())
@@ -96,7 +99,7 @@ namespace DynaPlex::DCL {
 						if (rng.genUniform() < sampling_probability)
 						{
 							auto& sample = somesamples[num_samples_added];
-							if (enable_sequential_halving && (M > ceil(log(allowed.size()) / log(2)))) {
+							if (enable_sequential_halving && (M > std::ceil(std::log(allowed.size()) / std::log(2)))) {
 								sequentialhalving_action_selector.SetAction(trajectory, sample, offset + num_samples_added);
 							}
 							else {
@@ -184,7 +187,7 @@ namespace DynaPlex::DCL {
 		auto splits = DynaPlex::Parallel::get_splits(N, system.WorldSize());
 		auto& [start_for_node, end_for_node] = splits[system.WorldRank()];
 
-		node_sampling_offset = static_cast<int32_t>(start_for_node);
+		node_sampling_offset = start_for_node;
 		//Create space for the samples collected on this node, and collect the samples:
 		std::vector<DynaPlex::NN::Sample> sample_vec(end_for_node - start_for_node);
 		auto work = [this, &policy](std::span<DynaPlex::NN::Sample> somesamples, int64_t thread_offset) {
@@ -237,9 +240,13 @@ namespace DynaPlex::DCL {
 			}
 		}
 
+		//std::cout << "into parallel compute " << system.WorldRank() << std::endl;
+		//system.AddBarrier();
 		DynaPlex::Parallel::parallel_compute<DynaPlex::NN::Sample>(sample_vec, work, system.HardwareThreads(), reporter);
 		seed_offset += N;
 
+		//std::cout << "out of parallel compute " << system.WorldRank() << std::endl;
+		//system.AddBarrier();
 		//gather all the collected samples over the threads into sample_data.
 		DynaPlex::NN::SampleData sample_data{ mdp };
 		for (auto& sample : sample_vec)
@@ -271,9 +278,10 @@ namespace DynaPlex::DCL {
 				sample_data.AddFromFile(mdp, GetPathOfTempSampleFile(rank));
 				system.remove_file(GetPathOfTempSampleFile(rank));
 			}
-			DynaPlex::RNG rng( { 11112014 } );
+			DynaPlex::RNG rng( false, rng_seed );
 			std::shuffle(sample_data.Samples.begin(), sample_data.Samples.end(), rng.gen());
 			sample_data.SaveToFile(mdp, path, json_save_format, silent);
 		}
+		system.AddBarrier();
 	}
 }

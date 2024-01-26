@@ -6,8 +6,8 @@
       "hidden": true,
       "cacheVariables": {
         "dynaplex_all_warnings": false,
-        //location where DynaPlex will store input and output on windows systems.  
-        "DYNAPLEX_IO_ROOT_DIR": "C:/Users/wjaarsveld/OneDrive - TU Eindhoven/Desktop"
+        "DYNAPLEX_IO_ROOT_DIR": "C:/Users/wjaarsveld/OneDrive - TU Eindhoven/Desktop",
+        "CMAKE_INSTALL_PREFIX": "C:/Users/wjaarsveld/OneDrive - TU Eindhoven/Desktop/dp_install"
       }
     },
     {
@@ -15,7 +15,6 @@
       "hidden": true,
       "cacheVariables": {
         "dynaplex_all_warnings": false,
-        //location where DynaPlex will store input and output on linux systems. 
         "DYNAPLEX_IO_ROOT_DIR": "/home/willemvj"
       }
     },
@@ -23,11 +22,8 @@
       "name": "WinDeb",
       "inherits": [ "x64-debug", "win-base" ],
       "cacheVariables": {
-        //Location of PyTorch/Libtorch debug library was extracted (find on pytorch.org) e.g.:
-        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-1.13.0+cpu/libtorch/share/cmake",
-        //disabling makes running a bit faster, but not all functionality is available.
+        "dynaplex_pytorch_path": "c:/libtorch-win-shared-with-deps-debug-2.1.1+cpu/libtorch/share/cmake",
         "dynaplex_enable_pytorch": false,
-        //Note that python bindings can only be built in release, since python.exe is a release build.
         "dynaplex_enable_pythonbindings": false,
         "dynaplex_enable_tests": true
       }
@@ -36,20 +32,25 @@
       "name": "WinRel",
       "inherits": [ "x64-release", "win-base" ],
       "cacheVariables": {
-        //Location where PyTorch/LibTorch release library was extracted  (find on pytorch.org), e.g.:
-        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-1.13.0+cpu/libtorch/share/cmake",
-        //enable pytorch for release:
+        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-2.1.1+cpu/libtorch/share/cmake",
         "dynaplex_enable_pytorch": true,
-        //whether test_executables are included in the build. 
         "dynaplex_enable_tests": true
+      }
+    },
+    {
+      "name": "WinProf",
+      "inherits": [ "x64-release", "win-base" ],
+      "cacheVariables": {
+        "dynaplex_pytorch_path": "C:/libtorch-win-shared-with-deps-2.1.1+cpu/libtorch/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_tests": true,
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
     },
     {
       "name": "WinPB",
       "inherits": [ "x64-release", "win-base" ],
       "cacheVariables": {
-        //For creating python bindings, linking to a anaconda version of pytorch is most stable, e.g. something like:
-        //(consider using environment.yml to configure the envDP environment. )
         "dynaplex_pytorch_path": "C:/Users/wjaarsveld/Anaconda3/envs/envDP/Lib/site-packages/torch/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": true,
@@ -61,8 +62,7 @@
       "name": "LinDeb",
       "inherits": [ "linux-debug", "lin-base" ],
       "cacheVariables": {
-        //Location of PyTorch library on linux:
-        "dynaplex_pytorch_path": "/home/willemvj/libtorch/share/cmake",
+        "dynaplex_pytorch_path": "/home/willemvj/libtorch2.1.0/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": false,
         "dynaplex_enable_tests": true
@@ -72,19 +72,28 @@
       "name": "LinRel",
       "inherits": [ "linux-release", "lin-base" ],
       "cacheVariables": {
-        //Location of PyTorch library on linux:
-        "dynaplex_pytorch_path": "/home/willemvj/libtorch/share/cmake",
+        "dynaplex_pytorch_path": "/home/willemvj/libtorch2.1.0/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": false,
-        "dynaplex_enable_mpi": true
+        "dynaplex_enable_mpi": false,
+        "dynaplex_enable_tests": true
+      }
+    },
+    {
+      "name": "LinMPI",
+      "inherits": [ "linux-release", "lin-base" ],
+      "cacheVariables": {
+        "dynaplex_pytorch_path": "/home/willemvj/libtorch2.1.0/share/cmake",
+        "dynaplex_enable_pytorch": true,
+        "dynaplex_enable_pythonbindings": false,
+        "dynaplex_enable_mpi": true,
+        "dynaplex_enable_tests": false
       }
     },
     {
       "name": "LinPB",
       "inherits": [ "linux-release", "lin-base" ],
       "cacheVariables": {
-        //For creating python bindings, linking to a anaconda version of pytorch appears most stable, e.g. something like (when using environment.yml to configure)
-        //Note that paths to TorchConfig.cmake and pybind11Config.cmake are needed. 
         "dynaplex_pytorch_path": "/home/willemvj/.conda/envs/envDP/lib/python3.11/site-packages/torch/share/cmake",
         "dynaplex_enable_pytorch": true,
         "dynaplex_enable_pythonbindings": true,
@@ -96,19 +105,16 @@
     },
     {
       "name": "WinDebCl",
-      "inherits": [ "win-base"],
+      "inherits": [ "windows-base", "win-base" ],
       "cacheVariables": {
-       // Disabling makes running a bit faster, but not all functionality is available.
         "dynaplex_enable_pytorch": false,
-        // Note that python bindings can only be built in release, since python.exe is a release build.
         "dynaplex_enable_pythonbindings": false,
         "dynaplex_enable_tests": true,
         "CMAKE_CXX_COMPILER": "clang-cl.exe",
         "CMAKE_C_COMPILER": "clang-cl.exe",
-        "CMAKE_BUILD_TYPE": "Debug"//,
-        //"CMAKE_CXX_CLANG_TIDY": "clang-tidy;-fexceptions,-checks=-*,bugprone-*,performance-*,readability-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-readability-magic-numbers,clang-analyzer-core.*,clang-analyzer-security.*"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
-   }
+    }
 
   ]
 }

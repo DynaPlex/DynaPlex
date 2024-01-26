@@ -6,7 +6,7 @@
 namespace DynaPlex {
 
     GymEmulator::GymEmulator(DynaPlex::System system, MDP mdp, VarGroup& vars)
-        : mdp{ mdp }, trajectory{ mdp->NumEventRNGs()} {
+        : mdp{ mdp }, trajectory{ } {
         num_valid_actions = mdp->NumValidActions();
         num_feats = mdp->NumFlatFeatures();
         if (mdp->DiscountFactor() != 1.0)
@@ -34,7 +34,10 @@ namespace DynaPlex {
         {
             int64_t seed;
             vars.Get("seed", seed);
-            trajectory.SeedRNGProvider(false, seed);
+            if (seed < 0)
+                throw DynaPlex::Error("seed must be non-negative");
+
+            trajectory.RNGProvider.SeedEventStreams(false, seed);
             seeded = true;
         }
     }
@@ -48,7 +51,9 @@ namespace DynaPlex {
         {
             int64_t seed;
             vars.Get("seed", seed);
-            trajectory.SeedRNGProvider(false, seed);
+            if (seed < 0)
+                throw DynaPlex::Error("seed must be non-negative");
+            trajectory.RNGProvider.SeedEventStreams(false, seed);
             seeded = true;
         }
         if (!seeded)
