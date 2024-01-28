@@ -54,8 +54,6 @@ void TestEarlyStopping() {
 
 		// Call and train DCL with specified instance to solve
 		auto dcl = dp.GetDCL(mdp, policy, dcl_config);
-		std::cout << "hello from " << dp.System().WorldRank() << std::endl;
-		dp.System().AddBarrier();
 		dcl.TrainPolicy();
 
 		auto policies = dcl.GetPolicies();
@@ -63,7 +61,7 @@ void TestEarlyStopping() {
 		auto comparison = comparer.Compare(policies);
 		for (auto& VarGroup : comparison)
 		{
-			std::cout << VarGroup.Dump() << std::endl;
+			dp.System() << VarGroup.Dump() << std::endl;
 		}
 	}
 }
@@ -130,7 +128,8 @@ void TestPaperInstances(int64_t rng_seed) {
 
 				DynaPlex::MDP mdp = dp.GetMDP(config);
 				auto policy = mdp->GetPolicy("base_stock");
-				std::cout << config.Dump() << std::endl;
+				//only print on this node in case of multi-node program. 
+				dp.System() << config.Dump() << std::endl;
 
 				// Call and train DCL with specified instance to solve
 				auto dcl = dp.GetDCL(mdp, policy, dcl_config);
@@ -148,38 +147,26 @@ void TestPaperInstances(int64_t rng_seed) {
 
 	for (auto& VarGroup : varGroupsMDPs)
 	{
-		std::cout << std::endl;
-		std::cout << VarGroup.Dump() << std::endl;
+		dp.System() << std::endl;
+		dp.System() << VarGroup.Dump() << std::endl;
 		for (auto& VarGroupPolicy : varGroupsPolicies_Mean.front())
 		{
-			std::cout << VarGroupPolicy.Dump() << std::endl;
+			dp.System() << VarGroupPolicy.Dump() << std::endl;
 		}
 		varGroupsPolicies_Mean.erase(varGroupsPolicies_Mean.begin());
 		for (auto& VarGroupPolicy : varGroupsPolicies_Benchmark.front())
 		{
-			std::cout << VarGroupPolicy.Dump() << std::endl;
+			dp.System() << VarGroupPolicy.Dump() << std::endl;
 		}
 		varGroupsPolicies_Benchmark.erase(varGroupsPolicies_Benchmark.begin());
-		std::cout << std::endl;
+		dp.System() << std::endl;
 	}
 }
 
 int main() {
 
 	//TestEarlyStopping();
-	//TestPaperInstances(12);
-	//TestPaperInstances(17);
-
-//	TestPaperInstances(127);
-
-//	TestPaperInstances(112337);
-
-//	TestPaperInstances(194);
-//	TestPaperInstances(123123);
-//	TestPaperInstances(26071983);
-//	TestPaperInstances(12131415);
-//	TestPaperInstances(4194);
-	TestPaperInstances(4123122);
+	TestPaperInstances(12);
 
 
 	return 0;

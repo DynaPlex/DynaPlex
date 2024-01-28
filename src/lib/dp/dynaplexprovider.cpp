@@ -103,7 +103,7 @@ namespace DynaPlex {
             m_systemInfo << DynaPlex::TorchAvailability::TorchVersion() << std::endl;
         else
             m_systemInfo << "Torch not available" << std::endl;
-
+        AddBarrier();
         // Register all the MDPs upon startup.
         Models::RegistrationManager::RegisterAll(m_registry);
     }

@@ -25,9 +25,9 @@ namespace DynaPlex::DCL {
 		config.GetOrDefault("M", M, 1000);
 		config.GetOrDefault("N", N, 5000);
 		config.GetOrDefault("sampling_probability", sampling_probability, 1.0);
-		if (N<1 || N >= (1ll<<30))
-			throw DynaPlex::Error("Value of N is invalid: " + std::to_string(N) + ". Must be positive and smaller than " + std::to_string(1<<30));
-	
+		if (N < 1 || N >= (1ll << 30))
+			throw DynaPlex::Error("Value of N is invalid: " + std::to_string(N) + ". Must be positive and smaller than " + std::to_string(1 << 30));
+
 
 		config.GetOrDefault("json_save_format", json_save_format, -1);
 		config.GetOrDefault("rng_seed", rng_seed, 15112017);
@@ -55,9 +55,9 @@ namespace DynaPlex::DCL {
 		int64_t offset = thread_offset + node_sampling_offset + 1 + seed;
 		int64_t num_samples_added = 0;
 		Trajectory trajectory{};
-		trajectory.RNGProvider.SeedEventStreams(false,rng_seed,offset);
-		DynaPlex::RNG rng(false,rng_seed,offset);
-	
+		trajectory.RNGProvider.SeedEventStreams(false, rng_seed, offset);
+		DynaPlex::RNG rng(false, rng_seed, offset);
+
 		bool final_reached_once = false;
 		while (num_samples_added < somesamples.size())
 		{
@@ -133,23 +133,23 @@ namespace DynaPlex::DCL {
 						if (trajectory.Category.IsAwaitEvent())
 							throw DynaPlex::Error("DCL: GenerateSamplesOnThread - trajectory is AwaitEvent after calling mdp->IncorporateUntilAction (without MaxPeriodCount.)");
 				}
-			}			
+			}
 		}
-		if(!silent)
-			if (!mdp->IsInfiniteHorizon() && !final_reached_once && thread_offset==0)
-				system <<std::endl << "WARNING possible data skew:  sampling collection did not reach the final state even once for this finite horizon MDP" << std::endl;
+		if (!silent)
+			if (!mdp->IsInfiniteHorizon() && !final_reached_once && thread_offset == 0)
+				system << std::endl << "WARNING possible data skew:  sampling collection did not reach the final state even once for this finite horizon MDP" << std::endl;
 		return;
 	}
 
 	std::string SampleGenerator::GetPathOfTempSampleFile(int rank)
 	{
 		std::string filename = "samples_node";
-	    filename += std::to_string(rank) + ".json";
-		return system.filepath(mdp->Identifier(),"temp", filename);
+		filename += std::to_string(rank) + ".json";
+		return system.filepath(mdp->Identifier(), "temp", filename);
 	}
 
 
-	void SampleGenerator::GenerateSamples(DynaPlex::Policy policy,const std::string& path) {
+	void SampleGenerator::GenerateSamples(DynaPlex::Policy policy, const std::string& path) {
 
 		if (!policy)
 			policy = mdp->GetPolicy("random");
@@ -169,7 +169,7 @@ namespace DynaPlex::DCL {
 				{"samples", samples}
 			};
 			samples_with_feats.SaveToFile(path);
-  			system.remove_file(temp_path);
+			system.remove_file(temp_path);
 		}
 	}
 
@@ -181,32 +181,33 @@ namespace DynaPlex::DCL {
 		if (!silent)
 			system << "Generating " << N << " samples based on policy type: " << policy->TypeIdentifier() << std::endl;
 
-		uniform_action_selector = DynaPlex::DCL::UniformActionSelector(rng_seed,H,M,mdp,policy);
+		uniform_action_selector = DynaPlex::DCL::UniformActionSelector(rng_seed, H, M, mdp, policy);
 		sequentialhalving_action_selector = DynaPlex::DCL::SequentialHalving(rng_seed, H, M, mdp, policy);
 		//Get the samples that must be collected for this specific node 
 		auto splits = DynaPlex::Parallel::get_splits(N, system.WorldSize());
 		auto& [start_for_node, end_for_node] = splits[system.WorldRank()];
 
 		node_sampling_offset = start_for_node;
+		int64_t to_collect_on_node = end_for_node - start_for_node;
 		//Create space for the samples collected on this node, and collect the samples:
-		std::vector<DynaPlex::NN::Sample> sample_vec(end_for_node - start_for_node);
+		std::vector<DynaPlex::NN::Sample> sample_vec(to_collect_on_node);
 		auto work = [this, &policy](std::span<DynaPlex::NN::Sample> somesamples, int64_t thread_offset) {
 			this->GenerateSamplesOnThread(somesamples, policy, thread_offset); };
 
-	
+
 		//for reporting progress:
 		DynaPlex::Parallel::ProgressReporter reporter;
 		//Default option, used unless we can have an lock_free sample counter.
-		reporter = [this](const std::atomic<bool>&) { 
+		reporter = [this](const std::atomic<bool>&) {
 			if (!silent)
-				system << "Collecting samples: progress reporting not possible" << std::endl; 			
+				system << "Collecting samples: progress reporting not possible" << std::endl;
 			};
 		//if appropriate, set specific progress reporter. 
 		if constexpr (std::atomic<int64_t>::is_always_lock_free && std::atomic<bool>::is_always_lock_free)
 		{
+			total_samples_collected = std::make_shared<std::atomic<int64_t>>(0);
 			if (system.WorldRank() == 0)
 			{//only enable progress reporting on a single node. 
-				total_samples_collected = std::make_shared<std::atomic<int64_t>>(0);
 				if (system.WorldSize() == 1) {
 					if (!silent)
 						system << "Progress:" << std::endl;
@@ -214,39 +215,37 @@ namespace DynaPlex::DCL {
 				else
 					if (!silent)
 						system << "Progress (node 0 only):" << std::endl;
-				reporter = [this](const std::atomic<bool>& error_occurred) {
+
+				reporter = [this, to_collect_on_node](const std::atomic<bool>& error_occurred) {
 					int64_t chars_printed = 0;
 					int64_t max_chars_to_print = 50;
 					int64_t num_ms = 1;
-					while (!error_occurred && (*total_samples_collected.get()) < N) {
+					while (!error_occurred && (*total_samples_collected.get()) < to_collect_on_node) {
 						std::this_thread::sleep_for(std::chrono::milliseconds(num_ms));
 						if (num_ms < 1000)
 							num_ms *= 4;
-						int64_t to_print = (max_chars_to_print * (*total_samples_collected.get())) / N;
-						while ( chars_printed < to_print)
+						int64_t to_print = (max_chars_to_print * (*total_samples_collected.get())) / to_collect_on_node;
+						while (chars_printed < to_print)
 						{
 							if (!silent)
-								system << '>';
+								system << '>' << std::flush;
 							chars_printed++;
 							if (!silent)
 								if (chars_printed % 5 == 0)
-									system << 2 * chars_printed;
+									system << 2 * chars_printed << std::flush;
 						}
 						system << std::flush;
 					}
-					if(!silent)
+					if (!silent)
 						system << std::endl;
-				};
+					};
+
 			}
 		}
 
-		//std::cout << "into parallel compute " << system.WorldRank() << std::endl;
-		//system.AddBarrier();
 		DynaPlex::Parallel::parallel_compute<DynaPlex::NN::Sample>(sample_vec, work, system.HardwareThreads(), reporter);
 		seed_offset += N;
 
-		//std::cout << "out of parallel compute " << system.WorldRank() << std::endl;
-		//system.AddBarrier();
 		//gather all the collected samples over the threads into sample_data.
 		DynaPlex::NN::SampleData sample_data{ mdp };
 		for (auto& sample : sample_vec)
@@ -278,7 +277,7 @@ namespace DynaPlex::DCL {
 				sample_data.AddFromFile(mdp, GetPathOfTempSampleFile(rank));
 				system.remove_file(GetPathOfTempSampleFile(rank));
 			}
-			DynaPlex::RNG rng( false, rng_seed );
+			DynaPlex::RNG rng(false, rng_seed);
 			std::shuffle(sample_data.Samples.begin(), sample_data.Samples.end(), rng.gen());
 			sample_data.SaveToFile(mdp, path, json_save_format, silent);
 		}
