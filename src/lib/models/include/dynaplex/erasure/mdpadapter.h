@@ -50,6 +50,8 @@ namespace DynaPlex::Erasure
 		}
 
 		double AllEventTransitions(const DynaPlex::dp_State& dp_state, std::vector<std::tuple<double, DynaPlex::dp_State>>& transitions) const override {
+			if (HasHiddenStateVariables())
+				throw DynaPlex::Error("MDP::AllEventTransitions : Cannot return event transitions as state has hidden variables.");
 			try {
 				std::vector<std::tuple<t_Event, double>>  eventProbs;
 		
@@ -121,9 +123,13 @@ namespace DynaPlex::Erasure
 			}
 		}
 
+		bool HasHiddenStateVariables() const override {
+			return HasResetHiddenStateVariables<t_MDP, t_State, DynaPlex::RNG>;
+		}
+
+
 		void InitializeFeatureMetaInfo(const DynaPlex::VarGroup& static_vars)
 		{
-			//initialize info pertaining to flat features. 
 			if constexpr (HasGetFlatFeatures<t_MDP, t_State>)
 			{
 				if (static_vars.HasKey("num_flat_features"))
@@ -350,7 +356,7 @@ namespace DynaPlex::Erasure
 				throw DynaPlex::Error("MDP->GetState(const VarGroup&): MDP must publicly define MDP::GetState(const VarGroup&) const returning MDP::State. ");
 		}
 		bool StatesAreEqual(const DynaPlex::dp_State& state1, const DynaPlex::dp_State& state2) const override
-		{
+		{			
 			if constexpr (std::equality_comparable<t_State>)
 			{
 				auto& t_state1 = ToState(state1);
@@ -599,7 +605,11 @@ namespace DynaPlex::Erasure
 			for (DynaPlex::Trajectory& traj : trajectories)
 			{
 				traj.Reset(std::move(state->Clone()));
-				auto& t_state = ToState(state);
+				auto& t_state = ToState(traj.GetState());
+				if constexpr (HasResetHiddenStateVariables<t_MDP, t_State, DynaPlex::RNG>)
+				{
+					mdp->ResetHiddenStateVariables(t_state, traj.RNGProvider.GetInitiationRNG());
+				}
 				traj.Category = mdp->GetStateCategory(t_state);
 			}
 		}

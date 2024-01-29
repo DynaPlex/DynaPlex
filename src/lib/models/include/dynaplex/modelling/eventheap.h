@@ -97,12 +97,18 @@ namespace DynaPlex {
             data.clear();
         }
  
+        /**
+         * When elements are changed while inside the heap, this must be used to restore the order. 
+         */
+        void resort() {
+            std::make_heap(data.begin(), data.end(), std::greater<T>());
+        }
 
     private:
         /** @brief The underlying container storing the heap elements. */
         std::vector<T> data;
 
-       
+
 
     };
 

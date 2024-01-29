@@ -37,6 +37,11 @@ namespace DynaPlex::Erasure
 		{ mdp.GetEvent(rng) } -> std::same_as<t_Event>;
 	};
 
+	template <typename t_MDP, typename t_State, typename t_RNG>
+	concept HasResetHiddenStateVariables = requires(const t_MDP & mdp, t_State & state, t_RNG & rng) {
+		mdp.ResetHiddenStateVariables(state, rng);
+	};
+
 	template <typename t_MDP,typename t_State, typename t_Event, typename t_RNG>
 	concept HasGetStateDependentEvent = requires(const t_MDP & mdp, const t_State& state, t_RNG & rng) {
 		{ mdp.GetEvent(state, rng) } -> std::same_as<t_Event>;

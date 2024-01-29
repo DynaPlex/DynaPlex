@@ -38,7 +38,7 @@ namespace DynaPlex {
 	      * Do not manually change this.
 	      */
 		double CumulativeReturn;
-
+		
 		// Move constructor
 		Trajectory(Trajectory&& other) noexcept = default;
 
@@ -46,39 +46,12 @@ namespace DynaPlex {
 		Trajectory& operator=(Trajectory&& other) noexcept = default;
 
 
-		// Copy constructor
-		Trajectory(const Trajectory& other)
-			: NextAction(other.NextAction),
-			Category(other.Category),
-			PeriodCount(other.PeriodCount),
-			EffectiveDiscountFactor(other.EffectiveDiscountFactor),
-			CumulativeReturn(other.CumulativeReturn),
-			RNGProvider(other.RNGProvider),
-			ExternalIndex(other.ExternalIndex) {
-			if (other.HasState()) {
-				state = other.state->Clone();  // Use the clone method for dp_State
-			}
-		}
-
-		// Copy assignment operator
-		Trajectory& operator=(const Trajectory& other) {
-			if (this != &other) {  // self-assignment check
-				NextAction = other.NextAction;
-				Category = other.Category;
-				PeriodCount = other.PeriodCount;
-				EffectiveDiscountFactor = other.EffectiveDiscountFactor;
-				CumulativeReturn = other.CumulativeReturn;
-				RNGProvider = other.RNGProvider;
-				ExternalIndex = other.ExternalIndex;
-				if (other.HasState()) {
-					state = other.state->Clone();  // Use the clone method for dp_State
-				}
-				else {
-					state.reset();
-				}
-			}
-			return *this;
-		}
+		//Safer to delete these. They could be implemented by cloning the state and copying other members, 
+		// but for MDP with hidden state variables, this implementation would not be in line with people's expectations!
+		// if functionality in this vain is needed, implement as part of MDP where it can be better documented. 
+		Trajectory(const Trajectory& other) = delete;
+		Trajectory& operator=(const Trajectory& other) =delete;
+		
 
 	private:
 		/// (type-erased) state of the system.

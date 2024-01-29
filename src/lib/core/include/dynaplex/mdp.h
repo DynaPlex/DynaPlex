@@ -19,6 +19,17 @@ namespace DynaPlex
 	public:
 
 		/**
+		 * Indicates whether the MDP has state variables that are hidden
+		 * 
+		 *Notes:
+		 * -hidden state variables are members of the state not available to valid policies, i.e. they cannot be inferred from features.
+		 * -It should be possible to Reset the value of hidden variables through a call to ResetHiddenStateVariables(State&, DynaPlex::RNG&) const;	
+ 		 * -In fact, this function tests presence of that function, and assumes availability of hidden variables if the function is present.
+		 * -The concept is related, but not exactly same, as the MDP being a POMDP.
+		 */
+		virtual bool HasHiddenStateVariables() const = 0;
+
+		/**
 		 * Retrieves the number of valid actions in the MDP.
 		 *
 		 * Notes: 

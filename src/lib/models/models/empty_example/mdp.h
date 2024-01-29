@@ -1,9 +1,6 @@
 #pragma once
 #include "dynaplex/dynaplex_model_includes.h"
 #include "dynaplex/modelling/discretedist.h"
-#include "dynaplex/modelling/queue.h"
-
-//namespace DynaPlex::Erasure { template <typename MDPType> class PolicyRegistry; }// Forward declaration 
 
 namespace DynaPlex::Models {
 	namespace empty_example /*must be consistent everywhere for complete mdp definition and associated policies and states (if not defined inline).*/

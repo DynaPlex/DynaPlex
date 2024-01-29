@@ -60,7 +60,7 @@ namespace DynaPlex::Models {
 			State GetInitialState() const;
 			State GetState(const VarGroup&) const;
 			void GetFeatures(const State&, DynaPlex::Features&) const;
-			//Enables all MDPs to be constructer in a uniform manner. e
+			//Enables all MDPs to be constructed in a uniform manner. 
 			explicit MDP(const DynaPlex::VarGroup&);
 			void RegisterPolicies(DynaPlex::Erasure::PolicyRegistry<MDP>&) const;
 		};

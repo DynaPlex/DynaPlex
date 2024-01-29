@@ -82,10 +82,10 @@ namespace DynaPlex::Tests {
         heap.push(Event(2.3, 55));
 
         double total_time = 0;
-     //   for (const auto& event : heap) {
-      //      total_time += event.time;
-      //  }
-       // EXPECT_DOUBLE_EQ(total_time, 1.5 + 0.8 + 2.3);
+        for (const auto& event : heap) {
+            total_time += event.time;
+        }
+        EXPECT_DOUBLE_EQ(total_time, 1.5 + 0.8 + 2.3);
     }
     
 }
