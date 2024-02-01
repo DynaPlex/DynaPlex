@@ -18,14 +18,20 @@ class MDP:
         """
         Convenience function that calls GetPolicy with the parameter id.
         """
-    def get_static_info(self) -> VarGroup:
-        ...
+    def get_static_info(self) -> dict:
+        """
+        Gets dictionary representing static information for this MDP, i.e. MDP properties.
+        """
     def identifier(self) -> str:
         ...
     def is_infinite_horizon(self) -> bool:
-        ...
-    def list_policies(self) -> VarGroup:
-        ...
+        """
+        indicates whether the MDP is infinite or finite horizon
+        """
+    def list_policies(self) -> dict:
+        """
+        Lists key-value pairs (id,description) that represent the available build-in policies for this MDP.
+        """
     def num_flat_features(self) -> int:
         ...
     def num_valid_actions(self) -> int:
@@ -35,18 +41,20 @@ class MDP:
     def type_identifier(self) -> str:
         ...
 class Policy:
-    def get_config(self) -> VarGroup:
-        ...
+    def get_config(self) -> dict:
+        """
+        Gets dictionary representing static information for this policy, i.e. the parameters it was configured with.
+        """
     def type_identifier(self) -> str:
         ...
 class PolicyComparer:
-    def assess(self, arg0: Policy) -> VarGroup:
+    def assess(self, arg0: Policy) -> dict:
         ...
     @typing.overload
-    def compare(self, first: Policy, second: Policy, index: int = -1) -> list[VarGroup]:
+    def compare(self, first: Policy, second: Policy, index: int = -1) -> list:
         ...
     @typing.overload
-    def compare(self, policies: list[Policy], index: int = -1) -> list[VarGroup]:
+    def compare(self, policies: list[Policy], index: int = -1) -> list:
         ...
 class dcl:
     def get_policies(self) -> list[Policy]:
@@ -60,8 +68,10 @@ class gym_emulator:
         ...
     def close(self) -> None:
         ...
-    def current_state_as_object(self) -> VarGroup:
-        ...
+    def current_state_as_object(self) -> dict:
+        """
+        returns the current state of the emulator as a dictionary.
+        """
     def mdp_identifier(self) -> str:
         ...
     def observation_space_size(self) -> int:
@@ -83,11 +93,11 @@ def get_comparer(mdp: MDP, **kwargs) -> PolicyComparer:
     """
     Gets comparer based on MDP and keyword arguments.
     """
-def get_dcl(mdp: MDP, policy: Policy = None, **kwargs) -> ...:
+def get_dcl(mdp: MDP, policy: Policy = None, **kwargs) -> dcl:
     """
     Returns a class that can be used to run dcl algorithm based on mdp, policy and keyword arguments.
     """
-def get_gym_emulator(mdp: MDP, **kwargs) -> ...:
+def get_gym_emulator(mdp: MDP, **kwargs) -> gym_emulator:
     """
     Gets comparer based on MDP and keyword arguments.
     """
@@ -95,7 +105,7 @@ def get_mdp(**kwargs) -> MDP:
     """
     Gets MDP based on keyword arguments.
     """
-def get_sample_generator(mdp: MDP, **kwargs) -> ...:
+def get_sample_generator(mdp: MDP, **kwargs) -> sample_generator:
     """
     Returns a class that can be used to generate roll-out samples for a specific mdp.
     """
@@ -103,7 +113,7 @@ def io_path() -> str:
     """
     Gets the path of the dynaplex IO directory.
     """
-def list_mdps() -> VarGroup:
+def list_mdps() -> dict:
     """
     Lists available MDPs
     """

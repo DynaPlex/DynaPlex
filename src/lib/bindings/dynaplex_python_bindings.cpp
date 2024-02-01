@@ -17,8 +17,9 @@ PYBIND11_MODULE(DP_Bindings, m) {
 	define_policy_bindings(m);
 	define_mdp_bindings(m);
 	define_comparer_bindings(m);
-	define_provider_bindings(m);
 	define_dcl_bindings(m);
 	define_gym_emulator_bindings(m);
 	define_sample_generator_bindings(m);
+	define_provider_bindings(m);
+
 }

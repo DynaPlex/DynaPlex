@@ -24,6 +24,8 @@ def test_model_factory_tests():
     vars = {"id": "lost_sales", "p": 9.0, "h": 1.0, "leadtime": 3, "demand_dist":{"type":"poisson","mean":3.0} }
     try:
         model = dynaplex.get_mdp(**vars)
+        policies = model.list_policies()
+        print(policies['base_stock'])
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")
     identifier = model.identifier()

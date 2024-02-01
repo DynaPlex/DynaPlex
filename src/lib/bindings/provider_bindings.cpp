@@ -6,19 +6,19 @@
 
 namespace DynaPlex {
 
-	DynaPlex::GymEmulator GetGymEmulator(DynaPlex::MDP mdp, py::kwargs& kwargs)
+	std::shared_ptr<DynaPlex::GymEmulator> GetGymEmulator(DynaPlex::MDP mdp, py::kwargs& kwargs)
 	{
 		auto vars = DynaPlex::VarGroup(kwargs);
-		return DynaPlex::GymEmulator(DynaPlex::DynaPlexProvider::Get().System(), mdp, vars);
+		return std::make_shared<DynaPlex::GymEmulator>(DynaPlex::DynaPlexProvider::Get().System(), mdp, vars);
 	}
 
 	DynaPlex::MDP GetMDP(py::kwargs& kwargs) {
 		return DynaPlex::DynaPlexProvider::Get().GetMDP(kwargs);
 	}
 
-	DynaPlex::VarGroup ListMDPs()
+	pybind11::dict ListMDPs()
 	{
-		return DynaPlex::DynaPlexProvider::Get().ListMDPs();
+		return *DynaPlex::DynaPlexProvider::Get().ListMDPs().ToPybind11Dict();
 	}
 	DynaPlex::Policy LoadPolicy(DynaPlex::MDP mdp, std::string path)
 	{
@@ -84,7 +84,7 @@ void define_provider_bindings(pybind11::module_& m) {
 	m.def("get_mdp", &DynaPlex::GetMDP, "Gets MDP based on keyword arguments.");
 	m.def("get_comparer", &DynaPlex::GetComparer, py::arg("mdp"), "Gets comparer based on MDP and keyword arguments.");
 	m.def("io_path", &DynaPlex::IO_Path, "Gets the path of the dynaplex IO directory.");
-	m.def("get_gym_emulator", &DynaPlex::GetGymEmulator, py::arg("mdp"), "Gets comparer based on MDP and keyword arguments.");
+	m.def("get_gym_emulator", &DynaPlex::GetGymEmulator, py::arg("mdp"), "Gets gym emulator based on MDP; also accepts key word arguments.");
 	m.def("get_dcl", &DynaPlex::GetDCL,
 		py::arg("mdp"),
 		py::arg("policy") = nullptr,

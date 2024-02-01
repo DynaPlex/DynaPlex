@@ -35,6 +35,41 @@ namespace DynaPlex {
 		// Returns the observation space size (state dimensionality)
 		int64_t ObservationSpaceSize() const;
 
+
+		/*// Move Constructor
+		GymEmulator(GymEmulator&& other) noexcept
+			: last_observation(std::move(other.last_observation)),
+			mdp(mdp),
+			trajectory(std::move(other.trajectory)),
+			last_cumulative_return(other.last_cumulative_return),
+			actions_taken_since_reset(other.actions_taken_since_reset),
+			events_since_reset(other.events_since_reset),
+			num_valid_actions(other.num_valid_actions),
+			num_feats(other.num_feats),
+			seeded(other.seeded),
+			num_actions_until_done(other.num_actions_until_done),
+			num_periods_until_done(other.num_periods_until_done) {
+
+		}
+
+		// Move Assignment Operator
+		GymEmulator& operator=(GymEmulator&& other) noexcept {
+			if (this != &other) {
+				last_observation = std::move(other.last_observation);
+				mdp = other.mdp;
+				trajectory = std::move(other.trajectory);
+				last_cumulative_return = other.last_cumulative_return;
+				actions_taken_since_reset = other.actions_taken_since_reset;
+				events_since_reset = other.events_since_reset;
+				num_valid_actions = other.num_valid_actions;
+				num_feats = other.num_feats;
+				seeded = other.seeded;
+				num_actions_until_done = other.num_actions_until_done;
+				num_periods_until_done = other.num_periods_until_done;
+			}
+			return *this;
+		}*/
+
 		// Destructor
 		~GymEmulator();
 
