@@ -125,6 +125,7 @@ namespace DynaPlex::Tests {
 			int64_t max_event_count = 128;
 			bool finalreached = false;
 			int64_t action_count = 0;
+			int64_t allowedactioncount = 0;
 			int64_t total_event_count = 0;
 			while (trajectory.PeriodCount < max_event_count && !finalreached)
 			{
@@ -158,6 +159,7 @@ namespace DynaPlex::Tests {
 						ASSERT_EQ(feats_store, alt_feats_store);
 					}
 					action_count++;
+					allowedactioncount += mdp->CountAllowedActions(trajectory.GetState());
 					ASSERT_NO_THROW(
 						policy->SetAction({ &trajectory,1 });
 					) << info << " Issue with policy. Did you correctly implement GetAction on policy " + policy->TypeIdentifier() + "?";
@@ -186,6 +188,10 @@ namespace DynaPlex::Tests {
 						finalreached = true;
 					}
 				}
+			}
+			if (!SkipNoDecisionsTests)
+			{
+				ASSERT_NE(action_count, allowedactioncount) << info << "A simulation of your trajectory seems to get stuck in a loop with only one action being allowed. In IsAllowedAction, is your feasible action space too restrictive? If this is intentional, set SkipNoDecisionsTests to skip this test.";
 			}
 
 			if (!RelaxOnProgramFlow)

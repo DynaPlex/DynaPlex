@@ -44,7 +44,13 @@ namespace DynaPlex
 		 */
 		virtual bool IsAllowedAction(const DynaPlex::dp_State&, int64_t action) const = 0;
 
-		
+		/**
+		 * Retrieves the number of allowed actions in a given state.
+		 *
+		 * @return the number of allowed actions for the MDP.
+		 */
+		virtual int64_t CountAllowedActions(const DynaPlex::dp_State&) const = 0;
+
 		/**
 		 * Determines if the MDP provides a state representations with flat features.
 		 *

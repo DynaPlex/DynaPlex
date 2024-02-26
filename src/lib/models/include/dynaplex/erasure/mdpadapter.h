@@ -398,6 +398,10 @@ namespace DynaPlex::Erasure
 			return provider.IsAllowedAction(t_state, action);
 		}
 
+		int64_t CountAllowedActions(const DynaPlex::dp_State& dp_state) const override {
+			auto& t_state = ToState(dp_state);
+			return provider.CountAllowedActions(t_state);
+		}
 
 		std::string TypeIdentifier() const override
 		{
