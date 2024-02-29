@@ -176,6 +176,7 @@ namespace DynaPlex {
     void System::SetIOLocation(const std::string& path, const std::string& dirname)
     {
         fs::path base_path(path);
+        base_path.make_preferred();
         fs::path combined_path = base_path / dirname;
 
         // Check if base_path is a valid existing directory
