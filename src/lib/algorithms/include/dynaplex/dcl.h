@@ -23,7 +23,7 @@ namespace DynaPlex::Algorithms {
 	
 
 		int64_t num_gens,resume_gen, rng_seed;
-		bool retrain_lastgen_only, silent;
+		bool retrain_lastgen_only, silent, delete_samples_after_training, keep_samples_lastgen_only;
 		DynaPlex::NN::PolicyTrainer trainer;
 		DynaPlex::VarGroup nn_architecture = DynaPlex::VarGroup{};
 		DynaPlex::MDP mdp;

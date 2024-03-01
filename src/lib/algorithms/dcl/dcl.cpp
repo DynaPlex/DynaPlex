@@ -18,6 +18,8 @@ namespace DynaPlex::Algorithms {
 			throw DynaPlex::Error("DCL :: Invalid rng_seed - should be non-negative");
 		config.GetOrDefault("silent", silent, false);
 		config.GetOrDefault("retrain_lastgen_only", retrain_lastgen_only, false);
+		config.GetOrDefault("delete_samples_after_training", delete_samples_after_training, false);
+		config.GetOrDefault("keep_samples_lastgen_only", keep_samples_lastgen_only, false);
 		config.GetOrDefault("resume_gen", resume_gen,0);
 		config.GetOrDefault("num_gens", num_gens, 1);
 
@@ -60,8 +62,11 @@ namespace DynaPlex::Algorithms {
 				sampleCollector.GenerateStateSamples(policy, GetPathOfSampleFile(generation));
 				if(!silent)
 					system << "Elapsed time: " << system.Elapsed() << std::endl;
-				if(system.WorldRank()==0)
-					trainer.TrainPolicy(nn_architecture, generation + 1, GetPathOfSampleFile(generation),silent);		
+				if (system.WorldRank() == 0) {
+					trainer.TrainPolicy(nn_architecture, generation + 1, GetPathOfSampleFile(generation), silent);
+					if (delete_samples_after_training || (keep_samples_lastgen_only && generation < num_gens - 1))
+						system.remove_file(GetPathOfSampleFile(generation));
+				}
 				system.AddBarrier();
 			}
 		}
