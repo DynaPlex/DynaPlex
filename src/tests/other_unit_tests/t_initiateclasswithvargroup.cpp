@@ -8,8 +8,8 @@ namespace DynaPlex::Tests {
 
 	TEST(InitiateClassWithVarGroup, VarGroup) {
 		//Create a VarGroup via the API:
-		auto nested = DynaPlex::VarGroup({ {"Id","1"},{"Size",1.0} });
-		auto nested2 = DynaPlex::VarGroup({ {"Id","2"},{"Size",4.0} });
+		auto nested = DynaPlex::VarGroup({ {"name","1"},{"Size",1.0} });
+		auto nested2 = DynaPlex::VarGroup({ {"name","2"},{"Size",4.0} });
 		DynaPlex::VarGroup varGroup({
 			{"testEnumClass",static_cast<int>(SomeClass::Test::option)},
 			{"myString","string"},
@@ -36,7 +36,7 @@ namespace DynaPlex::Tests {
 		ASSERT_EQ(someclass.myVector.size(), 2);
 		ASSERT_EQ(someclass.nestedClass.Size, 1.0);
 		ASSERT_EQ(someclass.myQueue.back(), 14);
-		ASSERT_EQ(someclass.myNestedVector.back().Id, "2");
+		ASSERT_EQ(someclass.myNestedVector.back().name, "2");
 
 
 		auto vars = someclass.ToVarGroup();

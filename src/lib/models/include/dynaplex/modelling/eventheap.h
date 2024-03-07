@@ -1,6 +1,7 @@
 #pragma once
 #include <algorithm> //push_heap, pop_heap. 
 #include <functional> //std::greater
+#include "dynaplex/error.h"
 namespace DynaPlex {
 
     namespace Concepts {
@@ -87,6 +88,18 @@ namespace DynaPlex {
          * @return A constant reference to the top element.
          */
         const T& first() const {
+            if (data.size() == 0)
+                throw DynaPlex::Error("EventHeap::first - heap is empty.");
+            return data.front();
+        }
+
+        /**
+         * @brief Access the first element of the heap.
+         * @return A constant reference to the top element.
+         */
+        T& first(){
+            if (data.size() == 0)
+                throw DynaPlex::Error("EventHeap::first - heap is empty.");
             return data.front();
         }
 

@@ -15,7 +15,7 @@ namespace DynaPlex::Tests {
 
 		// Initialize VarGroup for SmallClass
 		VarGroup vars1;
-		vars1.Add("Id", "ID_1");
+		vars1.Add("name", "ID_1");
 		vars1.Add("Size", 1.0);
 
 		// Initialize a SmallClass instance
@@ -27,7 +27,7 @@ namespace DynaPlex::Tests {
 
 		// Create another VarGroup for a different SmallClass instance
 		VarGroup vars2;
-		vars2.Add("Id", "ID_2");
+		vars2.Add("name", "ID_2");
 		vars2.Add("Size", 2.0);
 		SmallClass instance2(vars2);
 		queue.push_back(instance2);

@@ -7,6 +7,7 @@
 #include "dynaplex/modelling/discretedist.h"
 #include "dynaplex/rng.h"
 #include "dynaplex/policycomparison.h"
+#include <numeric>
 #include <boost/math/distributions/binomial.hpp>
 #include <boost/math/distributions/negative_binomial.hpp>
 namespace DynaPlex::Tests {
@@ -210,7 +211,7 @@ namespace DynaPlex::Tests {
 			vg.Add("probs", probs);
 			vg.Add("offset", 0);
 			DiscreteDist customDist(vg);
-
+			customDist.OptimizeForSampling();
 
 			auto buckets = GatherBucketedSampleMeans(customDist, numSamples, numMeans);
 
@@ -229,7 +230,8 @@ namespace DynaPlex::Tests {
 			vg.Add("type", "geometric");
 			vg.Add("mean", 4);
 			DiscreteDist customDist(vg);
-
+			customDist.OptimizeForSampling();
+			
 
 			auto buckets = GatherBucketedSampleMeans(customDist, numSamples, numMeans);
 
@@ -273,6 +275,98 @@ namespace DynaPlex::Tests {
 		ASSERT_EQ(customDist.Fractile(1.0), customDist.Max());  // Fractile of 1.0 should be the maximum value of the distribution
 
 		// You can add more sophisticated distributions or edge cases as needed.
+	}
+
+	TEST(DiscreteDistTests, ConditionalSampleTest) {
+		// Example setup: Create a geometric distribution with mean 5
+		double mean = 5.0;
+		DiscreteDist dist = DiscreteDist::GetGeometricDist(mean);
+
+		// Create an RNG object
+		DynaPlex::RNG rng{ false ,1203};
+
+		// Specify the minimum value for conditional sampling
+		int64_t minimum_value = 3;
+
+		// Number of samples to generate for the test
+		int num_samples = 1000;
+
+		// Generate samples and check if they meet the condition
+		for (int i = 0; i < num_samples; ++i) {
+			int64_t sample = dist.GetConditionalSample(rng, minimum_value);
+			ASSERT_GE(sample, minimum_value) << "Sample " << sample << " is less than the minimum value of " << minimum_value;
+		}
+	}
+
+	void TestConditionalSampling(DiscreteDist& dist)
+	{
+		DynaPlex::RNG rng{ false ,1203 };
+
+		EXPECT_THROW(dist.GetConditionalSample(rng, dist.Max() + 1), DynaPlex::Error);
+		for (int64_t minimum_value = dist.Min() - 1; minimum_value <= dist.Max(); minimum_value++)
+		{
+			// Setup: Define a custom distribution. For simplicity, let's say it's a simple distribution
+			// where the probabilities are known, and we can calculate the conditional mean analytically.
+				// Create an RNG object
+
+			// Specify the minimum value for conditional sampling and the expected conditional mean
+
+			double mean{ 0.0 };
+			double prob{ 0.0 };
+
+			for (const auto& [qty, pr] : dist)
+			{
+				if (qty >= minimum_value)
+				{
+					mean += qty * pr;
+					prob += pr;
+				}
+			}
+			double expected_conditional_mean{ mean / prob };
+
+
+			// Number of samples to generate for the test
+			int num_samples = 10000;
+
+			// Generate samples
+			std::vector<int64_t> samples;
+			for (int i = 0; i < num_samples; ++i) {
+				samples.push_back(dist.GetConditionalSample(rng, minimum_value));
+			}
+
+			// Calculate the empirical mean of the conditional samples
+			double empirical_mean = std::accumulate(samples.begin(), samples.end(), 0.0) / samples.size();
+
+			// Define a tolerance for comparing the means
+			double tolerance = 0.04;
+
+			// Assert that the empirical mean is within the tolerance of the expected mean
+			ASSERT_NEAR(empirical_mean, expected_conditional_mean, empirical_mean* tolerance) << "The empirical mean of the conditional distribution is not within the expected range." << minimum_value;
+
+		}
+	}
+
+	TEST(DiscreteDistTests, ConditionalMeanTest) {
+
+		{
+			std::vector<double> probabilities = { 0.2, 0.25, 0.15, 0.2, 0.1,0.0,0.1 }; // Example probabilities
+			int64_t offset = -1; // Starting value of the distribution
+			DiscreteDist dist = DiscreteDist::GetCustomDist(probabilities, offset);
+			TestConditionalSampling(dist);
+			dist.OptimizeForSampling();
+			TestConditionalSampling(dist);
+		}
+
+		{
+			std::vector<double> probabilities = { 0.2, 0.25, 0.15, 0.2, 0.1,0.0,0.1 }; // Example probabilities
+			int64_t offset = -1; // Starting value of the distribution
+			DiscreteDist dist = DiscreteDist::GetAdanEenigeResingDist(10,5);
+			dist = dist.Add(DiscreteDist::GetConstantDist(-5));
+			TestConditionalSampling(dist);
+			dist.OptimizeForSampling();
+			TestConditionalSampling(dist);
+		}
+
 	}
 
 

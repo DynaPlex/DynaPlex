@@ -5,9 +5,6 @@
 #include "dynaplex/error.h"
 #include "dynaplex/vargroup.h"
 
-
-
-
 namespace DynaPlex {
 	template<typename T>
 	class Queue
@@ -23,8 +20,6 @@ namespace DynaPlex {
 		using pointer = value_type*;
 		using const_pointer = const value_type*;
 	private:
-
-
 		size_t first_item;
 		size_t num_items;
 		std::vector<T> items;

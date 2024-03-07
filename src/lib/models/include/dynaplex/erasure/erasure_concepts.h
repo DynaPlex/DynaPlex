@@ -27,6 +27,11 @@ namespace DynaPlex::Erasure
 		{ mdp.GetState(vars) } -> std::same_as<t_State>;
 	};
 
+	template <typename t_MDP, typename t_State, typename t_RNG>
+	concept HasModifyStateWithRNG = requires(const t_MDP & mdp, t_State & state, t_RNG & rng) {
+		{ mdp.ModifyStateWithEvent(state, rng) } -> std::same_as<double>;
+	};
+
 	template <typename t_MDP, typename t_State, typename t_Event>
 	concept HasModifyStateWithEvent = requires(const t_MDP & mdp, t_State & state, const t_Event & event) {
 		{ mdp.ModifyStateWithEvent(state, event) } -> std::same_as<double>;
@@ -73,6 +78,18 @@ namespace DynaPlex::Erasure
 		typename t_MDP::Event;
 	};
 
+	template <typename T, bool HasEvent>
+	struct ConditionalEvent;
+
+	template <typename T>
+	struct ConditionalEvent<T, true> {
+		using type = typename T::Event;
+	};
+	//default to event being int64_t
+	template <typename T>
+	struct ConditionalEvent<T, false> {
+		using type = int64_t;
+	};
 
 	template<typename t_MDP>
 	concept HasState = requires{

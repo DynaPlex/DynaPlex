@@ -123,16 +123,8 @@ namespace DynaPlex
 		{
 			std::vector<double> probs;
 			vars.Get("probs", probs);
-
 			int64_t offset;
-			if (vars.HasKey("offset"))
-			{
-				vars.Get("offset", offset);
-			}
-			else
-			{
-				offset = 0;
-			}
+			vars.GetOrDefault("offset", offset, 0);
 			*this = GetCustomDist(std::move(probs), offset);
 			break;
 		}
@@ -726,22 +718,86 @@ namespace DynaPlex
 		return std::sqrt(Variance());
 	}
 
+	int64_t DiscreteDist::GetConditionalSample(DynaPlex::RNG& rng, int64_t minimum_value) const {
 
+		if (minimum_value > Max()) {
+			throw DynaPlex::Error("DiscreteDist::GetConditionalSample - minimum_value should not exceed the maximum value of the distribution.");
+		}
+		// Calculate the index for minimum_value, accounting for the actual minimum value of the distribution
+		size_t startIndex = std::max<int64_t>( minimum_value - min,0ll);
+		
+
+		if (optimizedForSampling)
+		{
+			double cumulativeProbabilityAtStart = startIndex > 0 ? cumulativePMF[startIndex - 1] : 0.0;
+			double randomValue = rng.genUniform() * (1.0 - cumulativeProbabilityAtStart) + cumulativeProbabilityAtStart;
+
+			// Use binary search over the range starting from startIndex
+			auto it = std::lower_bound(cumulativePMF.begin() + startIndex, cumulativePMF.end(), randomValue);
+			size_t index = std::distance(cumulativePMF.begin(), it);
+
+			return min + static_cast<int64_t>(index);
+		}
+		else
+		{
+			// Accumulate probabilities up to startIndex to adjust the random value generation
+			double cumulativeProbability = 0.0;
+			for (size_t i = 0; i < startIndex; ++i) {
+				cumulativeProbability += translatedPMF[i];
+			}
+
+			// Generate a random value adjusted for the already accumulated probability
+			double randomValue = rng.genUniform() * (1.0 - cumulativeProbability) + cumulativeProbability;
+
+			// Continue accumulating probabilities from startIndex and find the corresponding value
+			for (size_t i = startIndex; i < translatedPMF.size(); ++i) {
+				cumulativeProbability += translatedPMF[i];
+				if (randomValue < cumulativeProbability) {
+					return min + static_cast<int64_t>(i);
+				}
+			}
+
+			// This should technically never be reached if probabilities sum to 1,
+			// but it handles potential numerical inaccuracies.
+			return Max();
+		}
+	}
+
+	void DiscreteDist::OptimizeForSampling() {
+		//if (translatedPMF.size() > 9)
+		{
+			cumulativePMF.reserve(translatedPMF.size());
+			double sum = 0.0;
+			for (const auto& p : translatedPMF) {
+				sum += p;
+				cumulativePMF.push_back(sum);
+			}
+			optimizedForSampling = true;
+		}
+	}
 
 	int64_t DiscreteDist::GetSample(DynaPlex::RNG& rng) const {
 		// Generate a uniform random number between 0 and 1
 		double randomValue = rng.genUniform();
-		double cumulativeProbability = 0.0;
-		for (size_t i = 0; i < translatedPMF.size(); i++) {
-			cumulativeProbability += translatedPMF[i];
-			if (randomValue < cumulativeProbability) {
-				return min + static_cast<int64_t>(i);
-			}
-		}
 
-		// This should technically never be reached if probabilities sum to 1, 
-		// but it handles potential numerical inaccuracies.
-		return Max();
+		if (optimizedForSampling) {
+			// Use binary search on the cumulativePMF
+			auto it = std::lower_bound(cumulativePMF.begin(), cumulativePMF.end(), randomValue);
+			size_t index = std::distance(cumulativePMF.begin(), it);
+			return min + static_cast<int64_t>(index);
+		}
+		else {
+			double cumulativeProbability = 0.0;
+			for (size_t i = 0; i < translatedPMF.size(); i++) {
+				cumulativeProbability += translatedPMF[i];
+				if (randomValue < cumulativeProbability) {
+					return min + static_cast<int64_t>(i);
+				}
+			}
+			// This should technically never be reached if probabilities sum to 1, 
+			// but it handles potential numerical inaccuracies.
+			return Max();
+		}
 	}
 
 

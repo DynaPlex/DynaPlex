@@ -33,7 +33,7 @@ namespace DynaPlex::Tests {
 
 		ASSERT_NO_THROW(
 			mdp = dp.GetMDP(mdp_vars_from_json);
-		) << info << "Failed to configure mdp with file models/models/" << model_name << "/" << mdp_config_name << ". Is the id correct? Were all neccesary arguments in MDP constructor provided in json file, and are they valid? Does GetStaticInfo provide all required information?";
+		) << info << "Failed to configure mdp with file models/models/" << model_name << "/" << mdp_config_name << ". Is the id correct? Were all neccesary arguments in MDP constructor provided in json file, and are they valid? Does GetStaticInfo provide all required information? VarGroup used:" << mdp_vars_from_json.Dump(3);
 		ASSERT_TRUE(mdp) <<info << "Contact developers. ";
 
 		ASSERT_EQ(
@@ -143,7 +143,7 @@ namespace DynaPlex::Tests {
 					total_event_count++;
 					ASSERT_NO_THROW(
 						mdp->IncorporateEvent({ &trajectory,1 });
-					) << info << "Did you correctly implement ModifyStateWithEvent  and GetEvent?";
+					) << info << "Did you correctly implement ModifyStateWithEvent  and GetEvent?";// << trajectory.GetState()->ToVarGroup().Dump(1);
 				}
 				else if (cat.IsAwaitAction())
 				{
@@ -219,70 +219,76 @@ namespace DynaPlex::Tests {
 		if (!SkipStateSerializationTests)
 		{
 			auto& firstState = someStates[0];
-
 			for (auto& state : someStates)
 			{
 				auto vars = state->ToVarGroup();
 
 				DynaPlex::dp_State loaded_state{};
 				
+				
 				ASSERT_NO_THROW(
 					loaded_state = mdp->GetState(vars);
-				) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? Set SkipStateSerializationTests to skip this test.  ";
+				) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? Set SkipStateSerializationTests to skip this test.  " + vars.Dump(1);
 		
-			auto vars_from_loaded_state = loaded_state->ToVarGroup();
+				auto vars_from_loaded_state = loaded_state->ToVarGroup();
 				if (!SkipEqualityTests)
 				{
 					ASSERT_TRUE(mdp->StatesAreEqual(state, loaded_state)) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? Set SkipStateSerializationTests to skip this test.  ";
 				}
-
-				ASSERT_EQ(vars, vars_from_loaded_state) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? Set SkipStateSerializationTests to skip this test. ";
-
-
+				if (!VarGroupRepresentationNonUnique)
+				{
+					ASSERT_EQ(vars, vars_from_loaded_state) << "Issue with state serialization; are MDP::GetState(const VarGroup& vars) const and MDP::State::ToVarGroup() const correctly implemented? If vargroup representation is not unique due to presence of dictionaries, then set VarGroupRepresentationNonUnique to skip this test. vars" << vars.Dump(3) << "vars_from_loaded_state" << vars_from_loaded_state.Dump(3);
+				}
+			
 
 				std::vector<Trajectory> trajVec{};
 				for (size_t i = 0; i < 2; i++)
 				{
-					trajVec.push_back(std::move(Trajectory(0)));
-					
+					trajVec.push_back(std::move(Trajectory(0)));					
 				} 
 
 				trajVec[0].RNGProvider.SeedEventStreams(false, 12, 0);
 				trajVec[1].RNGProvider.SeedEventStreams(false, 12, 0);
-				mdp->InitiateState({ &trajVec[0] ,1 }, state);
-				mdp->InitiateState({ &trajVec[1] ,1 }, loaded_state);
+				trajVec[0].Reset(state->Clone());
+				trajVec[0].Category = mdp->GetStateCategory(trajVec[0].GetState());
+				trajVec[1].Reset(loaded_state->Clone());
+				trajVec[1].Category = mdp->GetStateCategory(trajVec[1].GetState());
+
 
 				int64_t max_period_count = 10;
 				int64_t action_count = 0;
-				
-				
+
+
+			
 				bool finalreached = false;
 				while (trajVec[0].PeriodCount < max_period_count && !finalreached)
 				{
+					ASSERT_EQ(trajVec[0].GetState()->ToVarGroup(), trajVec[1].GetState()->ToVarGroup()) << trajVec[0].PeriodCount << "  " << "\nvars\n" << trajVec[0].GetState()->ToVarGroup().Dump(3) << "\nvars_from_loaded_state\n" << trajVec[1].GetState()->ToVarGroup().Dump(3);
+
 					auto& cat = trajVec[0].Category;
-					ASSERT_EQ(trajVec[0].Category, trajVec[1].Category)<<info<<"Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
-					ASSERT_EQ(trajVec[0].CumulativeReturn, trajVec[1].CumulativeReturn) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
-					ASSERT_EQ(trajVec[0].PeriodCount, trajVec[1].PeriodCount) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
+					ASSERT_EQ(trajVec[0].Category, trajVec[1].Category)<<info<<" PeriodCount" << trajVec[0].PeriodCount << " Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test.";
+					ASSERT_EQ(trajVec[0].CumulativeReturn, trajVec[1].CumulativeReturn) << info << " PeriodCount" << trajVec[0].PeriodCount<< "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test.";
+					ASSERT_EQ(trajVec[0].PeriodCount, trajVec[1].PeriodCount) << info << " PeriodCount" << trajVec[0].PeriodCount << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test.";
 					
 					if (!SkipEqualityTests)
 					{
 						ASSERT_TRUE(mdp->StatesAreEqual(trajVec[0].GetState(), trajVec[1].GetState())) << info << "Discrepancy between original state and state after converting to and from VarGroup. MDP::State MDP::GetState(const DynaPlex::VarGroup& vars) const and DynaPlex::VarGroup MDP::State::ToVarGroup() const implemented correctly; are all state variables correctly taken into account? Set SkipStateSerializationTests to skip this test. ";
 					}
-
-
 					if (cat.IsAwaitEvent())
 					{
 						ASSERT_NO_THROW(
 							mdp->IncorporateEvent(trajVec);
-						) << info << "Did you correctly implement ModifyStateWithEvent  and GetEvent?";
+						) << info << " " << trajVec[0].PeriodCount << "Did you correctly implement ModifyStateWithEvent  and GetEvent?";
 					}
 					else if (cat.IsAwaitAction())
 					{
-						//std::cout << "test" << std::endl;
 						action_count++;
 						ASSERT_NO_THROW(
 							policy->SetAction(trajVec);
 						) << info << " Issue with policy. Did you correctly implement GetAction on policy " + policy->TypeIdentifier() + "?";
+						
+						ASSERT_EQ(trajVec[0].NextAction, trajVec[1].NextAction) << "nonequal actions for states that are supposed to be equal.";
+
 						ASSERT_NO_THROW(
 							mdp->IncorporateAction(trajVec)
 						) << info << "Did you correctly implement ModifyStateWithAction? ";

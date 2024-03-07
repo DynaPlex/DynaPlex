@@ -44,6 +44,8 @@ namespace DynaPlex
 
 	private:
 		std::vector<double> translatedPMF{};
+		std::vector<double> cumulativePMF{};
+		bool optimizedForSampling{ false };
 		int64_t min{ 0 };
 
 
@@ -153,8 +155,15 @@ namespace DynaPlex
 		DiscreteDist();
 
 		DiscreteDist(const DynaPlex::VarGroup& vars);
+		
+		/// creates an internal data structure that enables samples to be drawn much faster, especially when there are many potential values that this might take on.
+		void OptimizeForSampling();
+
 		/// Returns a sample of the rv, using the rng as random number generator. 
 		int64_t GetSample(DynaPlex::RNG& rng) const;
+
+		/// Returns a sample x of the rv|x>=minimum_value. Uses the rng as random number generator. 
+		int64_t GetConditionalSample(DynaPlex::RNG& rng,int64_t minimum_value) const;
 
 	};
 

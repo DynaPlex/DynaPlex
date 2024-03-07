@@ -40,7 +40,7 @@ namespace DynaPlex {
      
 
         /**
-         * Config may include max_event_count (default:3)
+         * Config may include max_period_count (default:3)
          * it may also include rng_seed (default:0).
          */
         DynaPlex::Utilities::Demonstrator GetDemonstrator(const VarGroup& config = VarGroup{});

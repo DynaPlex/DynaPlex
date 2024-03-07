@@ -11,9 +11,12 @@ set_target_properties(DP_${targetname} PROPERTIES
 )
 target_sources(DP_${targetname} PUBLIC ${headers} PRIVATE  ${sources})
 
+
 target_compile_definitions(DP_${targetname} PRIVATE DP_PYBIND_SUPPORT=1)
 
 target_include_directories(DP_${targetname} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+
 
 if(dynaplex_all_warnings)
 target_compile_options(DP_${targetname} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3>  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>)

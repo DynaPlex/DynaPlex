@@ -228,6 +228,10 @@ namespace DynaPlex
 		 */
 		virtual bool ProvidesEventProbs() const = 0;
 
+		/**
+		 * Returns the state category for this is state.
+		 */
+		virtual DynaPlex::StateCategory GetStateCategory(const DynaPlex::dp_State& dp_state) const = 0;
 
 		/**
 		 * Generates a policy specific to this MDP based on the provided VarGroup.

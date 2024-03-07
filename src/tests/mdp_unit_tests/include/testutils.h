@@ -26,8 +26,11 @@ namespace DynaPlex::Tests {
 		bool RelaxOnProgramFlow = false;
 		/// Skip tests related to state equality, when MDP does not support testing states for equality. 
 		bool SkipEqualityTests = false;
-		/// Skip tests related to serialization of states, e.g. when the MDP does not support State GetState(const VarGroup&) const;
+		/// Skip tests related to serialization of states
 		bool SkipStateSerializationTests = false;
+
+		bool VarGroupRepresentationNonUnique = false;
+
 		/// Skip tests related to the MDP always having only a single decision
 		bool SkipNoDecisionsTests = false;
 		/// If tests are slow, you can bring this number down.  

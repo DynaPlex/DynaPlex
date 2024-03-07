@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 #include "dynaplex/vargroup.h"
 
@@ -10,10 +9,9 @@ public:
     explicit SmallClass(const DynaPlex::VarGroup& vars);
     DynaPlex::VarGroup ToVarGroup() const;
 
-    SmallClass() {}
+    SmallClass() = default;
     void Print() const;
-
-    std::string Id;
+    std::string name;
     double Size;
 };
 

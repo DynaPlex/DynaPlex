@@ -43,7 +43,7 @@ namespace DynaPlex::Models {
 			config.Get("h", h);
 			config.Get("leadtime", leadtime);
 			config.Get("demand_dist",demand_dist);
-			
+			demand_dist.OptimizeForSampling();
 			//providing discount_factor is optional. 
 			if (config.HasKey("discount_factor"))
 				config.Get("discount_factor", discount_factor);

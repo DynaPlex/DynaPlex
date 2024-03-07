@@ -23,7 +23,7 @@ namespace DynaPlex::Erasure
 		static_assert(HasState<t_MDP>, "MDP must publicly define a nested type or using declaration for State");
 		static_assert(HasGetStaticInfo<t_MDP>, "MDP must publicly define GetStaticInfo() const returning DynaPlex::VarGroup.");
 		using t_State = typename t_MDP::State;
-		using t_Event = std::conditional_t<HasEvent<t_MDP>, typename t_MDP::Event, int64_t>;
+		using t_Event = typename ConditionalEvent<t_MDP, HasEvent<t_MDP>>::type;
 
 		static_assert(DynaPlex::Concepts::ConvertibleToVarGroup<t_State>, "MDP::State must define VarGroup ToVarGroup() const");
 
@@ -477,18 +477,28 @@ namespace DynaPlex::Erasure
 						traj.PeriodCount++;
 						traj.EffectiveDiscountFactor *= discount_factor;
 					}
-					if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG>)
+					if constexpr (HasModifyStateWithEvent<t_MDP, t_State, t_Event>)
 					{
-						t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(event_stream));
-						traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, Event) * traj.EffectiveDiscountFactor;
-					}
-					else if constexpr (HasGetStateDependentEvent<t_MDP, t_State, t_Event, DynaPlex::RNG>)
-					{
-						t_Event Event = mdp->GetEvent(t_state, traj.RNGProvider.GetEventRNG(event_stream));
-						traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, Event) * traj.EffectiveDiscountFactor;
+						if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG>)
+						{
+							t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(event_stream));
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, Event) * traj.EffectiveDiscountFactor;
+						}
+						else if constexpr (HasGetStateDependentEvent<t_MDP, t_State, t_Event, DynaPlex::RNG>)
+						{
+							t_Event Event = mdp->GetEvent(t_state, traj.RNGProvider.GetEventRNG(event_stream));
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, Event) * traj.EffectiveDiscountFactor;
+						}
+						else
+							throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define function GetEvent(DynaPlex::RNG&) returning MDP::Event. ");
 					}
 					else
-						throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define function GetEvent(DynaPlex::RNG&) returning MDP::Event. ");
+						if constexpr (HasModifyStateWithRNG<t_MDP, t_State, DynaPlex::RNG>)
+						{
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, traj.RNGProvider.GetEventRNG(event_stream)) * traj.EffectiveDiscountFactor;
+						}
+						else							
+							throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
 					traj.Category = mdp->GetStateCategory(t_state);
 
 					int64_t action_count;
@@ -545,7 +555,7 @@ namespace DynaPlex::Erasure
 			{
 				if (traj.Category.IsAwaitEvent())
 				{
-					auto& state = ToState(traj.GetState());
+					auto& t_state = ToState(traj.GetState());
 					auto event_stream = traj.Category.Index();
 					if (event_stream == 0)
 					{
@@ -557,22 +567,26 @@ namespace DynaPlex::Erasure
 						if constexpr (HasGetEvent<t_MDP, t_Event, DynaPlex::RNG>)
 						{
 							t_Event Event = mdp->GetEvent(traj.RNGProvider.GetEventRNG(event_stream));
-							traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, Event) * traj.EffectiveDiscountFactor;
 						}
 						else if constexpr (HasGetStateDependentEvent<t_MDP, t_State, t_Event, DynaPlex::RNG>)
 						{
-							t_Event Event = mdp->GetEvent(state, traj.RNGProvider.GetEventRNG(event_stream));
-							traj.CumulativeReturn += mdp->ModifyStateWithEvent(state, Event) * traj.EffectiveDiscountFactor;
+							t_Event Event = mdp->GetEvent(t_state, traj.RNGProvider.GetEventRNG(event_stream));
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, Event) * traj.EffectiveDiscountFactor;
 						}
 						else
 							throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define function GetEvent(DynaPlex::RNG&) returning MDP::Event. ");
 
 					}
 					else //if constexpr 
-						throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
+						if constexpr (HasModifyStateWithRNG<t_MDP, t_State, DynaPlex::RNG>)
+						{
+							traj.CumulativeReturn += mdp->ModifyStateWithEvent(t_state, traj.RNGProvider.GetEventRNG(event_stream)) * traj.EffectiveDiscountFactor;
+						}
+						else
+							throw DynaPlex::Error("MDP->IncorporateEvent: " + mdp_type_id + "\nMDP does not publicly define ModifyStateWithEvent(MDP::State&, const MDP::Event&) returning double.");
 
-
-					traj.Category = mdp->GetStateCategory(state);
+					traj.Category = mdp->GetStateCategory(t_state);
 					if (traj.Category.IsAwaitEvent())
 					{
 						EventsRemaining = true;
@@ -617,6 +631,14 @@ namespace DynaPlex::Erasure
 				traj.Category = mdp->GetStateCategory(t_state);
 			}
 		}
+
+
+		DynaPlex::StateCategory GetStateCategory(const DynaPlex::dp_State& dp_state) const override
+		{
+			auto& t_state = ToState(dp_state);
+			return mdp->GetStateCategory(t_state);
+		}
+
 
 		double Objective(const DynaPlex::dp_State& state) const override
 		{//currently, only minimization is supported. 

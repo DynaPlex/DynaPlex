@@ -100,8 +100,8 @@ namespace DynaPlex::Tests {
 		different_order.Add("q", 3.1);
 		different_order.Add("xlist", DynaPlex::VarGroup::DoubleVec{ 1.2,1.3 });
 		different_order.Add("s", "string");
-		//note that if vars are added in different order, they are no longer considered equal. 
-		EXPECT_NE(vars_alt, different_order);
+		//note that if vars are added in different order, they are still considered equal. 
+		EXPECT_EQ(vars_alt, different_order);
 
 		vars_alt.SortTopLevel();
 		different_order.SortTopLevel();

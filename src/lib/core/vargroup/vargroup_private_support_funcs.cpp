@@ -248,7 +248,7 @@ namespace DynaPlex::VarGroupHelpers {
     }
 
     void SortOrderedJson(ordered_json& oj) {
-        std::vector<nlohmann::ordered_json::iterator> iterators;
+     /*   std::vector<ordered_json::iterator> iterators;
         for (auto it = oj.begin(); it != oj.end(); ++it) {
             iterators.push_back(it);
         }
@@ -263,7 +263,7 @@ namespace DynaPlex::VarGroupHelpers {
             sorted[it.key()] = *it;
         }
 
-        oj.swap(sorted);
+        oj.swap(sorted);*/
     }
 
  

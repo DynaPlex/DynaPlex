@@ -4,7 +4,7 @@ DynaPlex extension for Python
 from __future__ import annotations
 from dp import save_policy
 import typing
-__all__ = ['MDP', 'Policy', 'PolicyComparer', 'dcl', 'filepath', 'get_comparer', 'get_dcl', 'get_gym_emulator', 'get_mdp', 'get_sample_generator', 'gym_emulator', 'io_path', 'list_mdps', 'load_policy', 'sample_generator', 'save_policy']
+__all__ = ['MDP', 'Policy', 'PolicyComparer', 'dcl', 'demonstrator', 'filepath', 'get_comparer', 'get_dcl', 'get_demonstrator', 'get_gym_emulator', 'get_mdp', 'get_sample_generator', 'gym_emulator', 'io_path', 'list_mdps', 'load_policy', 'sample_generator', 'save_policy']
 class MDP:
     def discount_factor(self) -> float:
         ...
@@ -63,6 +63,11 @@ class dcl:
         ...
     def train_policy(self) -> None:
         ...
+class demonstrator:
+    def get_trace(self, mdp: MDP, policy: Policy = None) -> list[dict]:
+        """
+        gets a trace for demonstration and rendering purposes.
+        """
 class gym_emulator:
     def action_space_size(self) -> int:
         ...
@@ -97,9 +102,13 @@ def get_dcl(mdp: MDP, policy: Policy = None, **kwargs) -> dcl:
     """
     Returns a class that can be used to run dcl algorithm based on mdp, policy and keyword arguments.
     """
+def get_demonstrator(**kwargs) -> demonstrator:
+    """
+    Gets comparer based on keyword arguments; may provide max_period_count and rng_seed. 
+    """
 def get_gym_emulator(mdp: MDP, **kwargs) -> gym_emulator:
     """
-    Gets comparer based on MDP and keyword arguments.
+    Gets gym emulator based on MDP; also accepts key word arguments.
     """
 def get_mdp(**kwargs) -> MDP:
     """

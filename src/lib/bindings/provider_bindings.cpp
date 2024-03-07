@@ -3,6 +3,7 @@
 #include <pybind11/pybind11.h>
 #include "gymemulator.h"
 #include "dynaplex/samplegenerator.h"
+#include "dynaplex/demonstrator.h"
 
 namespace DynaPlex {
 
@@ -62,6 +63,11 @@ namespace DynaPlex {
 		return system.IOLocation();
 	}
 
+	DynaPlex::Utilities::Demonstrator GetDemonstrator(py::kwargs& kwargs)
+	{
+		return DynaPlex::DynaPlexProvider::Get().GetDemonstrator(kwargs);
+	}
+
 	DynaPlex::Utilities::PolicyComparer GetComparer(DynaPlex::MDP mdp, py::kwargs& kwargs)
 	{
 		return DynaPlex::DynaPlexProvider::Get().GetPolicyComparer(mdp, kwargs);
@@ -83,6 +89,7 @@ void define_provider_bindings(pybind11::module_& m) {
 	m.def("load_policy", &DynaPlex::LoadPolicy, py::arg("mdp"), py::arg("path"), "loads policy for mdp from path");
 	m.def("get_mdp", &DynaPlex::GetMDP, "Gets MDP based on keyword arguments.");
 	m.def("get_comparer", &DynaPlex::GetComparer, py::arg("mdp"), "Gets comparer based on MDP and keyword arguments.");
+	m.def("get_demonstrator", &DynaPlex::GetDemonstrator, "Gets demonstrator based on keyword arguments; may provide max_period_count and rng_seed. ");
 	m.def("io_path", &DynaPlex::IO_Path, "Gets the path of the dynaplex IO directory.");
 	m.def("get_gym_emulator", &DynaPlex::GetGymEmulator, py::arg("mdp"), "Gets gym emulator based on MDP; also accepts key word arguments.");
 	m.def("get_dcl", &DynaPlex::GetDCL,

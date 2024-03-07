@@ -12,7 +12,7 @@
 
 namespace DynaPlex {
 
-	using ordered_json = nlohmann::ordered_json;
+	using ordered_json = nlohmann::json;
 	class VarGroup::Impl {
 	public:
 
@@ -258,6 +258,21 @@ namespace DynaPlex {
 		}
 	};
 
+
+	std::vector<std::string> VarGroup::Keys() const {
+		//check that is currently not needed, but we might refactor at some point so it is good to be sure.
+		std::vector<std::string> keys;
+		if (pImpl->data.is_null())
+			return keys;
+		if (!pImpl->data.is_object())
+			throw DynaPlex::Error("VarGroup::Keys - root item is not an object.");
+		keys.reserve(pImpl->data.size());
+		for (const auto& item : pImpl->data.items()) {
+			keys.push_back(item.key());
+		}
+		return keys;
+	}
+
 	VarGroup::VarGroup() : pImpl(std::make_unique<Impl>()) {}
 
 
@@ -458,6 +473,7 @@ namespace DynaPlex {
 		return id;
 	}
 
+
 	void VarGroup::SaveToFile(const std::string& file_path,const int indent) const {
 		std::ofstream file(file_path);
 		if (!file.is_open()) {
@@ -531,7 +547,6 @@ namespace DynaPlex {
 	bool VarGroup::operator!=(const VarGroup& other) const {
 		return !(this->operator==(other));
 	}
-
 
 	void VarGroup::SortTopLevel()
 	{

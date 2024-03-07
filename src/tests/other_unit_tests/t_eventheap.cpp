@@ -19,6 +19,28 @@ struct Event {
 
 };
 
+TEST(EventHeapTest, TestResortFunctionality) {
+    DynaPlex::EventHeap<Event> heap{};
+
+    // Push events into the heap.
+    heap.push(Event(1.5, 42)); // This will be modified.
+    heap.push(Event(0.8, 33));
+    heap.push(Event(2.3, 55));
+
+    // Directly modify the first element to simulate an external change.
+    // Since `first` returns a reference, we can modify it directly.
+    auto& topEvent = heap.first();
+    topEvent.time = 3.5; // Change the time making it no longer the smallest.
+
+    // Now, the heap order is incorrect. Let's resort it.
+    heap.resort();
+
+    // Verify the heap order is restored by checking the new top event.
+    const auto& newTopEvent = heap.first();
+    EXPECT_DOUBLE_EQ(newTopEvent.time, 1.5); // The smallest time after resorting.
+    EXPECT_EQ(newTopEvent.payload, 42); // Payload should match the event with the smallest time.
+}
+
 namespace DynaPlex::Tests {
     TEST(EventHeapTest, TestPushAndTop) {
       
@@ -85,6 +107,10 @@ namespace DynaPlex::Tests {
         for (const auto& event : heap) {
             total_time += event.time;
         }
+
+        
+
+
         EXPECT_DOUBLE_EQ(total_time, 1.5 + 0.8 + 2.3);
     }
     
