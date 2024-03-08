@@ -15,7 +15,7 @@ project = "DynaPlex"
 authors = "DynaPlex contributors"
 copyright = f"2023 - {now.year}, {authors}"
 
-with open("../../pyproject.toml", "rb") as fh:
+with open("../pyproject.toml", "rb") as fh:
     pyproj = tomli.load(fh)
 
 # -- API documentation
