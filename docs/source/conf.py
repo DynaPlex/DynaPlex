@@ -7,7 +7,7 @@ import pprint
 import tomli
 
 # -- Project information
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../'))
 
 now = datetime.date.today()
 
