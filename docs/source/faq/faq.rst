@@ -57,3 +57,12 @@ Invalid Discount Factor Error:
    Solutions:
 
    - Make sure you've read the ``discount_factor`` correctly from the provided ``VarGroup`` in the ``MDP::MDP(const VarGroup& config)`` constructor.
+
+JSON config files not copied when changed:
+------------------------------------------
+
+If you executable depends on JSON config files, you might want them to be copied to the input/output folder, especially when you have made adaptations to them. You can add this line to the end of the CMakeLists.txt in the folder of your executable:
+
+    .. code-block:: bash
+
+    add_dependencies(${targetname} DP_copy_model_config_files)
