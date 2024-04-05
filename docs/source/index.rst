@@ -36,6 +36,7 @@ Contents
    getting_started/adding_model
    getting_started/testing
    getting_started/adding_executable
+   getting_started/evaluate
 
 .. toctree::
    :maxdepth: 0
