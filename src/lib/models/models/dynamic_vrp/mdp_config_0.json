@@ -1,0 +1,10 @@
+{
+	"id": "dynamic_vrp",
+	"GridSize": 22,
+	"NumVehicles": 5,
+	"DepotLoc": 0,
+	"VehicleCap": 20,
+	"dailycustomerProb": 1.0,
+	"holdingCosts": 5.0,
+	"rejectionCosts": 50.0
+}

@@ -3,6 +3,9 @@
 
 namespace DynaPlex::Models {
 	//forward declarations of the registration functions of MDPs:
+	namespace dynamic_vrp {
+		void Register(DynaPlex::Registry&);
+	}
 	namespace lost_sales {
 		void Register(DynaPlex::Registry&);
 	}
@@ -16,6 +19,7 @@ namespace DynaPlex::Models {
 		void Register(DynaPlex::Registry&);
 	}
 	void RegistrationManager::RegisterAll(DynaPlex::Registry& registry) {
+		dynamic_vrp::Register(registry);
 		lost_sales::Register(registry);
 		bin_packing::Register(registry);
 		order_picking::Register(registry);
