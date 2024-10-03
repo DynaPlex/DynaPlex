@@ -313,8 +313,9 @@ namespace DynaPlex::Models {
 				for (int64_t i = 0; i <= leadtimeCM_[state.Inst] + 5; ++i) { state.cmPart.orderQuantities.push_back(0); }
 				for (int64_t i = 0; i <= leadtimeAM_[state.Inst] + 5; ++i) { state.amPart.orderQuantities.push_back(0); }
 			}
-			else//when sampling params
-			{
+			else//when sampling params (EPL)
+			{//drawn from uniform distribtuon with custom values set by ourselves from the EPL procedure
+
 				state.Inst = 1000000;//to ensure an error is thrown in case of logic error
 				state.ref_meanFailureCM = three_probs.GetSample(rng);
 				state.meanFailureCM = meanFailureCM_[state.ref_meanFailureCM];
@@ -610,7 +611,7 @@ namespace DynaPlex::Models {
 				}//end Instances loop
 			}
 			else//sample parameters, rest is determined in initial state function (EPL)
-			{
+			{//the value sbelow are examples, we use the EPL procedure detailed in the paper (external code) to set these
 				InstalledBase_ = { 1 };
 				meanFailureCM_ = { 0.001, 0.025, 0.01 };
 				leadtimeCM_ = { 60, 120, 240 };

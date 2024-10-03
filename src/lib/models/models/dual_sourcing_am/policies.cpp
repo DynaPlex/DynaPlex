@@ -66,6 +66,7 @@ namespace DynaPlex::Models {
 		SingleIndexPolicy::SingleIndexPolicy(std::shared_ptr<const MDP> mdp, const VarGroup& config)
 			:mdp{ mdp }
 		{
+			//note that in the paper we do not report single index results, as double index is state-of-the-art
 			config.GetOrDefault("delta", delta, 0);
 			config.GetOrDefault("orderupto_cm", orderupto_cm, 0);
 		}
