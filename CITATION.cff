@@ -17,3 +17,6 @@ title: "DynaPlex"
 repository-code: "https://github.com/DynaPlex/DynaPlex"
 url: "https://github.com/DynaPlex/DynaPlex"
 date-released: 2023-01-01
+identifiers:
+  - type: "software"
+    value: "DynaPlex"
