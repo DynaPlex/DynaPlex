@@ -72,7 +72,16 @@ When you find a bug: open a new issue in the repository, please include a short,
 
 ## Citing
 
-To do.
+When using the software, please cite as follows:
+
+```
+@software{DynaPlex,
+  author = {Akkerman, Fabian and Begnardi, Luca and {Lo Bianco}, Riccardo and Temizoz, Tarkan and Mes, Martijn and {van Jaarsveld}, Willem},
+  title = {{DynaPlex}},
+  url = {https://github.com/DynaPlex/DynaPlex},
+  year = {2023}
+}
+```
 
 ## Algorithms
 
