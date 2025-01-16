@@ -5,6 +5,45 @@ As soons as you implemented your MDP, you might want to evaluate the working of 
 
 Possibly, you want to evaluate the policies in more detail. Below we probide two examples. First, we show how you can simulate a horizon and store statistics during this horizon. Next, we show how you can evaluate the actions taken by the policy given a customized input state. Both can be used to report statistics or construct graphs.
 
+Demonstrator
+------------
+
+We can use the ``Demonstrator`` to go over a trajectory of states with a given policy and print out the complete trace of states, below is an example which you can add to your executable.
+
+.. code-block:: cpp
+
+	try {
+		auto& dp = DynaPlexProvider::Get();
+		//update to name of your MDP.
+		auto name = "lost_sales";
+		//get the path to the configuration file for the MDP.
+		auto path_to_json = dp.FilePath({ "mdp_config_examples", name },
+				"mdp_config_0.json");
+		//load the configuration file for the MDP.
+		auto config = VarGroup::LoadFromFile(path_to_json);
+
+		//create an MDP from the configuration file.
+		DynaPlex::MDP mdp = dp.GetMDP(config);
+		//get some policy, either the random built-in policy or a policy defined by you
+		//for this MDP
+		auto policy = mdp->GetPolicy("random");
+
+		//get a demonstrator:
+		auto demonstrator = dp.GetDemonstrator({{ "max_period_count", 10 }});
+
+		auto trace = demonstrator.GetTrace(mdp, policy);
+		//iterator over the trace, printing each element:
+		for (auto& t : trace) {
+			std::cout << t.Dump(3) << std::endl;
+			}
+                }
+        catch (const std::exception& e)
+        {
+		std::cout << "exception: " << e.what() << std::endl;
+        }
+        return 0;
+
+
 Simulate Trajectory
 -------------------
 
