@@ -6,11 +6,11 @@ After implementing your MDP in C++, it s possible to interact with DynaPlex thro
 
 **1. Virtual environment creation**
 
-First, in your Python IDE or in your terminal set up a Conda environment for compiling the Python bindings and running Python scripts that load those bindings:
+First, in your Python IDE or in your terminal set up a Conda environment for compiling the Python bindings and running Python scripts that load those bindings. We provide an environment.yml file (in the DynaPlex/python folder) that enables the creation of a python/anaconda environment (envDP) that has all packages for compiling the dynaplex python binding:
 
 .. code-block:: bash
 
-   conda envDP create -f path/to/environment.yml
+   conda env create -f path/to/environment.yml
 
 .. note::
 	For this to work, Conda needs to be available. On Snellius, it can be loaded via the module environments, something like:
@@ -19,9 +19,6 @@ First, in your Python IDE or in your terminal set up a Conda environment for com
 
    module load 2022
    module load  ...
-
-.. hint::
-	An environment file ``DynaPlex/python/environment.yml`` is provided.
 
 **2. Adapt your CMakeUserPresets.json**
 
@@ -37,9 +34,9 @@ In your Python IDE or terminal, activate your virtual environment
 
 .. code-block:: bash
 
-	conda activate EnvDP
+	conda activate envDP
 
-**5. Activate Python executable**
+**5. Install DynaPlex in the envDP environment**
 
 In your Python IDE or terminal, navigate to the DynaPlex/python folder. Next, run:
 
