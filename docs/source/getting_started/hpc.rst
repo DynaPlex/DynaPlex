@@ -51,9 +51,7 @@ After implementing your model, you may want to scale up your training procedure 
 
         cmake --build out/LinRel --target sometarget -j12
 
-   - Building DynaPlex for the first time may take a long time. Therefore, we advice to request a node and build on this node, which allows to paralellize the build over more threads and will speedup the building process signficantly.
-
-    First, request a node:
+   - Building DynaPlex for the first time may take a long time. Therefore, we advice to request a node and build on this node, which allows to paralellize the build over more threads and will speedup the building process signficantly. First, request a node:
 
     .. code-block:: bash
     
