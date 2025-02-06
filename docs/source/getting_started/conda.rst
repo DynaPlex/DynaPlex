@@ -47,7 +47,8 @@ In your Python IDE or terminal, navigate to the python folder. Next, run:
 
 	pip install -e .
 
-Note: do not forget the dot (.) at the end.
+.. note:: 
+	Do not forget the dot (.) at the end of this command.
 
 After this step, you should be able to import DynaPlex as a library in Python:
 
