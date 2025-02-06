@@ -37,6 +37,7 @@ Contents
    getting_started/testing
    getting_started/adding_executable
    getting_started/evaluate
+   getting_started/hpc
 
 .. toctree::
    :maxdepth: 0
