@@ -21,7 +21,7 @@ First, in your Python IDE or in your terminal set up a Conda environment for com
    module load  ...
 
 .. hint::
-	An environment file ``python/environment.yml`` is provided.
+	An environment file ``DynaPlex/python/environment.yml`` is provided.
 
 **2. Adapt your CMakeUserPresets.json**
 
@@ -41,7 +41,7 @@ In your Python IDE or terminal, activate your virtual environment
 
 **5. Activate Python executable**
 
-In your Python IDE or terminal, navigate to the python folder. Next, run:
+In your Python IDE or terminal, navigate to the DynaPlex/python folder. Next, run:
 
 .. code-block:: bash
 
