@@ -7,6 +7,11 @@
 
 namespace DynaPlex {
 
+	DynaPlex::Trajectory GetTrajectory(int64_t external_index)
+	{
+		return DynaPlex::Trajectory(external_index);
+	}
+
 	std::shared_ptr<DynaPlex::GymEmulator> GetGymEmulator(DynaPlex::MDP mdp, py::kwargs& kwargs)
 	{
 		auto vars = DynaPlex::VarGroup(kwargs);
@@ -85,6 +90,7 @@ namespace DynaPlex {
 
 
 void define_provider_bindings(pybind11::module_& m) {
+	m.def("get_trajectory", &DynaPlex::GetTrajectory, "gets trajectory", py::arg("externalIndex") = 0);
 	m.def("list_mdps", &DynaPlex::ListMDPs, "Lists available MDPs");
 	m.def("load_policy", &DynaPlex::LoadPolicy, py::arg("mdp"), py::arg("path"), "loads policy for mdp from path");
 	m.def("get_mdp", &DynaPlex::GetMDP, "Gets MDP based on keyword arguments.");

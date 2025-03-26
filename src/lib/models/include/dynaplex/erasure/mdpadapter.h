@@ -29,7 +29,9 @@ namespace DynaPlex::Erasure
 
 		std::string unique_id;
 		int64_t mdp_int_hash;
+	public:
 		std::shared_ptr<const t_MDP> mdp;
+	private:
 		std::string mdp_type_id;
 		PolicyRegistry<t_MDP> policy_registry;
 		ActionRangeProvider<t_MDP> provider;
@@ -618,6 +620,49 @@ namespace DynaPlex::Erasure
 			else
 				throw DynaPlex::Error("MDP->InitiateState: " + mdp_type_id + "\nMDP does not publicly define GetInitialState() const or GetInitialState(DynaPlex::RNG&) const returning MDP::State");
 		}
+
+		virtual DynaPlex::Trajectory DeepCopy(DynaPlex::Trajectory& traj) const override
+		{
+			DynaPlex::Trajectory copy{};
+			if(traj.HasState())
+				copy.Reset(std::move(traj.GetState()->Clone()));
+			copy.Category = traj.Category;
+			copy.CumulativeReturn = traj.CumulativeReturn;
+			copy.EffectiveDiscountFactor = traj.EffectiveDiscountFactor;
+			copy.ExternalIndex = traj.ExternalIndex;
+			copy.NextAction = traj.NextAction;
+			copy.PeriodCount = traj.PeriodCount;
+			copy.RNGProvider = traj.RNGProvider;
+			return std::move(copy);
+		}
+
+
+		virtual DynaPlex::Trajectory DeepCopyAndReinitiate(DynaPlex::Trajectory& traj) const override
+		{
+			DynaPlex::Trajectory copy{};
+			if (traj.HasState())
+				copy.Reset(std::move(traj.GetState()->Clone()));
+			copy.Category = traj.Category;
+			copy.CumulativeReturn = traj.CumulativeReturn;
+			copy.EffectiveDiscountFactor = traj.EffectiveDiscountFactor;
+			copy.ExternalIndex = traj.ExternalIndex;
+			copy.NextAction = traj.NextAction;
+			copy.PeriodCount = traj.PeriodCount;
+			copy.RNGProvider = traj.RNGProvider;
+			if constexpr (HasResetHiddenStateVariables<t_MDP, t_State, DynaPlex::RNG>)
+			{
+				if (copy.HasState())
+				{
+					auto& t_state = ToState(traj.GetState());
+					mdp->ResetHiddenStateVariables(t_state, traj.RNGProvider.GetInitiationRNG());
+					traj.Category = mdp->GetStateCategory(t_state);
+				}
+			}
+			return std::move(copy);
+		}
+
+
+
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories, const DynaPlex::dp_State& state) const override
 		{
 			for (DynaPlex::Trajectory& traj : trajectories)

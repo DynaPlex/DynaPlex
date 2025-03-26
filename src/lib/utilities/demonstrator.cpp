@@ -22,6 +22,14 @@ namespace DynaPlex :: Utilities{
 	{
 		config.GetOrDefault("max_period_count", max_period_count, 3);
 		config.GetOrDefault("rng_seed", rng_seed, 11112014);
+		if (config.HasKey("restricted_statecategory"))
+		{
+			restricted_statecategory = true;
+			config.Get("restricted_statecategory", cat);
+		}
+		else
+			restricted_statecategory = false;
+
 		if (rng_seed < 0)
 			throw DynaPlex::Error("Demonstrator :: Invalid rng_seed - should be non-negative");		
 	}
@@ -70,8 +78,8 @@ namespace DynaPlex :: Utilities{
 				final_reached = true;
 				element.action = 0;
 			}
-
-			trace.push_back(std::move(element)); 
+			if(!restricted_statecategory || element.cat==this->cat)
+				trace.push_back(std::move(element)); 
 		}
 
 		return trace;

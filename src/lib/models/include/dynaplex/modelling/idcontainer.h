@@ -12,7 +12,7 @@ namespace DynaPlex {
     class IdContainer {
     private:    
        std::vector<std::optional<std::pair<int64_t, T>>> backstore;
-        size_t first_empty_id = 1;
+        size_t first_empty_id = 0;
         size_t num_items = 0;
 
         void updateFirstEmptyIndex() {
@@ -36,8 +36,8 @@ namespace DynaPlex {
                 if (id >= backstore.size()) {
                     backstore.resize(id + 1);
                 }
-                if (id <= 0)
-                    throw DynaPlex::Error("IdContainer:: item key/index should be >0.");
+                if (id < 0)
+                    throw DynaPlex::Error("IdContainer:: item key/index should be >=0.");
 
                 DynaPlex::VarGroup vg;
                 varGroup.Get(key, vg);
@@ -69,7 +69,7 @@ namespace DynaPlex {
             if (id < 0 || id >= static_cast<int64_t>(backstore.size()) || !backstore[id]) {
                 throw Error("IdContainer::GetItem: Invalid ID or item does not exist");
             }
-            return *(backstore[id].second);
+            return backstore[id]->second;
         }
 
         T& operator[](int64_t id) {
@@ -80,7 +80,7 @@ namespace DynaPlex {
         }
 
         void Delete(int64_t id) {
-            if (id >0 && id < backstore.size() && backstore[id]) {
+            if (id >=0 && id < backstore.size() && backstore[id]) {
                 backstore[id] = std::nullopt;
                 num_items--;
                 if (id < first_empty_id) {

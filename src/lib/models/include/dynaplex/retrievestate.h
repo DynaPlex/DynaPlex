@@ -15,7 +15,7 @@ namespace DynaPlex {
             return adapter->state;
         }
         else {
-            // If cast fails, handle the error (throwing an exception here)
+            // If cast fails, throw exception
             throw DynaPlex::Error("RetrieveState: Dynamic cast failed, dp_state does not point to a StateAdapter<t_State>. You are trying to convert to a state that is not contained in dp_State.");
         }
     }

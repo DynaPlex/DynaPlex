@@ -42,6 +42,8 @@ namespace DynaPlex::Utilities {
 	private:
 		int64_t max_period_count;
 		int64_t rng_seed;
+		bool restricted_statecategory{ false };
+		DynaPlex::StateCategory cat;
 		System system;
 
 

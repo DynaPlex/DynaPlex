@@ -1,0 +1,74 @@
+{
+  "id": "collaborative_picking",
+  "picker_graph": {
+    "format": "grid",
+    "rows": [
+      "R |R |R |RD|R |R |R |R |R |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "UR|R |R |R |R |R |UR|R |R |  "
+    ],
+    "type": "undirected"
+  },
+  "vehicle_graph": {
+    "format": "grid",
+    "rows": [
+      "R |R |R |RD|R |R |R |R |R |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "U |  |  |D |  |  |U |  |  |D ",
+      "UR|R |R |R |R |R |UR|R |R |  "
+    ],
+    "type": "directed"
+  },
+  "timestep_delta":5,
+  "vehicle_dispatch_rate": 0.05,
+  "num_pickers": 2,
+  "vehicle_travel_time": {
+    "type": "constant",
+    "value": 5
+  },
+  "picker_travel_time": {
+    "type": "constant",
+    "value": 5
+  },
+  "pick_time": {
+    "type": "constant",
+    "value": 3
+  },
+  "vehicle_entrance": [ 7, 0 ],
+  "vehicle_exit": [ 7, 9 ],
+  "pick_locations": [
+ {"coords": [ 1 , 1 ],"prob": 0.1, "vehicle_loc": [-1]},
+ {"coords": [ 2 , 1 ],"prob": 0.1, "vehicle_loc": [-1] },
+ {"coords": [ 3 , 1 ],"prob": 0.1, "vehicle_loc": [-1] },
+ {"coords": [ 4 , 1 ],"prob": 0.1, "vehicle_loc": [-1] },
+ {"coords": [ 5 , 1 ],"prob": 0.1, "vehicle_loc": [-1] },
+ {"coords": [ 6 , 1 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 1 , 4 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 2 , 4 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 3 , 4 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 4 , 4 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 5 , 4 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 6 , 4 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 1 , 7 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 2 , 7 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 3 , 7 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 4 , 7 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 5 , 7 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 6 , 7 ],"prob": 0.1 , "vehicle_loc": [-1]},
+ {"coords": [ 1 , 8 ],"prob": 0.1 , "vehicle_loc": [1]},
+ {"coords": [ 2 , 8 ],"prob": 0.1 , "vehicle_loc": [1]},
+ {"coords": [ 3 , 8 ],"prob": 0.1 , "vehicle_loc": [1]},
+ {"coords": [ 4 , 8 ],"prob": 0.1 , "vehicle_loc": [1]},
+ {"coords": [ 5 , 8 ],"prob": 0.1 , "vehicle_loc": [1]},
+ {"coords": [ 6 , 8 ],"prob": 0.1, "vehicle_loc": [1]}
+  ]
+}

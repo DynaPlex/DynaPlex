@@ -1,0 +1,431 @@
+{
+  "id": "collaborative_picking",
+  "picker_graph": {
+    "format": "grid",
+    "rows": [
+      "|R  |R  |R  |R  |RD |RD |R  |R  |R  |R  |R  |R  |RD |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|UR |U  |   |   |DR |D  |   |   |UR |U  |   |   |DR |D  |",
+      "|URD|URD|RD |RD |RD |RD |RD |RD |URD|URD|RD |RD |RD |D  |",
+      "|  D|L D|L D|L D|L D|L D|L D|L D|L D|L D|L D|L D|L D|L D|",
+      "|   |   |   |   |   |   |   |   |   |   |   |   |   |   |"
+    ],
+    "type": "undirected"
+  },
+  "vehicle_graph": {
+    "format": "grid",
+    "rows": [
+      "|R  |R  |R  |R  |RD |RD |R  |R  |R  |R  |R  |R  |RD |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|U  |U  |   |   |D  |D  |   |   |U  |U  |   |   |D  |D  |",
+      "|UR |UR |R  |R  |R  |R  |R  |R  |UR |UR |R  |R  |RD |D  |",
+      "| UD|LUD|L D|L D|L D|L D|L D|L D|L D|L D|L D|L D|L D|L D|",
+      "|   |   |   |   |   |   |   |   |   |   |   |   |   |   |"
+    ],
+    "type": "directed"
+  },
+  "timestep_delta": 5,
+  "num_pickers": 4,
+  "num_vehicles": 12,
+  "vehicle_travel_time": {
+    "type": "constant",
+    "value": 5
+  },
+  "vehicle_vacate_node_time": {
+    "type": "constant",
+    "value" : 5
+  },
+  "picker_travel_time": {
+    "type": "constant",
+    "value": 5
+  },
+  "pick_time": {
+    "type": "constant",
+    "value": 6
+  },
+  "drop_off_time": {
+    "type": "geometric",
+    "mean":  120
+  },
+  "first_pick_location": {
+   "coords": [ 9, 1 ]
+  },
+  "truck_docks": [
+    {
+      "coords": [ 11, 1 ]
+    },
+    {
+      "coords": [ 11, 2 ]
+    },
+    {
+      "coords": [ 11, 3 ]
+    },
+    {
+      "coords": [ 11, 4 ]
+    },
+    {
+      "coords": [ 11, 5 ]
+    },
+    {
+      "coords": [ 11, 6 ]
+    },
+    {
+      "coords": [ 11, 7 ]
+    },
+    {
+      "coords": [ 11, 8 ]
+    },
+    {
+      "coords": [ 11, 9 ]
+    },
+    {
+      "coords": [ 11, 10 ]
+    },
+    {
+      "coords": [ 11, 11 ]
+    },
+    {
+      "coords": [ 11, 12 ]
+    },
+    {
+      "coords": [ 11, 13 ]
+    },
+    {
+      "coords": [ 11, 14 ]
+    }
+  ],
+    "pick_locations": [
+      {
+        "coords": [ 1, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 2, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 3, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 4, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 5, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 6, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 7, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 8, 3 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 1, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 2, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 3, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 4, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 5, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 6, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 7, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 8, 7 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 1, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 2, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 3, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 4, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 5, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 6, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 7, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 8, 11 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 1, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 2, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 3, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 4, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 5, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 6, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 7, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 8, 15 ],
+        "prob": 0.1,
+        "vehicle_loc": [ -1, -2 ]
+      },
+      {
+        "coords": [ 1, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 2, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 3, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 4, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 5, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 6, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 7, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 8, 0 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 1, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 2, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 3, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 4, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 5, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 6, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 7, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 8, 4 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 1, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 2, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 3, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 4, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 5, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 6, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 7, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 8, 8 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 1, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 2, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 3, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 4, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 5, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 6, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 7, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      },
+      {
+        "coords": [ 8, 12 ],
+        "prob": 0.1,
+        "vehicle_loc": [ 1, 2 ]
+      }
+    ]
+  }

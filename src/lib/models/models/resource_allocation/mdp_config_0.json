@@ -1,0 +1,23 @@
+{
+  "id": "resource_allocation",
+  "task_types": [
+    {
+      "key": "1_1",
+      "arrival_rate": 0.01,
+      "resource_options": {
+        "A": {
+          "duration_dist": {
+            "type": "geometric",
+            "mean": 50.00
+          }
+        }
+      }
+    }
+  ],
+  "resource_types": [
+    {
+      "key": "A",
+      "number_available": 1
+    }
+  ]
+}

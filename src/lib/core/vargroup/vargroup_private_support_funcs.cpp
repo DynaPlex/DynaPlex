@@ -178,6 +178,9 @@ namespace DynaPlex::VarGroupHelpers {
                     }
                     else {
                         array_type = element.type();
+                        if (element.is_null()) {
+                            array_type = ordered_json::value_t::object;
+						}
                     }
 
                     if (element.is_boolean())
@@ -197,6 +200,7 @@ namespace DynaPlex::VarGroupHelpers {
                     }
                     else {
                         element_type = element.type();
+                        element_type = element.is_null() ? ordered_json::value_t::object : element_type;
                     }
 
                     if (array_type != element_type) {

@@ -1,0 +1,36 @@
+{
+  "id": "collaborative_picking",
+  "num_isles": 8,
+  "isle_length": 25,
+  "average_picks_per_run": 20.0,
+  "timestep_delta": 20,
+  "idling_time": 10,
+  "deadlock_check_time": 100,
+  "startup_duration": 6000,
+  "num_pickers": 12,
+  "num_vehicles": 36,
+  "vehicle_travel_time": {
+    "type": "adan_eenige_resing",
+    "mean": 8,
+    "stdev": 2
+  },
+  "vehicle_vacate_node_time": {
+    "type": "constant",
+    "value": 30
+  },
+  "picker_travel_time": {
+    "type": "adan_eenige_resing",
+    "mean": 18,
+    "stdev": 4
+
+  },
+  "pick_time": {
+    "type": "adan_eenige_resing",
+    "mean": 350,
+    "stdev": 50
+  },
+  "drop_off_time": {
+    "type": "geometric",
+    "mean": 500
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "resource_allocation",
+  "task_types": [
+    {
+      "key": "1_1",
+      "arrival_rate": 0.01,
+      "resource_options": {
+        "A": {
+          "duration_dist": {
+            "type": "geometric",
+            "mean": 100.0
+          }
+        }
+      },
+      "next_tasks": {
+        "1_2": {
+          "probability": 0.7
+        }
+      }
+    },
+    {
+      "key": "1_2",
+      "resource_options": {
+        "B": {
+          "duration_dist": {
+            "type": "geometric",
+            "mean": 95.0
+          }
+        }
+      }
+    },
+    {
+      "key": "2_1",
+      "arrival_rate": 0.01,
+      "resource_options": {
+        "B": {
+          "duration_dist": {
+            "type": "geometric",
+            "mean": 100.0
+          }
+        }
+      },
+      "next_tasks": {
+        "2_2": {
+          "probability": 0.7
+        }
+      }
+    },
+    {
+      "key": "2_2",
+      "resource_options": {
+        "A": {
+          "duration_dist": {
+            "type": "geometric",
+            "mean": 95.0
+          }
+        }
+      }
+    }
+  ],
+  "resource_types": [
+    {
+      "key": "A",
+      "number_available": 2
+    },
+    {
+      "key": "B",
+      "number_available": 2
+    }
+  ]
+}

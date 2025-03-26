@@ -211,10 +211,20 @@ namespace DynaPlex
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories) const = 0;
 		/**
-		 * Sets the states in the trajectories to a specific state value. 
+		 * Sets the states in the trajectories to a specific state value, while reinitiating any hidden state variables. 
 		 * Updates the Category in the trajectory, and re-initiates PeriodCount, CumulativeReturn, and EffectiveDiscountFactor.
 		 */
 		virtual void InitiateState(std::span<DynaPlex::Trajectory> trajectories,const DynaPlex::dp_State& state) const = 0;
+
+		/**
+		 * Returns a deep copy of the trajectory, copying all trajectory variables and cloning the underlying state.
+		 */
+		virtual DynaPlex::Trajectory DeepCopy(DynaPlex::Trajectory& traj) const = 0;
+
+		/**
+		 * Returns a deep copy of the trajectory, copying all trajectory variables and cloning the underlying state, while reinitiating any hidden state variables using the initiation RNG.
+		 */
+		virtual DynaPlex::Trajectory DeepCopyAndReinitiate(DynaPlex::Trajectory& traj) const = 0;
 
 		/**
 		 * Appends all possible transitions from a certain state that awaits an event to the transitions parameter.

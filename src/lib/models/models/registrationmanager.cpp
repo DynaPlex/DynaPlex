@@ -15,10 +15,19 @@ namespace DynaPlex::Models {
 	namespace perishable_systems {
 		void Register(DynaPlex::Registry&);
 	}
+	namespace resource_allocation {
+		void Register(DynaPlex::Registry&);
+	}
+	namespace collaborative_picking {
+		void Register(DynaPlex::Registry&);
+	}
+
 	void RegistrationManager::RegisterAll(DynaPlex::Registry& registry) {
 		lost_sales::Register(registry);
 		bin_packing::Register(registry);
 		order_picking::Register(registry);
 		perishable_systems::Register(registry);
+		resource_allocation::Register(registry);
+		collaborative_picking::Register(registry);
 	}
 }
