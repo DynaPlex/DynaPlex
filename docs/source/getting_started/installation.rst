@@ -4,7 +4,19 @@ Installation instructions
 Prerequisites
 -------------
 
-We assume that you already have installed a C++ IDE and if you want to run locally, a local version of LibTorch. You also need CMake (version >=3.21). Most IDEs (e.g., Visual Studio) are supplied with CMake, if you install the right plugins.
+We assume that you already have installed a C++ IDE and if you want to run locally, a local version of LibTorch. Please ensure you use LibTorch 2.1.1, as other versions may cause build errors (not tested). You also need CMake (version >=3.21). Most IDEs (e.g., Visual Studio) are supplied with CMake, if you install the right plugins.
+
+Libtorch
+--------
+
+These are the download links for the correct Libtorch versions, most users will only need the Release version:
+
+`Windows Release <https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-2.1.1%2Bcpu.zip>`_
+
+`Windows Debug <https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-2.1.1%2Bcpu.zip>`_
+
+`Linux <https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.1.1%2Bcpu.zip>`_
+
 
 Setup
 -----
