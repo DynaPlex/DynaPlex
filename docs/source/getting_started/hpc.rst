@@ -12,18 +12,32 @@ After implementing your model, you may want to scale up your training procedure 
 
       unzip libtorch-version-name.zip
     
+**1. Build:**
 
-**1. Initialize Environment and Load Modules (Only on Snellius):**
+   We provide a special `build.job` file in the `/bash` folder that will automate all build processes for you, you will only need to change the specific target for your build and next run it using:
 
-   .. code-block:: bash
+    . code-block:: bash
+
+        cd bash
+        sbatch build.job
+
+    For those that prefer a manual build, below we provide the steps for building. Note that it is not allowed to build on the login node, so you will first need to request a compute node for your job:
+
+    . code-block:: bash
+    
+        srun -p genoa -c 192 -n 1 -t 00:15:00 --pty /bin/bash
+
+    As soon as you have been allocated a node, you need to load the modules using `source loadmodules.sh`
+   
+    .. code-block:: bash
 
       cd bash
       source loadmodules.sh
       cd .. #back to root
 
-**2. Build:**
+     Next follow the below steps.
 
-   - For a specific preset from CMake user presets (e.g., `LinRel`):
+- For a specific preset from CMake user presets (e.g., `LinRel`):
 
      .. code-block:: bash
 
@@ -33,9 +47,9 @@ After implementing your model, you may want to scale up your training procedure 
 
      .. code-block:: bash
 
-        cmake --build out/LinRel -- -j12
+        cmake --build out/LinRel -- -j120
 
-     Note: The option ``-- -j12`` instructs to parallelize the build.
+     Note: The option ``-- -j120`` instructs to parallelize the build.
 
    - If you encounter the error:
 
@@ -51,23 +65,5 @@ After implementing your model, you may want to scale up your training procedure 
 
         cmake --build out/LinRel --target sometarget -j12
 
-   - Building DynaPlex for the first time may take a long time. Therefore, we advice to request a node and build on this node, which allows to paralellize the build over more threads and will speedup the building process signficantly. First, request a node:
-
-    .. code-block:: bash
-    
-        srun -p genoa -c 192 -n 1 -t 00:59:00 --pty /bin/bash
-
-    Next, follow the steps above again (load the modules and indicate the CMake preset). Next, we can build, and parallelize the build over more nodes (j120 instead of j12), e.g.:
-
-    .. code-block:: bash
-    
-        cmake --build out/LinRel --target sometarget -j120
-
 **3. Run:**
-    - Executables may be run from a compute node, that can be obtained as follows:
-
-     .. code-block:: bash
-    
-        srun -p genoa -c 192 -n 1 -t 00:59:00 --pty /bin/bash
-    
-    also use srun to then do something on that node. You can alternatively run using the sbatch command, see `CPU.job` in the 'bash/' folder for an example file.
+    - Executables may be run from using a job script, using the `sbatch` command, see `CPU.job` in the 'bash/' folder for an example file.
