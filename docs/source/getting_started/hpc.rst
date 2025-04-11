@@ -35,7 +35,8 @@ After implementing your model, you may want to scale up your training procedure 
       source loadmodules.sh
       cd .. #back to root
 
-     Next follow the below steps.
+     
+    Next follow the below steps.
 
     For a specific preset from CMake user presets (e.g., ``LinRel``):
 
@@ -43,23 +44,26 @@ After implementing your model, you may want to scale up your training procedure 
     
         cmake --preset=LinRel  # Other options: LinDeb/ LinDB
 
-     Compile all code:
+     
+    Compile all code:
 
      .. code-block:: bash
 
         cmake --build out/LinRel -- -j120
 
-     Note: The option ``-- -j120`` instructs to parallelize the build.
+     
+    Note: The option ``-- -j120`` instructs to parallelize the build.
 
-     If you encounter the error:
+    If you encounter the error:
 
      .. code-block:: text
 
         CMake Error: Could not read presets from /home/willemvj/DynaPlexPrivate: Unrecognized "version" field
 
-     Your CMake version is not recent enough. On Snellius, you may have forgotten to ``source loadmodules.sh`` to bring the recent CMake version into scope.
+     
+    Your CMake version is not recent enough. On Snellius, you may have forgotten to ``source loadmodules.sh`` to bring the recent CMake version into scope.
 
-     Compile a specific target (e.g., ``sometarget``). This will only build you specific target, e.g., a target in the ``src``
+    Compile a specific target (e.g., ``sometarget``). This will only build you specific target, e.g., a target in the ``src``
 
      .. code-block:: bash
 
