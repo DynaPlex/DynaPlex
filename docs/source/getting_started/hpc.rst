@@ -6,7 +6,7 @@ After implementing your model, you may want to scale up your training procedure 
 
 **0. Download and unzip LibTorch (Only on Snellius):**
 
-    Easiest way to link LibTorch: tou can download the LibTorch version for Linux and upload it (still zipped) to your home folder. Next, you can unzip the library:
+    Easiest way to link LibTorch: you can download the LibTorch version for Linux and upload it (still zipped) to your home folder. Next, you can unzip the library:
 
     .. code-block:: bash
 
