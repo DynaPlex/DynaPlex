@@ -65,4 +65,4 @@ If you executable depends on JSON config files, you might want them to be copied
 
     .. code-block:: bash
 
-    add_dependencies(${targetname} DP_copy_model_config_files)
+       add_dependencies(${targetname} DP_copy_model_config_files)
