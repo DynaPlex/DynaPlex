@@ -6,8 +6,28 @@ import glob
 import torch
 
 try:
-    from dp import DP_Bindings as dynaplex
-except ImportError as e:
+    import importlib.util
+
+    # Dynamically load the DP_Bindings .so file
+    _dp_dir = os.path.dirname(__file__)
+    _so_file = next(
+        f for f in os.listdir(_dp_dir)
+        if f.startswith("DP_Bindings") and f.endswith(".so")
+    )
+    _so_path = os.path.join(_dp_dir, _so_file)
+
+    _spec = importlib.util.spec_from_file_location("DP_Bindings", _so_path)
+    DP_Bindings = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(DP_Bindings)
+
+    dynaplex = DP_Bindings
+
+except Exception as e:
+    raise ImportError(
+        f"Failed to import DP_Bindings from {_so_file if 'DP_Bindings' in locals() else 'unknown'}.\n"
+        f"Make sure the shared object (.so) was correctly built and placed in the dp/ directory.\n"
+        f"Original error: {e}"
+    )
 
     print(sys.version)
     # get absolute path to current file.
