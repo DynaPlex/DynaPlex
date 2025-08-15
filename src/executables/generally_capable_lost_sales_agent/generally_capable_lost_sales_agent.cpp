@@ -74,7 +74,7 @@ int64_t FindCOLevel(DynaPlex::VarGroup& config)
 	policy_config.Add("id", "constant_order");
 	policy_config.Add("co_level", COLevel);
 
-	while ((double) COLevel < max_period_demand)
+	while ((double)COLevel < max_period_demand)
 	{
 		auto policy = mdp->GetPolicy(policy_config);
 		auto comparison = comparer.Assess(policy);
@@ -138,7 +138,7 @@ std::pair<int64_t, int64_t> FindCBSLevels(DynaPlex::VarGroup& config, int64_t mi
 			}
 		}
 
-		if (innerCBScost < bestCBScost){
+		if (innerCBScost < bestCBScost) {
 			bestCBScost = innerCBScost;
 			bestBSLevel = bs;
 			bestCapLevel = innerBestCap;
@@ -395,8 +395,8 @@ void Case3Results(DynaPlex::VarGroup& mdp_config, std::string path) {
 	};
 	std::vector<std::string> std_vec_mix = { "pois", "geom", "negbinom", "binom", "pois", "geom", "negbinom" };
 
-	std::vector<std::vector<double>> leadtime_distribution_vec = 
-	{   { 0.0, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 },
+	std::vector<std::vector<double>> leadtime_distribution_vec =
+	{ { 0.0, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 },
 		{ 0.0, 0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0, 0.0, 0.0 },
 		{ 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.3, 0.1, 0.0, 0.0 },
 		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.4 },
@@ -413,7 +413,7 @@ void Case3Results(DynaPlex::VarGroup& mdp_config, std::string path) {
 
 	mdp_config.Set("evaluate", true);
 	mdp_config.Set("stochastic_leadtime", true);
-	for (bool ordercrossover : { true }) {
+	for (bool ordercrossover : { false, true }) {
 
 		std::vector<std::vector<std::vector<std::vector<double>>>> Results;
 		mdp_config.Set("order_crossover", ordercrossover);
@@ -510,7 +510,7 @@ void Case3Results(DynaPlex::VarGroup& mdp_config, std::string path) {
 
 							uncensored_mdp_config.Set("maximizeRewards", censoredDemand);
 							DynaPlex::MDP uncensored_test_mdp = dp.GetMDP(uncensored_mdp_config);
-							if (censored) 
+							if (censored)
 								policies.push_back(dp.LoadPolicy(uncensored_test_mdp, path));
 
 							InstanceResults.push_back(TestPolicies(test_mdp, uncensored_test_mdp, policies, instance_config, periods, censored, censoredDemand));
@@ -731,7 +731,7 @@ void Case2Results(DynaPlex::VarGroup& mdp_config, std::string path) {
 				}
 			}
 		}
-		
+
 		// Uncensored results
 
 		dp.System() << std::endl;
@@ -969,7 +969,7 @@ void Case1ExtensiveResults(DynaPlex::VarGroup& config, std::string loc, int64_t 
 			dist_token = { "poisson", "geometric" };
 			if (all) {
 				p_values = { 5.0, 10.0 };
-				leadtime_values = {  1, 3, 5, 7 };
+				leadtime_values = { 1, 3, 5, 7 };
 			}
 			else {
 				p_values = { penalty };
@@ -1048,7 +1048,7 @@ void Case1ExtensiveResults(DynaPlex::VarGroup& config, std::string loc, int64_t 
 					int64_t MaxOrderSize = demand_dist.Fractile(p / (p + 1.0));
 					int64_t MaxSystemInv = DemOverLeadtime.Fractile(p / (p + 1.0));
 
-					if (censored) 
+					if (censored)
 						config.Set("censoredDemand", false);
 					//std::cout << config.Dump() << std::endl;
 					int64_t BestBSLevel = FindBestBSLevel(config);
@@ -1057,7 +1057,7 @@ void Case1ExtensiveResults(DynaPlex::VarGroup& config, std::string loc, int64_t 
 					int64_t BestSLevel = bestParams.first;
 					int64_t BestrLevel = bestParams.second;
 
-					if (censored) 
+					if (censored)
 						config.Set("censoredDemand", true);
 
 					DynaPlex::MDP test_mdp = dp.GetMDP(config);
@@ -1119,7 +1119,7 @@ void Case1ExtensiveResults(DynaPlex::VarGroup& config, std::string loc, int64_t 
 							//dp.System() << VarGroup.Dump() << std::endl;
 						}
 
-						if (!censored){
+						if (!censored) {
 							CBSLastNNGap = 100 * (last_nn_cost - best_cbs_cost) / best_cbs_cost;
 							dp.System() << std::endl;
 							dp.System() << "------------Uncensored----------LowerCostBetter" << std::endl;
@@ -1219,7 +1219,8 @@ void TrainSeperateNetworks(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup ins
 
 	int64_t num_gens = 5;
 	DynaPlex::VarGroup new_dcl_config = dcl_config;
-	new_dcl_config.Set("N", 50000);
+	new_dcl_config.Set("N", 100000);
+	new_dcl_config.Set("SimulateOnlyPromisingActions", false);
 	DynaPlex::VarGroup nn_training{
 		{"early_stopping_patience",15},
 		{"mini_batch_size", 256},
@@ -1233,8 +1234,6 @@ void TrainSeperateNetworks(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup ins
 	auto policy = mdp->GetPolicy("greedy_capped_base_stock");
 	auto dcl = dp.GetDCL(mdp, policy, new_dcl_config);
 	dcl.TrainPolicy();
-	auto nn_policy = dcl.GetPolicy(num_gens);
-	dp.SavePolicy(nn_policy, path);
 
 	DynaPlex::VarGroup test_config;
 	test_config.Add("number_of_trajectories", 1000);
@@ -1244,9 +1243,25 @@ void TrainSeperateNetworks(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup ins
 	auto dcl_policies = dcl.GetPolicies();
 	auto comparer = dp.GetPolicyComparer(mdp, test_config);
 	auto comparison = comparer.Compare(dcl_policies, 0, true, false);
+
+	double best_cost = std::numeric_limits<double>::infinity();
+	int64_t best_policy = 0;
+	int64_t generation = 0;
 	for (auto results : comparison) {
 		dp.System() << results.Dump() << std::endl;
+		double cost;
+		results.Get("mean", cost);
+
+		if (cost < best_cost)
+		{
+			best_cost = cost;
+			best_policy = generation;
+		}
+		generation++;
 	}
+	dp.System() << "Best network:  " << best_policy << std::endl;
+	auto nn_policy = dcl.GetPolicy(best_policy);
+	dp.SavePolicy(nn_policy, path);
 }
 
 std::vector<std::vector<std::vector<double>>> TestCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup instance_config,
@@ -1297,11 +1312,11 @@ std::vector<std::vector<std::vector<double>>> TestCase4Instances(DynaPlex::VarGr
 	return InstanceResults;
 }
 
-void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_config, bool train, std::string gca_loc) {
+void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_config, std::string gca_loc, bool train) {
 	auto& dp = DynaPlexProvider::Get();
 
 	// CASE 1 Instances
-	std::string case_num = "_case1_";
+	std::string case_num = "case_1_";
 	std::vector<double> mean_demand = { 5.0, 10.0 };
 	std::vector<std::string> dist_token = { "poisson", "geometric" };
 	std::vector<double> p_values = { 9.0, 69.0 };
@@ -1335,11 +1350,11 @@ void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_c
 				if (dist == "poisson") {
 					stdev = std::sqrt(demand);
 				}
-				else  {
+				else {
 					double prob = 1.0 / (1.0 + demand);
 					double var = (1 - prob) / (prob * prob);
 					stdev = std::sqrt(var);
-				}	
+				}
 				std::vector<double> stdDemand_vec = { stdev };
 				mdp_config.Set("stdDemand", stdDemand_vec);
 				instance_config.Set("stdDemand", stdDemand_vec);
@@ -1352,8 +1367,9 @@ void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_c
 					mdp_config.Set("leadtime_distribution", leadtime_probs);
 
 					auto path = dp.System().filepath("lost_sales_general", case_num + std::to_string(instance));
-					if (train)
+					if (train) {
 						TrainSeperateNetworks(mdp_config, instance_config, dcl_config, path);
+					}
 					else {
 						std::vector<std::vector<std::vector<double>>> results = TestCase4Instances(mdp_config, instance_config, gca_loc, path);
 						allResults.push_back(results);
@@ -1365,13 +1381,15 @@ void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_c
 		}
 	}
 
-	dp.System() << std::endl;
-	dp.System() << "----------------CASE 4 - 1 Results  " << std::endl;
-	dp.System() << std::endl;
-	PrintResults(case1Results, 0, 0);
+	if (!train) {
+		dp.System() << std::endl;
+		dp.System() << "----------------CASE 4 - 1 Results  " << std::endl;
+		dp.System() << std::endl;
+		PrintResults(case1Results, 0, 0);
+	}
 
 	// CASE 2 Instances
-	case_num = "_case2_";
+	case_num = "case_2_";
 	mdp_config.Set("p", 39.0);
 	instance_config.Set("p", 39.0);
 	mdp_config.Set("leadtime", 6);
@@ -1430,8 +1448,9 @@ void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_c
 			instance_config.Set("stdDemand", std_demand);
 
 			auto path = dp.System().filepath("lost_sales_general", case_num + std::to_string(instance));
-			if (train)
+			if (train) {
 				TrainSeperateNetworks(mdp_config, instance_config, dcl_config, path);
+			}
 			else {
 				std::vector<std::vector<std::vector<double>>> results = TestCase4Instances(mdp_config, instance_config, gca_loc, path);
 				allResults.push_back(results);
@@ -1441,13 +1460,15 @@ void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_c
 		}
 	}
 
-	dp.System() << std::endl;
-	dp.System() << "----------------CASE 4 - 2 Results  " << std::endl;
-	dp.System() << std::endl;
-	PrintResults(case2Results, 0, 0);
+	if (!train) {
+		dp.System() << std::endl;
+		dp.System() << "----------------CASE 4 - 2 Results  " << std::endl;
+		dp.System() << std::endl;
+		PrintResults(case2Results, 0, 0);
+	}
 
 	// CASE 3 Instances
-	case_num = "_case3_";
+	case_num = "case_3_";
 	mdp_config.Set("p", 69.0);
 	instance_config.Set("p", 69.0);
 	mdp_config.Set("stochastic_leadtime", true);
@@ -1505,8 +1526,9 @@ void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_c
 			instance_config.Set("leadtime_distribution", leadtime_dist);
 
 			auto path = dp.System().filepath("lost_sales_general", case_num + std::to_string(instance));
-			if (train)
+			if (train) {
 				TrainSeperateNetworks(mdp_config, instance_config, dcl_config, path);
+			}
 			else {
 				std::vector<std::vector<std::vector<double>>> results = TestCase4Instances(mdp_config, instance_config, gca_loc, path);
 				allResults.push_back(results);
@@ -1516,14 +1538,104 @@ void TrainCase4Instances(DynaPlex::VarGroup mdp_config, DynaPlex::VarGroup dcl_c
 		}
 	}
 
-	dp.System() << std::endl;
-	dp.System() << "----------------CASE 4 - 3 Results  " << std::endl;
-	dp.System() << std::endl;
-	PrintResults(case3Results, 0, 0);
+	if (!train) {
+		dp.System() << std::endl;
+		dp.System() << "----------------CASE 4 - 3 Results  " << std::endl;
+		dp.System() << std::endl;
+		PrintResults(case3Results, 0, 0);
+
+		dp.System() << std::endl;
+		dp.System() << "----------------CASE 4 - All Results  " << std::endl;
+		dp.System() << std::endl;
+		PrintResults(allResults, 0, 0);
+	}
+}
+
+void TestOutlierInstances(DynaPlex::VarGroup mdp_config, std::string gca_loc) {
+	auto& dp = DynaPlexProvider::Get();
+
+	std::vector<double> mean_demand = { 1.0, 8.0, 15.0, 20.0, 50.0 };
+	std::vector<std::string> dist_token = { "poisson", "geometric" };
+	std::vector<double> p_values = { 0.5, 1.0, 39.9, 150.0, 200.0 };
+	std::vector<int64_t> leadtime_values = { 8 };
+
+	DynaPlex::VarGroup instance_config;
+	std::vector<int64_t> periods = { 5000 };
+	std::vector<int64_t> demand_cycles = { 0 };
+
+	mdp_config.Set("evaluate", true);
+	mdp_config.Set("censoredDemand", false);
+	mdp_config.Set("maximizeRewards", false);
+	mdp_config.Set("stochastic_leadtime", false);
+	mdp_config.Set("demand_cycles", demand_cycles);
+	std::vector<std::vector<std::vector<std::vector<double>>>> allResults;
+	for (double p : p_values) {
+		mdp_config.Set("p", p);
+		instance_config.Set("p", p);
+
+		for (double demand : mean_demand) {
+			std::vector<double> demand_vec = { demand };
+			mdp_config.Set("mean_demand", demand_vec);
+			instance_config.Set("mean_demand", demand_vec);
+
+			for (std::string dist : dist_token) {
+				double stdev = demand;
+				double p_dummy = 0.3;
+				//poisson distribution
+				if (dist == "poisson") {
+					stdev = std::sqrt(demand);
+				}
+				//geometric distribution
+				else if (dist == "geometric") {
+					double prob = 1.0 / (1.0 + demand);
+					double var = (1 - prob) / (prob * prob);
+					stdev = std::sqrt(var);
+				}
+				std::vector<double> stdDemand_vec = { stdev };
+				mdp_config.Set("stdDemand", stdDemand_vec);
+				instance_config.Set("stdDemand", stdDemand_vec);
+
+				for (int64_t leadtime : leadtime_values) {
+					int64_t max_leadtime;
+					mdp_config.Get("max_leadtime", max_leadtime);
+					mdp_config.Set("leadtime", leadtime);
+					instance_config.Set("leadtime", leadtime);
+					std::vector<double> leadtime_probs(max_leadtime + 1, 0.0);
+					leadtime_probs[leadtime] = 1.0; // deterministic leadtime
+
+					int64_t BestBSLevel = FindBestBSLevel(mdp_config);
+					int64_t BestCOLevel = FindCOLevel(mdp_config);
+					std::pair<int64_t, int64_t> bounds = ReturnBounds(p / (p + 1.0), leadtime_probs, demand_cycles, demand_vec, stdDemand_vec);
+					std::pair<int64_t, int64_t> bestParams = FindCBSLevels(mdp_config, BestBSLevel, bounds.second, BestCOLevel, bounds.first);
+					int64_t BestSLevel = bestParams.first;
+					int64_t BestrLevel = bestParams.second;
+					DynaPlex::VarGroup policy_config;
+					policy_config.Set("base_stock_level", BestBSLevel);
+					policy_config.Set("S", BestSLevel);
+					policy_config.Set("r", BestrLevel);
+
+					std::vector<std::vector<std::vector<double>>> pResults;
+					DynaPlex::MDP test_mdp = dp.GetMDP(mdp_config);
+					std::vector<DynaPlex::Policy> policies;
+
+					policy_config.Set("id", "base_stock");
+					policies.push_back(test_mdp->GetPolicy(policy_config));
+					policy_config.Set("id", "capped_base_stock");
+					policies.push_back(test_mdp->GetPolicy(policy_config));
+					//policies.push_back(test_mdp->GetPolicy("greedy_capped_base_stock"));
+					policies.push_back(dp.LoadPolicy(test_mdp, gca_loc));
+					pResults.push_back(TestPolicies(test_mdp, test_mdp, policies, instance_config, periods, false, false));				
+					allResults.push_back(pResults);
+				}
+			}
+		}
+	}
 
 	dp.System() << std::endl;
-	dp.System() << "----------------CASE 4 - All Results  " << std::endl;
+	dp.System() << "----------------Uncensored Results:  " << std::endl;
+	dp.System() << "---------Num periods:  " << periods.back() << std::endl;
 	dp.System() << std::endl;
+
 	PrintResults(allResults, 0, 0);
 }
 
@@ -1533,7 +1645,7 @@ void TrainNetwork() {
 
 	DynaPlex::VarGroup nn_training{
 		{"early_stopping_patience",15},
-		{"mini_batch_size", 2048},
+		{"mini_batch_size", 1024},
 		{"max_training_epochs", 100}
 	};
 
@@ -1553,7 +1665,7 @@ void TrainNetwork() {
 		{"nn_training",nn_training},
 		{"retrain_lastgen_only", false}
 	};
-	
+
 	DynaPlex::VarGroup config;
 	config.Add("id", "Zero_Shot_Lost_Sales_Inventory_Control");
 	config.Add("evaluate", false);
@@ -1569,9 +1681,11 @@ void TrainNetwork() {
 
 	bool train = false;
 	bool train_seperate_networks = false;
-	bool evaluate_paper_instances_case1 = true;
-	bool evaluate_all_instances_case1 = true;
-	bool evaluate_all_instances_case2 = true;
+	bool test_seperate_networks = false;
+	bool test_outlier_instances = false;
+	bool evaluate_paper_instances_case1 = false;
+	bool evaluate_all_instances_case1 = false;
+	bool evaluate_all_instances_case2 = false;
 	bool evaluate_all_instances_case3 = true;
 
 	if (train) {
@@ -1603,19 +1717,90 @@ void TrainNetwork() {
 		Case3Results(config, path);
 	}
 
-	if (train_seperate_networks) 
+	if (train_seperate_networks)
 	{
-		TrainCase4Instances(config, dcl_config, true, path);
+		TrainCase4Instances(config, dcl_config, path, true);
 	}
-	//else if (dp.System().WorldRank() == 0)
+	else if (dp.System().WorldRank() == 0 && test_seperate_networks)
+	{
+		TrainCase4Instances(config, dcl_config, path, false);
+	}
+
+	if (dp.System().WorldRank() == 0 && test_outlier_instances)
+	{
+		TestOutlierInstances(config, path);
+	}
+}
+
+void DemonstrateActions() //Should set 
+{
+	auto& dp = DynaPlexProvider::Get();
+
+	DynaPlex::VarGroup config;
+	config.Add("id", "Zero_Shot_Lost_Sales_Inventory_Control");
+	config.Add("evaluate", false);
+	config.Add("censoredDemand", true);
+	config.Add("maximizeRewards", false);
+	config.Add("stochastic_leadtime", false);
+	config.Add("train_stochastic_leadtimes", true);
+	config.Add("train_cyclic_demand", true);
+	config.Add("train_random_yield", false);
+	config.Add("discount_factor", 1.0);
+	config.Add("max_demand", 12.0);
+	config.Add("max_p", 100.0);
+	int64_t max_leadtime = 10;
+	config.Add("max_leadtime", max_leadtime);
+	config.Add("max_num_cycles", 7);
+	std::vector<int64_t> demand_cycles = { 0 };
+	config.Add("demand_cycles", demand_cycles);
+	double p = 69.0;
+	config.Add("p", p);
+	std::vector<double> mean_demand = { 8.0 };
+	config.Add("mean_demand", mean_demand);
+	double prob = 1.0 / (1.0 + 8.0);
+	double var = (1 - prob) / (prob * prob);
+	double stdev = std::sqrt(var);
+	std::vector<double> std_demand = { stdev };
+	config.Add("stdDemand", std_demand);
+	int64_t leadtime = 8;
+	config.Add("leadtime", leadtime);
+	std::vector<double> leadtime_probs(max_leadtime + 1, 0.0);
+	leadtime_probs[leadtime] = 1.0; 
+
+	auto path = dp.System().filepath("Zero_Shot_Lost_Sales_Inventory_Control", "GC-LSN");
+
+	DynaPlex::VarGroup test_config;
+	test_config.Add("warmup_periods", 100);
+	test_config.Add("number_of_trajectories", 1);
+	test_config.Add("periods_per_trajectory", 1000);
+	test_config.Add("max_period_count", 1000);
+
+	DynaPlex::MDP mdp = dp.GetMDP(config);
+	auto dcl_policy = dp.LoadPolicy(mdp, path);
+	auto demonstrator = dp.GetDemonstrator(test_config);
+
+	auto trace_dcl = demonstrator.GetTrace(mdp, dcl_policy);
+	//for (auto& step : trace_dcl)
 	//{
-	//	TrainCase4Instances(config, dcl_config, false, path);
+	//	std::cout << step.Dump() << std::endl;
 	//}
+	//std::cout << std::endl;
+
+	//int64_t BestBSLevel = FindBestBSLevel(config);
+	//int64_t BestCOLevel = FindCOLevel(config);
+	//std::pair<int64_t, int64_t> bounds = ReturnBounds(p / (p + 1.0), leadtime_probs, demand_cycles, mean_demand, std_demand);
+	//std::pair<int64_t, int64_t> bestParams = FindCBSLevels(config, BestBSLevel, bounds.second, BestCOLevel, bounds.first);
+	//int64_t BestSLevel = bestParams.first;
+	//int64_t BestrLevel = bestParams.second;
+	//DynaPlex::VarGroup policy_config;
+	//policy_config.Add("base_stock_level", BestBSLevel);
+	//policy_config.Set("S", BestSLevel);
+	//policy_config.Set("r", BestrLevel);
 }
 
 int main() {
-
-	TrainNetwork();
+	DemonstrateActions();
+	//TrainNetwork();
 
 	return 0;
 }

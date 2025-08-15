@@ -935,6 +935,8 @@ namespace DynaPlex::Models {
 			}				
 
 			int64_t demand = event.first;
+			state.demand = demand;
+
 			double cost =  0.0;
 			double rewards = 0.0;
 			bool uncensored = true;
@@ -1296,7 +1298,7 @@ namespace DynaPlex::Models {
 				features.Add(state.min_leadtime);
 			}
 			if (train_cyclic_demand) {
-				//features.Add(state.cycle_length);
+				features.Add(state.cycle_length);
 				for (int64_t i = 0; i < max_num_cycles; i++) {
 					int64_t cyclePeriod = (state.period + i) % state.cycle_length;
 					features.Add(state.mean_cycle_demand[cyclePeriod]);
@@ -1319,6 +1321,7 @@ namespace DynaPlex::Models {
 			State state{};
 
 			state.period = 0;
+			state.demand = 0;
 			state.collectStatistics = false;
 			state.censoredDemand = false;
 			state.censoredLeadtime = false;
@@ -1420,7 +1423,17 @@ namespace DynaPlex::Models {
 					mean_true_demand.push_back(mean);
 					double min_var = DiscreteDist::LeastVarianceRequiredForAERFit(mean);
 					double min_std = std::sqrt(min_var);
-					stdev_true_demand.push_back(rng.genUniform() * (mean * 2.0 - min_std) + min_std);
+					double st_dev = rng.genUniform() * (mean * 2.0 - min_std) + min_std;
+					stdev_true_demand.push_back(st_dev);
+					if (state.cycle_length == 1) {
+						if (state.estimated_max_leadtime == state.estimated_min_leadtime && state.estimated_max_leadtime == 6) {
+							double a = (st_dev / mean) * (st_dev / mean) - 1 / mean;
+							if (a > 1)
+							{
+								std::cout << state.p << "  " << mean << std::endl;
+							}							
+						}
+					}
 				}
 				state.mean_cycle_demand = mean_true_demand;
 				state.std_cycle_demand = stdev_true_demand;
@@ -1910,6 +1923,7 @@ namespace DynaPlex::Models {
 			vars.Get("state_vector", state.state_vector);
 			vars.Get("mean_cycle_demand", state.mean_cycle_demand);
 			vars.Get("std_cycle_demand", state.std_cycle_demand);
+			vars.Get("demand", state.demand);
 			if (train_cyclic_demand) {
 				vars.Get("period", state.period);
 				vars.Get("cycle_length", state.cycle_length);
@@ -1937,6 +1951,7 @@ namespace DynaPlex::Models {
 			vars.Add("state_vector", state_vector);
 			vars.Add("mean_cycle_demand", mean_cycle_demand);
 			vars.Add("std_cycle_demand", std_cycle_demand);
+			vars.Add("demand", demand);
 			vars.Add("period", period);
 			vars.Add("cycle_length", cycle_length);
 			vars.Add("order_crossover", order_crossover);

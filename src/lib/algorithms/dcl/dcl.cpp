@@ -65,7 +65,7 @@ namespace DynaPlex::Algorithms {
 					system << "Elapsed time: " << system.Elapsed() << std::endl;
 				if (system.WorldRank() == 0) {
 					trainer.TrainPolicy(nn_architecture, generation + 1, GetPathOfSampleFile(generation), silent);
-					system.remove_file(GetPathOfSampleFile(generation));
+					//system.remove_file(GetPathOfSampleFile(generation));
 				}
 				system.AddBarrier();
 			}

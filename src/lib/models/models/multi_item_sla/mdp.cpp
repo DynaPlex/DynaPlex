@@ -13,28 +13,35 @@ namespace DynaPlex::Models {
 			return vars;
 		}
 
-		//int64_t MDP::GetH(const State& state) const
-		//{
-		//	return reviewHorizon + state.TimeRemaining;
-		//}
+		int64_t MDP::GetH(const State& state) const
+		{
+			return reviewHorizon + state.TimeRemaining + 1;
+		}
 
 		MDP::MDP(const VarGroup& config)
 		{
-			config.Get("aggregateTargetFillRate", aggregateTargetFillRate);
 			config.Get("numberOfItems", numberOfItems);
-			config.Get("reviewHorizon", reviewHorizon);
 			config.Get("leadTimes", leadTimes);
 			config.Get("holdingCosts", holdingCosts);
 			config.Get("demandRates", demandRates);
 			config.Get("highDemandVariance", highDemandVariance);
 			config.Get("totalDemandRate", totalDemandRate);
-			config.Get("totalActions", totalActions);
-			config.GetOrDefault("unavoidableCostPerPeriod", unavoidableCostPerPeriod, 0.0);
-			config.GetOrDefault("benchmarkAction", benchmarkAction, static_cast<int64_t>(std::floor((double)totalActions / 2.0)));
-			config.GetOrDefault("penaltyCost", penaltyCost, 100.0);
 			config.Get("sendBackUnits", sendBackUnits);
 			config.Get("backOrderCost", backOrderCost);
+
+			std::vector<int64_t> concatBaseStockLevels;
+
+			config.Get("aggregateTargetFillRate", aggregateTargetFillRate);
+			config.GetOrDefault("unavoidableCostPerPeriod", unavoidableCostPerPeriod, 0.0);
+			config.Get("reviewHorizon", reviewHorizon);
+			config.Get("totalActions", totalActions);
+			config.GetOrDefault("benchmarkAction", benchmarkAction, static_cast<int64_t>(std::floor((double)totalActions / 2.0)));
+			config.GetOrDefault("penaltyCost", penaltyCost, 100.0);
+			config.Get("concatBaseStockLevels", concatBaseStockLevels);
 			sendBackCost = 0.0;
+
+			if (benchmarkAction >= totalActions)
+				benchmarkAction = totalActions - 1;
 
 			demand_distributions.reserve(numberOfItems);
 			for (int64_t i = 0; i < numberOfItems; i++) {
@@ -45,8 +52,6 @@ namespace DynaPlex::Models {
 			}
 
 			baseStockLevels.reserve(totalActions);
-			std::vector<int64_t> concatBaseStockLevels;
-			config.Get("concatBaseStockLevels", concatBaseStockLevels);
 			for (int64_t l = 0; l < totalActions; l++)
 			{
 				std::vector<int64_t> subset(concatBaseStockLevels.begin() + l * numberOfItems, concatBaseStockLevels.begin() + (l + 1) * numberOfItems);
@@ -305,14 +310,11 @@ namespace DynaPlex::Models {
 			state.CSPerReviewPeriod = 0.0;
 			state.CESPerReviewPeriod = 0.0;
 			state.CIPPerReviewPeriod = 0.0;
-			state.SPPerReviewPeriod = 0.0;
+			state.SPPerReviewPeriod = 1.0;
 			state.AllowedActions.resize(totalActions, false);
 			state.AllowedActions[benchmarkAction] = true;
 			state.policyChange.resize(reviewHorizon, 0);
-
 			//state.HoldingCosts = 0.0;
-			//std::vector<int64_t> counts(totalActions - 1, 0);
-			//state.ActionStats = std::move(counts);
 
 			return state;
 		}
@@ -321,12 +323,12 @@ namespace DynaPlex::Models {
 		{
 			State state{};
 			vars.Get("cat", state.cat);
-			//vars.Get("ActionStats", state.ActionStats);
 			vars.Get("aggregate_vector", state.aggregate_vector);
 			vars.Get("ObservedDemand", state.ObservedDemand);
 			vars.Get("AggregateFillRate", state.AggregateFillRate);
 			vars.Get("TimeRemaining", state.TimeRemaining);
 			vars.Get("CumulativeStockouts", state.CumulativeStockouts);
+			vars.Get("SPPerReviewPeriod", state.SPPerReviewPeriod);
 			return state;
 		}
 
@@ -334,12 +336,12 @@ namespace DynaPlex::Models {
 		{
 			DynaPlex::VarGroup vars;
 			vars.Add("cat", cat);
-			//vars.Add("ActionStats", ActionStats);
 			vars.Add("aggregate_vector", aggregate_vector);
 			vars.Add("ObservedDemand", ObservedDemand);
 			vars.Add("AggregateFillRate", AggregateFillRate);
 			vars.Add("TimeRemaining", TimeRemaining);
 			vars.Add("CumulativeStockouts", CumulativeStockouts);
+			vars.Add("SPPerReviewPeriod", SPPerReviewPeriod);
 			return vars;
 		}
 

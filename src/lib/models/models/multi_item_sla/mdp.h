@@ -59,7 +59,7 @@ namespace DynaPlex::Models {
 			std::vector<double> ReturnUsefulStatistics(const State&) const;
 			void ResetHiddenStateVariables(State& state, DynaPlex::RNG&) const;
 			void SetAllowedActions(State& state) const;
-			//int64_t GetH(const State&) const;
+			int64_t GetH(const State&) const;
 
 			//Remainder of the DynaPlex API:
 			double ModifyStateWithAction(State&, int64_t action) const;

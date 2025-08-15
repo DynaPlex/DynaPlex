@@ -41,38 +41,42 @@ namespace DynaPlex :: Utilities{
 		// Vector that will hold a single trajectory.
 		Trajectory trajectory{};
 		trajectory.RNGProvider.SeedEventStreams(true, rng_seed);
-		mdp->InitiateState({ &trajectory,1 });
-		
-		double cumulative_return = 0.0;
-		bool final_reached = false;
-
-		while (trajectory.PeriodCount < max_period_count && !final_reached) {
-			TraceElement element;
-
-			element.state = trajectory.GetState()->Clone();
-			element.period_count = trajectory.PeriodCount;
-			element.incr_return = trajectory.CumulativeReturn - cumulative_return;
-			element.cum_return = trajectory.CumulativeReturn;
-			cumulative_return = trajectory.CumulativeReturn;
-
-			auto& cat = trajectory.Category;
-			element.cat = cat;
-			if (cat.IsAwaitEvent()) {
-				mdp->IncorporateEvent({ &trajectory,1 });
-				element.action = 0;
-			}
-			else if (cat.IsAwaitAction()) {
-				policy->SetAction({ &trajectory,1 });
-				element.action = trajectory.NextAction;
-				mdp->IncorporateAction({ &trajectory,1 });
-			}
-			else if (cat.IsFinal()) {
-				final_reached = true;
-				element.action = 0;
-			}
-
-			trace.push_back(std::move(element)); 
+		TraceElement element;
+		for (int64_t i = 0; i < 50000; i++) {
+			mdp->InitiateState({ &trajectory,1 });
 		}
+		
+		//double cumulative_return = 0.0;
+		//bool final_reached = false;
+
+		//while (trajectory.PeriodCount < max_period_count && !final_reached) {
+		//	TraceElement element;
+
+		//	element.state = trajectory.GetState()->Clone();
+		//	element.period_count = trajectory.PeriodCount;
+		//	element.incr_return = trajectory.CumulativeReturn - cumulative_return;
+		//	element.cum_return = trajectory.CumulativeReturn;
+		//	cumulative_return = trajectory.CumulativeReturn;
+
+		//	auto& cat = trajectory.Category;
+		//	element.cat = cat;
+		//	if (cat.IsAwaitEvent()) {
+		//		mdp->IncorporateEvent({ &trajectory,1 });
+		//		element.action = 0;
+		//	}
+		//	else if (cat.IsAwaitAction()) {
+		//		policy->SetAction({ &trajectory,1 });
+		//		element.action = trajectory.NextAction;
+		//		mdp->IncorporateAction({ &trajectory,1 });
+		//		trace.push_back(std::move(element));
+		//	}
+		//	else if (cat.IsFinal()) {
+		//		final_reached = true;
+		//		element.action = 0;
+		//	}
+
+		//	//trace.push_back(std::move(element)); 
+		//}
 
 		return trace;
 	}

@@ -54,6 +54,7 @@ namespace DynaPlex::Models {
 				int64_t cumulativeDemands;
 
 				int64_t period;
+				int64_t demand;
 				int64_t cycle_length;
 				std::vector<int64_t> demand_cycles;
 				std::vector<bool> collectDemandStatistics;

@@ -412,6 +412,7 @@ namespace DynaPlex::Models {
 		{
 			State state{};
 			vars.Get("cat", state.cat);
+			vars.Get("period", state.period);
 			vars.Get("state_vector", state.state_vector);
 			vars.Get("total_inv", state.total_inv);
 			return state;
@@ -421,6 +422,7 @@ namespace DynaPlex::Models {
 		{
 			DynaPlex::VarGroup vars;
 			vars.Add("cat", cat);
+			vars.Add("period", period);
 			vars.Add("state_vector", state_vector);
 			vars.Add("total_inv", total_inv);
 			return vars;

@@ -1,0 +1,328 @@
+***************************************************************************************************** 
+* WARNING: The 2022 software stack is deprecated. Please consider switching to
+the latest 2024 * 
+* software stack, or the older 2023 software stack. * 
+* * 
+* If you have any question, please contact us via
+http://servicedesk.surfsara.nl. * 
+***************************************************************************************************** 
+[ 17%] Built target DP_Core
+[ 25%] Built target DP_Utilities
+[ 64%] Built target DP_Models
+[ 80%] Built target DP_NN
+[ 92%] Built target DP_Algorithms
+[ 96%] Built target DP_DynaPlex
+Consolidate compiler generated dependencies of target generally_capable_lost_sales_agent
+[ 98%] Building CXX object src/executables/generally_capable_lost_sales_agent/CMakeFiles/generally_capable_lost_sales_agent.dir/generally_capable_lost_sales_agent.cpp.o
+[100%] Linking CXX executable ../../../bin/generally_capable_lost_sales_agent
+[100%] Built target generally_capable_lost_sales_agent
+DynaPlex: Hardware Threads: 192, MPI: No, 
+DynaPlex: torch available, Version 2.6.0	
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[5.0],"p":9.0,"stdDemand":[2.23606797749979]}
+BSP cost:  7.27131  GCA cost:  6.85126  gaps:  -5.77684  -0.86717  0.205244  CBS cost:  6.91119  gap:  -4.95262  BSP service:  0.939096  nn service:  0.944618  CBS service:  0.92865  test nn service:  0.939383
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[5.0],"p":9.0,"stdDemand":[2.23606797749979]}
+BSP cost:  8.32118  GCA cost:  7.48005  gaps:  -10.1083  -0.894976  0.023912  CBS cost:  7.5476  gap:  -9.29654  BSP service:  0.929929  nn service:  0.924875  CBS service:  0.926153  test nn service:  0.923659
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[5.0],"p":9.0,"stdDemand":[5.477225575051661]}
+BSP cost:  17.5384  GCA cost:  16.5732  gaps:  -5.50326  -0.873252  0.017605  CBS cost:  16.7192  gap:  -4.6708  BSP service:  0.821134  nn service:  0.81907  CBS service:  0.81105  test nn service:  0.822014
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[5.0],"p":9.0,"stdDemand":[5.477225575051661]}
+BSP cost:  19.1791  GCA cost:  17.4781  gaps:  -8.86904  -1.15925  0.00494015  CBS cost:  17.6831  gap:  -7.80021  BSP service:  0.78727  nn service:  0.791778  CBS service:  0.767527  test nn service:  0.792496
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[10.0],"p":9.0,"stdDemand":[3.1622776601683795]}
+BSP cost:  10.2746  GCA cost:  9.65651  gaps:  -6.01599  -1.1703  0.142129  CBS cost:  9.77086  gap:  -4.90307  BSP service:  0.962403  nn service:  0.961021  CBS service:  0.950731  test nn service:  0.958039
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[10.0],"p":9.0,"stdDemand":[3.1622776601683795]}
+BSP cost:  11.7874  GCA cost:  10.5946  gaps:  -10.1196  -0.924059  0.00807837  CBS cost:  10.6934  gap:  -9.28128  BSP service:  0.945736  nn service:  0.946555  CBS service:  0.950366  test nn service:  0.947172
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[10.0],"p":9.0,"stdDemand":[10.488088481701515]}
+BSP cost:  33.6095  GCA cost:  31.7567  gaps:  -5.51277  -0.844708  0.0655686  CBS cost:  32.0272  gap:  -4.70783  BSP service:  0.824471  nn service:  0.820081  CBS service:  0.82179  test nn service:  0.827896
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[10.0],"p":9.0,"stdDemand":[10.488088481701515]}
+BSP cost:  36.7601  GCA cost:  33.5025  gaps:  -8.86171  -0.782725  0.0717069  CBS cost:  33.7668  gap:  -8.14272  BSP service:  0.796151  nn service:  0.809314  CBS service:  0.805521  test nn service:  0.802003
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[5.0],"p":69.0,"stdDemand":[2.23606797749979]}
+BSP cost:  12.4316  GCA cost:  12.2471  gaps:  -1.48416  -0.355377  0.0713951  CBS cost:  12.2908  gap:  -1.13281  BSP service:  0.993452  nn service:  0.993092  CBS service:  0.992874  test nn service:  0.99257
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[5.0],"p":69.0,"stdDemand":[2.23606797749979]}
+BSP cost:  15.2886  GCA cost:  14.8048  gaps:  -3.16484  -0.627647  0.0384713  CBS cost:  14.8983  gap:  -2.55322  BSP service:  0.991609  nn service:  0.990539  CBS service:  0.989692  test nn service:  0.990084
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[5.0],"p":69.0,"stdDemand":[5.477225575051661]}
+BSP cost:  35.0507  GCA cost:  34.4684  gaps:  -1.66124  -0.820122  0.125726  CBS cost:  34.7534  gap:  -0.848077  BSP service:  0.97561  nn service:  0.972654  CBS service:  0.973309  test nn service:  0.974516
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[5.0],"p":69.0,"stdDemand":[5.477225575051661]}
+BSP cost:  40.721  GCA cost:  39.4111  gaps:  -3.21681  -1.25203  0.00276022  CBS cost:  39.9107  gap:  -1.9897  BSP service:  0.970068  nn service:  0.967062  CBS service:  0.968564  test nn service:  0.967981
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[10.0],"p":69.0,"stdDemand":[3.1622776601683795]}
+BSP cost:  17.343  GCA cost:  17.0849  gaps:  -1.48772  -0.392366  0.111501  CBS cost:  17.1522  gap:  -1.09967  BSP service:  0.995498  nn service:  0.995551  CBS service:  0.995176  test nn service:  0.995091
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[10.0],"p":69.0,"stdDemand":[3.1622776601683795]}
+BSP cost:  21.4408  GCA cost:  20.8362  gaps:  -2.81977  -0.652956  0.395483  CBS cost:  20.9732  gap:  -2.18105  BSP service:  0.993052  nn service:  0.994313  CBS service:  0.993696  test nn service:  0.993334
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":4,"mean_demand":[10.0],"p":69.0,"stdDemand":[10.488088481701515]}
+BSP cost:  67.1183  GCA cost:  65.9263  gaps:  -1.77596  -0.906179  0.0285609  CBS cost:  66.5292  gap:  -0.877734  BSP service:  0.975586  nn service:  0.974911  CBS service:  0.975759  test nn service:  0.975804
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"leadtime":8,"mean_demand":[10.0],"p":69.0,"stdDemand":[10.488088481701515]}
+BSP cost:  77.9651  GCA cost:  75.4541  gaps:  -3.22068  -1.21127  0.010759  CBS cost:  76.3793  gap:  -2.03405  BSP service:  0.970678  nn service:  0.969899  CBS service:  0.969633  test nn service:  0.969927
+
+
+----------------CASE 4 - 1 Results  
+
+Avg BS Costs:  27.0063  , Avg BS - NN Policy Gap:  -4.97492  , Avg CBS - NN Policy Gap:  -0.858399  , Avg Test NN - NN Policy Gap:  0.08274  , Avg BS Service:  0.929484  , Avg CBS Service:  0.926281  , Avg NN Service:  0.929708  , Avg Test NN Service:  0.929498  , Avg NN Policy Costs:  25.8829  , Avg CBS Policy Costs:  26.1254  , Avg BS - CBS Gap:  -4.15446
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"mean_demand":[2.5,4.5,3.0],"p":39.0,"stdDemand":[1.5811388300841898,4.9749371855331,2.7386127875258306]}
+BSP cost:  20.6644  GCA cost:  19.4353  gaps:  -5.94787  -2.69404  0.100575  CBS cost:  19.9734  gap:  -3.34392  BSP service:  0.947968  nn service:  0.946673  CBS service:  0.950413  test nn service:  0.948791
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"mean_demand":[9.0,11.0,9.5],"p":39.0,"stdDemand":[3.0,11.489125293076057,5.2488093888042835]}
+BSP cost:  45.0987  GCA cost:  42.657  gaps:  -5.41431  -1.66606  0.0603989  CBS cost:  43.3797  gap:  -3.81176  BSP service:  0.960451  nn service:  0.961861  CBS service:  0.960888  test nn service:  0.961711
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"mean_demand":[3.0,6.0,10.0],"p":39.0,"stdDemand":[1.7320508075688772,6.48074069840786,5.477225575051661]}
+BSP cost:  31.1872  GCA cost:  28.1975  gaps:  -9.58621  -5.44023  0.097581  CBS cost:  29.8198  gap:  -4.38451  BSP service:  0.963981  nn service:  0.962668  CBS service:  0.963446  test nn service:  0.963394
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2,3,4],"leadtime":6,"mean_demand":[4.0,2.5,3.0,4.5,3.0],"p":39.0,"stdDemand":[2.0,2.9580398915498085,2.7386127875258306,1.7748239349298849,1.7320508075688772]}
+BSP cost:  13.4333  GCA cost:  12.9129  gaps:  -3.87405  -0.88906  0.875563  CBS cost:  13.0287  gap:  -3.01177  BSP service:  0.973022  nn service:  0.963909  CBS service:  0.970033  test nn service:  0.970324
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2,3,4],"leadtime":6,"mean_demand":[7.5,11.5,10.0,9.5,8.5],"p":39.0,"stdDemand":[2.7386127875258306,11.989578808281799,5.477225575051661,2.5845091410169165,2.9154759474226504]}
+BSP cost:  37.9518  GCA cost:  35.1429  gaps:  -7.40114  -2.44203  0.23375  CBS cost:  36.0226  gap:  -5.08325  BSP service:  0.963673  nn service:  0.963613  CBS service:  0.963573  test nn service:  0.965127
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2,3,4],"leadtime":6,"mean_demand":[11.0,3.0,5.0,8.0,6.0],"p":39.0,"stdDemand":[3.3166247903554,3.4641016151377544,3.6514837167011076,2.372684056006958,2.449489742783178]}
+BSP cost:  19.0687  GCA cost:  17.1302  gaps:  -10.1659  -7.47368  0.710414  CBS cost:  18.5139  gap:  -2.90967  BSP service:  0.982705  nn service:  0.977898  CBS service:  0.981639  test nn service:  0.980552
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2,3,4,5,6],"leadtime":6,"mean_demand":[3.0,4.0,2.0,3.5,4.5,2.5,4.0],"p":39.0,"stdDemand":[1.7320508075688772,4.472135954999579,2.0,1.5745369689742652,2.1213203435596424,2.9580398915498085,3.4641016151377544]}
+BSP cost:  16.3128  GCA cost:  15.9105  gaps:  -2.46582  -1.43579  1.20417  CBS cost:  16.1423  gap:  -1.04503  BSP service:  0.962446  nn service:  0.950765  CBS service:  0.95826  test nn service:  0.961322
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2,3,4,5,6],"leadtime":6,"mean_demand":[11.0,10.0,9.0,10.0,11.0,8.5,9.5],"p":39.0,"stdDemand":[3.3166247903554,10.488088481701515,5.408326913195984,2.6400183654090306,3.3166247903554,8.986100377805714,5.2488093888042835]}
+BSP cost:  36.6139  GCA cost:  35.306  gaps:  -3.57208  -1.85373  0.111295  CBS cost:  35.9728  gap:  -1.75081  BSP service:  0.97004  nn service:  0.967766  CBS service:  0.968795  test nn service:  0.9688
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2,3,4,5,6],"leadtime":6,"mean_demand":[3.0,5.0,5.0,7.0,7.0,10.0,10.0],"p":39.0,"stdDemand":[1.7320508075688772,5.477225575051661,3.6514837167011076,2.206709137469482,2.6457513110645907,10.488088481701515,5.477225575051661]}
+BSP cost:  30.6721  GCA cost:  29.5554  gaps:  -3.6408  -3.57213  0.253517  CBS cost:  30.6502  gap:  -0.0712159  BSP service:  0.962322  nn service:  0.958169  CBS service:  0.962217  test nn service:  0.960879
+
+
+----------------CASE 4 - 2 Results  
+
+Avg BS Costs:  27.8892  , Avg BS - NN Policy Gap:  -5.78535  , Avg CBS - NN Policy Gap:  -3.05186  , Avg Test NN - NN Policy Gap:  0.405252  , Avg BS Service:  0.965179  , Avg CBS Service:  0.964363  , Avg NN Service:  0.96148  , Avg Test NN Service:  0.964544  , Avg NN Policy Costs:  26.2497  , Avg CBS Policy Costs:  27.0559  , Avg BS - CBS Gap:  -2.82355
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1],"mean_demand":[8.0,10.0,6.0],"order_crossover":false,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  58.6354  GCA cost:  58.3689  gaps:  -0.454504  -0.423904  0.0817919  CBS cost:  58.6174  gap:  -0.0307306  BSP service:  0.974715  nn service:  0.972338  CBS service:  0.974545  test nn service:  0.973632
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.2,0.2,0.2,0.2,0.2,0.0,0.0,0.0,0.0],"mean_demand":[8.0,10.0,6.0],"order_crossover":false,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  50.9186  GCA cost:  50.5379  gaps:  -0.747831  -0.66487  0.0164957  CBS cost:  50.8761  gap:  -0.0835164  BSP service:  0.976223  nn service:  0.976524  CBS service:  0.975967  test nn service:  0.976664
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.0,0.0,0.1,0.2,0.3,0.3,0.1,0.0,0.0],"mean_demand":[8.0,10.0,6.0],"order_crossover":false,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  53.4633  GCA cost:  52.5706  gaps:  -1.6697  -1.08753  0.0602018  CBS cost:  53.1486  gap:  -0.588576  BSP service:  0.973789  nn service:  0.974123  CBS service:  0.973564  test nn service:  0.974663
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.2,0.3,0.4],"mean_demand":[8.0,10.0,6.0],"order_crossover":false,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  56.7925  GCA cost:  55.2393  gaps:  -2.73481  -1.26751  0.0857327  CBS cost:  55.9485  gap:  -1.48613  BSP service:  0.971386  nn service:  0.971991  CBS service:  0.970555  test nn service:  0.971583
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.0,0.0,0.0,0.0,0.2,0.2,0.2,0.2,0.2],"mean_demand":[8.0,10.0,6.0],"order_crossover":false,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  57.2014  GCA cost:  56.2814  gaps:  -1.60821  -1.10663  0.0120559  CBS cost:  56.9112  gap:  -0.507194  BSP service:  0.972159  nn service:  0.972073  CBS service:  0.971834  test nn service:  0.971944
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1],"mean_demand":[8.0,10.0,6.0],"order_crossover":true,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  42.2539  GCA cost:  41.3894  gaps:  -2.04595  -2.14926  1.64863  CBS cost:  42.2985  gap:  0.105587  BSP service:  0.976427  nn service:  0.975211  CBS service:  0.977936  test nn service:  0.979265
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.2,0.2,0.2,0.2,0.2,0.0,0.0,0.0,0.0],"mean_demand":[8.0,10.0,6.0],"order_crossover":true,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  41.4127  GCA cost:  40.8608  gaps:  -1.33282  -1.20225  0.321269  CBS cost:  41.358  gap:  -0.132167  BSP service:  0.975693  nn service:  0.977899  CBS service:  0.979058  test nn service:  0.9793
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.0,0.0,0.1,0.2,0.3,0.3,0.1,0.0,0.0],"mean_demand":[8.0,10.0,6.0],"order_crossover":true,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  45.8285  GCA cost:  45.6497  gaps:  -0.390149  -0.543821  0.387031  CBS cost:  45.8993  gap:  0.154512  BSP service:  0.977636  nn service:  0.9758  CBS service:  0.977408  test nn service:  0.976173
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.2,0.3,0.4],"mean_demand":[8.0,10.0,6.0],"order_crossover":true,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  50.1419  GCA cost:  49.4283  gaps:  -1.42334  -1.55203  0.254781  CBS cost:  50.2075  gap:  0.130719  BSP service:  0.971353  nn service:  0.973252  CBS service:  0.972753  test nn service:  0.973348
+
+
+Num periods:  5000
+
+
+----------------LowerCostBetter
+{"demand_cycles":[0,1,2],"leadtime":6,"leadtime_distribution":[0.0,0.0,0.0,0.0,0.0,0.0,0.2,0.2,0.2,0.2,0.2],"mean_demand":[8.0,10.0,6.0],"order_crossover":true,"p":69.0,"stdDemand":[2.8284271247461903,10.488088481701515,4.242640687119285]}
+BSP cost:  48.802  GCA cost:  48.2284  gaps:  -1.1754  -0.663567  0.520232  CBS cost:  48.5506  gap:  -0.515255  BSP service:  0.96831  nn service:  0.973697  CBS service:  0.973389  test nn service:  0.974407
+
+
+----------------CASE 4 - 3 Results  
+
+Avg BS Costs:  50.545  , Avg BS - NN Policy Gap:  -1.35827  , Avg CBS - NN Policy Gap:  -1.06614  , Avg Test NN - NN Policy Gap:  0.338822  , Avg BS Service:  0.973769  , Avg CBS Service:  0.974701  , Avg NN Service:  0.974291  , Avg Test NN Service:  0.975098  , Avg NN Policy Costs:  49.8555  , Avg CBS Policy Costs:  50.3816  , Avg BS - CBS Gap:  -0.295275
+----------------CASE 4 - All Results  
+
+Avg BS Costs:  33.9587  , Avg BS - NN Policy Gap:  -4.14999  , Avg CBS - NN Policy Gap:  -1.48179  , Avg Test NN - NN Policy Gap:  0.238838  , Avg BS Service:  0.951315  , Avg CBS Service:  0.949908  , Avg NN Service:  0.950616  , Avg Test NN Service:  0.951538  , Avg NN Policy Costs:  32.8265  , Avg CBS Policy Costs:  33.295  , Avg BS - CBS Gap:  -2.7096DynaPlex: Finalizing. Time Elapsed: 00:09:03.716
+
+JOB STATISTICS
+==============
+Job ID: 13740539
+Cluster: snellius
+User/Group: temizoz/temizoz
+State: RUNNING
+Nodes: 1
+Cores per node: 192
+CPU Utilized: 00:00:00
+CPU Efficiency: 0.00% of 1-06:11:12 core-walltime
+Job Wall-clock time: 00:09:26
+Memory Utilized: 0.00 MB
+Memory Efficiency: 0.00% of 336.00 GB (336.00 GB/node)
+WARNING: Efficiency statistics can only be obtained after the job has ended as seff tool is based on the accounting database data.
