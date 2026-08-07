@@ -1,0 +1,113 @@
+site_name: DynaPlex
+site_description: >-
+  Solving Markov Decision Problems and similar models (POMDP, HMM), written in
+  Python, executed by a fast multi-threaded engine — for Supply Chain,
+  Logistics and Manufacturing.
+site_url: https://dynaplex.github.io/DynaPlex/
+repo_url: https://github.com/DynaPlex/DynaPlex
+repo_name: DynaPlex/DynaPlex
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/images/icon.png
+  favicon: assets/images/icon.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+    - toc.follow
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            # Stubs are authoritative: never fall back to importing/inspecting
+            # compiled modules (keeps pybind plumbing members off the pages and
+            # makes local-tree and installed-wheel builds render identically).
+            allow_inspection: false
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            merge_init_into_class: true
+            separate_signature: true
+            show_signature_annotations: true
+            annotations_path: source
+            show_overloads: false
+            signature_crossrefs: true
+            members_order: source
+            filters: ["!^_"]
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Installation: getting-started/installation.md
+      - Verifying your installation: getting-started/verifying-installation.md
+      - A brief introduction to MDPs: getting-started/introduction-to-mdps.md
+  - Tutorials:
+      - Airplane ticket selling MDP: tutorials/airplane-mdp.md
+      - Airplane MDP — Python code: tutorials/airplane-mdp-code.md
+      - Bin packing MDP: tutorials/binpacking-mdp.md
+      - Bin packing MDP — Python code: tutorials/binpacking-mdp-code.md
+  - Language reference:
+      - Language reference: reference/language-reference.md
+  - API reference:
+      - dynaplex: reference/api/core.md
+      - dynaplex.modelling: reference/api/modelling.md
+      - dynaplex.runtime: reference/api/runtime.md
+  - Community:
+      - Getting help: community/getting-help.md
+      - Planned features: community/roadmap.md
+      - Licensing: community/licensing.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: [docs]
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  version:
+    provider: mike

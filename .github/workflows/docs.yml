@@ -1,0 +1,80 @@
+# Deploys the versioned docs site to gh-pages with mike. The API reference
+# documents the RELEASED library: the workflow installs the dynaplex wheel
+# from PyPI and mkdocstrings/griffe introspects it (plus the shipped _core
+# .pyi stubs). Requires the wheel-based mkdocs.yml (no local `paths:` entry
+# — that phase-1 line is stripped when the public tree is snapshot).
+#
+# Triggers:
+#   - push to main touching docs sources -> redeploys docs for the latest
+#     PyPI release (docs fixes between releases).
+#   - workflow_dispatch -> run manually after a PyPI release; optional
+#     `version` input pins an exact dynaplex version (for back-deploys).
+#
+# The mike version name is MAJOR.MINOR of the installed wheel; `latest`
+# always aliases the newest. First ever run is INSTANTLY live at
+# https://dynaplex.github.io/DynaPlex/ — only enable once site content is
+# final. The job is guarded to the public repo so pushes to the private
+# staging repo never trigger a deploy.
+#
+# Pipeline tested end-to-end 2026-08-06: pip install dynaplex==1.11.0 from
+# PyPI in a fresh venv + `mike deploy 1.11 latest` with the paths:-less
+# config -> strict build clean, gh-pages serves 1.10 + 1.11[latest],
+# version selector populated.
+
+name: docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "dynaplex version to install and document (default: latest on PyPI)"
+        required: false
+
+permissions:
+  contents: write # mike commits + pushes to gh-pages
+
+concurrency:
+  group: docs-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'DynaPlex/DynaPlex'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # mike reads/writes the gh-pages branch history
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install dynaplex + docs tooling
+        run: |
+          python -m pip install --upgrade pip
+          if [ -n "${{ inputs.version }}" ]; then
+            pip install "dynaplex==${{ inputs.version }}"
+          else
+            pip install dynaplex
+          fi
+          pip install mkdocs-material mike "mkdocstrings[python]"
+
+      - name: Configure git identity for mike
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and deploy with mike
+        run: |
+          VERSION=$(python -c "import dynaplex; print('.'.join(dynaplex.__version__.split('.')[:2]))")
+          echo "Deploying docs as version $VERSION (latest)"
+          mike deploy --push --update-aliases "$VERSION" latest
+          mike set-default --push latest

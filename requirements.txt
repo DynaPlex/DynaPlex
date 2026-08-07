@@ -1,0 +1,8 @@
+# Documentation toolchain (pip install -r requirements.txt)
+# NB: never MkDocs 2.0 — it is an incompatible, unlicensed rewrite the
+# Material team warns against; long-term migration path is Zensical
+# (MIT, drop-in for Material projects), once mike + mkdocstrings work there.
+mkdocs>=1.6,<2
+mkdocs-material>=9.5
+mike>=2.1
+mkdocstrings[python]>=0.26

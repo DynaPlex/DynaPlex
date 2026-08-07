@@ -1,0 +1,9 @@
+# Blank issues disabled: the "Something else" form is the escape hatch.
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussion
+    url: https://github.com/DynaPlex/DynaPlex/discussions
+    about: Please ask questions in Discussions rather than in issues.
+  - name: Documentation
+    url: https://dynaplex.github.io/DynaPlex/
+    about: Tutorials, language reference and API reference.

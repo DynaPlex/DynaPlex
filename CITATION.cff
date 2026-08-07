@@ -1,0 +1,21 @@
+# GitHub renders a "Cite this repository" button from this file.
+# Set date-released at go-public.
+cff-version: 1.2.0
+message: "If you use DynaPlex in your research, please cite it as below."
+title: "DynaPlex software library and documentation"
+type: software
+authors:
+  - family-names: Akkerman
+    given-names: Fabian
+  - family-names: Begnardi
+    given-names: Luca
+  - family-names: Lo Bianco
+    given-names: Riccardo
+  - family-names: Temizoz
+    given-names: Tarkan
+  - family-names: Mes
+    given-names: Martijn
+  - family-names: van Jaarsveld
+    given-names: Willem
+repository-code: "https://github.com/DynaPlex/DynaPlex"
+url: "https://dynaplex.github.io/DynaPlex/"

@@ -1,0 +1,39 @@
+name: DynaML feature request
+description: Propose an addition to the DynaML modelling language
+labels: ["enhancement", "dynaml"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        DynaML grows based on what modellers actually need. If you genuinely
+        miss something for applications in supply chain, logistics,
+        transportation, maintenance optimization or similar fields, we want
+        to hear about it. The most useful requests explain the three things
+        below.
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to achieve in your MDP?
+      description: >-
+        The modelling goal, in domain terms — what should the model capture
+        or the policy decide?
+    validations:
+      required: true
+  - type: textarea
+    id: limitation
+    attributes:
+      label: Why is that difficult with current DynaML?
+      description: >-
+        Which limitation gets in the way? Ideally show the snippet you would
+        like to write but cannot, or the workaround you use today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Your proposed addition to DynaML
+      description: >-
+        What should the language support? A sketch of the syntax or API you
+        have in mind is perfect — it does not need to be a full design.
+    validations:
+      required: true

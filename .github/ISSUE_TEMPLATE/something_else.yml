@@ -1,0 +1,19 @@
+name: Something else
+description: Anything that is not a bug report or a DynaML feature request
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For questions, please use
+        [Discussions](https://github.com/DynaPlex/DynaPlex/discussions) —
+        you will usually get an answer faster there. Use this form for
+        anything that is not a bug, a DynaML feature request, or a
+        question: documentation gaps, packaging or installation trouble,
+        tooling suggestions, and so on.
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like to tell us?
+    validations:
+      required: true

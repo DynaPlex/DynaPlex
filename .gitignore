@@ -1,0 +1,30 @@
+# Build output
+build/
+site/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Poetry
+# Note: poetry.lock should be committed for applications/projects to ensure reproducible builds
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
