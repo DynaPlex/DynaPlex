@@ -1,0 +1,3456 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.12/reference/api/randomness/">
+      
+      
+        <link rel="prev" href="../modelling/">
+      
+      
+        <link rel="next" href="../training/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Distributions and randomness - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#distributions-and-randomness" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Distributions and randomness
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#distributions-and-samplers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributions and samplers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiscreteDist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DiscreteDist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.constant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        constant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.custom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        custom
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.poisson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        poisson
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric_from_prob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric_from_prob
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.binomial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        binomial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.negative_binomial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        negative_binomial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.adan_eenige_resing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        adan_eenige_resing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.least_variance_for_moment_fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        least_variance_for_moment_fit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.poisson_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        poisson_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric_from_prob_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric_from_prob_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.binomial_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        binomial_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.negative_binomial_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        negative_binomial_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.adan_eenige_resing_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        adan_eenige_resing_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        min
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.max" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.probability_at" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        probability_at
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.expectation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        expectation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.variance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        variance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        std
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.entropy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        entropy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.fractile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fractile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.conditional_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        conditional_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.alias_sampler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        alias_sampler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.mix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        add
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.take_maximum_with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        take_maximum_with
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.invert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        invert
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AliasSampler
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AliasSampler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler.min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        min
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler.max" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler.sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#random-number-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random number generation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.default_rng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        default_rng
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.Generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.choice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        choice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.random" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        random
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.uniform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uniform
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#distributions-and-samplers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributions and samplers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiscreteDist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DiscreteDist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.constant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        constant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.custom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        custom
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.poisson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        poisson
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric_from_prob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric_from_prob
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.binomial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        binomial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.negative_binomial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        negative_binomial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.adan_eenige_resing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        adan_eenige_resing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.least_variance_for_moment_fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        least_variance_for_moment_fit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.poisson_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        poisson_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.geometric_from_prob_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geometric_from_prob_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.binomial_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        binomial_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.negative_binomial_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        negative_binomial_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.adan_eenige_resing_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        adan_eenige_resing_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        min
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.max" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.probability_at" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        probability_at
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.expectation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        expectation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.variance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        variance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        std
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.entropy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        entropy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.fractile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fractile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.conditional_sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        conditional_sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.alias_sampler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        alias_sampler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.mix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        add
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.take_maximum_with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        take_maximum_with
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.DiscreteDist.invert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        invert
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AliasSampler
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AliasSampler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler.min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        min
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler.max" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.AliasSampler.sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#random-number-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random number generation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.default_rng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        default_rng
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.Generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.choice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        choice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.random" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        random
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.Generator.uniform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uniform
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="distributions-and-randomness">Distributions and randomness<a class="headerlink" href="#distributions-and-randomness" title="Permanent link">&para;</a></h1>
+<p>How random events are modelled and drawn. For <em>event distributions</em>,
+prefer building a <a class="autorefs autorefs-internal" title="DiscreteDist" href="#dynaplex.modelling.DiscreteDist"><code>DiscreteDist</code></a> (plus
+a precomputed <code>dist.alias_sampler()</code>) over rolling your own from raw
+draws; the generators further down are the underlying source of
+randomness. The distribution classes live in <code>dynaplex.modelling</code>; the
+generators are imported from the top-level <code>dynaplex</code> package.</p>
+<h2 id="distributions-and-samplers">Distributions and samplers<a class="headerlink" href="#distributions-and-samplers" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.DiscreteDist" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DiscreteDist</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>An integer-valued probability distribution as an immutable value.</p>
+<p>Stores a trimmed probability mass function plus an offset: the support is
+<code>[offset, offset + len(probs) - 1]</code>. Construct via the classmethod
+factories (<code>DiscreteDist.poisson(3.2)</code>, <code>DiscreteDist.custom(probs)</code>,
+...), typically in an MDP's <code>__init__</code>, and store in a (const) field.
+All methods are callable from compiled DynaML code.</p>
+<p>Whenever the distribution is <em>static</em> (the same for every state — the
+usual case), precompute an O(1) sampler once via <code>alias_sampler</code> and draw
+through that; <code>sample</code> is for the exceptional state-dependent case.</p>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dist</span> <span class="o">=</span> <span class="n">DiscreteDist</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="mf">3.2</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">mean</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">expectation</span><span class="p">()</span>       <span class="c1"># 3.2</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">x</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">rng</span><span class="p">)</span>            <span class="c1"># one O(n) inverse-CDF draw</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">sampler</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">alias_sampler</span><span class="p">()</span>  <span class="c1"># build once ...</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">y</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">rng</span><span class="p">)</span>         <span class="c1"># ... then O(1) per draw</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.constant" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">constant</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.constant" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">constant</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The point mass at <code>value</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.custom" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">custom</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.custom" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">custom</span><span class="p">(</span><span class="n">probs</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Array1D
+
+
+  
+      module-attribute
+   (dynaplex.modelling.array_types.Array1D)" href="../modelling/#dynaplex.modelling.Array1D">Array1D</a></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.float64">float64</span></span><span class="p">],</span> <span class="n">offset</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A distribution from an explicit PMF over <code>offset, offset+1, ...</code> (validated + trimmed).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.poisson" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">poisson</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.poisson" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">poisson</span><span class="p">(</span><span class="n">mean</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Poisson with the given mean (&gt;= 0).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.geometric" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">geometric</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.geometric" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">geometric</span><span class="p">(</span><span class="n">mean</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Geometric on {0, 1, ...} with the given mean (&gt;= 0): success prob 1/(1+mean).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.geometric_from_prob" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">geometric_from_prob</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.geometric_from_prob" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">geometric_from_prob</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Geometric on {0, 1, ...}: P(X == k) = p * (1-p)**k, with p in (0, 1].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.binomial" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">binomial</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.binomial" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">binomial</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Binomial: <code>n</code> trials (&gt;= 0), success probability <code>p</code> in [0, 1].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.negative_binomial" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">negative_binomial</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.negative_binomial" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">negative_binomial</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Negative binomial: <code>r</code> &gt; 0 successes, success probability <code>p</code> in (0, 1].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.adan_eenige_resing" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">adan_eenige_resing</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.adan_eenige_resing" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">adan_eenige_resing</span><span class="p">(</span><span class="n">mean</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">stdev</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Build the distribution with the given first two moments, by the fit of
+Adan, van Eenige &amp; Resing (1995).</p>
+<p>Turns (mean, standard deviation) into a concrete <code>DiscreteDist</code>:
+selects Poisson / mixed-binomial / mixed-negative-binomial /
+mixed-geometric by <code>a = cv**2 - 1/mean</code>. Requires <code>mean &gt; 0</code>,
+<code>stdev &gt;= 0</code> and <code>stdev**2 &gt; delta*(1-delta)</code> with
+<code>delta = mean - floor(mean)</code> (or a near-integer mean with near-zero
+stdev); raises DynaPlexError otherwise — see
+<code>least_variance_for_moment_fit</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.least_variance_for_moment_fit" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">least_variance_for_moment_fit</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.least_variance_for_moment_fit" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">least_variance_for_moment_fit</span><span class="p">(</span><span class="n">mean</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The least variance a distribution with the given mean can have under the AER fit.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.poisson_sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">poisson_sample</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.poisson_sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">poisson_sample</span><span class="p">(</span><span class="n">mean</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw from Poisson(mean), mean &gt;= 0.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.geometric_sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">geometric_sample</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.geometric_sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">geometric_sample</span><span class="p">(</span><span class="n">mean</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw from the geometric on {0, 1, ...} with the given mean (&gt;= 0).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.geometric_from_prob_sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">geometric_from_prob_sample</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.geometric_from_prob_sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">geometric_from_prob_sample</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw from the geometric on {0, 1, ...} with success prob p in (0, 1].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.binomial_sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">binomial_sample</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.binomial_sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">binomial_sample</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw from Binomial(n, p).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.negative_binomial_sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">negative_binomial_sample</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.negative_binomial_sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">negative_binomial_sample</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw from NegativeBinomial(r, p); r is integral here (legacy sampler).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.adan_eenige_resing_sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">adan_eenige_resing_sample</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.DiscreteDist.adan_eenige_resing_sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">adan_eenige_resing_sample</span><span class="p">(</span><span class="n">mean</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">stdev</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw from the Adan-van Eenige-Resing two-moment fit (component picked per draw, legacy-style).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.min" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">min</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.min" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">min</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Smallest value in the support.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.max" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">max</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.max" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">max</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Largest value in the support.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.probability_at" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">probability_at</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.probability_at" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">probability_at</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>P(X == value); 0.0 outside the support.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.expectation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">expectation</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.expectation" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">expectation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>E[X].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.variance" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">variance</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.variance" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">variance</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Var[X].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.std" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">std</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.std" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">std</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Standard deviation of X.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.entropy" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">entropy</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.entropy" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">entropy</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Shannon entropy (natural log).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.fractile" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">fractile</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.fractile" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">fractile</span><span class="p">(</span><span class="n">alpha</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Smallest value v with P(X &lt;= v) &gt;= alpha (single cumulative scan).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sample</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">sample</span><span class="p">(</span><span class="n">rng</span><span class="p">:</span> <span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.random">random</span></span><span class="o">.</span><span class="n"><span title="numpy.random.Generator">Generator</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Generator (dynaplex.modelling.generator.Generator)" href="#dynaplex.Generator">Generator</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw: inverse-CDF linear scan on rng.random() (parity-safe).</p>
+<div class="admonition tip">
+<p class="admonition-title">Static distribution? Use an alias sampler instead.</p>
+<p>If the distribution is the same for every state — the usual
+case, built once in the MDP's <code>__init__</code> — do not draw through
+this method. Precompute
+<a class="autorefs autorefs-internal" title="alias_sampler" href="#dynaplex.modelling.DiscreteDist.alias_sampler"><code>alias_sampler</code></a>
+once, store it next to the distribution, and call
+<code>sampler.sample(rng)</code>: O(1) per draw instead of a scan over
+the support. Reserve <code>dist.sample</code> for the exceptional case
+where the distribution object itself depends on the current
+state (e.g. non-stationary demand).</p>
+</div>
+<p>The union parameter declares an overload set: the method compiles once
+per generator type (numpy PCG64 / DynaPlex-native xoshiro256++) and the
+call site dispatches by exact argument type.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.conditional_sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">conditional_sample</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.conditional_sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">conditional_sample</span><span class="p">(</span><span class="n">rng</span><span class="p">:</span> <span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.random">random</span></span><span class="o">.</span><span class="n"><span title="numpy.random.Generator">Generator</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Generator (dynaplex.modelling.generator.Generator)" href="#dynaplex.Generator">Generator</a></span><span class="p">,</span> <span class="n">minimum_value</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw of X | X &gt;= minimum_value (rescaled uniform, no rejection).</p>
+<p>Union rng parameter = overload set, as in <code>sample</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.alias_sampler" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">alias_sampler</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.alias_sampler" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">alias_sampler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="AliasSampler (dynaplex.modelling.samplers.AliasSampler)" href="#dynaplex.modelling.AliasSampler">AliasSampler</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Precompute an <code>AliasSampler</code> for this distribution — O(1) per draw,
+two rng draws. The right choice for long-lived distributions sampled
+many times.</p>
+<p>Build once (e.g. in the MDP <code>__init__</code>) and store alongside the
+distribution; see <code>modelling/samplers.py</code> for the trade-offs.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.mix" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">mix</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.mix" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">mix</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span><span class="p">,</span> <span class="n">prob_of_other</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The mixture (1 - prob_of_other) * self + prob_of_other * other.</p>
+<p>Kernel-backed on BOTH doors: CPython calls the pybind door here;
+compiled code never reaches this body — the frontend intercepts the
+method call and lowers it to the DP!dist.mix builtin running the same
+kernel. (The retired pure-Python loop body survives as the bit-identity
+mirror in test_discrete_dist.py.)</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.add" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">add</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.add" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">add</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The distribution of X + Y for independent X ~ self, Y ~ other (convolution).</p>
+<p>Kernel-backed on BOTH doors, like <code>mix</code>: pybind here, the DP!dist.add
+builtin in compiled code.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.take_maximum_with" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">take_maximum_with</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.take_maximum_with" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">take_maximum_with</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The distribution of max(X, value).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.DiscreteDist.invert" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">invert</span>
+
+
+<a href="#dynaplex.modelling.DiscreteDist.invert" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">invert</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DiscreteDist (dynaplex.modelling.discrete_dist.DiscreteDist)" href="#dynaplex.modelling.DiscreteDist">DiscreteDist</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The distribution of -X.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.AliasSampler" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">AliasSampler</span>
+
+
+<a href="#dynaplex.modelling.AliasSampler" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Precomputed Walker/Vose alias-table sampler for a <code>DiscreteDist</code>.</p>
+<p>O(1) per draw regardless of support size, two <code>rng.random()</code> per draw.
+The recommended sampler for long-lived distributions sampled many times;
+note the draw stream differs from <code>DiscreteDist.sample</code>. Build via
+<code>dist.alias_sampler()</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.AliasSampler.min" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">min</span>
+
+
+<a href="#dynaplex.modelling.AliasSampler.min" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">min</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Smallest value in the support.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.AliasSampler.max" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">max</span>
+
+
+<a href="#dynaplex.modelling.AliasSampler.max" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">max</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Largest value in the support.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.AliasSampler.sample" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sample</span>
+
+
+<a href="#dynaplex.modelling.AliasSampler.sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">sample</span><span class="p">(</span><span class="n">rng</span><span class="p">:</span> <span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.random">random</span></span><span class="o">.</span><span class="n"><span title="numpy.random.Generator">Generator</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Generator (dynaplex.modelling.generator.Generator)" href="#dynaplex.Generator">Generator</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One draw: uniform bucket, then a biased coin — two draws, O(1).</p>
+<p>Union rng parameter = overload set, as in <code>DiscreteDist.sample</code>.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="random-number-generation">Random number generation<a class="headerlink" href="#random-number-generation" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.default_rng" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">default_rng</span>
+
+
+<a href="#dynaplex.default_rng" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Generator (dynaplex._core.Generator)" href="#dynaplex.Generator">Generator</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Create a DynaPlex-native (xoshiro256++) RNG from a single int64 seed.</p>
+<p>In compiled/interpreted code this lowers to the C++ DP!DPNativeGenerator; in CPython it
+returns the bound <code>Generator</code> (same shared C++ kernels, bit-identical draws).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.Generator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Generator</span>
+
+
+<a href="#dynaplex.Generator" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">Generator</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.SupportsInt">SupportsInt</span></span> <span class="o">|</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.SupportsIndex">SupportsIndex</span></span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>DynaPlex-native RNG (xoshiro256++, SplitMix64 seeding) — what dynaplex.default_rng(seed) returns in CPython. random()/uniform()/choice() run the exact backend kernels (bit-identical to compiled code); <code>capsule</code> + <code>lock</code> implement the numpy BitGenerator protocol over the same state, so np.random.Generator(gen) works too.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="dynaplex.Generator.state" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">state</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+<a href="#dynaplex.Generator.state" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">state</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The 4 xoshiro256++ lanes as a tuple of uint64 ints (get/set).</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.Generator.choice" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">choice</span>
+
+
+<a href="#dynaplex.Generator.choice" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">choice</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.Any">Any</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.Any">Any</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A random element from <code>a</code> — or from <code>range(a)</code> when <code>a</code> is an int — optionally weighted by a probability sequence <code>p</code>. Runs the exact backend kernel, bit-identical to compiled DynaML code.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.Generator.random" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">random</span>
+
+
+<a href="#dynaplex.Generator.random" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">random</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A uniform random float in [0.0, 1.0). Runs the exact backend kernel, bit-identical to compiled DynaML code.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.Generator.uniform" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">uniform</span>
+
+
+<a href="#dynaplex.Generator.uniform" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">:</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.SupportsFloat">SupportsFloat</span></span> <span class="o">|</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.SupportsIndex">SupportsIndex</span></span><span class="p">,</span> <span class="n">high</span><span class="p">:</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.SupportsFloat">SupportsFloat</span></span> <span class="o">|</span> <span class="n"><span title="typing">typing</span></span><span class="o">.</span><span class="n"><span title="typing.SupportsIndex">SupportsIndex</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A uniform random float in [low, high). Runs the exact backend kernel, bit-identical to compiled DynaML code.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../modelling/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Modelling MDPs">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Modelling MDPs
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../training/" class="md-footer__link md-footer__link--next" aria-label="Next: Training policies">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Training policies
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

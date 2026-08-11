@@ -1,0 +1,4222 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.12/reference/api/modelling/">
+      
+      
+        <link rel="prev" href="../../troubleshooting/">
+      
+      
+        <link rel="next" href="../randomness/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Modelling MDPs - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#modelling-mdps" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Modelling MDPs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-mdp-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The MDP contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MDPProtocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MDPProtocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.get_initial_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_initial_state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.modify_state_with_event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        modify_state_with_event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.modify_state_with_action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        modify_state_with_action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.write_action_validity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        write_action_validity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policies-the-two-shapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policies: the two shapes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.PolicyProtocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolicyProtocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PolicyProtocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.PolicyProtocol.get_action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_action
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ContextPolicyProtocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ContextPolicyProtocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ContextPolicyProtocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ContextPolicyProtocol.get_action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_action
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#states-and-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        States and trajectories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.StateCategory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StateCategory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.HorizonType" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HorizonType
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.TrajectoryContext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TrajectoryContext
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.make_context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        make_context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.reseed_context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reseed_context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Validity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#const-classes-and-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Const classes and annotations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.const_dataclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        const_dataclass
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Const" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Const
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Rank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rank
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Array1D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array1D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Array2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Array3D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstList" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstList
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstArray1D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstArray1D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstArray2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstArray2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstArray3D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstArray3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copying-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copying state
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="clone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.clone.clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.clone.clone_into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone_into
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validating-your-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validating your model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.assert_mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assert_mdp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.assert_policy_for_mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assert_policy_for_mdp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.assert_featurizer_for_mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assert_featurizer_for_mdp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.implements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        implements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.conforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        conforms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.DynaPlexError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynaPlexError
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-mdp-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The MDP contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MDPProtocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MDPProtocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.get_initial_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_initial_state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.modify_state_with_event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        modify_state_with_event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.modify_state_with_action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        modify_state_with_action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.MDPProtocol.write_action_validity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        write_action_validity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policies-the-two-shapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policies: the two shapes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.PolicyProtocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolicyProtocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PolicyProtocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.PolicyProtocol.get_action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_action
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ContextPolicyProtocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ContextPolicyProtocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ContextPolicyProtocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ContextPolicyProtocol.get_action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_action
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#states-and-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        States and trajectories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.StateCategory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StateCategory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.HorizonType" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HorizonType
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.TrajectoryContext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TrajectoryContext
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.make_context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        make_context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.reseed_context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reseed_context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Validity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#const-classes-and-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Const classes and annotations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.const_dataclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        const_dataclass
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Const" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Const
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Rank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rank
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Array1D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array1D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Array2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.Array3D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstList" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstList
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstArray1D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstArray1D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstArray2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstArray2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.ConstArray3D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConstArray3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copying-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copying state
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="clone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.clone.clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.modelling.clone.clone_into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone_into
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validating-your-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validating your model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.assert_mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assert_mdp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.assert_policy_for_mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assert_policy_for_mdp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.assert_featurizer_for_mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assert_featurizer_for_mdp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.implements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        implements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.modelling.conforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        conforms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.DynaPlexError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynaPlexError
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="modelling-mdps">Modelling MDPs<a class="headerlink" href="#modelling-mdps" title="Permanent link">&para;</a></h1>
+<p>Everything you import when writing an MDP, a State class, or a policy.
+These names live in <code>dynaplex.modelling</code>. Event distributions and random
+number generation are on the
+<a href="../randomness/">distributions &amp; randomness page</a>; the language rules for
+compiled code are in the <a href="../../language-reference/">language reference</a>.</p>
+<h2 id="the-mdp-contract">The MDP contract<a class="headerlink" href="#the-mdp-contract" title="Permanent link">&para;</a></h2>
+<p>There is no universal state class in DynaPlex. Each MDP defines its own
+State: a plain dataclass holding exactly the quantities that describe the
+system between decisions, plus one required field, <code>category</code>, which tells
+the engine whether the state next expects an event or an action. For the
+<a href="../../../tutorials/airplane-mdp/">airplane ticket MDP</a>, that looks like:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">State</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">remaining_days</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">remaining_seats</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">price_offered_per_seat</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">category</span><span class="p">:</span> <span class="n">StateCategory</span> <span class="o">=</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">AWAIT_EVENT</span>
+</code></pre></div>
+<p>In the signatures below, <code>StateType</code> is a type variable standing for
+whatever State class <em>your</em> MDP defines — <code>MDPProtocol</code> is generic in it.
+An MDP, then, is a class whose methods operate on that state: it creates
+one (<code>get_initial_state</code>) and modifies it in place
+(<code>modify_state_with_event</code>, <code>modify_state_with_action</code>,
+<code>write_action_validity</code>). A policy operates on the same State class, and
+this shared type is what ties them together: <code>assert_policy_for_mdp</code>
+lets the type checker verify that a policy's <code>StateType</code> matches its
+MDP's.</p>
+<div class="admonition note">
+<p class="admonition-title">What is a protocol, and why the <code>assert_*</code> functions?</p>
+<p>A <a href="https://typing.python.org/en/latest/spec/protocol.html">protocol</a> is
+Python's way of describing an interface by <em>shape</em> rather than by
+inheritance: any class that has the listed attributes and methods
+satisfies <code>MDPProtocol</code> — you never subclass it or import it into your
+model. That leaves one gap: nothing tells you when your class <em>doesn't</em>
+match, e.g. a misspelled method or a wrong signature. That is what
+<code>assert_mdp</code> and friends are for. They do nothing at runtime, but a call
+like <code>assert_mdp(mdp)</code> gives a type checker such as
+<a href="https://microsoft.github.io/pyright/">pyright</a> a place to verify
+conformance, so <code>pyright my_model.py</code> reports exactly which member is
+missing or mistyped — before anything is run or compiled.</p>
+</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.MDPProtocol" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">MDPProtocol</span>
+
+
+<a href="#dynaplex.modelling.MDPProtocol" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Protocol">Protocol</span>[<span title="dynaplex.modelling.protocols.StateType">StateType</span>, <span title="dynaplex.modelling.protocols.ContextType">ContextType</span>]</code></p>
+
+
+
+        <p>The interface every DynaPlex MDP class implements.</p>
+<p>An MDP class provides two attributes — <code>horizon_type</code> and
+<code>num_actions</code> — and four methods operating on a user-defined State
+class: <code>get_initial_state</code>, <code>modify_state_with_event</code>,
+<code>modify_state_with_action</code>, and <code>write_action_validity</code>.</p>
+<p>This is a <em>structural</em> protocol: any class with these members satisfies
+it, no inheritance needed. Call <code>assert_mdp</code> on an instance to have the
+type checker verify conformance (a no-op at runtime).</p>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <p>A minimal skeleton (see the
+<a href="https://dynaplex.github.io/DynaPlex/latest/tutorials/airplane-mdp/">tutorials</a> for complete
+models):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@const_dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyMDP</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">horizon_type</span><span class="p">:</span> <span class="n">HorizonType</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">num_actions</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">TrajectoryContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyState</span><span class="p">:</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="o">...</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">modify_state_with_event</span><span class="p">(</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">MyState</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">TrajectoryContext</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        <span class="o">...</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">modify_state_with_action</span><span class="p">(</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">MyState</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">TrajectoryContext</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="o">...</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_action_validity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">MyState</span><span class="p">,</span> <span class="n">valid</span><span class="p">:</span> <span class="n">Validity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        <span class="o">...</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="n">assert_mdp</span><span class="p">(</span><span class="n">MyMDP</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>  <span class="c1"># pyright verifies protocol conformance</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.MDPProtocol.get_initial_state" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_initial_state</span>
+
+
+<a href="#dynaplex.modelling.MDPProtocol.get_initial_state" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_initial_state</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Generates and returns an initial state of the MDP.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Trajectory context; its <code>rng</code> supports a random initial
+state, and its <code>cumulative_cost</code> accumulates costs (update it
+in place with <code>+=</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.StateType">StateType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The initial state of the MDP.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.MDPProtocol.modify_state_with_event" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">modify_state_with_event</span>
+
+
+<a href="#dynaplex.modelling.MDPProtocol.modify_state_with_event" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">modify_state_with_event</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate an event and modify state in place.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>state</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.StateType">StateType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Current state (modified in place)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Trajectory context containing rng and cumulative_cost</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.MDPProtocol.modify_state_with_action" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">modify_state_with_action</span>
+
+
+<a href="#dynaplex.modelling.MDPProtocol.modify_state_with_action" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">modify_state_with_action</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply an action to the state (modify in place).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>state</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.StateType">StateType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Current state (modified in place)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Trajectory context containing cumulative_cost (updated in place)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>action</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Action to apply to the state</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.MDPProtocol.write_action_validity" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">write_action_validity</span>
+
+
+<a href="#dynaplex.modelling.MDPProtocol.write_action_validity" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">write_action_validity</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">,</span> <span class="n">valid</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Validity
+
+
+  
+      module-attribute
+   (dynaplex.modelling.features.Validity)" href="#dynaplex.modelling.Validity">Validity</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+<details class="write-action-validity" open>
+  <summary>valid.set(i, True) if action i is allowed in the current state,</summary>
+  <p>valid.set(i, False) otherwise — for EVERY i in range(num_actions).</p>
+</details>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>state</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.StateType">StateType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Current state</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>valid</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="Validity
+
+
+  
+      module-attribute
+   (dynaplex.modelling.features.Validity)" href="#dynaplex.modelling.Validity">Validity</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Validity sink to write the mask to (not pre-initialised)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="policies-the-two-shapes">Policies: the two shapes<a class="headerlink" href="#policies-the-two-shapes" title="Permanent link">&para;</a></h2>
+<p>A policy maps a decision state to an action index. DynaPlex recognizes
+exactly two <code>get_action</code> signatures and tells the policy kinds apart by
+shape:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nd">@const_dataclass</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">GreedyPolicy</span><span class="p">:</span>                    <span class="c1"># deterministic — by construction</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">mdp</span><span class="p">:</span> <span class="n">MyMDP</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">MyState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nd">@const_dataclass</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">NoisyPolicy</span><span class="p">:</span>                     <span class="c1"># context-driven</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">mdp</span><span class="p">:</span> <span class="n">MyMDP</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">MyState</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">TrajectoryContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+</code></pre></div>
+<p>A policy with the <code>(self, state)</code> signature is deterministic <strong>by
+construction</strong>: it is never handed a source of randomness, so there is
+nothing it could draw from. Adding the second parameter — the exact name
+<code>context</code> with the exact annotation <code>TrajectoryContext</code> — makes the policy
+<em>context-driven</em>: the built-in algorithms (the
+<a href="../../../training/policy-comparison/">comparer</a>, <a href="../../../training/dcl/">DCL</a>)
+pass the trajectory's context on every call. Through it the policy can use:</p>
+<ul>
+<li><strong><code>context.policy_rng</code></strong> — a random stream dedicated to policy draws,
+  separate from the event stream and reseeded per trajectory from global
+  coordinates. Results with a context-driven policy are therefore
+  reproducible, independent of the number of worker threads, and safe for
+  <a href="../../../training/policy-comparison/">common-random-number</a> comparisons.</li>
+<li><strong><code>context.valid</code></strong> — a reusable action-validity scratch (a
+  <code>ValidityWriter</code> sized to the MDP's action space). Hand it to
+  <code>mdp.write_action_validity(state, context.valid)</code> and read the mask back
+  from it — no per-call allocation. It is overwritten on every use and
+  carries no meaning between calls.</li>
+</ul>
+<p>The shape is validated before anything compiles or runs: exact parameter
+names, exact annotations, plain positional parameters, no defaults and no
+<code>*args</code>. Anything else is rejected with an error naming both accepted
+signatures.</p>
+<div class="admonition warning">
+<p class="admonition-title">Rules a context-driven policy must follow</p>
+<p>The context also exposes trajectory state that a policy must leave
+alone. Draw <strong>only</strong> from <code>context.policy_rng</code> — never from
+<code>context.rng</code>, which is the MDP's event stream (touching it silently
+breaks common-random-number comparisons) — and never write
+<code>context.cumulative_cost</code> or <code>context.time_elapsed</code>. These rules are
+not yet enforced mechanically; today they are part of the contract.</p>
+</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.PolicyProtocol" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PolicyProtocol</span>
+
+
+<a href="#dynaplex.modelling.PolicyProtocol" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Protocol">Protocol</span>[<span title="dynaplex.modelling.protocols.PolicyStateType">PolicyStateType</span>]</code></p>
+
+
+
+        <p>The interface every DynaPlex policy class implements.</p>
+<p>A policy provides one method: <code>get_action(state) -&gt; int</code>, mapping a
+state awaiting a decision to the index of the chosen action. This is a
+<em>structural</em> protocol — no inheritance needed; call <code>assert_policy_for_mdp</code>
+to have the type checker verify that a policy fits an MDP (their State
+types must match).</p>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <p>A minimal rule-based policy (see the
+<a href="https://dynaplex.github.io/DynaPlex/latest/tutorials/airplane-mdp/">tutorials</a> for complete
+models):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@const_dataclass</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">ThresholdPolicy</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">mdp</span><span class="p">:</span> <span class="n">MyMDP</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">MyState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">inventory</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="k">else</span> <span class="mi">0</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">assert_policy_for_mdp</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">ThresholdPolicy</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.PolicyProtocol.get_action" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_action</span>
+
+
+<a href="#dynaplex.modelling.PolicyProtocol.get_action" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_action</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.PolicyStateType">PolicyStateType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Determine which action to take given the current state.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>state</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.PolicyStateType">PolicyStateType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Current state</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Action index (must be valid for the current state according to the MDP)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.ContextPolicyProtocol" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ContextPolicyProtocol</span>
+
+
+<a href="#dynaplex.modelling.ContextPolicyProtocol" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Protocol">Protocol</span>[<span title="dynaplex.modelling.protocols.PolicyStateType">PolicyStateType</span>]</code></p>
+
+
+
+        <p>The interface of a CONTEXT-DRIVEN DynaPlex policy.</p>
+<p>Identical to <code>PolicyProtocol</code> except that <code>get_action</code> receives a second
+argument: the trajectory's <code>TrajectoryContext</code>. Through it the policy may
+draw from the dedicated POLICY stream (<code>context.policy_rng</code> — independent
+of the event stream, so policy draws never perturb event draws and
+common-random-number comparisons across policies stay valid) and use the
+context's reusable action-validity scratch (<code>context.valid</code>, a
+<code>ValidityWriter</code> to hand to <code>mdp.write_action_validity</code> — no per-call
+allocation).</p>
+<p>The two signatures are how DynaPlex tells the policy kinds apart: a policy
+whose <code>get_action</code> takes <code>(self, state)</code> is deterministic BY
+CONSTRUCTION (it is never handed a source of randomness); adding the
+<code>context: TrajectoryContext</code> parameter — that exact name and annotation —
+makes it context-driven, and the built-in algorithms (PolicyComparer, DCL)
+hand it the per-trajectory context. The context's policy stream is reseeded
+per trajectory from global coordinates, so results stay reproducible and
+worker-count-invariant.</p>
+<p>Convention (not yet enforced): a policy must only use <code>context.policy_rng</code>
+for randomness — never <code>context.rng</code>, the event stream — and must not
+write <code>context.cumulative_cost</code> / <code>context.time_elapsed</code>. Mechanical
+validation of this contract is future work (roadmap
+mdp_validation_improvements).</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>```python
+@const_dataclass
+class EpsilonGreedyPolicy:
+    mdp: MyMDP
+    eps: float
+
+    def get_action(self, state: MyState, context: TrajectoryContext) -&gt; int:
+        if context.policy_rng.random() &lt; self.eps:
+            return context.policy_rng.choice(2)
+        return 1 if state.inventory &lt; 5 else 0
+```
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.ContextPolicyProtocol.get_action" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_action</span>
+
+
+<a href="#dynaplex.modelling.ContextPolicyProtocol.get_action" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_action</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.protocols.PolicyStateType">PolicyStateType</span></span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TrajectoryContext
+
+
+  
+      dataclass
+   (dynaplex.modelling.trajectory_context.TrajectoryContext)" href="#dynaplex.modelling.TrajectoryContext">TrajectoryContext</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Determine which action to take given the current state.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>state</code>
+            </td>
+            <td>
+                  <code><span title="dynaplex.modelling.protocols.PolicyStateType">PolicyStateType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Current state</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TrajectoryContext
+
+
+  
+      dataclass
+   (dynaplex.modelling.trajectory_context.TrajectoryContext)" href="#dynaplex.modelling.TrajectoryContext">TrajectoryContext</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The trajectory's context — use <code>context.policy_rng</code>
+for draws and <code>context.valid</code> as validity scratch</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Action index (must be valid for the current state according to the MDP)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="states-and-trajectories">States and trajectories<a class="headerlink" href="#states-and-trajectories" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.StateCategory" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">StateCategory</span>
+
+
+<a href="#dynaplex.modelling.StateCategory" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>The category of a state, determining which operation runs next.</p>
+<p>Every DynaPlex state carries a <code>category</code> field of this type; the
+trajectory loop dispatches on it:</p>
+<ul>
+<li>AWAIT_EVENT: a random event is next — <code>modify_state_with_event</code> runs</li>
+<li>AWAIT_ACTION: a decision is next — the policy picks an action and
+  <code>modify_state_with_action</code> runs</li>
+<li>FINAL: terminal state (finite-horizon MDPs); the trajectory has ended</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.HorizonType" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">HorizonType</span>
+
+
+<a href="#dynaplex.modelling.HorizonType" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>Horizon type determines whether the MDP has a finite or infinite horizon.</p>
+<ul>
+<li>FINITE: Episodes naturally terminate (reach StateCategory.FINAL)</li>
+<li>INFINITE: Episodes never naturally terminate (simulation must be limited externally)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.TrajectoryContext" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TrajectoryContext</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.TrajectoryContext" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">TrajectoryContext</span><span class="p">(</span><span class="n">rng</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Generator (dynaplex.modelling.generator.Generator)" href="../randomness/#dynaplex.Generator">Generator</a></span><span class="p">,</span> <span class="n">policy_rng</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Generator (dynaplex.modelling.generator.Generator)" href="../randomness/#dynaplex.Generator">Generator</a></span><span class="p">,</span> <span class="n">cumulative_cost</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">time_elapsed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">valid</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.features.ValidityWriter">ValidityWriter</span></span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Context information for a trajectory/episode.</p>
+<p>This is the standard trajectory context used by DynaPlex MDPs.
+Users can extend this class if they need additional trajectory-level
+statistics or state, but at minimum it must contain:
+- rng: Random number generator for sampling events
+- policy_rng: Random number generator for randomized policies
+- cumulative_cost: Running total of costs accumulated during the trajectory</p>
+<p>Construct fresh contexts with <code>make_context(mdp, seed)</code> rather than calling
+the constructor directly — the factory derives an independent stream for
+each generator from a single seed and sizes the validity scratch for the
+MDP's action space.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.make_context" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_context</span>
+
+
+<a href="#dynaplex.modelling.make_context" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">make_context</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="s1">&#39;MDPProtocol&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">eval</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="TrajectoryContext
+
+
+  
+      dataclass
+   (dynaplex.modelling.trajectory_context.TrajectoryContext)" href="#dynaplex.modelling.TrajectoryContext">TrajectoryContext</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Build a fresh TrajectoryContext for <code>mdp</code> whose generators carry
+independent streams.</p>
+<p>The coordinates are those of <code>combine_seeds</code>: distinct (eval, seed, sample,
+trajectory) tuples yield non-overlapping streams by construction, and the
+event and policy generators get one stream each. The context's validity
+scratch is sized to <code>mdp.num_actions</code>. Plain CPython convenience — inside
+compiled kernels, construct once and use <code>reseed_context</code> per trajectory
+instead.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mdp</code>
+            </td>
+            <td>
+                  <code>&#39;MDPProtocol&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The MDP the context will drive (only <code>num_actions</code> is read,
+to size the action-validity scratch).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>seed</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Global experiment seed (the combine_seeds <code>global_seed</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>eval</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Select the evaluation seed space (disjoint from training).</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample coordinate, when one context per sample is needed.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>trajectory</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Trajectory coordinate, when one context per trajectory
+is needed.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.reseed_context" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">reseed_context</span>
+
+
+<a href="#dynaplex.modelling.reseed_context" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">reseed_context</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TrajectoryContext
+
+
+  
+      dataclass
+   (dynaplex.modelling.trajectory_context.TrajectoryContext)" href="#dynaplex.modelling.TrajectoryContext">TrajectoryContext</a></span><span class="p">,</span> <span class="nb">eval</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">global_seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Reset <code>ctx</code> in place for a fresh trajectory at the given seed coordinates.</p>
+<p>Reseeds both generators (each on its own stream) and zeroes
+<code>cumulative_cost</code>/<code>time_elapsed</code>. Allocation-free, and runs identically
+in CPython and compiled code — after this call the context is
+indistinguishable from <code>make_context</code> at the same coordinates. Argument
+order follows <code>combine_seeds</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.Validity" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">Validity</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.Validity" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Validity</span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.features._Validity">_Validity</span></span><span class="p">,</span> <span class="n"><span title="dynaplex.modelling.interpreter_impl.InterpreterImpl">InterpreterImpl</span></span><span class="p">(</span><span class="n"><span title="dynaplex.modelling.features.ValidityWriter">ValidityWriter</span></span><span class="p">)]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Annotation for the action-validity mask parameter of <code>write_action_validity</code>.</p>
+<p>The MDP method signature is <code>def write_action_validity(self, state, valid:
+Validity) -&gt; None</code>; inside, mark allowed actions with <code>valid.set(a, cond)</code>.
+At least one action must remain valid in every AWAIT_ACTION state.</p>
+<p>For a worked example (accept/reject constrained by remaining seats), see
+<code>write_action_validity</code> in the
+<a href="https://dynaplex.github.io/DynaPlex/latest/tutorials/airplane-mdp/">airplane tutorial code</a>.</p>
+
+    </div>
+
+</div><h2 id="const-classes-and-annotations">Const classes and annotations<a class="headerlink" href="#const-classes-and-annotations" title="Permanent link">&para;</a></h2>
+<p>Compiled DynaML code relies on a few concepts that standard Python has no
+syntax for — most importantly <strong>constness</strong>: MDP and policy objects are
+read-only during a trajectory, and marking their classes with
+<code>@const_dataclass</code> lets the compiler enforce and exploit that. Similarly,
+the compiler needs some information that ordinary annotations do not
+carry, such as the rank of a NumPy array field; the <code>Rank</code>, <code>Array*D</code> and
+<code>ConstArray*D</code> annotations supply it. The names below are the API for
+declaring all of this; what constness <em>means</em> inside compiled methods,
+and the rules for array dtypes and ranks, are explained in the language
+reference under
+<a href="../../language-reference/#const-classes-and-read-only-containers">const classes and read-only containers</a>
+and <a href="../../language-reference/#numpy-arrays">NumPy arrays</a>.</p>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.const_dataclass" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">const_dataclass</span>
+
+
+<a href="#dynaplex.modelling.const_dataclass" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">const_dataclass</span><span class="p">(</span><span class="n">_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Declare a read-only DynaML dataclass — the standard decorator for MDP
+and policy classes.</p>
+<p>Combines <code>@dataclass</code> with const marking: every instance of the
+decorated class (and everything reachable through its object-typed
+fields) is <strong>read-only in compiled DynaML code</strong>. This is the required
+convention for MDP and policy classes, whose <code>self</code> must not change
+during a trajectory: construct and fill the object in <code>__init__</code>
+(plain CPython, unrestricted — load data, validate, precompute), and
+compiled methods then only read it.</p>
+<p>Accepts the same keyword arguments as <code>@dataclass</code>. The common form
+for an MDP is <code>@const_dataclass(init=False, slots=True)</code> with a
+hand-written <code>__init__</code>:</p>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@const_dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyMDP</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">num_actions</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">demand_dist</span><span class="p">:</span> <span class="n">DiscreteDist</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">demand_sampler</span><span class="p">:</span> <span class="n">AliasSampler</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean_demand</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="c1"># plain CPython: unrestricted</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">num_actions</span> <span class="o">=</span> <span class="mi">2</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">demand_dist</span> <span class="o">=</span> <span class="n">DiscreteDist</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mean_demand</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">demand_sampler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">demand_dist</span><span class="o">.</span><span class="n">alias_sampler</span><span class="p">()</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.Const" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Const</span>
+
+
+<a href="#dynaplex.modelling.Const" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Metadata marker for Annotated types: declares a list or NDArray as const.</p>
+
+
+<details class="usage" open>
+  <summary>Usage</summary>
+  <p>Annotated[list[int], Const()]
+Annotated[NDArray[np.float64], Const()]</p>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.modelling.Rank" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Rank</span>
+
+
+<a href="#dynaplex.modelling.Rank" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">Rank</span><span class="p">(</span><span class="n">rank</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Rank metadata for ndarray annotations.</p>
+
+
+<details class="intended-usage" open>
+  <summary>Intended usage</summary>
+  <p>Annotated[NDArray[np.float64], Rank(2)]</p>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.Array1D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">Array1D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.Array1D" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Array1D</span><span class="p">:</span> <span class="n"><span title="typing.TypeAlias">TypeAlias</span></span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.array_types._NDArrayScalar">_NDArrayScalar</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Rank (dynaplex.modelling.rank.Rank)" href="#dynaplex.modelling.Rank">Rank</a></span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A 1-dimensional NumPy array annotation.</p>
+<p>In DynaML, every array annotation must fix both the number of dimensions and
+the element dtype: <code>Array1D[np.float64]</code> declares a 1-dimensional ndarray
+holding float64 values. The allowed dtypes are <code>np.float64</code>, <code>np.float32</code>,
+<code>np.int64</code>, and <code>np.bool_</code>. (Equivalent to
+<code>Annotated[NDArray[np.float64], Rank(1)]</code>.)</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.Array2D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">Array2D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.Array2D" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Array2D</span><span class="p">:</span> <span class="n"><span title="typing.TypeAlias">TypeAlias</span></span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.array_types._NDArrayScalar">_NDArrayScalar</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Rank (dynaplex.modelling.rank.Rank)" href="#dynaplex.modelling.Rank">Rank</a></span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A 2-dimensional NumPy array annotation, e.g. <code>Array2D[np.int64]</code> — see
+<code>Array1D</code> for the dimension-and-dtype rules.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.Array3D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">Array3D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.Array3D" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Array3D</span><span class="p">:</span> <span class="n"><span title="typing.TypeAlias">TypeAlias</span></span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.array_types._NDArrayScalar">_NDArrayScalar</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Rank (dynaplex.modelling.rank.Rank)" href="#dynaplex.modelling.Rank">Rank</a></span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A 3-dimensional NumPy array annotation, e.g. <code>Array3D[np.float32]</code> — see
+<code>Array1D</code> for the dimension-and-dtype rules.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.ConstList" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ConstList</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.ConstList" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ConstList</span><span class="p">:</span> <span class="n"><span title="typing.TypeAlias">TypeAlias</span></span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.array_types._T">_T</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Const (dynaplex.modelling.const.Const)" href="#dynaplex.modelling.Const">Const</a></span><span class="p">()]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A read-only list annotation: <code>ConstList[int]</code> declares a list whose
+contents compiled code may read but not modify. (Equivalent to
+<code>Annotated[list[int], Const()]</code>.)</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.ConstArray1D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ConstArray1D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.ConstArray1D" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ConstArray1D</span><span class="p">:</span> <span class="n"><span title="typing.TypeAlias">TypeAlias</span></span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.array_types._NDArrayScalar">_NDArrayScalar</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Rank (dynaplex.modelling.rank.Rank)" href="#dynaplex.modelling.Rank">Rank</a></span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n"><a class="autorefs autorefs-internal" title="Const (dynaplex.modelling.const.Const)" href="#dynaplex.modelling.Const">Const</a></span><span class="p">()]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A read-only 1-dimensional NumPy array annotation, e.g.
+<code>ConstArray1D[np.float64]</code>: compiled code may read but not write the array.
+See <code>Array1D</code> for the dimension-and-dtype rules.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.ConstArray2D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ConstArray2D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.ConstArray2D" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ConstArray2D</span><span class="p">:</span> <span class="n"><span title="typing.TypeAlias">TypeAlias</span></span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.array_types._NDArrayScalar">_NDArrayScalar</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Rank (dynaplex.modelling.rank.Rank)" href="#dynaplex.modelling.Rank">Rank</a></span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n"><a class="autorefs autorefs-internal" title="Const (dynaplex.modelling.const.Const)" href="#dynaplex.modelling.Const">Const</a></span><span class="p">()]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A read-only 2-dimensional NumPy array annotation — see <code>ConstArray1D</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.modelling.ConstArray3D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ConstArray3D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.modelling.ConstArray3D" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ConstArray3D</span><span class="p">:</span> <span class="n"><span title="typing.TypeAlias">TypeAlias</span></span> <span class="o">=</span> <span class="n"><span title="typing.Annotated">Annotated</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.array_types._NDArrayScalar">_NDArrayScalar</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Rank (dynaplex.modelling.rank.Rank)" href="#dynaplex.modelling.Rank">Rank</a></span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n"><a class="autorefs autorefs-internal" title="Const (dynaplex.modelling.const.Const)" href="#dynaplex.modelling.Const">Const</a></span><span class="p">()]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A read-only 3-dimensional NumPy array annotation — see <code>ConstArray1D</code>.</p>
+
+    </div>
+
+</div><h2 id="copying-state">Copying state<a class="headerlink" href="#copying-state" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="dynaplex.modelling.clone" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">clone</span>
+
+
+<a href="#dynaplex.modelling.clone" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p><code>clone</code> — deep copy for branching (e.g. Sequential-Halving rollouts) — and
+<code>clone_into</code> — deep IN-PLACE assignment.</p>
+<p><code>clone(x)</code> returns an independent, MUTABLE copy of <code>x</code>; everything DEEPLY const it reaches
+is SHARED (linked), not duplicated. A structurally-const list of MUTABLE-class elements is
+NOT deeply const: it is copied and its elements cloned (both here and in the interpreter).
+This is a real Python function (used when DynaML code runs in pure CPython) AND is
+recognized by the interpreter frontend as a builtin that lowers to the C++ clone opcode —
+the same dual role as <code>sync_worlds</code>.</p>
+<p><code>clone_into(src, dst)</code> recursively overwrites <code>dst</code>'s contents so it becomes value-equal
+to a deep copy of <code>src</code>, preserving <code>dst</code>'s identity (objects, lists, ndarray backings)
+wherever structure matches. THIS function is the semantic spec the interpreter builtin is
+parity-tested against; it carries the same two-map algorithm as the C++ walker (<code>memo</code> on
+id(src) reproduces src-side sharing; <code>consumed</code> on id(dst) prevents a dst object already
+claimed at one position from being overwritten again from another). Same-store row reuse
+in the interpreter corresponds exactly to in-place mutation here.</p>
+<p>Const detection here is by explicit <code>@const_dataclass</code> (<code>__dynapl_const__</code>). The interpreter
+shares by the <em>propagated</em> const flag; the two differ only for a class that is const only
+by propagation (never decorated), and only in <code>is</code>-identity (value-equivalent, since const
+is immutable). The same identity-only caveat applies to deeply-const LISTS and const
+ndarray fields (no runtime const marker exists here, so the <code>clone</code> mirror copies them; the
+interpreter shares them — value-equivalent because they are immutable). DCL's shared
+immutable data is always explicitly const, so it is exact there. <code>clone_into</code> reads FIELD
+const-ness from the <code>Annotated[..., Const()]</code> hints, so its links are exact.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.clone.clone" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">clone</span>
+
+
+<a href="#dynaplex.modelling.clone.clone" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">clone</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Deep-copy <code>x</code>: independent mutable copy, sharing const_dataclass subgraphs.</p>
+<p>Typed identity (<code>clone(x)</code> has the same static type as <code>x</code>) so type checkers keep the
+argument's type instead of collapsing to <code>Any</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.modelling.clone.clone_into" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">clone_into</span>
+
+
+<a href="#dynaplex.modelling.clone.clone_into" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">clone_into</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Deep in-place assignment: overwrite <code>dst</code> so it becomes value-equal to a deep
+copy of <code>src</code>, preserving <code>dst</code>'s identity wherever structure matches.</p>
+<p>Both arguments must be two instances of the same MUTABLE dataclass, or two lists of
+the same type. External aliases of reused dst sub-objects observe the new values
+(that is the defined semantics, not an accident); where structure mismatches (None
+flips, ndarray shape changes, aliasing duals) the affected position falls back to a
+fresh clone. Overlapping src/dst graphs are unsupported. <code>clone_into(x, x)</code> is a
+no-op. Returns None (unmistakably a mutation).</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="validating-your-model">Validating your model<a class="headerlink" href="#validating-your-model" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.assert_mdp" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">assert_mdp</span>
+
+
+<a href="#dynaplex.modelling.assert_mdp" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">assert_mdp</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="MDPProtocol (dynaplex.modelling.protocols.MDPProtocol)" href="#dynaplex.modelling.MDPProtocol">MDPProtocol</a></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">,</span> <span class="n"><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="MDPProtocol (dynaplex.modelling.protocols.MDPProtocol)" href="#dynaplex.modelling.MDPProtocol">MDPProtocol</a></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">,</span> <span class="n"><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Type assertion function for MDP protocol validation.</p>
+<p>This is a no-op function at runtime, but type checkers (like pyright) will
+verify that the provided MDP satisfies the MDPProtocol interface. The
+type checker automatically infers StateType and ContextType from the
+MDP's method signatures.</p>
+<p>This pattern enables static type checking of protocol conformance without
+runtime overhead. If the MDP doesn't satisfy the protocol, the type
+checker will report an error.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.assert_policy_for_mdp" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">assert_policy_for_mdp</span>
+
+
+<a href="#dynaplex.modelling.assert_policy_for_mdp" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">assert_policy_for_mdp</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="MDPProtocol (dynaplex.modelling.protocols.MDPProtocol)" href="#dynaplex.modelling.MDPProtocol">MDPProtocol</a></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">,</span> <span class="n"><span title="dynaplex.modelling.protocols.ContextType">ContextType</span></span><span class="p">],</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyProtocol (dynaplex.modelling.protocols.PolicyProtocol)" href="#dynaplex.modelling.PolicyProtocol">PolicyProtocol</a></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyProtocol (dynaplex.modelling.protocols.PolicyProtocol)" href="#dynaplex.modelling.PolicyProtocol">PolicyProtocol</a></span><span class="p">[</span><span class="n"><span title="dynaplex.modelling.protocols.StateType">StateType</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Type assertion function for validating policy compatibility with an MDP.</p>
+<p>This is a no-op function at runtime, but type checkers (like pyright) will
+verify that the policy's StateType matches the MDP's StateType. The type
+checker automatically infers StateType from both the policy's and MDP's
+method signatures and ensures they are compatible.</p>
+<p>This pattern enables static type checking of policy-MDP compatibility
+without runtime overhead. If the policy doesn't work with the MDP (different
+StateType), the type checker will report an error.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mdp</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="MDPProtocol (dynaplex.modelling.protocols.MDPProtocol)" href="#dynaplex.modelling.MDPProtocol">MDPProtocol</a>[<span title="dynaplex.modelling.protocols.StateType">StateType</span>, <span title="dynaplex.modelling.protocols.ContextType">ContextType</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>MDP instance to check compatibility with</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>policy</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="PolicyProtocol (dynaplex.modelling.protocols.PolicyProtocol)" href="#dynaplex.modelling.PolicyProtocol">PolicyProtocol</a>[<span title="dynaplex.modelling.protocols.StateType">StateType</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Policy instance to validate</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="PolicyProtocol (dynaplex.modelling.protocols.PolicyProtocol)" href="#dynaplex.modelling.PolicyProtocol">PolicyProtocol</a>[<span title="dynaplex.modelling.protocols.StateType">StateType</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The same policy instance (for chaining if needed)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.assert_featurizer_for_mdp" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">assert_featurizer_for_mdp</span>
+
+
+<a href="#dynaplex.modelling.assert_featurizer_for_mdp" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">assert_featurizer_for_mdp</span><span class="p">(</span><span class="n">features_cls</span><span class="p">,</span> <span class="n">mdp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Validate a featurizer class against an MDP: field-walk strictness + a live probe.
+Returns the measured feature width (raises with a clear message on any violation).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.implements" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">implements</span>
+
+
+<a href="#dynaplex.modelling.implements" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">implements</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Does <code>obj</code>'s class conform to <code>proto</code>? The instance form used in kernels;
+inside compiled code it is a COMPILE-TIME constant, legal only as the entire
+condition of an if/else (the untaken branch is discarded before
+type-checking). In plain CPython it is this ordinary memoized function.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.modelling.conforms" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">conforms</span>
+
+
+<a href="#dynaplex.modelling.conforms" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">conforms</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Does class <code>cls</code> structurally conform to protocol <code>proto</code>? (Memoized.)</p>
+
+
+    </div>
+
+</div><h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.DynaPlexError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">DynaPlexError</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.DynaPlexError" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">DynaPlexError</span> <span class="o">=</span> <span class="n"><span title="dynaplex._core">_core</span></span><span class="o">.</span><span class="n"><span title="dynaplex._core.DynaPlexError">DynaPlexError</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../troubleshooting/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Troubleshooting compile errors">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Troubleshooting compile errors
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../randomness/" class="md-footer__link md-footer__link--next" aria-label="Next: Distributions and randomness">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Distributions and randomness
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3093 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.12/reference/language-reference/">
+      
+      
+        <link rel="prev" href="../../training/gym-environments/">
+      
+      
+        <link rel="next" href="../troubleshooting/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Language reference - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dynamic-system-modelling-language-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Language reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-dynaml-code-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How DynaML code runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaml-data-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynaML data types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DynaML data types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primitives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classes-and-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classes and objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assignable-values-and-support-for-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assignable values and support for None
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syntax-for-class-definition-and-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syntax for class definition and defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#const-classes-and-read-only-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Const classes and read-only containers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frozen-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frozen classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enums
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions-and-method-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions and method signatures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions and method signatures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#free-function-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free function signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-parameters-and-overloads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Union parameters and overloads
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-bodies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function bodies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Function bodies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#types-and-casting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Types and casting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparisons-equality-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparisons, equality and ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boolean-connectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boolean connectives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assertions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-and-modifying-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing and modifying fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calling-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calling functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-unsupported-python-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other unsupported Python syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-functions-and-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in functions and modules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in functions and modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-built-ins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python built-ins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#math-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        math module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heapq-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        heapq module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numpy-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NumPy arrays
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random-number-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random number generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex-built-ins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynaPlex built-ins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributions-and-samplers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributions and samplers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-runtime-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced runtime primitives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-dynaml-code-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How DynaML code runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaml-data-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynaML data types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DynaML data types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primitives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classes-and-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classes and objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assignable-values-and-support-for-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assignable values and support for None
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syntax-for-class-definition-and-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syntax for class definition and defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#const-classes-and-read-only-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Const classes and read-only containers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frozen-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frozen classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enums
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions-and-method-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions and method signatures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions and method signatures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#free-function-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free function signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-parameters-and-overloads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Union parameters and overloads
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-bodies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function bodies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Function bodies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#types-and-casting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Types and casting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparisons-equality-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparisons, equality and ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boolean-connectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boolean connectives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assertions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-and-modifying-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing and modifying fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calling-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calling functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-unsupported-python-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other unsupported Python syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-functions-and-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in functions and modules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in functions and modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-built-ins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python built-ins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#math-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        math module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heapq-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        heapq module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numpy-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NumPy arrays
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random-number-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random number generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex-built-ins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynaPlex built-ins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributions-and-samplers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributions and samplers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-runtime-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced runtime primitives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="dynamic-system-modelling-language-reference">Dynamic System Modelling Language reference<a class="headerlink" href="#dynamic-system-modelling-language-reference" title="Permanent link">&para;</a></h1>
+<p>To formulate a Markov decision problem, a formalization of the state and
+transition functions is required. In DynaPlex, <em>states</em> of a sequential
+problem are expressed as objects of a user-defined class, while <em>transitions</em>
+between states are formalized as modifications of those objects by transition
+functions. DynaPlex imposes a certain formalism for expressing these states
+and transition functions, that is referred to as the Dynamic System Modelling
+Language (DynaML).</p>
+<p>DynaML is designed to achieve two core requirements:</p>
+<ol>
+<li>being an expressive and readable language that is easy to learn, write,
+   and read;</li>
+<li>enabling automatic analysis and <strong>compilation</strong> of the models it
+   describes, for efficient execution.</li>
+</ol>
+<p>To achieve these design goals, classes (states, MDPs) in DynaML are expressed
+as Python dataclasses, whereas transition functions are represented as Python
+methods on an MDP class that operate on objects of another dataclass: a State
+class. Classes and functions expressed in DynaML are also valid Python code, i.e.
+DynaML is a subset of Python, making it easy to learn. At the same time, to enable static code
+analysis, DynaML imposes certain structural and semantic properties, which
+are described in this document.</p>
+<h2 id="how-dynaml-code-runs">How DynaML code runs<a class="headerlink" href="#how-dynaml-code-runs" title="Permanent link">&para;</a></h2>
+<p>DynaML models lead a double life. On the one hand they are ordinary Python:
+you can construct states and call transition methods directly in CPython —
+handy for debugging and unit-testing a model. On the other hand, when a
+model is handed to an algorithm (<code>DCL</code>, <code>PolicyComparer</code>, <code>PPO</code>, or
+an <code>Engine</code> directly), DynaPlex <strong>compiles</strong> it: classes and methods are
+translated into an efficient internal representation and executed on a
+multi-threaded engine with a bundled LLVM JIT. That compiled execution is
+where the performance comes from — and both routes produce identical
+results, bit for bit.</p>
+<p>Throughout this document, <em>compiled code</em> refers to methods running on the
+engine. The restrictions described here are what makes compilation possible,
+and they are enforced when a model is compiled; plain CPython will happily
+run code that violates them, which is precisely why validating with pyright
+(and reading this document) matters.</p>
+<h2 id="how-to-use-this-document">How to use this document<a class="headerlink" href="#how-to-use-this-document" title="Permanent link">&para;</a></h2>
+<p>This document describes what can and cannot be accepted in DynaPlex MDP
+methods. Summary: write code in Python, but use the following rules:</p>
+<ul>
+<li>Annotate parameters and return types.</li>
+<li>Use dataclasses; avoid dictionaries, tuples.</li>
+<li>Use homogeneous lists; avoid heterogeneous lists.</li>
+<li>Use functions; avoid lambdas.</li>
+<li>Use pure Python. Besides Python built-ins, a limited set of modules is
+  supported: parts of <code>numpy</code>, <code>math</code>, <code>heapq</code>, <code>enum</code>, <code>dataclasses</code>, and
+  the built-ins that <code>dynaplex</code> itself provides — see
+  <a href="#built-in-functions-and-modules">Built-in functions and modules</a>.</li>
+<li>Avoid strings; use enums instead.</li>
+<li>When you need to load data using external files and packages, do so in the
+  <code>__init__</code> method of the MDP class, not in the transition functions, and
+  load the results into supported fields of the state class.</li>
+</ul>
+<p>Test your code in CPython. Validate in pyright — if that complains, then it
+is likely that the code is not valid DynaML. Calling the runtime no-ops
+<code>assert_mdp(mdp)</code> and <code>assert_policy_for_mdp(mdp, policy)</code> in your script
+additionally makes pyright check that your classes satisfy the interfaces
+DynaPlex expects. If something fails to compile, look up the error message
+on the <a href="../troubleshooting/">troubleshooting page</a>, which groups the common
+compile errors by family with causes and fixes. Alternatively,
+use an LLM, pointing it to this reference document and to your code, and it
+will likely tell you what is wrong. If not, post a question on
+<a href="https://github.com/DynaPlex/DynaPlex/discussions">GitHub Discussions</a>.</p>
+<h2 id="dynaml-data-types">DynaML data types<a class="headerlink" href="#dynaml-data-types" title="Permanent link">&para;</a></h2>
+<p>DynaML supports data primitives and objects of user-defined classes. In
+DynaML, any object must have a type that can be determined before running the
+code.</p>
+<h3 id="primitives">Primitives<a class="headerlink" href="#primitives" title="Permanent link">&para;</a></h3>
+<p>DynaML programs manipulate a small collection of well-defined data
+primitives. Primitive values are scalars (<code>bool</code>, <code>int</code>, <code>float</code>) and lists
+of such scalars. These primitives can appear as parameters to functions, as
+local variables in expressions, and as fields of state objects.</p>
+<h3 id="classes-and-objects">Classes and objects<a class="headerlink" href="#classes-and-objects" title="Permanent link">&para;</a></h3>
+<p>On top of these primitives, DynaML uses Python dataclasses to define
+structured objects. State and MDP classes in DynaML are classes whose fields
+are either primitive values or other DynaML objects (nested classes), or
+lists of primitives or such objects. DynaML also supports NumPy <code>NDArray</code>
+fields (see <a href="#numpy-arrays">NumPy arrays</a>). During execution, states are
+concrete instances of these dataclasses, and transition functions are
+methods that read and update their fields.</p>
+<h3 id="assignable-values-and-support-for-none">Assignable values and support for None<a class="headerlink" href="#assignable-values-and-support-for-none" title="Permanent link">&para;</a></h3>
+<p>Scalars (<code>float</code>, <code>int</code>, <code>bool</code>) can be assigned following standard Python
+typing rules (as enforced by tools such as pyright). In particular, a <code>bool</code>
+value is silently accepted wherever an <code>int</code> is expected, and an <code>int</code> value
+is silently accepted wherever a <code>float</code> is expected. Floats are not silently
+accepted where an <code>int</code> is expected, but we can always cast.</p>
+<p>If annotated as <code>Optional[T]</code> or <code>T | None</code>, an <strong>object</strong> field or variable
+can be assigned <code>None</code>. Only user-defined object types can be nullable —
+<code>None</code> is <em>never</em> allowed for scalars, enums, lists, NumPy arrays, random
+generators, <code>DiscreteDist</code>, or samplers, and <code>Optional</code> annotations on those
+types are rejected.</p>
+<h3 id="syntax-for-class-definition-and-defaults">Syntax for class definition and defaults<a class="headerlink" href="#syntax-for-class-definition-and-defaults" title="Permanent link">&para;</a></h3>
+<p>Example of a simple DynaML class (throughout, we suppress import
+statements):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Node</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">product_inventories</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">on_hold</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">parent</span><span class="p">:</span> <span class="s2">&quot;Node | None&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</code></pre></div>
+<p>The listing shows that DynaML supports defaults. For objects, the only
+default supported is <code>None</code>, whereas the only default supported for lists is
+an empty list (via the default-factory pattern, as <code>list</code> is mutable).</p>
+<p><code>field(compare=False)</code> is supported (it excludes the field from equality and
+ordering, exactly as in Python); <code>field(init=False)</code> is not supported.</p>
+<h3 id="const-classes-and-read-only-containers">Const classes and read-only containers<a class="headerlink" href="#const-classes-and-read-only-containers" title="Permanent link">&para;</a></h3>
+<p>A class can be marked <strong>const</strong> with the <code>@const_dataclass</code> decorator
+(imported from <code>dynaplex</code>). Every instance of a const class — and every
+object reachable through its object-typed fields — is treated as
+<strong>read-only</strong> inside compiled DynaML methods: such methods may read its
+fields but must not assign to them. <code>@const_dataclass</code> accepts the same
+keyword arguments as <code>@dataclass</code> (<code>init</code>, <code>slots</code>, <code>frozen</code>, ...).</p>
+<p>This is the required convention for MDP and policy classes, whose <code>self</code> is
+read-only during a trajectory:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex</span><span class="w"> </span><span class="kn">import</span> <span class="n">const_dataclass</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nd">@const_dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyMDP</span><span class="p">:</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">num_actions</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="c1"># __init__ is hand-written CPython (init=False); compiled methods treat self as read-only</span>
+</code></pre></div>
+<p>Const only restricts <em>compiled</em> methods; a hand-written
+<code>__init__</code>/<code>__post_init__</code> (plain CPython) may still set fields during
+construction. Individual <code>list</code> or <code>NDArray</code> fields can be marked read-only
+with <code>Annotated[list[int], Const()]</code> (<code>Const</code> is importable from
+<code>dynaplex</code>), independent of the enclosing class. More conveniently, use the
+shorthands <code>ConstList[int]</code> and <code>ConstArray1D[np.float64]</code> /
+<code>ConstArray2D[...]</code> / <code>ConstArray3D[...]</code> (importable from
+<code>dynaplex.modelling</code>), which are equivalent to the <code>Annotated[..., Const()]</code>
+form — e.g. <code>ConstList[int]</code> is <code>Annotated[list[int], Const()]</code>.</p>
+<p>For <code>list</code> and <code>NDArray</code> (which are passed by reference), const-ness must
+<strong>match</strong> at every binding — call arguments, assignments, returns, and
+constructor fields. You may not pass a mutable list/array where a const one
+is expected, nor a const one where a mutable one is expected; both would let
+one side mutate what the other treats as read-only. The exception is a
+<em>freshly created</em> value used directly in a const slot — a list literal,
+<code>sorted(x)</code>, <code>x.copy()</code>, <code>x[:]</code>, <code>a + b</code>, <code>x * n</code>, or
+<code>np.array(x)</code>/<code>np.zeros(...)</code>/etc. — which is accepted because nothing else
+aliases it. So to satisfy a const slot from a mutable variable, pass a fresh
+copy (e.g. <code>x.copy()</code> or <code>np.array(x)</code>). Reading a const container (<code>len</code>,
+indexing, iteration, <code>in</code>) is always allowed; mutating it (<code>append</code>,
+<code>x[i] = ...</code>, <code>+=</code>, in-place <code>sort</code>) is rejected. (Objects don't need this
+rule: their const-ness is fixed by their class.)</p>
+<h3 id="frozen-classes">Frozen classes<a class="headerlink" href="#frozen-classes" title="Permanent link">&para;</a></h3>
+<p>A <code>@dataclass(frozen=True)</code> is automatically recognized: instances are
+immutable, and any assignment to a field of a frozen object in compiled code
+is a compile-time error (mirroring the <code>FrozenInstanceError</code> you would get
+in CPython). Frozen classes are useful for value-like objects that are
+created once and then only read.</p>
+<p>A frozen class whose fields are all primitives, enums, or NumPy arrays plays
+a special role as a <em>bundle</em>: bundles can be passed across engine
+boundaries, with scalar fields copied and array backings shared. This
+matters mainly when working with the engine API directly and is covered in
+the engine documentation.</p>
+<h3 id="enums">Enums<a class="headerlink" href="#enums" title="Permanent link">&para;</a></h3>
+<p>DynaML supports Python enums for representing finite sets of named integer
+values. Only standard <code>enum.Enum</code> is supported (not <code>IntEnum</code>, <code>Flag</code>, or
+other enum variants). Enum values must be consecutive integers starting from
+<code>1</code>; this can be easily achieved using <code>auto</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">Light</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">RED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">ORANGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">GREEN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</code></pre></div>
+<p>Enums can be used as function parameters, return types, and as fields in
+dataclasses. Enums of the same type can be compared with <code>is</code> / <code>is not</code>
+and, equivalently, with <code>==</code> / <code>!=</code> (e.g. <code>x is Light.RED</code>). Enums can be
+constructed from integer values (e.g. <code>Light(1)</code>), and the integer value is
+accessible via the <code>.value</code> attribute. Enums are not orderable.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Enums and dataclasses must be defined or imported at module level (not
+inside functions). When DynaPlex analyzes a function's type annotations,
+it resolves types from the function's module globals using
+<code>get_type_hints()</code>. Types defined or imported only within a function's
+local scope cannot always be resolved and are unsupported.</p>
+</div>
+<h2 id="functions-and-method-signatures">Functions and method signatures<a class="headerlink" href="#functions-and-method-signatures" title="Permanent link">&para;</a></h2>
+<p>DynaML supports both free functions and methods. Here, we discuss the
+allowed syntax and semantics for free functions.</p>
+<h3 id="free-function-signatures">Free function signatures<a class="headerlink" href="#free-function-signatures" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Every parameter must have a type hint.</li>
+<li>Every function must have a return annotation. Use <code>-&gt; None</code> for void.</li>
+<li>Multi-return is expressed with tuple annotations: <code>-&gt; tuple[int, float]</code>.</li>
+<li>Parameters may have default values (literal constants only). Default
+  values for list parameters are not supported.</li>
+<li>Calls to other registered functions are supported with both positional and
+  keyword arguments.</li>
+<li>Returns: a single typed value or a typed tuple, e.g. <code>-&gt; int</code>,
+  <code>-&gt; tuple[int, float]</code>.</li>
+<li>Arguments and return types must be valid DynaML types, as described in the
+  data-type section above.</li>
+</ul>
+<p>Example of a free function:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">calculate_distance</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+</code></pre></div>
+<h3 id="method-signatures">Method signatures<a class="headerlink" href="#method-signatures" title="Permanent link">&para;</a></h3>
+<p>Methods can be added to dataclasses. The following rules apply:</p>
+<ul>
+<li>The first parameter (<code>self</code>) should <strong>not</strong> have a type annotation (it's
+  inferred from the dataclass).</li>
+<li>All other parameters must have type hints.</li>
+<li>Return type annotations work the same as for free functions.</li>
+<li>Methods are called using dot notation: <code>obj.method(args)</code>.</li>
+<li>Special methods (e.g., <code>__init__</code>, <code>__post_init__</code>, <code>__eq__</code>, <code>__lt__</code>,
+  etc.) are not supported; make use of the default initialization and
+  equality machinery of dataclasses. That is, <code>__init__</code> and
+  <code>__post_init__</code> are unsupported insofar as the object is constructed in
+  functions that are parsed as DynaML. (Since the MDP is passed as an
+  argument, the <code>__init__</code> of the MDP is supported, and there, any valid
+  CPython classes and libraries can be used.)</li>
+</ul>
+<p>Example of a dataclass with a method:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Point</span><span class="p">:</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">distance_from_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+</code></pre></div>
+<h3 id="union-parameters-and-overloads">Union parameters and overloads<a class="headerlink" href="#union-parameters-and-overloads" title="Permanent link">&para;</a></h3>
+<p>A parameter may be annotated with a union of two or more DynaML types, e.g.
+<code>rng: Generator | np.random.Generator</code>. Such a function is compiled as an
+<em>overload set</em>: one variant per union member, and each call site dispatches
+to the variant that exactly matches the argument's type. There is no
+implicit coercion between union members — the argument must match one member
+exactly. (Unions with <code>None</code>, like <code>Node | None</code>, are not overloads; they
+are the nullable object annotations described above.)</p>
+<h2 id="function-bodies">Function bodies<a class="headerlink" href="#function-bodies" title="Permanent link">&para;</a></h2>
+<p>DynaML supports most mathematical constructs that Python supports for
+scalars. A few specific requirements are worth mentioning; we summarize
+below.</p>
+<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
+<p>Parameters work as in normal Python. A minor restriction is that you cannot
+assign to parameters, but you can of course assign to fields and indexes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">give_age</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">age</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">node</span><span class="o">.</span><span class="n">on_hold</span> <span class="o">=</span> <span class="kc">True</span>       <span class="c1"># accepted</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>   <span class="c1"># accepted</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>                 <span class="c1"># accepted</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">age</span> <span class="o">=</span> <span class="mi">42</span>           <span class="c1"># ERROR: assignment to parameter &#39;age&#39; is not permitted</span>
+</code></pre></div>
+<h3 id="types-and-casting">Types and casting<a class="headerlink" href="#types-and-casting" title="Permanent link">&para;</a></h3>
+<p>DynaML supports explicit casts between any two scalar types: <code>int</code>, <code>float</code>,
+and <code>bool</code>. These casts follow the usual Python semantics, e.g.
+<code>int(1.7) == 1</code>, <code>float(True) == 1.0</code>, and <code>bool(0) == False</code>. In addition,
+any object type can be cast to <code>bool</code>, with the usual Python semantics
+(<code>None</code> becomes false). Implicit casts are allowed only where described in
+the data-type section (for example, using an <code>int</code> where a <code>float</code> is
+expected).</p>
+<h3 id="arithmetic">Arithmetic<a class="headerlink" href="#arithmetic" title="Permanent link">&para;</a></h3>
+<p>DynaML supports the usual arithmetic operators on scalar types (<code>bool</code>,
+<code>int</code>, <code>float</code>), with behavior matching Python.</p>
+<p>The supported binary operators are <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code>, <code>%</code>, and <code>**</code>.
+For <code>+</code>, <code>-</code>, <code>*</code>, <code>//</code>, <code>%</code>, and <code>**</code>, the result type is <code>float</code> if either
+operand is a <code>float</code>, and <code>int</code> otherwise, while <code>/</code> always produces a
+<code>float</code>, even when both operands are <code>int</code>. Boolean values participate in
+arithmetic as <code>0</code> (<code>False</code>) or <code>1</code> (<code>True</code>), conforming to Python. Augmented
+assignment on numeric locals and fields is also supported for all of these
+operators: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>//=</code>, <code>%=</code>, and <code>**=</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">arithmetic_examples</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sold</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">flag</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">inv</span> <span class="o">-=</span> <span class="n">sold</span>                  <span class="c1"># valid: int -= int</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">discounted</span> <span class="o">=</span> <span class="n">price</span> <span class="o">*</span> <span class="n">factor</span>  <span class="c1"># valid: float * float -&gt; float</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">discounted</span> <span class="o">/=</span> <span class="mf">100.0</span>          <span class="c1"># valid: float /= float -&gt; float</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="c1"># REJECTED by pyright; INVALID in DynaML:</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="c1"># flag = inv - sold</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="c1"># instead, use:</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">flag</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">inv</span> <span class="o">-</span> <span class="n">sold</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="comparisons-equality-and-ordering">Comparisons, equality and ordering<a class="headerlink" href="#comparisons-equality-and-ordering" title="Permanent link">&para;</a></h3>
+<p>Boolean expressions in DynaML are built from comparisons. Comparisons
+(<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) produce boolean results, which are stored
+as <code>bool</code>.</p>
+<p><strong>Equality</strong> (<code>==</code> / <code>!=</code>) is supported for scalars, enums (of the same
+type), objects, and lists — including nested objects and lists of objects.
+Object and list equality is <em>deep</em> (structural, field-by-field and
+element-by-element), matching Python's dataclass <code>__eq__</code>. Floats compare by
+value (so <code>0.0 == -0.0</code> and <code>NaN != NaN</code>). A class is eligible for
+<code>==</code>/<code>!=</code> unless, through its compared fields, it reaches an <code>NDArray</code>
+field, a nested list (<code>list[list[...]]</code>), or a reference cycle; such a
+comparison is rejected at compile time, and you can exclude the offending
+field with <code>dataclasses.field(compare=False)</code> (which drops it from
+equality, exactly as in Python).</p>
+<p><strong>Ordering</strong> (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is supported for scalars, for
+<em>orderable objects</em>, and for flat lists whose elements are orderable —
+numbers (<code>list[int]</code>, <code>list[bool]</code>, <code>list[float]</code>) or orderable objects
+(<code>list[MyOrderable]</code>). An object is orderable when it is a
+<code>@dataclass(order=True)</code> whose leading fields form a homogeneous numeric
+prefix — all <code>int</code>/<code>bool</code>, or all <code>float</code> — with any remaining fields marked
+<code>field(compare=False)</code>. Ordering is then lexicographic over that leading
+prefix, matching Python. Lists compare lexicographically (shorter is smaller
+on a common prefix). Enums are not orderable.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">:</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">label</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># excluded from ordering (and equality)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">pick</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="k">return</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span>                          <span class="c1"># lexicographic over (priority, size)</span>
+</code></pre></div>
+<h3 id="boolean-connectives">Boolean connectives<a class="headerlink" href="#boolean-connectives" title="Permanent link">&para;</a></h3>
+<p>Short-circuiting <code>and</code> and <code>or</code> are supported. They are supported when all
+operands are <code>bool</code>, and also when all operands have the same type. (Mixing
+of <code>Object</code> and <code>Object | None</code> is allowed, as long as the objects are of
+the same type.) The unary operator <code>not</code> is supported with the usual Python
+semantics and always produces a <code>bool</code>.</p>
+<h3 id="control-flow">Control flow<a class="headerlink" href="#control-flow" title="Permanent link">&para;</a></h3>
+<p>Control flow in DynaML is restricted to structured constructs: <code>if</code> /
+<code>if-else</code>, <code>while</code>, and <code>for</code> loops.</p>
+<p>The allowed iterables in <code>for</code> loops are <code>range(...)</code> with one, two, or
+three integer arguments (<code>range(stop)</code>, <code>range(start, stop)</code>,
+<code>range(start, stop, step)</code>), lists, and <code>enumerate(...)</code> over a list. Loops
+over lists are supported both for <code>list</code> variables and for <code>list</code> literals.
+For the latter, the type of the list literal must be clear from the code:
+<code>for x in []:</code> will fail, but <code>for x in [1, 2, 3]:</code> is supported. For
+<code>enumerate</code>, the only variant that compiles is
+<code>for i, x in enumerate(some_list):</code>, where <code>some_list</code> is a list variable or
+literal. The index and value variables may reuse the names of already
+defined locals, but the types must match.</p>
+<p>You can use if-expressions (the "ternary" operator) to assign the result of
+a conditional directly. The form is <code>A if condition else B</code>, just as in
+Python; note that the types of <code>A</code> and <code>B</code> must be the same. Nested
+if-expressions are also supported.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Do not change the length of the list that you are iterating over while
+iterating. This will compile successfully, but it will fail in
+unexpected ways (undefined behavior). It is generally considered bad
+practice even in regular Python.</p>
+</div>
+<p>Loop bodies may use <code>break</code> and <code>continue</code> to alter control flow. Conditions
+in <code>if</code> and <code>while</code> may be explicit booleans or any expression that Python
+would treat as truthy/falsy: for example, <code>if obj:</code> tests whether an object
+reference is non-<code>None</code>. A simple <code>while</code> loop example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">countdown</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="k">while</span> <span class="n">start</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># or while start:</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        <span class="n">start</span> <span class="o">-=</span> <span class="mi">1</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        <span class="n">steps</span> <span class="o">+=</span> <span class="mi">1</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="k">return</span> <span class="n">steps</span>
+</code></pre></div>
+<p><code>for</code> loops iterating over lists are also supported. An example using the
+<code>Point</code> dataclass defined above:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">sum_points</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Point</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Sum the first and second elements of a list of (x, y) points.&quot;&quot;&quot;</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">sum_x</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">sum_y</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>        <span class="n">sum_x</span> <span class="o">+=</span> <span class="n">point</span><span class="o">.</span><span class="n">x</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>        <span class="n">sum_y</span> <span class="o">+=</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="k">return</span> <span class="n">sum_x</span><span class="p">,</span> <span class="n">sum_y</span>
+</code></pre></div>
+<h3 id="assertions">Assertions<a class="headerlink" href="#assertions" title="Permanent link">&para;</a></h3>
+<p><code>assert condition</code> and <code>assert condition, "message"</code> are supported. The
+message may be a string literal or a simple f-string containing bare
+<code>{expr}</code> placeholders, which is convenient when debugging:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;negative seats: </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+<p><code>print(...)</code> is <em>accepted but ignored</em> in compiled code: no instructions are
+generated for it. This lets you keep debug prints in code that you also run
+under CPython, but do not rely on <code>print</code> for any observable effect.</p>
+<h3 id="local-variables">Local variables<a class="headerlink" href="#local-variables" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Locals are created on first assignment and can be annotated for clarity
+  (<code>x: int = ...</code>).</li>
+<li>A variable's <em>first</em> assignment must occur in a scope that syntactically
+  encloses all of its uses. In particular, a variable that is first assigned
+  inside an <code>if</code> or loop body cannot be read outside that <code>if</code> or loop; it
+  must be introduced before the control-flow construct.</li>
+</ul>
+<p>For example, the first function below is rejected, because the return
+statement uses <code>x</code>, but <code>x</code> is first defined only inside the <code>if</code> statement.
+To sidestep this, declare <code>x</code> before the <code>if</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">rejected</span><span class="p">(</span><span class="n">flag</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>        <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="k">return</span> <span class="n">x</span> <span class="c1"># rejected - x is not defined in this scope.</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">accepted</span><span class="p">(</span><span class="n">flag</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>        <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>        <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+<p>Once a variable has a type in a given (or enclosing) scope, it must not be
+reused with a different type. For example, the following is rejected because
+<code>x</code> is first used as an <code>int</code> and later as a <code>float</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">bad_retype</span><span class="p">(</span><span class="n">flag</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>        <span class="c1"># x: int</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>        <span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># INVALID: cannot reuse x as float</span>
+</code></pre></div>
+<p>Global variables are not supported.</p>
+<h3 id="accessing-and-modifying-fields">Accessing and modifying fields<a class="headerlink" href="#accessing-and-modifying-fields" title="Permanent link">&para;</a></h3>
+<p>Field access/assignment on dataclass instances is supported, including
+augmented assignment, e.g. <code>location.inventory -= 10</code>, and nested targets
+such as <code>network.nodes[i].inventory = 5</code>.</p>
+<h3 id="calling-functions">Calling functions<a class="headerlink" href="#calling-functions" title="Permanent link">&para;</a></h3>
+<p>Tuple unpacking is supported only one level deep: <code>a, b = f()</code>; this is the
+only way in which multiple return values can be captured by the calling
+function. Nested tuple unpacking is not supported.</p>
+<p>Functions may be called with positional or keyword arguments. Arguments with
+defaults may be omitted from the call. Type checking is performed at compile
+time, ensuring passed arguments match the expected types.</p>
+<h3 id="objects">Objects<a class="headerlink" href="#objects" title="Permanent link">&para;</a></h3>
+<p>Objects can be constructed following the usual syntax, and methods can be
+called on those objects. For example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">create_and_use_point</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Point object and call its method.&quot;&quot;&quot;</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="n">p</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="n">distance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">distance_from_origin</span><span class="p">()</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="k">return</span> <span class="n">distance</span>
+</code></pre></div>
+<h3 id="lists">Lists<a class="headerlink" href="#lists" title="Permanent link">&para;</a></h3>
+<p>DynaML supports lists of primitives (<code>list[int]</code>, <code>list[float]</code>,
+<code>list[bool]</code>), lists of objects (<code>list[MyClass]</code>), and nested lists of
+numbers (<code>list[list[int]]</code>, etc.). List literals can be constructed using
+standard Python syntax: <code>[1, 2, 3]</code> or <code>[]</code>. Lists support:</p>
+<ul>
+<li><strong>Indexing</strong>: positive and negative indices (<code>my_list[0]</code>, <code>my_list[-1]</code>)</li>
+<li><strong>Index assignment</strong>: <code>my_list[i] = value</code> and augmented forms
+  (<code>my_list[i] += value</code>, etc.)</li>
+<li><strong><code>len()</code></strong>: returns the current length</li>
+<li><strong><code>.append(value)</code></strong>: appends a single element in place</li>
+<li><strong><code>.extend(other)</code></strong>: appends all elements of <code>other</code> in place</li>
+<li><strong><code>.pop()</code></strong>: removes and returns the last element</li>
+<li><strong><code>.clear()</code></strong>: removes all elements</li>
+<li><strong><code>.copy()</code></strong> and <strong><code>my_list[:]</code></strong>: return a shallow copy</li>
+<li><strong><code>.sort()</code></strong>: sorts in place; <strong><code>sorted(my_list)</code></strong>: returns a new sorted
+  list. Both work for any list whose elements support ordering: numbers,
+  orderable objects, or <code>list[list[number]]</code>. Sorting is stable (matching
+  Python).</li>
+<li><strong><code>+</code></strong> and <strong><code>+=</code></strong>: concatenation (produces a new list) and in-place
+  extend</li>
+<li><strong><code>*</code></strong> and <strong><code>*=</code></strong>: repetition (produces a new list) and in-place
+  repetition</li>
+<li><strong><code>x in my_list</code></strong> and <strong><code>x not in my_list</code></strong>: membership tests</li>
+</ul>
+<p>Not supported: <code>.index()</code>, <code>.count()</code>, <code>.insert()</code>, <code>.remove()</code>,
+<code>.reverse()</code>.</p>
+<h3 id="other-unsupported-python-syntax">Other unsupported Python syntax<a class="headerlink" href="#other-unsupported-python-syntax" title="Permanent link">&para;</a></h3>
+<p>The following Python features are presently unsupported, and not planned for
+future support in DynaML: strings (there is no <code>str</code> type — use enums);
+dictionaries; sets; tuples (with two syntactic exceptions: returning
+multiple values, which must be immediately bound to individual variables by
+the caller, see above; and in-place shape literals in
+<a href="#numpy-arrays">array creators</a> such as <code>np.zeros((m, n), ...)</code> — in
+neither case is the tuple a value that can be stored or passed around);
+lambdas; <code>isinstance</code> and other runtime introspection.</p>
+<div class="admonition tip">
+<p class="admonition-title">Missing something? DynaML is in rapid development</p>
+<p>DynaPlex and DynaML are developing rapidly, and the language grows based
+on what modellers actually need. If a limitation genuinely blocks you in
+an application — supply chain, logistics, transportation, maintenance
+optimization, or similar — please
+<a href="https://github.com/DynaPlex/DynaPlex/issues">open a feature request</a>.
+The most useful requests explain three things:</p>
+<ol>
+<li>what you are trying to achieve in your MDP;</li>
+<li>why that is difficult with the current DynaML limitations;</li>
+<li>your proposed addition to DynaML.</li>
+</ol>
+</div>
+<h2 id="built-in-functions-and-modules">Built-in functions and modules<a class="headerlink" href="#built-in-functions-and-modules" title="Permanent link">&para;</a></h2>
+<p>Beyond the language constructs above, DynaML programs can call a fixed
+collection of built-in functions. Everything listed in this section behaves
+exactly as its CPython counterpart unless noted otherwise.</p>
+<h3 id="python-built-ins">Python built-ins<a class="headerlink" href="#python-built-ins" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Built-in</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int(x)</code>, <code>float(x)</code>, <code>bool(x)</code></td>
+<td>scalar casts; <code>bool</code> also accepts objects (<code>None</code> → <code>False</code>)</td>
+</tr>
+<tr>
+<td><code>abs(x)</code></td>
+<td><code>int -&gt; int</code>, <code>float -&gt; float</code></td>
+</tr>
+<tr>
+<td><code>round(x)</code></td>
+<td>returns <code>int</code></td>
+</tr>
+<tr>
+<td><code>min(a, b, ...)</code>, <code>max(a, b, ...)</code></td>
+<td>two or more scalar arguments of a common type</td>
+</tr>
+<tr>
+<td><code>sum(xs)</code></td>
+<td>over <code>list[int]</code> or <code>list[float]</code></td>
+</tr>
+<tr>
+<td><code>any(xs)</code>, <code>all(xs)</code></td>
+<td>over <code>list[bool]</code></td>
+</tr>
+<tr>
+<td><code>len(xs)</code></td>
+<td>list length</td>
+</tr>
+<tr>
+<td><code>sorted(xs)</code></td>
+<td>new sorted list; same element requirements as <code>.sort()</code></td>
+</tr>
+<tr>
+<td><code>range(...)</code>, <code>enumerate(...)</code></td>
+<td>loop headers only, see <a href="#control-flow">control flow</a></td>
+</tr>
+<tr>
+<td><code>assert cond, msg</code></td>
+<td>supported; <code>msg</code> may be a simple f-string</td>
+</tr>
+<tr>
+<td><code>print(...)</code></td>
+<td>accepted but <strong>ignored</strong> (no code generated)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="math-module"><code>math</code> module<a class="headerlink" href="#math-module" title="Permanent link">&para;</a></h3>
+<p><code>math.sqrt</code>, <code>math.exp</code>, <code>math.log</code>, <code>math.log10</code>, <code>math.sin</code>, <code>math.cos</code>,
+<code>math.tan</code>, <code>math.floor</code>, <code>math.ceil</code>, <code>math.isfinite</code>, <code>math.isnan</code>.</p>
+<p>All take a <code>float</code> (an <code>int</code> is implicitly accepted) and return <code>float</code>,
+except <code>math.floor</code> / <code>math.ceil</code>, which return <code>int</code>, and
+<code>math.isfinite</code> / <code>math.isnan</code>, which return <code>bool</code>. Import <code>math</code> at module
+level.</p>
+<h3 id="heapq-module"><code>heapq</code> module<a class="headerlink" href="#heapq-module" title="Permanent link">&para;</a></h3>
+<p>DynaML supports a min-heap maintained on a list via the standard <code>heapq</code>
+module: <code>heapq.heapify(x)</code>, <code>heapq.heappush(heap, item)</code>, and
+<code>heapq.heappop(heap)</code>. These behave exactly like CPython's <code>heapq</code> and are
+available for any list whose elements support ordering (the same element
+types as sorting: numbers, orderable objects, or <code>list[list[number]]</code>). The
+heap list itself must be mutable (not a const container). Import <code>heapq</code> at
+module level:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">schedule</span><span class="p">(</span><span class="n">jobs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Job</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>    <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">jobs</span><span class="p">,</span> <span class="n">Job</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="k">return</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>      <span class="c1"># returns the smallest Job</span>
+</code></pre></div>
+<p>Note that <code>Job</code> in this example works only because it is an <em>orderable</em>
+object — a <code>@dataclass(order=True)</code> with a homogeneous numeric leading
+prefix, as defined in
+<a href="#comparisons-equality-and-ordering">Comparisons, equality and ordering</a>
+(where this <code>Job</code> class is introduced).</p>
+<p><code>heappop</code> on an empty heap raises, as in Python. The other <code>heapq</code> helpers
+(<code>heappushpop</code>, <code>heapreplace</code>, <code>nlargest</code>, <code>nsmallest</code>, <code>merge</code>) are not
+currently supported.</p>
+<h3 id="numpy-arrays">NumPy arrays<a class="headerlink" href="#numpy-arrays" title="Permanent link">&para;</a></h3>
+<p>DynaML supports NumPy array fields and locals, with one rule to remember:
+an array annotation must pin down <strong>both</strong> the element dtype <strong>and</strong> the
+number of dimensions (the rank). The dtype must be one of <code>np.float64</code>,
+<code>np.float32</code>, <code>np.int64</code>, <code>np.bool_</code>. The most convenient way to declare
+both at once is with the <code>Array1D</code> / <code>Array2D</code> / <code>Array3D</code> aliases from
+<code>dynaplex.modelling</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex.modelling</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array1D</span><span class="p">,</span> <span class="n">Array2D</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">State</span><span class="p">:</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="n">vector</span><span class="p">:</span> <span class="n">Array1D</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]</span>     <span class="c1"># 1-D array of int64</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="n">matrix</span><span class="p">:</span> <span class="n">Array2D</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>   <span class="c1"># 2-D array of float64</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>    <span class="n">category</span><span class="p">:</span> <span class="n">StateCategory</span> <span class="o">=</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">AWAIT_EVENT</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="k">def</span><span class="w"> </span><span class="nf">make_state</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">State</span><span class="p">:</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>    <span class="k">return</span> <span class="n">State</span><span class="p">(</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>        <span class="n">vector</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>          <span class="c1"># shape n: one dimension</span>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>        <span class="n">matrix</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>   <span class="c1"># shape (n, m): two dimensions</span>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>    <span class="p">)</span>
+</code></pre></div>
+<p>The rank is simply the number of elements in the shape passed to the
+creating call: <code>np.zeros(n, ...)</code> creates a 1-D array of length <code>n</code>,
+<code>np.zeros((n, m), ...)</code> a 2-D array, and so on.</p>
+<p><code>Array1D[T]</code> / <code>Array2D[T]</code> / <code>Array3D[T]</code> are shorthands for
+<code>Annotated[NDArray[T], Rank(1)]</code> (respectively <code>Rank(2)</code>, <code>Rank(3)</code>), which
+DynaML also accepts spelled out. Two other forms are accepted:</p>
+<ul>
+<li>A bare <code>NDArray[T]</code> (no rank metadata) declares a <strong>1-D</strong> array — the
+  rank defaults to 1, so multi-dimensional arrays always need explicit
+  <code>Rank</code> metadata (i.e. use <code>Array2D</code>/<code>Array3D</code>).</li>
+<li>For locals, an annotation may be omitted entirely when both dtype and
+  rank are inferable from the creating expression — e.g.
+  <code>x = np.zeros((m, n), dtype=np.float64)</code> is a 2-D <code>float64</code> array.</li>
+</ul>
+<p>A <code>np.ndarray</code> annotation without a dtype is rejected. Read-only variants
+<code>ConstArray1D[...]</code> / <code>ConstArray2D[...]</code> / <code>ConstArray3D[...]</code> are covered
+under
+<a href="#const-classes-and-read-only-containers">Const classes and read-only containers</a>.</p>
+<p><strong>Creating arrays.</strong> The supported creators are <code>np.zeros</code>, <code>np.ones</code>,
+<code>np.full</code>, <code>np.array</code>, <code>np.asarray</code>, <code>np.zeros_like</code>, <code>np.ones_like</code>, and
+<code>np.full_like</code>. Shapes are given as an integer (rank 1) or a tuple of
+integers, e.g. <code>np.zeros((m, n), dtype=np.float64)</code>; <code>np.array</code> /
+<code>np.asarray</code> convert a list of numbers.</p>
+<p>Shape tuples are the one place where a tuple may be <em>written</em> in DynaML
+(tuples otherwise only appear when returning multiple values, and are never
+values you can store — see
+<a href="#other-unsupported-python-syntax">unsupported syntax</a>). Consequently, the
+tuple must be spelled out in place at the call site: the individual
+dimensions may be arbitrary integer expressions
+(<code>np.zeros((m + 1, 2 * n), ...)</code>), but the shape as a whole cannot be built
+elsewhere and passed in via a variable.</p>
+<p><strong>Element access.</strong> Indexing with one index per dimension is supported —
+<code>a[i]</code>, <code>a[i, j]</code>, <code>a[i, j, k]</code> — for both reading and assignment,
+including augmented assignment (<code>a[i] += w</code>) and negative indices. Slicing
+(<code>a[1:3]</code>, <code>a[i, :]</code>) is <strong>not</strong> supported.</p>
+<div class="admonition warning">
+<p class="admonition-title">Array indices are not bounds-checked</p>
+<p>Unlike list indexing, which raises an error on an out-of-range index,
+ndarray indexing is <strong>not</strong> bounds-checked at runtime: an out-of-range
+index (outside <code>[-n, n - 1]</code> for a dimension of size <code>n</code>) silently
+reads — or, on assignment, overwrites — unrelated memory. Validate
+index arithmetic by running the model under plain CPython, where NumPy
+raises <code>IndexError</code>.</p>
+</div>
+<p><strong>Shape.</strong> The size of dimension <code>k</code> is available as <code>a.shape[k]</code> (indexed
+access only; bare <code>a.shape</code> has no tuple type in DynaML).</p>
+<p><strong>Whole-array reductions.</strong> <code>sum</code>, <code>mean</code>, <code>min</code>, <code>max</code>, <code>any</code>, <code>all</code> are
+available both as methods (<code>a.sum()</code>, <code>a.mean()</code>, ...) and as free functions
+(<code>np.sum(a)</code>, <code>np.amin(a)</code>, ...); <code>np.count_nonzero(a)</code> is available as a
+free function. Reductions always cover the whole array — there is no
+<code>axis=</code> argument.</p>
+<p><strong>Not supported:</strong> elementwise arithmetic on arrays (<code>a + b</code>, <code>a * 2</code>,
+elementwise comparisons) — loop over elements instead; slicing and views;
+<code>reshape</code>; boolean masking. Arrays are best used as fixed-shape numeric
+storage that you index explicitly.</p>
+<h3 id="random-number-generation">Random number generation<a class="headerlink" href="#random-number-generation" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Prefer <code>DiscreteDist</code> for event distributions</p>
+<p>Don't roll your own discrete distributions from raw generator draws. The
+preferred route is a <a href="#distributions-and-samplers"><code>DiscreteDist</code></a> built
+in the MDP's <code>__init__</code> plus a precomputed sampler
+(<code>dist.alias_sampler()</code>) for the draws — validated, kernel-backed, and
+O(1) per draw. Use the raw generator methods below when that genuinely
+doesn't fit (e.g. continuous uniforms or ad-hoc index draws).</p>
+</div>
+<p>DynaML offers two generator families with an identical method surface:</p>
+<ul>
+<li><code>dynaplex.default_rng(seed)</code> returns a <code>dynaplex.Generator</code> — DynaPlex's
+  native generator (xoshiro256++), the faster choice and the recommended
+  default;</li>
+<li><code>np.random.default_rng(seed)</code> returns NumPy's <code>Generator</code> (PCG64), useful
+  when bit-compatibility with NumPy streams matters.</li>
+</ul>
+<p>Seeds must be non-negative integers. A function parameter can accept either
+family via a union annotation (see
+<a href="#union-parameters-and-overloads">union parameters</a>).</p>
+<p>Methods on both families:</p>
+<ul>
+<li><code>rng.random()</code> — a float in <code>[0, 1)</code>;</li>
+<li><code>rng.uniform(low, high)</code> — a float in <code>[low, high)</code>; requires
+  <code>high &gt; low</code>;</li>
+<li><code>rng.choice(...)</code> — in the following forms:<ul>
+<li><code>rng.choice(n)</code> with an integer <code>n</code>: a uniform draw from
+  <code>0, ..., n-1</code>;</li>
+<li><code>rng.choice(xs)</code> with a list or 1-D array: a uniform draw of an
+  element;</li>
+<li>either form with weights: <code>rng.choice(xs, p=probs)</code>, where <code>probs</code> is
+  a <code>list[float]</code> or 1-D float array summing to one.</li>
+<li>The NumPy-only keyword arguments <code>size=</code>, <code>replace=</code>, <code>axis=</code>, and
+  <code>shuffle=</code> are not supported.</li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Reproducibility</p>
+<p>For the NumPy family, <code>rng.random()</code> and <code>rng.uniform()</code> reproduce
+NumPy's streams bit-for-bit. <code>rng.choice(n)</code> (integer form) uses a
+different integer-sampling algorithm than NumPy and will generally
+return a different (equally uniform) stream for the same seed. </p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Weights must sum to one</p>
+<p>Compiled DynaPlex execution normalizes any positive weights, but NumPy
+itself rejects a <code>p</code> that does not sum to one (within ~1.5e-8). A
+NumPy-family model that relies on normalization therefore runs compiled
+but raises in plain CPython. Do not rely on the normalization: keep
+weights summing to one, as NumPy requires.</p>
+</div>
+<h3 id="dynaplex-built-ins">DynaPlex built-ins<a class="headerlink" href="#dynaplex-built-ins" title="Permanent link">&para;</a></h3>
+<p><strong><code>clone(x)</code></strong> (importable from <code>dynaplex.modelling</code>) — a deep copy of an
+object graph, list, or array, callable inside compiled DynaML code.
+Constant (<code>@const_dataclass</code>) parts are shared rather than copied.</p>
+<h3 id="distributions-and-samplers">Distributions and samplers<a class="headerlink" href="#distributions-and-samplers" title="Permanent link">&para;</a></h3>
+<p>The modelling toolkit provides <code>DiscreteDist</code> — an explicit distribution
+over a finite range of integers — together with two O(1) samplers. These
+are ordinary DynaPlex classes: construct them in your MDP's <code>__init__</code>,
+store them in (const) fields, and call their methods from compiled code.</p>
+<ul>
+<li>Factories: <code>DiscreteDist.constant(v)</code>, <code>DiscreteDist.custom(probs,
+  offset=0)</code>, <code>DiscreteDist.poisson(mean)</code>, <code>DiscreteDist.geometric(mean)</code>,
+  <code>DiscreteDist.geometric_from_prob(p)</code>, <code>DiscreteDist.binomial(n, p)</code>,
+  <code>DiscreteDist.negative_binomial(r, p)</code>,
+  and — building a distribution from a mean and standard deviation — the
+  two-moment fit <code>DiscreteDist.adan_eenige_resing(mean, stdev)</code> (Adan, van
+  Eenige &amp; Resing, 1995).</li>
+<li>Methods callable in compiled code: <code>sample(rng)</code>,
+  <code>conditional_sample(rng, min_value)</code>, <code>min()</code>, <code>max()</code>,
+  <code>probability_at(v)</code>, <code>expectation()</code>, <code>variance()</code>, <code>std()</code>, <code>entropy()</code>,
+  <code>fractile(alpha)</code>.</li>
+<li>One-shot draws without building a distribution:
+  <code>DiscreteDist.poisson_sample(mean, rng)</code> and the analogous
+  <code>*_sample</code> classmethods.</li>
+<li><strong>Whenever the distribution is static</strong> (the same for every state — the
+  usual case), build a sampler once in the MDP's <code>__init__</code> —
+  <code>dist.alias_sampler()</code> — and draw with <code>sampler.sample(rng)</code>: O(1) per
+  draw. <code>dist.sample(rng)</code> is for the exceptional case where the
+  distribution object itself depends on the current state (e.g.
+  non-stationary demand); for
+  state-dependent <em>parameters</em>, the one-shot classmethods above avoid
+  building a distribution at all.</li>
+</ul>
+<p>See the bin packing tutorial for a worked example
+(<a href="../../tutorials/binpacking-mdp/#python-code">Python code</a>).</p>
+<h2 id="advanced-runtime-primitives">Advanced runtime primitives<a class="headerlink" href="#advanced-runtime-primitives" title="Permanent link">&para;</a></h2>
+<p>The functions below are also callable inside compiled DynaML code, but they
+live in <code>dynaplex.runtime</code> and everyday modelling does not need them — they
+are building blocks for writing your own high-performance algorithm
+harnesses on top of the engine (see the
+<a href="../api/runtime/"><code>dynaplex.runtime</code> API reference</a>):</p>
+<ul>
+<li><strong><code>clone_into(src, dst)</code></strong> — deep <em>in-place</em> assignment: makes <code>dst</code>
+  structurally equal to <code>src</code> while preserving the identity of <code>dst</code> and
+  its sub-objects where possible. Both arguments must be of the same
+  mutable class. External references to <code>dst</code>'s sub-objects observe the
+  update. NumPy array fields are copied in place when shapes match exactly,
+  and replaced by a fresh array otherwise. Useful for re-initializing
+  long-lived state objects without allocation.</li>
+<li><strong><code>reseed(rng, seed)</code></strong> — re-seeds an existing generator of either family
+  in place, exactly as if it had been freshly constructed with that seed;
+  the allocation-free companion to <code>clone_into</code> for recycling long-lived
+  trajectory state.</li>
+<li><strong><code>combine_seeds(eval, global_seed, sample, trajectory, stream)</code></strong> —
+  packs coordinates into a single collision-free non-negative seed, for
+  constructing independent random streams in simulation experiments.</li>
+<li><strong><code>monotonic()</code></strong> — a monotonic wall-clock reading in seconds
+  (like <code>time.perf_counter</code>), coherent across threads.</li>
+<li><strong><code>time.sleep(seconds)</code></strong> — suspends execution.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Determinism</p>
+<p><code>monotonic()</code> and <code>time.sleep</code> are the only deliberately
+non-deterministic built-ins. Clock values must only be written to
+timing/diagnostic buffers — never into state that affects transitions,
+costs, or sampled results.</p>
+</div>
+<h2 id="common-pitfalls">Common pitfalls<a class="headerlink" href="#common-pitfalls" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Missing type hints on parameters or return.</li>
+<li>Using default values for a list parameter.</li>
+<li>Optional primitives or list types (<code>Optional[int]</code>, etc.), or assigning
+  <code>None</code> to any list, array, generator, or scalar.</li>
+<li>Assigning <code>None</code> to an object that is not annotated with <code>| None</code>.</li>
+<li>Reusing a local variable name with a different type.</li>
+<li>Reading a variable outside the <code>if</code>/loop in which it was first assigned.</li>
+<li>Mutating a const container, or passing a mutable container into a const
+  slot (pass a fresh copy instead).</li>
+<li>Relying on <code>print</code> output from compiled code (it is ignored).</li>
+<li>Defining enums or dataclasses inside a function instead of at module
+  level.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../training/gym-environments/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Vectorized gym environments">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Vectorized gym environments
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../troubleshooting/" class="md-footer__link md-footer__link--next" aria-label="Next: Troubleshooting compile errors">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Troubleshooting compile errors
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

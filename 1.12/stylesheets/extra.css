@@ -1,0 +1,24 @@
+/* DynaPlex brand color as the Material primary. Adjust --dp-primary to taste. */
+:root {
+  /* The dominant blue of the DynaPlex logo. */
+  --dp-primary: #4050b0;
+  --md-primary-fg-color: var(--dp-primary);
+  --md-primary-fg-color--light: #5a6ac4;
+  --md-primary-fg-color--dark: #32408f;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: var(--dp-primary);
+  /* Body links: the deep brand blue is unreadable on slate — use the logo's
+     light blue for links and hover accents in dark mode. */
+  --md-typeset-a-color: #82a8ec;
+  --md-accent-fg-color: #a5c4ff;
+}
+
+/* Landing page: center the logo, cap its width */
+.dp-hero img {
+  display: block;
+  margin: 0 auto 1rem auto;
+  max-width: 420px;
+  width: 100%;
+}
