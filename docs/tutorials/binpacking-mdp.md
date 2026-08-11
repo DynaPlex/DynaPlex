@@ -28,8 +28,7 @@ empty. The process continues indefinitely.
 ## The components of the MDP
 
 1. **States (S):** The state consists of:
-    - `weight_vector`: a NumPy array representing the current weight in each
-      bin
+    - `weight_vector`: a list holding the current weight in each bin
     - `upcoming_weight`: the weight that has just arrived and must be
       assigned
     - `category`: the state category (`AWAIT_EVENT` or `AWAIT_ACTION`)
@@ -83,5 +82,71 @@ This MDP example includes two simple heuristic policies:
    overflow, it assigns to the first bin. This is a common heuristic in bin
    packing problems.
 
-Continue to the [Python code](binpacking-mdp-code.md) for the complete
-implementation.
+## Python code
+
+You can download a complete Python implementation of this MDP example:
+[binpacking.py](../downloads/binpacking.py).
+
+Below is the full code for reference; note that other files could import from
+this and use the MDP, e.g. for training policies:
+
+```python title="binpacking.py" linenums="1"
+--8<-- "downloads/binpacking.py"
+```
+
+## Training a DCL agent
+
+With the model and the two heuristic policies in place, we can train a neural
+network policy with [Deep Controlled Learning](../training/dcl.md) and see
+whether it beats the heuristics. Download
+[binpacking_dcl.py](../downloads/binpacking_dcl.py), place it next to
+`binpacking.py`, and run it:
+
+```python title="binpacking_dcl.py" linenums="1"
+--8<-- "downloads/binpacking_dcl.py"
+```
+
+The script calls `assert_mdp` and `assert_policy_for_mdp` — no-ops at
+runtime that make `pyright binpacking_dcl.py` statically verify that the MDP
+and policies satisfy the interfaces DynaPlex expects (see the
+[airplane tutorial](airplane-mdp.md) for details).
+
+The script trains three DCL generations, starting from `LowestWeightPolicy`
+as the generation-0 rollout policy, and then evaluates everything with the
+[`PolicyComparer`](../training/policy-comparison.md) on common random
+numbers.
+
+!!! warning "Unexploited symmetry may hamper performance"
+    This model is deliberately kept simple, and that leaves performance on
+    the table. The bins are interchangeable — any permutation of
+    `weight_vector` describes an equivalent state — but the model does not
+    sort the weights after adding each weight, and the featurizer feeds the
+    raw vector to a plain `MLP`. Equivalent states therefore look different
+    to the network, which must spend training data and capacity learning the
+    symmetry instead of having it built in. A canonical state — e.g. keeping
+    `weight_vector` sorted after every assignment, so that action `i` means
+    "assign to the i-th fullest bin" — exploits the symmetry and typically
+    learns faster and reaches better policies. Network architectures that
+    are permutation-invariant by construction are on the
+    [roadmap](../community/roadmap.md#beyond-mlp-neural-networks-in-dcl). It takes a few minutes on a laptop; training artifacts land in
+`dynaplex_runs/`, and rerunning the script resumes from what is already
+there instead of recomputing.
+
+On our machine the comparison comes out as follows (network training is
+seeded but follows torch's determinism caveats, so your numbers may differ
+slightly — the ordering should not):
+
+```text
+policy                  mean       error    delta_mean  delta_error
+LowestWeight *        2.6381     0.01583             0            0
+FirstFit              2.6298     0.01543       -0.0083     0.004839
+DCL_gen1              2.5504      0.0164       -0.0877      0.02135
+DCL_gen2              2.3791     0.01584        -0.259      0.01681
+DCL_gen3              2.0206     0.01277       -0.6175      0.01875
+(* = benchmark; delta = policy - benchmark, paired on common random numbers)
+```
+
+The two heuristics are nearly tied at about 2.63 overflow cost per period.
+Each DCL generation improves on the previous one, and the generation-3 agent
+reaches 2.02 — beating the heuristics by roughly 23%, with the paired delta
+column showing the improvement is far outside the noise.

@@ -68,5 +68,33 @@ For this MDP we will implement a simple rule-based benchmark:
    sell only to Type 1 customers.
 4. When there are no seats remaining, we cannot sell to anybody.
 
-Continue to the [Python code](airplane-mdp-code.md) for the complete
-implementation.
+## Python code
+
+You can download a complete Python implementation of this MDP example:
+[airplane_mdp_example.py](../downloads/airplane_mdp_example.py).
+
+The file contains, in order: the `State` and MDP classes with the transition
+functions, a rule-based benchmark policy, a *featurizer* (the class that
+defines the state representation used as neural-network input — declared
+separately from the MDP itself), and driver code that first walks through a
+single episode step by step (useful for validating a model), then evaluates
+the policy over many episodes with the `PolicyComparer`, and optionally
+trains a PPO agent and compares it against the rule-based policy on common
+random numbers.
+
+!!! tip "Catch interface mistakes statically with pyright"
+    The driver code calls `assert_mdp(mdp)` and
+    `assert_policy_for_mdp(mdp, policy)`. These do nothing at runtime, but
+    they let a type checker verify that your classes have the members and
+    method signatures DynaPlex expects. Running
+    `pyright airplane_mdp_example.py` thus detects many modelling mistakes
+    (a missing `category` field, a wrongly typed transition function)
+    statically — before anything is run or compiled. More generally, pyright
+    flags most code that is not valid DynaML; see the
+    [language reference](../reference/language-reference.md).
+
+Below is the full code for reference:
+
+```python title="airplane_mdp_example.py" linenums="1"
+--8<-- "downloads/airplane_mdp_example.py"
+```

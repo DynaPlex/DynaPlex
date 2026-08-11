@@ -1,11 +1,12 @@
 # DynaPlex
 
-DynaPlex is a Python library for solving Markov Decision Processes and
-similar models (POMDP, HMM). Its design prioritizes clean modelling and solving of problems arising in operations management (OM): supply chain management, transportation, manufacturing and warehousing, and maintenance optimization. Models are written in
-**DynaML** — a subset of Python suitable for modelling OM problems — and executed by a fast multi-threaded
-engine with a bundled LLVM JIT: you read and write canonical Python code,
-and get auto-vectorized C++ speed. Just as importantly, the library bundles
-algorithms such as deep controlled learning (DCL), specifically designed for the highly stochastic problems that arise in typical OM applications. 
+DynaPlex is an optimization library for solving Markov Decision Processes and
+related sequential decision making problems (POMDP, HMM). 
+
+The DynaPlex design enables clean modelling and efficient solving of problems arising in operations management (OM) and related fields, e.g. in supply chain management, transportation, manufacturing, warehousing, maintenance optimization, process optimization, etc. Models are written in
+**DynaML**: a purpose-built modelling language whose syntax is canonical Python, extended with modelling primitives such as discrete distributions. Models execute on a multi-threaded bundled LLVM JIT, allowing the user to read and write canonical Python code, and get auto-vectorized C++ speed. 
+
+Just as importantly, the library bundles algorithms such as Deep Controlled Learning (DCL), specifically designed for the highly stochastic problems that arise in typical OM applications, as well as canonical implementations of DRL algorithms such as Proximal Policy Optimization (PPO), which benefit from the compiled vectorized environment to accelerate training. There is also first-class support for comparing and optimizing classical parameterized policies, as well as planned support for exact algorithms. 
 
 **[Documentation & tutorials](https://dynaplex.github.io/DynaPlex/)** ·
 **[PyPI](https://pypi.org/project/dynaplex/)** ·
@@ -17,11 +18,9 @@ DynaPlex has been rewritten from the ground up around a purpose-built
 engine that compiles and runs DynaML at native (C++) speed,
 multi-threaded, with the LLVM JIT bundled in the wheel. No C++, no compiler, no build step needed: `pip install dynaplex` is the whole setup.
 
-DynaPlex is free to use for everyone — research, teaching, and
-commercial applications alike, with no feature or usage limits. It ships
-as pre-built wheels on PyPI under a free-use license; the engine's
-source is not published. This repository is the library's public home:
-the documentation source, the issue tracker and the discussions live
+The DynaPlex pre-built wheels are free to use for everyone: research, teaching, and
+commercial applications alike, with no feature or usage limits. This repository is the 
+library's public home: the documentation source, the issue tracker and the discussions live
 here. Documentation contributions are welcome — every docs page has an
 edit button that leads back to this repo. See [License](#license) below.
 

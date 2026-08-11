@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import NDArray
 
-from dynaplex import PolicyComparer, PPOTrainerConfig, PPOTrainer, default_rng
+from dynaplex import MLP, PolicyComparer, PPO, PPOConfig, make_context
 from dynaplex.modelling import (
     Validity,
     HorizonType,
@@ -278,7 +278,7 @@ def simulate_episode(mdp: AirplaneMDP, policy: SimplePolicy, *, seed: int = 42) 
     
     Useful for debugging and validating your MDP before training.
     """     
-    context = TrajectoryContext(rng=default_rng(seed))
+    context = make_context(mdp, seed)
     state = mdp.get_initial_state(context)
     
     step = 0
@@ -321,7 +321,8 @@ def main() -> None:
     policy = SimplePolicy(mdp=mdp)	
 
 
-    # no-op functionthat makes pyright verify that MDP satisfies the MDPProtocol interface.
+    # No-ops at runtime; they make pyright statically verify that the MDP and
+    # policy satisfy the interfaces DynaPlex expects.
     assert_mdp(mdp)
     assert_policy_for_mdp(mdp, policy)
     # Run single simulation with detailed output
@@ -367,29 +368,28 @@ def train_ppo_airplane() -> None:
     policy = SimplePolicy(mdp=mdp)
     
     # Configure PPO trainer
-    config = PPOTrainerConfig(
+    config = PPOConfig(
         seed=42,
         device="cpu",
-        hidden_sizes=(128, 128),
         num_envs=100,
         total_timesteps=100000,
         num_steps=2 * initial_days,
         minibatch_size=64,
         lr=2.5e-4,
-        logdir=None,  # Defaults to log/<MDP_class_name>/ppo
     )
-    
-    # Train policy
-    ppo_trainer = PPOTrainer(mdp=mdp, config=config, features=AirplaneFeaturizer)
-    load_policy = False
-    if load_policy:
-        print("Loading previously trained policy...")
-        trained_policy = ppo_trainer.load_trained_policy()
-        print("Policy loaded successfully!")
-    else:
-        print("Training policy...")
-        trained_policy = ppo_trainer.train()
-        print("Training completed!")
+
+    # Train policy. Artifacts land in dynaplex_runs/; if the workdir was
+    # already trained, train() loads and returns the stored agent instead
+    # of retraining.
+    ppo = PPO(
+        mdp,
+        features=AirplaneFeaturizer,
+        config=config,
+        network=MLP(hidden=(128, 128)),
+    )
+    print("Training policy...")
+    trained_policy = ppo.train()
+    print("Training completed!")
     
     # Compare with baseline
     print("=" * 80)

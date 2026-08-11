@@ -68,10 +68,10 @@ Section 3.3.
 
 We provide examples/tutorials in the form of the
 [Airplane Ticket Selling MDP](../tutorials/airplane-mdp.md) and the
-[Bin Packing MDP](../tutorials/binpacking-mdp.md). The Python code for these
-MDPs is available on the
-[Airplane MDP Python code](../tutorials/airplane-mdp-code.md) and
-[Bin Packing MDP Python code](../tutorials/binpacking-mdp-code.md) pages.
+[Bin Packing MDP](../tutorials/binpacking-mdp.md). Each tutorial includes the
+complete Python code
+([airplane](../tutorials/airplane-mdp.md#python-code),
+[bin packing](../tutorials/binpacking-mdp.md#python-code)).
 
 Classes and methods in DynaPlex MDPs must adhere to certain structural and
 semantic properties. For more information, see the

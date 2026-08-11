@@ -8,13 +8,8 @@ Includes:
 """
 from dataclasses import dataclass
 
-import numpy as np
-from numpy.typing import NDArray
-
 from dynaplex.modelling import (
     AliasSampler,
-    assert_mdp,
-    assert_policy_for_mdp,
     const_dataclass,
     DiscreteDist,
     featurizer,
@@ -31,8 +26,8 @@ class State:
     """
     State representation for the bin packing MDP.
     """
-    weight_vector: NDArray[np.int64]  # Current weight in each bin
-    upcoming_weight: int              # Weight to be assigned
+    weight_vector: list[int]  # Current weight in each bin
+    upcoming_weight: int      # Weight to be assigned
     # This member must always be defined on any dynaplex MDP state:
     category: StateCategory = StateCategory.AWAIT_EVENT
 
@@ -102,7 +97,7 @@ class BinPackingMDP:
         Generates and returns an initial state of the MDP.
         """
         return State(
-            weight_vector=np.zeros(self.number_of_bins, dtype=np.int64),
+            weight_vector=[0] * self.number_of_bins,
             upcoming_weight=0,
             category=StateCategory.AWAIT_EVENT,
         )
@@ -233,11 +228,3 @@ class BinPackingFeaturizer:
     def write_features(self, state: State) -> None:
         self.v.extend(state.weight_vector)
         self.v.append(state.upcoming_weight)
-
-
-# Plumbing, safe to skip: @featurizer already attached the derived holder class as
-# an attribute (<Featurizer>.Holder); this line just gives it an importable
-# module-level name, so other files can `from ... import <Name>FeaturizerHolder`
-# and use it in type annotations. dcl() never needs this — it finds the holder
-# by itself. Only add such an alias when other code imports your holder by name.
-BinPackingFeaturizerHolder = BinPackingFeaturizer.Holder

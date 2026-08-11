@@ -70,15 +70,23 @@ nav:
       - A brief introduction to MDPs: getting-started/introduction-to-mdps.md
   - Tutorials:
       - Airplane ticket selling MDP: tutorials/airplane-mdp.md
-      - Airplane MDP — Python code: tutorials/airplane-mdp-code.md
       - Bin packing MDP: tutorials/binpacking-mdp.md
-      - Bin packing MDP — Python code: tutorials/binpacking-mdp-code.md
+  - Training and evaluation:
+      - Comparing policies: training/policy-comparison.md
+      - Deep Controlled Learning: training/dcl.md
+      - PPO: training/ppo.md
+      - Vectorized gym environments: training/gym-environments.md
   - Language reference:
       - Language reference: reference/language-reference.md
+      - Troubleshooting compile errors: reference/troubleshooting.md
   - API reference:
-      - dynaplex: reference/api/core.md
-      - dynaplex.modelling: reference/api/modelling.md
-      - dynaplex.runtime: reference/api/runtime.md
+      - Modelling MDPs: reference/api/modelling.md
+      - Distributions and randomness: reference/api/randomness.md
+      - Training policies: reference/api/training.md
+      - Evaluating policies: reference/api/evaluation.md
+      - Gym interop: reference/api/gym.md
+      - Advanced runtime: reference/api/runtime.md
+      - All symbols A–Z: reference/api/symbols.md
   - Community:
       - Getting help: community/getting-help.md
       - Planned features: community/roadmap.md

@@ -21,8 +21,6 @@ plain language:
 - **Everything you build with DynaPlex is yours**: your models, your
   code, your trained policies, your simulation results, your
   publications. The license claims no rights over them.
-- The engine's source code is not published, and modifying or reverse
-  engineering the wheels is not permitted.
 - Like virtually all software licenses (open-source ones included),
   DynaPlex comes **as is, without warranty or liability**: you use it
   at your own risk, and validating results before you rely on them in

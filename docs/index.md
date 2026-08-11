@@ -2,8 +2,13 @@
 ![DynaPlex logo](assets/images/logo.png){ width="420" }
 </div>
 
-DynaPlex is an optimization library for solving Markov Decision Problems (MDPs). MDP models in DynaPlex are written in DynaML/Python and compiled into C++20 & LLVM kernels: you read and write canonical Python code, and get auto-vectorized C++ speed — greatly reducing simulation, computation and training times. DynaPlex supports deep reinforcement learning and classical parameterized policies; exact methods based on policy and value iteration are [planned](community/roadmap.md). 
-DynaPlex focuses on solving problems arising in Operations Management: Supply Chain, Transportation and Logistics, Manufacturing, etc.
+DynaPlex is an optimization library for solving Markov Decision Processes and
+related sequential decision making problems (POMDP, HMM). 
+
+The DynaPlex design enables clean modelling and efficient solving of problems arising in operations management (OM) and related fields, e.g. in supply chain management, transportation, manufacturing, warehousing, maintenance optimization, process optimization, etc. Models are written in
+**DynaML**: a purpose-built modelling language whose syntax is canonical Python, extended with modelling primitives such as discrete distributions. Models are executed by a multi-threaded engine with a bundled LLVM JIT, allowing the user to read and write canonical Python code, and get auto-vectorized C++ speed. 
+
+Just as importantly, the library bundles algorithms such as [Deep Controlled Learning (DCL)](training/dcl.md), specifically designed for the highly stochastic problems that arise in typical OM applications, as well as canonical implementations of DRL algorithms such as [Proximal Policy Optimization (PPO)](training/ppo.md), which benefit from accelerated training due to the compiled vectorized environments. There is also first-class support for [comparing](training/policy-comparison.md) and optimizing classical parameterized policies, as well as [planned](community/roadmap.md) support for exact algorithms. 
 
 ```bash
 pip install dynaplex
@@ -31,10 +36,10 @@ pip install dynaplex
 
     ---
 
-    Two worked examples — a finite-horizon ticket selling problem and an
-    infinite-horizon bin packing problem — with complete, runnable code.
-
-    [:octicons-arrow-right-24: Airplane MDP](tutorials/airplane-mdp.md)
+    Two worked examples — a finite-horizon
+    [ticket selling problem](tutorials/airplane-mdp.md) and an
+    infinite-horizon [bin packing problem](tutorials/binpacking-mdp.md) —
+    with complete, runnable code.
 
 -   :material-book-open-variant:{ .lg .middle } **Language reference**
 

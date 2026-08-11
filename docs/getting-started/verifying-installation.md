@@ -18,7 +18,7 @@ build-from-source step and no external LLVM to install — the JIT is bundled.
 | Windows | AMD64 (64-bit) |
 
 The only required runtime dependency is NumPy. PyTorch is needed *only* for
-the reinforcement-learning algorithms (`PPOTrainer`); install it separately
+the reinforcement-learning algorithms (`PPO`, `DCL`); install it separately
 from <https://pytorch.org/get-started/locally/> if you need them.
 
 ## Install

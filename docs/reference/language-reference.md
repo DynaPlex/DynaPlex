@@ -28,7 +28,7 @@ are described in this document.
 DynaML models lead a double life. On the one hand they are ordinary Python:
 you can construct states and call transition methods directly in CPython —
 handy for debugging and unit-testing a model. On the other hand, when a
-model is handed to an algorithm (`dcl`, `PolicyComparer`, `PPOTrainer`, or
+model is handed to an algorithm (`DCL`, `PolicyComparer`, `PPO`, or
 an `Engine` directly), DynaPlex **compiles** it: classes and methods are
 translated into an efficient internal representation and executed on a
 multi-threaded engine with a bundled LLVM JIT. That compiled execution is
@@ -60,7 +60,12 @@ methods. Summary: write code in Python, but use the following rules:
   load the results into supported fields of the state class.
 
 Test your code in CPython. Validate in pyright — if that complains, then it
-is likely that the code is not valid DynaML. If something fails to compile,
+is likely that the code is not valid DynaML. Calling the runtime no-ops
+`assert_mdp(mdp)` and `assert_policy_for_mdp(mdp, policy)` in your script
+additionally makes pyright check that your classes satisfy the interfaces
+DynaPlex expects. If something fails to compile, look up the error message
+on the [troubleshooting page](troubleshooting.md), which groups the common
+compile errors by family with causes and fixes. Alternatively,
 use an LLM, pointing it to this reference document and to your code, and it
 will likely tell you what is wrong. If not, post a question on
 [GitHub Discussions](https://github.com/DynaPlex/DynaPlex/discussions).
@@ -549,8 +554,11 @@ Not supported: `.index()`, `.count()`, `.insert()`, `.remove()`,
 
 The following Python features are presently unsupported, and not planned for
 future support in DynaML: strings (there is no `str` type — use enums);
-dictionaries; sets; tuples (except for returning multiple values, which must
-be immediately bound to individual variables by the caller, see above);
+dictionaries; sets; tuples (with two syntactic exceptions: returning
+multiple values, which must be immediately bound to individual variables by
+the caller, see above; and in-place shape literals in
+[array creators](#numpy-arrays) such as `np.zeros((m, n), ...)` — in
+neither case is the tuple a value that can be stored or passed around);
 lambdas; `isinstance` and other runtime introspection.
 
 !!! tip "Missing something? DynaML is in rapid development"
@@ -628,24 +636,64 @@ currently supported.
 
 ### NumPy arrays
 
-DynaML supports NumPy `NDArray` fields and locals with a statically known
-dtype and rank. The dtype must be one of `np.float64`, `np.float32`,
-`np.int64`, `np.bool_`, and must be annotated (or inferable from the
-creating expression). Multi-dimensional arrays are supported.
+DynaML supports NumPy array fields and locals, with one rule to remember:
+an array annotation must pin down **both** the element dtype **and** the
+number of dimensions (the rank). The dtype must be one of `np.float64`,
+`np.float32`, `np.int64`, `np.bool_`. The most convenient way to declare
+both at once is with the `Array1D` / `Array2D` / `Array3D` aliases from
+`dynaplex.modelling`:
 
 ```python
+from dynaplex.modelling import Array1D, Array2D
+
 @dataclass(slots=True)
 class State:
-    weight_vector: NDArray[np.int64]
-    upcoming_weight: int
+    vector: Array1D[np.int64]     # 1-D array of int64
+    matrix: Array2D[np.float64]   # 2-D array of float64
     category: StateCategory = StateCategory.AWAIT_EVENT
+
+
+def make_state(n: int, m: int) -> State:
+    return State(
+        vector=np.zeros(n, dtype=np.int64),          # shape n: one dimension
+        matrix=np.zeros((n, m), dtype=np.float64),   # shape (n, m): two dimensions
+    )
 ```
+
+The rank is simply the number of elements in the shape passed to the
+creating call: `np.zeros(n, ...)` creates a 1-D array of length `n`,
+`np.zeros((n, m), ...)` a 2-D array, and so on.
+
+`Array1D[T]` / `Array2D[T]` / `Array3D[T]` are shorthands for
+`Annotated[NDArray[T], Rank(1)]` (respectively `Rank(2)`, `Rank(3)`), which
+DynaML also accepts spelled out. Two other forms are accepted:
+
+- A bare `NDArray[T]` (no rank metadata) declares a **1-D** array — the
+  rank defaults to 1, so multi-dimensional arrays always need explicit
+  `Rank` metadata (i.e. use `Array2D`/`Array3D`).
+- For locals, an annotation may be omitted entirely when both dtype and
+  rank are inferable from the creating expression — e.g.
+  `x = np.zeros((m, n), dtype=np.float64)` is a 2-D `float64` array.
+
+A `np.ndarray` annotation without a dtype is rejected. Read-only variants
+`ConstArray1D[...]` / `ConstArray2D[...]` / `ConstArray3D[...]` are covered
+under
+[Const classes and read-only containers](#const-classes-and-read-only-containers).
 
 **Creating arrays.** The supported creators are `np.zeros`, `np.ones`,
 `np.full`, `np.array`, `np.asarray`, `np.zeros_like`, `np.ones_like`, and
-`np.full_like`. Shapes are given as an integer (rank 1) or a tuple literal
-of integers, e.g. `np.zeros((m, n), dtype=np.float64)`; `np.array` /
+`np.full_like`. Shapes are given as an integer (rank 1) or a tuple of
+integers, e.g. `np.zeros((m, n), dtype=np.float64)`; `np.array` /
 `np.asarray` convert a list of numbers.
+
+Shape tuples are the one place where a tuple may be *written* in DynaML
+(tuples otherwise only appear when returning multiple values, and are never
+values you can store — see
+[unsupported syntax](#other-unsupported-python-syntax)). Consequently, the
+tuple must be spelled out in place at the call site: the individual
+dimensions may be arbitrary integer expressions
+(`np.zeros((m + 1, 2 * n), ...)`), but the shape as a whole cannot be built
+elsewhere and passed in via a variable.
 
 **Element access.** Indexing with one index per dimension is supported —
 `a[i]`, `a[i, j]`, `a[i, j, k]` — for both reading and assignment,
@@ -715,9 +763,14 @@ Methods on both families:
     For the NumPy family, `rng.random()` and `rng.uniform()` reproduce
     NumPy's streams bit-for-bit. `rng.choice(n)` (integer form) uses a
     different integer-sampling algorithm than NumPy and will generally
-    return a different (equally uniform) stream for the same seed. Compiled
-    and interpreted DynaPlex execution always agree with each other
-    bit-for-bit.
+    return a different (equally uniform) stream for the same seed. 
+
+!!! warning "Weights must sum to one"
+    Compiled DynaPlex execution normalizes any positive weights, but NumPy
+    itself rejects a `p` that does not sum to one (within ~1.5e-8). A
+    NumPy-family model that relies on normalization therefore runs compiled
+    but raises in plain CPython. Do not rely on the normalization: keep
+    weights summing to one, as NumPy requires.
 
 ### DynaPlex built-ins
 
@@ -756,7 +809,7 @@ store them in (const) fields, and call their methods from compiled code.
   building a distribution at all.
 
 See the bin packing tutorial for a worked example
-([Python code](../tutorials/binpacking-mdp-code.md)).
+([Python code](../tutorials/binpacking-mdp.md#python-code)).
 
 ## Advanced runtime primitives
 

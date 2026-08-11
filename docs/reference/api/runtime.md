@@ -1,7 +1,8 @@
-# API reference — `dynaplex.runtime`
+# Advanced runtime
 
 Advanced runtime primitives, for authors of custom algorithm harnesses.
-Everyday modelling and solving does not need anything on this page.
+Everything on this page lives in `dynaplex.runtime`. Everyday modelling
+and solving does not need anything here.
 
 ## Engine
 

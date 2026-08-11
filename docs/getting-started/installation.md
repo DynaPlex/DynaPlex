@@ -6,7 +6,7 @@
 - **Platform support:**
     - Windows: AMD64
     - Linux: x86_64 (glibc 2.28 or newer, `manylinux_2_28`)
-    - macOS: Apple Silicon (arm64), macOS 14.0 or newer; no Intel hardware supported
+    - macOS: Apple Silicon (arm64), macOS 14.0 or newer; Intel (x86_64), macOS 15.0 or newer
 - **PyTorch:** Algorithms require a compatible PyTorch installation. Use the
   [PyTorch selector](https://pytorch.org/get-started/locally/) to install the
   appropriate version for your system.
