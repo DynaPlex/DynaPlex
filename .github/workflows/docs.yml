@@ -11,9 +11,10 @@
 #     `version` input pins an exact dynaplex version (for back-deploys).
 #
 # The mike version name is MAJOR.MINOR of the installed wheel; `latest`
-# always aliases the newest. First ever run is INSTANTLY live at
-# https://dynaplex.github.io/DynaPlex/ — only enable once site content is
-# final. The job is guarded to the public repo so pushes to the private
+# always aliases the newest release on PyPI. Back-deploys of an older
+# version (via the `version` input) leave the `latest` alias untouched.
+# Deploys are INSTANTLY live at https://dynaplex.github.io/DynaPlex/.
+# The job is guarded to the public repo so pushes to the private
 # staging repo never trigger a deploy.
 #
 # Pipeline tested end-to-end 2026-08-06: pip install dynaplex==1.11.0 from
@@ -75,6 +76,12 @@ jobs:
       - name: Build and deploy with mike
         run: |
           VERSION=$(python -c "import dynaplex; print('.'.join(dynaplex.__version__.split('.')[:2]))")
-          echo "Deploying docs as version $VERSION (latest)"
-          mike deploy --push --update-aliases "$VERSION" latest
-          mike set-default --push latest
+          NEWEST=$(python -c "import json, urllib.request; v = json.load(urllib.request.urlopen('https://pypi.org/pypi/dynaplex/json'))['info']['version']; print('.'.join(v.split('.')[:2]))")
+          if [ "$VERSION" = "$NEWEST" ]; then
+            echo "Deploying docs as version $VERSION (aliased latest)"
+            mike deploy --push --update-aliases "$VERSION" latest
+            mike set-default --push latest
+          else
+            echo "Back-deploying docs for $VERSION; latest stays on $NEWEST"
+            mike deploy --push "$VERSION"
+          fi
