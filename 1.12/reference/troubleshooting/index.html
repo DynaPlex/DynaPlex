@@ -633,6 +633,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../training/dcl/" class="md-nav__link">
         
   
@@ -1614,7 +1642,7 @@
 <h1 id="troubleshooting-compile-errors">Troubleshooting compile errors<a class="headerlink" href="#troubleshooting-compile-errors" title="Permanent link">&para;</a></h1>
 <p>When DynaPlex compiles a model and something in it is not valid DynaML, the
 compiler raises an error. Most tracebacks end like this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ValueError: In function &#39;LostSalesMDP.modify_state_with_action$State$TrajectoryContext$Int&#39;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ValueError: In function 'LostSalesMDP.modify_state_with_action$State$TrajectoryContext$Int'
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>(model.py), line 3: Type mismatch: expected Int, got Float
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  Line 1: def modify_state_with_action(self, state: State, context: TrajectoryContext, action: int) -&gt; None:
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  Line 3:     state.total_inv += self.h
@@ -1635,9 +1663,9 @@ first, and validating with pyright, catches many of these before the
 compiler does.</p>
 <h2 id="type-mismatch">Type mismatch<a class="headerlink" href="#type-mismatch" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Type mismatch: expected Int, got Float
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Type mismatch: cannot assign Float to variable &#39;x&#39; (expected Int)
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Type mismatch for argument &#39;demand&#39;: expected Int, got Float
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Cannot assign Float to field &#39;total_inv&#39; (expected Int)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Type mismatch: cannot assign Float to variable 'x' (expected Int)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Type mismatch for argument 'demand': expected Int, got Float
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Cannot assign Float to field 'total_inv' (expected Int)
 </code></pre></div>
 <p>Every variable, field, and parameter in DynaML has one fixed type. The only
 implicit conversions are numeric widenings <code>bool</code> → <code>int</code> → <code>float</code>; nothing
@@ -1650,7 +1678,7 @@ is about mutability, not the element type — see
 <a href="#const-containers">Const containers</a> below.</p>
 <h2 id="void-expression-used-as-a-value">Void expression used as a value<a class="headerlink" href="#void-expression-used-as-a-value" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Cannot use statement-only expression in ... . Expressions like list.append() and
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>list.sort() don&#39;t return a value and can only be used as statements in DynaML compiled code.
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>list.sort() don't return a value and can only be used as statements in DynaML compiled code.
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Expression must return exactly 1 value(s), but got 0 value(s). This expression
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>returns nothing (void). Cannot assign void result to a variable.
 </code></pre></div>
@@ -1661,11 +1689,11 @@ is no <code>None</code> value to bind. Use them as bare statements:</p>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">q</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>       <span class="c1"># correct</span>
 </code></pre></div>
 <h2 id="unknown-field-method-or-name">Unknown field, method, or name<a class="headerlink" href="#unknown-field-method-or-name" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Field &#39;on_hand&#39; not found in class &#39;State&#39;
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Unknown method &#39;FifoQueue.nosuchmethod&#39;. Method not found on class &#39;FifoQueue&#39;
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Method &#39;helper&#39; not found on dataclass &#39;MyMDP&#39;
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Variable &#39;x&#39; is used before being defined. Variable must be defined before use.
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Unknown class &#39;Foo&#39;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Field 'on_hand' not found in class 'State'
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Unknown method 'FifoQueue.nosuchmethod'. Method not found on class 'FifoQueue'
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Method 'helper' not found on dataclass 'MyMDP'
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Variable 'x' is used before being defined. Variable must be defined before use.
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Unknown class 'Foo'
 </code></pre></div>
 <p>Usually a typo — DynaML cannot create fields or variables on the fly, so a
 misspelled assignment target is an error rather than a silent new attribute.
@@ -1683,7 +1711,7 @@ Two non-typo causes:</p>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Sets are not supported in DynaML. Use a list instead.
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Unsupported expression type: ListComp
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Unsupported statement type: With
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Built-in function &#39;zip&#39; not yet supported
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Built-in function 'zip' not yet supported
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>Only simple function calls and method calls supported (e.g., int(x) or obj.method())
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>Slice assignment is not supported. Use list[i] = value with an integer index.
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>Nested tuple unpacking is not supported. Use separate assignment statements instead.
@@ -1705,8 +1733,8 @@ is in. The usual fixes:</p>
 </ul>
 <h2 id="cannot-determine-infer-a-type">Cannot determine / infer a type<a class="headerlink" href="#cannot-determine-infer-a-type" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Cannot determine type of ...
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Cannot infer type for variable &#39;x&#39; from None literal. ...
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>Cannot infer list element type for variable &#39;xs&#39;. Please provide a type annotation (e.g., xs: list[...] = ...).
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Cannot infer type for variable 'x' from None literal. ...
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>Cannot infer list element type for variable 'xs'. Please provide a type annotation (e.g., xs: list[...] = ...).
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>sorted() does not accept an empty list literal []. Assign to a typed variable first.
 </code></pre></div>
 <p>The compiler types every expression before running anything, and a bare <code>[]</code>
@@ -1719,9 +1747,9 @@ type first:</p>
 <p><code>None</code> can only ever be assigned where the annotation says <code>SomeClass | None</code>
 — see <a href="#none-and-optional-objects">Optional objects</a>.</p>
 <h2 id="variable-declaration-rules">Variable declaration rules<a class="headerlink" href="#variable-declaration-rules" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Annotated variable &#39;x&#39; must be initialized with a value. Use &#39;x: int = value&#39; syntax.
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Variable &#39;x&#39; is already declared. Type annotations can only be used when first declaring a variable, ...
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Cannot redeclare function parameter &#39;x&#39; with a type annotation. ...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Annotated variable 'x' must be initialized with a value. Use 'x: int = value' syntax.
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Variable 'x' is already declared. Type annotations can only be used when first declaring a variable, ...
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Cannot redeclare function parameter 'x' with a type annotation. ...
 </code></pre></div>
 <p>A type annotation introduces a variable, exactly once, together with its
 initial value. Reassignment uses plain <code>x = value</code>, and the new value must
@@ -1732,7 +1760,7 @@ through a function.</p>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Invalid type annotation: ...
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>*args/**kwargs are not supported
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>List parameters cannot have defaults (mutable default arguments are shared across calls). ...
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>Function &#39;f&#39; ... uses type &#39;X&#39; which is not a dataclass or supported primitive type. ...
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>Function 'f' ... uses type 'X' which is not a dataclass or supported primitive type. ...
 </code></pre></div>
 <p>Every compiled function annotates all parameters and its return type, using
 supported types only: primitives, homogeneous <code>list[...]</code>, ndarrays,
@@ -1741,7 +1769,7 @@ dataclasses, enums, and the <code>dynaplex</code> built-in classes. See
 for the exact rules, including which defaults are allowed.</p>
 <h2 id="const-containers">Const containers<a class="headerlink" href="#const-containers" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>expected const list[int], got list[int]
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Class &#39;X&#39; is const (declared with @const_dataclass, or reachable from a const class) but field ... 
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Class 'X' is const (declared with @const_dataclass, or reachable from a const class) but field ... 
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Mutating a const container / passing a mutable container into a const slot
 </code></pre></div>
 <p>Fields of <code>@const_dataclass</code> classes (like your MDP) are deeply immutable in
@@ -1752,7 +1780,7 @@ same storage. The sanctioned way in is a <em>fresh</em> value — a list literal
 into the const slot. Conversely, state (reachable from your State class) is
 mutable and cannot be stored into a const class.</p>
 <h2 id="none-and-optional-objects">None and optional objects<a class="headerlink" href="#none-and-optional-objects" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Reserved built-in type &#39;FifoQueue&#39; is never noneable ...; only user Object classes support None.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Reserved built-in type 'FifoQueue' is never noneable ...; only user Object classes support None.
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Non-optional Object type cannot have a default. Either make the field optional (T | None) or remove the default.
 </code></pre></div>
 <p>Only user-defined dataclass types can be optional, via <code>SomeClass | None</code>.
@@ -1762,7 +1790,7 @@ Primitives, lists, ndarrays, and the built-in runtime classes can never hold
 <h2 id="ndarray-restrictions">ndarray restrictions<a class="headerlink" href="#ndarray-restrictions" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Too many indices for ndarray rank 1: got 2
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>Bare `.shape` is not supported (DynaML has no tuple type). Use indexed access `a.shape[k]` ...
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Unknown or unsupported ndarray method &#39;cumsum&#39;. Supported reduction methods: ...
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Unknown or unsupported ndarray method 'cumsum'. Supported reduction methods: ...
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>len() requires a list or ndarray argument, got ...
 </code></pre></div>
 <p>Compiled code supports a deliberate subset of numpy: fixed dtype and rank per
@@ -1777,8 +1805,8 @@ state layout.</p>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Scalar fields cannot use default_factory
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>Enum default must be a member of ...
 <a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>X must derive directly from enum.Enum, not ...
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>Dataclass &#39;A.B&#39; has &#39;.&#39; in its name. Dots are reserved for qualified names ...
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>Dataclass &#39;X&#39; defines __ne__, which is not supported: &#39;!=&#39; always compiles to the negation of __eq__ ...
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>Dataclass 'A.B' has '.' in its name. Dots are reserved for qualified names ...
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>Dataclass 'X' defines __ne__, which is not supported: '!=' always compiles to the negation of __eq__ ...
 </code></pre></div>
 <p>State and MDP classes are plain dataclasses defined at module level, with
 every field annotated with a supported type and defaults restricted to

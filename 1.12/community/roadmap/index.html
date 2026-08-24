@@ -633,6 +633,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../training/dcl/" class="md-nav__link">
         
   
@@ -1432,11 +1460,20 @@ ready-to-adapt job scripts for HPC clusters (SLURM-based, with Snellius —
 the Dutch national supercomputer — as the worked example), covering
 installation into a cluster environment and running larger training jobs.</p>
 <h2 id="beyond-mlp-neural-networks-in-dcl">Beyond-MLP neural networks in DCL<a class="headerlink" href="#beyond-mlp-neural-networks-in-dcl" title="Permanent link">&para;</a></h2>
-<p>The DCL examples currently use multi-layer perceptrons. DynaPlex supports
-custom network architectures, and we plan worked examples showing them —
-e.g. convolutional networks over spatially-structured states. Further
-architectures (graph neural networks over multi-tensor features) are under
-development.</p>
+<p>The worked DCL examples currently use multi-layer perceptrons over a flat
+feature vector. DynaPlex already lets you plug in <strong>custom network
+architectures</strong> — you supply the network factory — and the observation surface
+now supports <strong>multi-tensor feature bundles</strong>, the substrate needed for
+architectures that read structured state rather than a single flat vector.</p>
+<p>We are building on this in stages:</p>
+<ul>
+<li><strong>Convolutional networks</strong> over spatially-structured states — a worked example
+  is planned.</li>
+<li><strong>Attention / pointer networks</strong> over object-token features (variable-length
+  sets of entities) — the <a href="../../training/featurizers/">featurizer</a> support for
+  this is landing and still stabilizing; a worked example will follow.</li>
+<li><strong>Graph neural networks</strong> over multi-tensor features — under development.</li>
+</ul>
 <h2 id="ports-of-models-from-the-original-dynaplex">Ports of models from the original DynaPlex<a class="headerlink" href="#ports-of-models-from-the-original-dynaplex" title="Permanent link">&para;</a></h2>
 <p>Models written for the original C++ DynaPlex do not run on the new engine,
 but porting them is generally straightforward — the new modelling surface is

@@ -15,14 +15,14 @@ from numpy.typing import NDArray
 
 from dynaplex import MLP, PolicyComparer, PPO, PPOConfig, make_context
 from dynaplex.modelling import (
-    Validity,
+    GlobalStateWriter,
     HorizonType,
     StateCategory,
     TrajectoryContext,
+    Validity,
     assert_mdp,
     assert_policy_for_mdp,
     featurizer,
-    GlobalStateWriter,
 )
 
 
@@ -266,6 +266,11 @@ class AirplaneFeaturizer:
         self.v.append(state.remaining_days / self.mdp.initial_days)
         self.v.append(state.remaining_seats / self.mdp.initial_seats)
         self.v.append(state.price_offered_per_seat / self.mdp.average_price)
+
+    # The observation spec (gym's observation_space analog) is auto-generated:
+    # @featurizer synthesizes a spec() method that sizes each writer field by
+    # counting the writes on a probe state. Declaring spec() by hand is possible
+    # when you want the observation space stated explicitly.
 
 
 # ============================================================================

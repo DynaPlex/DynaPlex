@@ -635,6 +635,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../dcl/" class="md-nav__link">
         
   
@@ -1449,16 +1477,19 @@ with external RL code.</p>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">mdp</span> <span class="o">=</span> <span class="n">LostSalesMDP</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">leadtime</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">demand_dist</span><span class="o">=</span><span class="n">DiscreteDist</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="mf">5.0</span><span class="p">))</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">env</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">gym</span><span class="o">.</span><span class="n">VectorEnv</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">LostSalesFeaturizer</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">obs</span><span class="p">,</span> <span class="n">infos</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>                 <span class="c1"># obs: float32 [256, num_features]</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">obs</span><span class="p">,</span> <span class="n">infos</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>                 <span class="c1"># obs: {"v": float32 [256, ...]}</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">mask</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="s2">&quot;action_mask&quot;</span><span class="p">]</span>                  <span class="c1"># bool [256, num_actions]</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">mask</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="s2">"action_mask"</span><span class="p">]</span>                  <span class="c1"># bool [256, num_actions]</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">actions</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>                <span class="c1"># your policy here</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">obs</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">infos</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
 </code></pre></div>
-<p>Observations come from a <a href="../../reference/api/training/#featurizers">featurizer</a>
-(the observation space is a flat <code>Box[num_features]</code>), actions are
-<code>Discrete(mdp.num_actions)</code>, rewards are the <strong>negated costs</strong> incurred during
-the step, and the action-validity mask rides in <code>infos["action_mask"]</code>.</p>
+<p>Observations come from a <a href="../featurizers/">featurizer</a> (the required <code>features=</code>
+argument) and are <strong>bundles</strong>: the observation space is a <code>spaces.Dict</code> with one <code>Box</code>
+per spec tensor, keyed by writer field name, and <code>reset</code>/<code>step</code> return the
+matching dict of batched arrays (SB3's <code>CombinedExtractor</code> convention).
+Actions are <code>Discrete(mdp.num_actions)</code>, rewards are the <strong>negated costs</strong>
+incurred during the step, and the action-validity mask rides in
+<code>infos["action_mask"]</code>.</p>
 <h2 id="why-it-is-fast">Why it is fast<a class="headerlink" href="#why-it-is-fast" title="Permanent link">&para;</a></h2>
 <p>In the engine, an environment is a <em>slot</em>, not a process: the <code>num_envs</code>
 slots are sharded over worker threads inside one compiled kernel. Per policy
@@ -1498,9 +1529,10 @@ accordingly.</p>
 <p>The env <strong>autoresets on the same step</strong>: when an episode ends during
 <code>step()</code>, the returned observation and mask already belong to the <em>next</em>
 episode, and the ended episode's last state surfaces through the infos —</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">if</span> <span class="s2">&quot;final_observation&quot;</span> <span class="ow">in</span> <span class="n">infos</span><span class="p">:</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">which</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="s2">&quot;_final_observation&quot;</span><span class="p">]</span>          <span class="c1"># bool [num_envs]</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">final_obs</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="s2">&quot;final_observation&quot;</span><span class="p">]</span>       <span class="c1"># object array; rows where `which`</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">if</span> <span class="s2">"final_observation"</span> <span class="ow">in</span> <span class="n">infos</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">which</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="s2">"_final_observation"</span><span class="p">]</span>          <span class="c1"># bool [num_envs]</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">final_obs</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="s2">"final_observation"</span><span class="p">]</span>       <span class="c1"># object array; where `which`,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                                                 <span class="c1"># each entry is an obs dict</span>
 </code></pre></div>
 <ul>
 <li><code>terminated[i]</code> — the episode reached a <code>FINAL</code> state (finite-horizon MDPs).</li>
@@ -1539,8 +1571,7 @@ develop against <code>"python"</code> and switch on the speed later.</p>
 <p>See <a href="../../reference/api/gym/"><code>dynaplex.gym.VectorEnv</code></a> for all constructor
 options (<code>num_envs</code>, <code>max_episode_steps</code>, <code>workers</code>, <code>backend</code>, <code>jit</code>, ...).</p>
 <h2 id="current-limits">Current limits<a class="headerlink" href="#current-limits" title="Permanent link">&para;</a></h2>
-<p>Single-tensor featurizers only (the observation space is a flat <code>Box</code>);
-<code>autoreset=False</code> (park mode, for external collectors that reset environments
+<p><code>autoreset=False</code> (park mode, for external collectors that reset environments
 themselves, e.g. Tianshou's) and per-environment subset resets are designed
 but not yet implemented.</p>
 

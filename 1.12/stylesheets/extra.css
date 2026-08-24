@@ -15,6 +15,13 @@
   --md-accent-fg-color: #a5c4ff;
 }
 
+/* Wider content column than Material's ~61rem default: the tutorials embed
+   full source files, which need horizontal room to render without wrapping
+   or scrolling. Screens narrower than this are unaffected. */
+.md-grid {
+  max-width: 1440px;
+}
+
 /* Landing page: center the logo, cap its width */
 .dp-hero img {
   display: block;

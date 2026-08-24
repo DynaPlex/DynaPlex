@@ -10,14 +10,16 @@ from dataclasses import dataclass
 
 from dynaplex.modelling import (
     AliasSampler,
-    const_dataclass,
     DiscreteDist,
-    featurizer,
+    GlobalStateCounter,
     GlobalStateWriter,
     HorizonType,
     StateCategory,
     TrajectoryContext,
     Validity,
+    const_dataclass,
+    featurizer,
+    probe_state,
 )
 
 
@@ -228,3 +230,13 @@ class BinPackingFeaturizer:
     def write_features(self, state: State) -> None:
         self.v.extend(state.weight_vector)
         self.v.append(state.upcoming_weight)
+
+    # Optional — this is exactly the body @featurizer synthesizes when spec() is
+    # omitted: sizing-by-counting on a probe state. Edit the return to declare
+    # sizes explicitly instead (here:
+    # {"v": TensorSpec(Dtype.float32, (self.mdp.number_of_bins + 1,))}).
+    def spec(self) -> dict:
+        state = probe_state(self.mdp)
+        twin = BinPackingFeaturizer(mdp=self.mdp, v=GlobalStateCounter())
+        twin.write_features(state)
+        return {"v": twin.v.spec()}

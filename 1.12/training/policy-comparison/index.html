@@ -16,7 +16,7 @@
         <link rel="prev" href="../../tutorials/binpacking-mdp/">
       
       
-        <link rel="next" href="../dcl/">
+        <link rel="next" href="../featurizers/">
       
       
         
@@ -703,6 +703,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1409,8 +1437,8 @@ or <a href="../ppo/">PPO</a>.</p>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">comparer</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyComparer</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">number_of_trajectories</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">results</span> <span class="o">=</span> <span class="n">comparer</span><span class="o">.</span><span class="n">compare</span><span class="p">({</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">&quot;base-stock&quot;</span><span class="p">:</span> <span class="n">BaseStockPolicy</span><span class="p">(</span><span class="n">mdp</span><span class="p">),</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="s2">&quot;agent&quot;</span><span class="p">:</span> <span class="n">my_agent</span><span class="p">,</span>          <span class="c1"># e.g. an NNAgent from DCL or PPO</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">"base-stock"</span><span class="p">:</span> <span class="n">BaseStockPolicy</span><span class="p">(</span><span class="n">mdp</span><span class="p">),</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="s2">"agent"</span><span class="p">:</span> <span class="n">my_agent</span><span class="p">,</span>          <span class="c1"># e.g. an NNAgent from DCL or PPO</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">})</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 </code></pre></div>
@@ -1512,13 +1540,13 @@ options.</p>
         
         
           
-          <a href="../dcl/" class="md-footer__link md-footer__link--next" aria-label="Next: Deep Controlled Learning">
+          <a href="../featurizers/" class="md-footer__link md-footer__link--next" aria-label="Next: Featurizers">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Deep Controlled Learning
+                Featurizers
               </div>
             </div>
             <div class="md-footer__button md-icon">

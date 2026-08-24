@@ -633,6 +633,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../training/dcl/" class="md-nav__link">
         
   
@@ -1463,7 +1491,7 @@ over DynaPlex MDPs — see the
 
 
 <a href="#dynaplex.gym.VectorEnv" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">VectorEnv</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="MDPProtocol (dynaplex.modelling.MDPProtocol)" href="../modelling/#dynaplex.modelling.MDPProtocol">MDPProtocol</a></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">,</span> <span class="n">num_envs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="n">max_episode_steps</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">autoreset</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">workers</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">jit</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">VectorEnv</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="MDPProtocol (dynaplex.modelling.MDPProtocol)" href="../modelling/#dynaplex.modelling.MDPProtocol">MDPProtocol</a></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">,</span> <span class="n">num_envs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="n">max_episode_steps</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">autoreset</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">workers</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">jit</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -1511,9 +1539,11 @@ over DynaPlex MDPs — see the
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the featurizer CLASS (<code>@featurizer</code>-decorated); observation
-width is probe-measured. Single-tensor rank-2 featurizers only —
-the observation space is a flat <code>Box[num_features]</code>.</p>
+                <p>the featurizer CLASS (<code>@featurizer</code>-decorated). Observations
+are BUNDLES: the observation space is a <code>spaces.Dict</code> with one <code>Box</code>
+per spec tensor (keyed by writer field name), and <code>reset</code>/<code>step</code>
+return dicts of batched arrays (SB3's <code>CombinedExtractor</code> /
+gym <code>Dict</code>-space convention).</p>
               </div>
             </td>
             <td>
@@ -1672,7 +1702,7 @@ MDPs that stall without advancing time or reaching FINAL.</p>
 
 
 <a href="#dynaplex.gym.VectorEnv.reset" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">reset</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">env_id</span><span class="p">:</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.int_">int_</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.float32">float32</span></span><span class="p">],</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">reset</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">env_id</span><span class="p">:</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.int_">int_</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.ndarray">ndarray</span></span><span class="p">],</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1696,7 +1726,7 @@ current episodes are abandoned and each slot starts its next one.
 
 
 <a href="#dynaplex.gym.VectorEnv.step" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">step</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">ready_env_ids</span><span class="p">:</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.int_">int_</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.float32">float32</span></span><span class="p">],</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.float32">float32</span></span><span class="p">],</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.bool_">bool_</span></span><span class="p">],</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.bool_">bool_</span></span><span class="p">],</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">step</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">ready_env_ids</span><span class="p">:</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.int_">int_</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.ndarray">ndarray</span></span><span class="p">],</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.float32">float32</span></span><span class="p">],</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.bool_">bool_</span></span><span class="p">],</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.bool_">bool_</span></span><span class="p">],</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">

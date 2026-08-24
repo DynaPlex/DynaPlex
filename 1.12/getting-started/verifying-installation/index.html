@@ -737,6 +737,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../training/dcl/" class="md-nav__link">
         
   
@@ -1452,7 +1480,7 @@ build-from-source step and no external LLVM to install — the JIT is bundled.</
 <tbody>
 <tr>
 <td>Python</td>
-<td>3.13 only</td>
+<td>3.13 or 3.14</td>
 </tr>
 <tr>
 <td>macOS (Apple Silicon)</td>
@@ -1479,9 +1507,9 @@ from <a href="https://pytorch.org/get-started/locally/">https://pytorch.org/get-
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>dynaplex
 </code></pre></div>
 <p>If <code>pip</code> cannot find a matching wheel, it is almost always a platform
-mismatch — most often a Python version other than 3.13, an OS older than
+mismatch — most often a Python version other than 3.13/3.14, an OS older than
 the floors above, or a 32-bit interpreter. Check with:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys, platform; print(sys.version); print(platform.machine())&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import sys, platform; print(sys.version); print(platform.machine())"</span>
 </code></pre></div>
 <h2 id="run-the-self-test">Run the self-test<a class="headerlink" href="#run-the-self-test" title="Permanent link">&para;</a></h2>
 <p>The quickest and most complete check is the bundled self-test. It prints your
@@ -1508,7 +1536,7 @@ small kernel through LLVM:</p>
 </code></pre></div>
 <p>The command exits with status <code>0</code> on success and <code>1</code> if any check fails,
 so it can be dropped straight into a CI pipeline:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>-m<span class="w"> </span>dynaplex.selftest<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;DynaPlex self-test failed&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>-m<span class="w"> </span>dynaplex.selftest<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"DynaPlex self-test failed"</span>
 </code></pre></div>
 <p>What each check means:</p>
 <ul>
@@ -1523,10 +1551,10 @@ so it can be dropped straight into a CI pipeline:</p>
 <h2 id="manual-one-line-checks">Manual one-line checks<a class="headerlink" href="#manual-one-line-checks" title="Permanent link">&para;</a></h2>
 <p>If you prefer to check things by hand, these are safe to paste into a shell:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Version and build configuration</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import dynaplex; print(dynaplex.__version__, dynaplex.__build_config__)&quot;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import dynaplex; print(dynaplex.__version__, dynaplex.__build_config__)"</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Is the JIT compiled into this wheel?</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from dynaplex import _core; print(&#39;JIT enabled:&#39;, _core.has_jit())&quot;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from dynaplex import _core; print('JIT enabled:', _core.has_jit())"</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

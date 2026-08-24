@@ -633,6 +633,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../training/dcl/" class="md-nav__link">
         
   
@@ -3264,7 +3292,7 @@ MDP's action space.</p>
 
 
 <a href="#dynaplex.modelling.make_context" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">make_context</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="s1">&#39;MDPProtocol&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">eval</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="TrajectoryContext
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">make_context</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="s1">'MDPProtocol'</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">eval</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="TrajectoryContext
 
 
   
@@ -3875,7 +3903,7 @@ argument's type instead of collapsing to <code>Any</code>.</p>
 
 
 <a href="#dynaplex.modelling.clone.clone_into" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">clone_into</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone.<autoref identifier=">_T</span>" backlink-type="used-by" backlink-anchor="dynaplex.modelling.clone.clone_into" optional hover><span title="dynaplex.modelling.clone._T">_T</span></autoref></span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">clone_into</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4035,13 +4063,23 @@ StateType), the type checker will report an error.</p>
 
 
 <a href="#dynaplex.modelling.assert_featurizer_for_mdp" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">assert_featurizer_for_mdp</span><span class="p">(</span><span class="n">features_cls</span><span class="p">,</span> <span class="n">mdp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">assert_featurizer_for_mdp</span><span class="p">(</span><span class="n">features_cls</span><span class="p">,</span> <span class="n">mdp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TensorSpec
+
+
+  
+      dataclass
+   (dynaplex.modelling.featurizers.TensorSpec)" href="../training/#dynaplex.modelling.TensorSpec">TensorSpec</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
-        <p>Validate a featurizer class against an MDP: field-walk strictness + a live probe.
-Returns the measured feature width (raises with a clear message on any violation).</p>
+        <p>Validate a featurizer class against an MDP and return its spec.</p>
+<p>Declaration is truth, the probe is the TEST: field-walk strictness, spec
+structure, then a dress rehearsal — allocate a ONE-ROW holder at the declared
+sizes and drive the real path (install / reset / write_features / finish) on a
+probe state. A spec that disagrees with what write_features actually writes
+dies here, loudly, at sizing time (writer overflow on too-small, finish
+underfill on too-large) — never as a silently mis-shaped slab.</p>
 
 
     </div>
