@@ -16,17 +16,20 @@ from dynaplex.models.lost_sales import LostSalesFeaturizer, LostSalesMDP
 mdp = LostSalesMDP(p=9.0, h=1.0, leadtime=4, demand_dist=DiscreteDist.poisson(5.0))
 env = dp.gym.VectorEnv(mdp, features=LostSalesFeaturizer, num_envs=256)
 
-obs, infos = env.reset(seed=42)                 # obs: float32 [256, num_features]
+obs, infos = env.reset(seed=42)                 # obs: {"v": float32 [256, ...]}
 for _ in range(1000):
     mask = infos["action_mask"]                  # bool [256, num_actions]
     actions = mask.argmax(axis=1)                # your policy here
     obs, rewards, terminated, truncated, infos = env.step(actions)
 ```
 
-Observations come from a [featurizer](../reference/api/training.md#featurizers)
-(the observation space is a flat `Box[num_features]`), actions are
-`Discrete(mdp.num_actions)`, rewards are the **negated costs** incurred during
-the step, and the action-validity mask rides in `infos["action_mask"]`.
+Observations come from a [featurizer](featurizers.md) (the required `features=`
+argument) and are **bundles**: the observation space is a `spaces.Dict` with one `Box`
+per spec tensor, keyed by writer field name, and `reset`/`step` return the
+matching dict of batched arrays (SB3's `CombinedExtractor` convention).
+Actions are `Discrete(mdp.num_actions)`, rewards are the **negated costs**
+incurred during the step, and the action-validity mask rides in
+`infos["action_mask"]`.
 
 ## Why it is fast
 
@@ -55,7 +58,8 @@ episode, and the ended episode's last state surfaces through the infos —
 ```python
 if "final_observation" in infos:
     which = infos["_final_observation"]          # bool [num_envs]
-    final_obs = infos["final_observation"]       # object array; rows where `which`
+    final_obs = infos["final_observation"]       # object array; where `which`,
+                                                 # each entry is an obs dict
 ```
 
 - `terminated[i]` — the episode reached a `FINAL` state (finite-horizon MDPs).
@@ -99,7 +103,6 @@ options (`num_envs`, `max_episode_steps`, `workers`, `backend`, `jit`, ...).
 
 ## Current limits
 
-Single-tensor featurizers only (the observation space is a flat `Box`);
 `autoreset=False` (park mode, for external collectors that reset environments
 themselves, e.g. Tianshou's) and per-environment subset resets are designed
 but not yet implemented.

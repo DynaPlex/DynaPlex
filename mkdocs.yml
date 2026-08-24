@@ -73,6 +73,7 @@ nav:
       - Bin packing MDP: tutorials/binpacking-mdp.md
   - Training and evaluation:
       - Comparing policies: training/policy-comparison.md
+      - Featurizers: training/featurizers.md
       - Deep Controlled Learning: training/dcl.md
       - PPO: training/ppo.md
       - Vectorized gym environments: training/gym-environments.md

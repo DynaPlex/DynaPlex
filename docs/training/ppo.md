@@ -62,6 +62,24 @@ best-model selection is low-variance. Evaluation numbers are in the MDP's
 native cost metric and are directly comparable to any other policy you assess
 with the same settings, including DCL agents and hand-written benchmarks.
 
+## The training cycle
+
+PPO alternates **collection** and **update** phases. Each iteration steps all
+`num_envs` environments for `num_steps` steps, producing a rollout batch of
+`num_envs × num_steps` timesteps; it then makes `update_epochs` passes over
+that batch in shuffled minibatches of `minibatch_size`. So per iteration there
+are `update_epochs × batch ÷ minibatch_size` gradient steps, every collected
+timestep is reused `update_epochs` times, and the total number of iterations
+is `total_timesteps ÷ batch`. The startup line in the example output above
+prints exactly this arithmetic — read it before waiting on a long run.
+
+Two configurations that silently degenerate:
+
+- `num_envs × num_steps` **greater than** `total_timesteps` → zero iterations;
+  nothing is trained.
+- `minibatch_size` greater than the rollout batch → a single, giant minibatch
+  per epoch instead of shuffled minibatches.
+
 ## Tuning for large batches
 
 The vectorized env makes environments nearly free — the per-step cost is one

@@ -11,12 +11,24 @@ import numpy as np
 import dynaplex as dp
 from dynaplex.modelling import DiscreteDist, assert_mdp, assert_policy_for_mdp
 
-from binpacking import (
-    BinPackingMDP,
-    BinPackingFeaturizer,
-    FirstFitPolicy,
-    LowestWeightPolicy,
-)
+try:
+    # If you author your own models, you can import them from another file 
+    # as you would any other Python module:
+    from binpacking import (
+        BinPackingMDP,
+        BinPackingFeaturizer,
+        FirstFitPolicy,
+        LowestWeightPolicy,
+    )
+except ImportError:
+    # Since binpacking is also one of the built-in models that ships with 
+    # DynaPlex, we can also import it directly from the dynaplex.models.binpacking module.. 
+    from dynaplex.models.binpacking import (
+        BinPackingMDP,
+        BinPackingFeaturizer,
+        FirstFitPolicy,
+        LowestWeightPolicy,
+    )
 
 
 def main() -> None:

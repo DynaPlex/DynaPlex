@@ -24,11 +24,20 @@ installation into a cluster environment and running larger training jobs.
 
 ## Beyond-MLP neural networks in DCL
 
-The DCL examples currently use multi-layer perceptrons. DynaPlex supports
-custom network architectures, and we plan worked examples showing them —
-e.g. convolutional networks over spatially-structured states. Further
-architectures (graph neural networks over multi-tensor features) are under
-development.
+The worked DCL examples currently use multi-layer perceptrons over a flat
+feature vector. DynaPlex already lets you plug in **custom network
+architectures** — you supply the network factory — and the observation surface
+now supports **multi-tensor feature bundles**, the substrate needed for
+architectures that read structured state rather than a single flat vector.
+
+We are building on this in stages:
+
+- **Convolutional networks** over spatially-structured states — a worked example
+  is planned.
+- **Attention / pointer networks** over object-token features (variable-length
+  sets of entities) — the [featurizer](../training/featurizers.md) support for
+  this is landing and still stabilizing; a worked example will follow.
+- **Graph neural networks** over multi-tensor features — under development.
 
 ## Ports of models from the original DynaPlex
 

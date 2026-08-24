@@ -117,7 +117,7 @@ as the generation-0 rollout policy, and then evaluates everything with the
 numbers.
 
 !!! warning "Unexploited symmetry may hamper performance"
-    This model is deliberately kept simple, and that leaves performance on
+    This model is deliberately kept simple, and that leaves DRL performance on
     the table. The bins are interchangeable — any permutation of
     `weight_vector` describes an equivalent state — but the model does not
     sort the weights after adding each weight, and the featurizer feeds the
@@ -126,11 +126,11 @@ numbers.
     symmetry instead of having it built in. A canonical state — e.g. keeping
     `weight_vector` sorted after every assignment, so that action `i` means
     "assign to the i-th fullest bin" — exploits the symmetry and typically
-    learns faster and reaches better policies. Network architectures that
-    are permutation-invariant by construction are on the
-    [roadmap](../community/roadmap.md#beyond-mlp-neural-networks-in-dcl). It takes a few minutes on a laptop; training artifacts land in
+    learns faster and reaches better policies.
+    
+It takes a few minutes on a laptop; training artifacts land in
 `dynaplex_runs/`, and rerunning the script resumes from what is already
-there instead of recomputing.
+here instead of recomputing.
 
 On our machine the comparison comes out as follows (network training is
 seeded but follows torch's determinism caveats, so your numbers may differ
