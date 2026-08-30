@@ -14,7 +14,7 @@ from dynaplex.modelling import DiscreteDist, assert_mdp, assert_policy_for_mdp
 try:
     # If you author your own models, you can import them from another file 
     # as you would any other Python module:
-    from binpacking import (
+    from binpacking import (  # pyright: ignore[reportMissingImports]  # local-file form; falls back to dynaplex.models below
         BinPackingMDP,
         BinPackingFeaturizer,
         FirstFitPolicy,

@@ -13,8 +13,11 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import NDArray
 
-from dynaplex import MLP, PolicyComparer, PPO, PPOConfig, make_context
+from dynaplex import PolicyComparer
 from dynaplex.modelling import (
+    Featurizer,
+    AliasSampler,
+    DiscreteDist,
     GlobalStateWriter,
     HorizonType,
     StateCategory,
@@ -22,7 +25,9 @@ from dynaplex.modelling import (
     Validity,
     assert_mdp,
     assert_policy_for_mdp,
+    const_dataclass,
     featurizer,
+    new_context,
 )
 
 
@@ -37,12 +42,13 @@ class State:
     """
     remaining_days: int
     remaining_seats: int
+    customer_type: int
     price_offered_per_seat: int
     # this member must always be defined on any dynaplex MDP state:
     category: StateCategory = StateCategory.AWAIT_EVENT
     
 
-@dataclass(init=False, slots=True)
+@const_dataclass(init=False, slots=True)
 class AirplaneMDP:
     """
     Airplane ticket selling MDP.
@@ -51,12 +57,14 @@ class AirplaneMDP:
         0: Reject customer
         1: Accept customer (sell seat)
     """    
-    # MDP configuration (instance attributes, no defaults)
+    # MDP configuration (instance attributes, no defaults). The MDP is a
+    # const_dataclass: its fields are fixed for the lifetime of the MDP.
     initial_days: int
     initial_seats: int
-    prices_per_customer_type: list[int]
+    prices_per_customer_type: NDArray[np.int64]   # 1-D by default; use Array2D etc. for more dimensions
     average_price: float
-    customer_type_probs: list[float]
+    customer_type_dist: DiscreteDist       # distribution over customer types
+    customer_type_sampler: AliasSampler    # O(1) draws from customer_type_dist
     num_actions: int
     horizon_type: HorizonType
     
@@ -92,9 +100,13 @@ class AirplaneMDP:
         #NOTE: ensure all attributes are set that are part of the annotation!
         self.initial_days = initial_days
         self.initial_seats = initial_seats
-        self.prices_per_customer_type = prices_per_customer_type
+        self.prices_per_customer_type = np.array(prices_per_customer_type)
         self.average_price = sum(prices_per_customer_type) / len(prices_per_customer_type)
-        self.customer_type_probs = customer_type_probs
+        # A DiscreteDist over the type indices 0, 1, 2, ... and a precomputed
+        # alias sampler for it: drawing a customer type is then O(1), and the
+        # same sampler code runs in CPython and in the compiled engine.
+        self.customer_type_dist = DiscreteDist.custom(customer_type_probs)
+        self.customer_type_sampler = self.customer_type_dist.alias_sampler()
 
         # number of actions in the MDP that are potentially valid. 
         self.num_actions = 2  # 0: Reject, 1: Accept
@@ -113,6 +125,7 @@ class AirplaneMDP:
         return State(
             remaining_days=self.initial_days,
             remaining_seats=self.initial_seats,
+            customer_type=0,
             price_offered_per_seat=0,
             category=StateCategory.AWAIT_EVENT,
         )
@@ -127,12 +140,10 @@ class AirplaneMDP:
         """
         # NOTE: function modify_state_with_event and any functions that it calls must be valid DynaML code.
 
-        # rng Generator -> modern/recommended approach to generate random numbers in numpy. 
-        # rng.choice == np.random.choice:
-        state.price_offered_per_seat = context.rng.choice(
-           self.prices_per_customer_type,
-           p=self.customer_type_probs,
-        )
+        # Draw the type of the arriving customer from the alias sampler using the
+        # trajectory's event stream, then look up the price that type pays.
+        state.customer_type = self.customer_type_sampler.sample(context.rng)
+        state.price_offered_per_seat = int(self.prices_per_customer_type[state.customer_type])
         
         # Next, the agent must decide whether to accept or reject the customer.
         state.category = StateCategory.AWAIT_ACTION        
@@ -153,7 +164,7 @@ class AirplaneMDP:
         # NOTE: do _not_ attempt to generate random numbers here. Any random transitions must happen 
         # in modify_state_with_event, using the rng parameter passed in there. 
         
-        assert state.remaining_days > 0 
+        assert state.remaining_days > 0, "No selling days left"
         state.remaining_days -= 1
 
        
@@ -203,13 +214,14 @@ class AirplaneMDP:
 # Policy Definition
 # ============================================================================
 
-@dataclass(slots=True)
+@const_dataclass(slots=True)
 class SimplePolicy:
     """
-    Simple rule-based policy for the airplane MDP. This policy adheres to the DynaPlex DSL. 
-    
-    This policy uses threshold-based rules to decide when to accept or reject customers.   
- 
+    Simple rule-based policy for the airplane MDP. This policy adheres to the DynaPlex DSL.
+
+    This policy uses threshold-based rules to decide when to accept or reject customers.
+    Like the MDP it is a const_dataclass: its parameters never change while it is
+    evaluated, which lets the compiled engine share it across worker worlds.
     """
     mdp: AirplaneMDP
     seat_threshold: int = 5
@@ -253,7 +265,7 @@ class SimplePolicy:
 
 @featurizer
 @dataclass(slots=True)
-class AirplaneFeaturizer:
+class AirplaneFeaturizer(Featurizer):
     """Featurizer: writer fields declare the representation, write_features fills one
     batch row through them. @featurizer derives the FeatureHolder class (attached as
     AirplaneFeaturizer.Holder) and synthesizes the install/reset/finish field-walks —
@@ -283,7 +295,7 @@ def simulate_episode(mdp: AirplaneMDP, policy: SimplePolicy, *, seed: int = 42) 
     
     Useful for debugging and validating your MDP before training.
     """     
-    context = make_context(mdp, seed)
+    context = new_context(mdp, seed)   # the trajectory's streams + bookkeeping, seeded
     state = mdp.get_initial_state(context)
     
     step = 0
@@ -360,6 +372,9 @@ def main() -> None:
 
 def train_ppo_airplane() -> None:
     """Train a PPO policy for the airplane MDP."""
+    # Imported here so the example (and its MDP) stays importable without torch.
+    from dynaplex import MLP, PPO, PPOConfig
+
     # Create MDP
     initial_days = 25
     mdp = AirplaneMDP(

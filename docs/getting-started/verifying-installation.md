@@ -11,7 +11,7 @@ build-from-source step and no external LLVM to install — the JIT is bundled.
 
 | | |
 |---|---|
-| Python | 3.13 or 3.14 |
+| Python | 3.11 – 3.14 |
 | macOS (Apple Silicon) | arm64, macOS 14.0 or newer |
 | macOS (Intel) | x86_64, macOS 15.0 or newer |
 | Linux | x86_64, glibc 2.28 or newer (`manylinux_2_28`) |
@@ -28,7 +28,7 @@ pip install dynaplex
 ```
 
 If `pip` cannot find a matching wheel, it is almost always a platform
-mismatch — most often a Python version other than 3.13/3.14, an OS older than
+mismatch — most often a Python version outside 3.11–3.14, an OS older than
 the floors above, or a 32-bit interpreter. Check with:
 
 ```bash

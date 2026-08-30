@@ -20,10 +20,11 @@ company cannot revisit decisions once they are made.
 
 ## The components of the MDP
 
-1. **States (S):** The state has only 3 variables: (i) the remaining days
+1. **States (S):** The state has only 4 variables: (i) the remaining days
    until the flight leaves, (ii) the number of remaining seats that can still
-   be offered to customers, and (iii) the price that the new customer is
-   willing to pay (1000, 2000 or 3000).
+   be offered to customers, (iii) the type of the customer that just arrived
+   (0, 1 or 2) and (iv) the price that this customer is willing to pay (3000,
+   2000 or 1000).
 
     We consider 3 types of states to which we can transition: (i) a state
     after an event (new customer arrival) happened, right before the decision
@@ -36,7 +37,11 @@ company cannot revisit decisions once they are made.
    reject the customer.
 
 3. **Randomness / events:** On each day, exactly one customer arrives, the
-   type of which is random.
+   type of which is random. In the code the type distribution is a
+   [`DiscreteDist`](../reference/api/randomness.md) over the type indices, and
+   the event draws from its precomputed
+   [`AliasSampler`](../reference/api/randomness.md) — the idiomatic way to
+   sample a fixed discrete distribution in DynaPlex.
 
 4. **Transitions:**
     - When we are in the `AWAIT_EVENT` state and a new customer arrives, the
@@ -82,6 +87,15 @@ the policy over many episodes with the `PolicyComparer`, and optionally
 trains a PPO agent and compares it against the rule-based policy on common
 random numbers.
 
+!!! note "Const MDPs and policies"
+    The MDP and the rule-based policy are declared with `@const_dataclass`:
+    their fields (prices, the customer-type sampler, thresholds) never change
+    once constructed. This is what allows the compiled engine to share one
+    MDP and policy across its worker worlds. `PolicyComparer` defaults to
+    `backend="auto"`, which silently falls back to plain Python when a model
+    does not compile; pass `backend="engine"` while developing to be told
+    exactly what the compiler objects to.
+
 !!! tip "Catch interface mistakes statically with pyright"
     The driver code calls `assert_mdp(mdp)` and
     `assert_policy_for_mdp(mdp, policy)`. These do nothing at runtime, but
@@ -92,6 +106,18 @@ random numbers.
     statically — before anything is run or compiled. More generally, pyright
     flags most code that is not valid DynaML; see the
     [language reference](../reference/language-reference.md).
+
+!!! tip "Beyond the cost: keeping your own statistics"
+    Every transition function receives a `context` — the trajectory's random
+    stream, `cumulative_cost` and `time_elapsed`. `PolicyComparer` reports the
+    cost, but a study usually wants more: how many customers of each type were
+    accepted, how revenue is spread over the selling days, whether the flight
+    sold out. You get that by declaring your own context class with a field per
+    statistic, updating it inside the transition functions where the
+    information is already at hand, and reading the per-trajectory arrays back
+    from `assessment.stats`. The advanced guide
+    [Custom trajectory statistics](../advanced/airplane-statistics.md) extends
+    this very model that way.
 
 Below is the full code for reference:
 

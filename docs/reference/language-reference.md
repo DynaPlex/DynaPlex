@@ -251,13 +251,10 @@ Methods can be added to dataclasses. The following rules apply:
 - All other parameters must have type hints.
 - Return type annotations work the same as for free functions.
 - Methods are called using dot notation: `obj.method(args)`.
-- Special methods (e.g., `__init__`, `__post_init__`, `__eq__`, `__lt__`,
-  etc.) are not supported; make use of the default initialization and
-  equality machinery of dataclasses. That is, `__init__` and
-  `__post_init__` are unsupported insofar as the object is constructed in
-  functions that are parsed as DynaML. (Since the MDP is passed as an
-  argument, the `__init__` of the MDP is supported, and there, any valid
-  CPython classes and libraries can be used.)
+- Special methods other than `__init__` and `__post_init__` (`__eq__`,
+  `__lt__`, etc.) are not supported; make use of the default equality and
+  ordering machinery of dataclasses. `__init__` and `__post_init__` *are*
+  supported, under the rules in the next section.
 
 Example of a dataclass with a method:
 
@@ -270,6 +267,125 @@ class Point:
     def distance_from_origin(self) -> float:
         return (self.x**2 + self.y**2) ** 0.5
 ```
+
+### Custom `__init__` and `__post_init__`
+
+A dataclass may define its own `__init__` and/or a `__post_init__`. Two
+situations:
+
+- **Objects built in CPython** (the MDP passed to the engine, anything you
+  construct before handing it over): the `__init__` runs in plain CPython and
+  may use any library. It is never compiled.
+- **Objects constructed inside DynaML code** (`State(...)` in a transition
+  function, say): the `__init__` is compiled like any other method, and is
+  only compiled when some DynaML code actually constructs the class.
+
+For the compiled case, the idea is simple: the compiler wants to be sure
+that by the time your `__init__` returns, every field holds a value — and
+that nothing looks at a half-built object along the way. In practice that
+means: assign every field, unconditionally, before you do anything else with
+`self`. This is *definite assignment*, checked at compile time; a body that
+violates it is rejected with an error pointing at the offending line rather
+than producing an object with garbage in it.
+
+Concretely, the body must be valid DynaML and:
+
+- Assign **every field on every path** before it returns. Assigning a field
+  only inside a loop, or only in one arm of an `if`, is rejected. (Annotate
+  the method `-> None`.)
+- Read a field (`self.x`) only after it has been assigned.
+- Use `self` only as `self.field` (store or read) until every field has been
+  assigned. Calling a method on `self`, passing `self` to a function, storing
+  it in a list, or aliasing it (`s = self`) before that point is rejected.
+- Assign a `Final[...]` field (`typing.Final`: set at construction, never
+  rebound) exactly once — never in a loop, never on more than one path.
+
+A few consequences and limits:
+
+- Field defaults are not allowed on such a class: nothing runs before a
+  hand-written `__init__`, so a default would be inert. Move the value into
+  the `__init__` body.
+- A subclass's `__init__` calls the base's with `super().__init__(...)` or
+  `Base.__init__(self, ...)`; that call counts as assigning every base field
+  (see [Inheritance](#inheritance)).
+- Not supported: `field(init=False)`, `InitVar`, and a custom `__init__` on a
+  `@const_dataclass` or a `@separate_world_class` (build those in CPython).
+
+`__post_init__` follows Python exactly: the dataclass-generated `__init__`
+calls it after filling the fields (defaults included), so inside it every
+field is already assigned and it is an ordinary method — it may read and
+rebind fields freely (except `Final` ones) and call other methods. With a
+hand-written `__init__` it is *not* called automatically (Python does not
+either); call it explicitly from `__init__` if you want it, after every
+field has been assigned. It takes no parameters beyond `self` and returns
+`None`.
+
+The `__init__` may take defaults and keyword arguments like any method, and
+may use a [union parameter](#union-parameters-and-overloads), in which case
+each construction site dispatches to the matching variant.
+
+```python
+@dataclass
+class Order:
+    size: Final[int]
+    deadline: int
+    pieces: list[int]
+
+    def __init__(self, size: int, horizon: int = 10) -> None:
+        self.size = size
+        self.deadline = horizon + size // 2
+        self.pieces = []
+        for i in range(size):
+            self.pieces.append(i)
+```
+
+### Inheritance
+
+A dataclass may inherit from **one** other dataclass, **one level** deep
+(`Child(Base)`, where `Base` has no dataclass base of its own; `object` or a
+Protocol as an extra base is fine). Fields are the base's followed by the
+subclass's, exactly as in CPython; inherited methods and overrides work as
+you expect, and the base's version of a method is reachable from the
+subclass:
+
+```python
+@dataclass
+class Point:
+    x: int
+    y: int
+    def norm1(self) -> int:
+        return abs(self.x) + abs(self.y)
+
+@dataclass
+class Point3(Point):
+    z: int = 0
+    def norm1(self) -> int:
+        return super().norm1() + abs(self.z)     # or Point.norm1(self)
+```
+
+Construction style must agree: either both classes use the dataclass-generated
+`__init__`, or both write their own. In the hand-written case the subclass
+`__init__` calls the base's — `super().__init__(...)`, `super(Child,
+self).__init__(...)` or `Base.__init__(self, ...)` — and that call counts as
+assigning every base field for the [definite-assignment
+rules](#custom-__init__-and-__post_init__): it may come before or after the
+subclass's own assignments, base fields are readable only after it, and a
+`Final` base field forbids a second call. Inside the base `__init__`, when it
+runs for a subclass instance, `self` may not be passed around or have methods
+called on it (the subclass's fields are not assigned yet). The mixed case — a
+hand-written base `__init__` under a generated subclass one, which CPython
+silently bypasses — is rejected (for a trajectory context, already when the
+class is defined: `@trajectory_context` checks it).
+
+!!! warning "`super()` and `slots=True`"
+    In CPython, zero-argument `super()` does not work inside a class declared
+    with `@dataclass(slots=True)` (the dataclass rebuilds the class). Use
+    `Base.method(self, ...)` or `super(Child, self).method(...)`, or drop
+    `slots=True` on the subclass. Compiled code accepts all three spellings.
+
+Types stay **nominal**: a `Point3` cannot be stored in a `Point`-typed field,
+local, parameter or list. Inheritance shares fields and code, not a runtime
+type hierarchy.
 
 ### Union parameters and overloads
 
@@ -477,6 +593,26 @@ def accepted(flag: bool) -> int:
     else:
         x = 10
     return x
+```
+
+The same rule covers `for` loop targets, which are scoped to the loop: the
+loop variable is visible in the loop body but not after the loop (nor in its
+`else:` clause), and it may not reuse the name of an existing variable. CPython
+leaves the loop variable bound to its last value after the loop; DynaML rejects
+such a use so that accepted programs behave identically. Copy the value to a
+variable declared before the loop if you need it afterwards:
+
+```python
+def rejected(n: int) -> int:
+    for i in range(n):
+        pass
+    return i  # rejected - i is not defined after the loop.
+
+def accepted(n: int) -> int:
+    last = -1
+    for i in range(n):
+        last = i
+    return last
 ```
 
 Once a variable has a type in a given (or enclosing) scope, it must not be
@@ -810,6 +946,100 @@ store them in (const) fields, and call their methods from compiled code.
 
 See the bin packing tutorial for a worked example
 ([Python code](../tutorials/binpacking-mdp.md#python-code)).
+
+## Trajectory contexts and statistics
+
+Every trajectory runs with a *context* object: the random streams, the
+cumulative cost, the elapsed time and an action-validity scratch. The vanilla
+context is `TrajectoryContext`; an MDP that wants per-trajectory **statistics**
+declares its own context class and constructs it in a `make_context(self)`
+method (worked example: [Airplane MDP with custom
+statistics](../advanced/airplane-statistics.md)).
+
+```python
+@dataclass
+class MyStats(TrajectoryStats):           # what PolicyComparer hands back: one row per trajectory
+    stockouts: Final[Array1D[np.int64]]   # the scalar, [n]
+    holding: Final[Array2D[np.float64]]   # the 1-D array, [n, k]
+
+@trajectory_context
+@dataclass
+class MyContext(TrajectoryContext):       # the five base members come from the base
+    Stats = MyStats                       # the holder
+    stockouts: int                        # statistics
+    holding: Final[NDArray[np.float64]]
+    lead_time_rng: Final[Generator]       # an extra stream
+
+    def __init__(self, mdp: MyMDP) -> None:
+        super().__init__(mdp)             # rng, policy_rng, cumulative_cost, time_elapsed, valid
+        ...                               # assign every statistic; shapes from the MDP
+
+class MyMDP:
+    def make_context(self) -> MyContext:  # declares (annotation) + constructs
+        return MyContext(self)
+    def get_initial_state(self, context: MyContext) -> State: ...
+```
+
+Rules, all checked when the class is defined (`@trajectory_context`) or when
+the MDP is bound (`infer_context_type`):
+
+- **Closed field table.** After the five base members (inherit them from
+  `TrajectoryContext`, or spell them out in that order as a standalone
+  class): `float` / `int` / `bool`
+  scalars, `Final[NDArray[...]]` of dtype float64 / int64 / bool (any rank), and
+  `Final[Generator]` streams. Nothing else — in particular no lists: a
+  statistic has a fixed shape.
+- **Uniform `Final` rule.** Scalars are the only fields you re-assign
+  (`context.stockouts += 1`); every other field is `Final`, created once in
+  `__init__` and mutated in place (`context.holding[k] += ...`). A generator
+  is never replaced — it is reseeded in place.
+- **Scratch.** The same scalars and arrays wrapped in `Scratch[...]`
+  (`plan_period: Scratch[int]`, `plan: Final[Scratch[NDArray[np.int64]]]`) are
+  per-trajectory *scratch*, not statistics: carried by clones, but never
+  collected (absent from `Stats`) and never written by the kernels — `reset()`
+  leaves them alone. This is where a context-driven policy keeps intermediate
+  storage across the decisions of one trajectory (a production plan computed
+  once per period, say), and the policy alone is responsible for knowing when
+  it is stale: decide that from the state (e.g. "first decision of a period"),
+  not from anything the context did. The MDP still declares and sizes the
+  field; a scratch array may be non-`Final` (rebindable) if you need that.
+- **Statistics holder.** Named as a class attribute (`Stats = MyStats`): a
+  dataclass deriving from `TrajectoryStats`
+  with exactly the collected fields — `cumulative_cost`, `time_elapsed` (from
+  the base) and every statistic — under the same names, each `Final` with
+  one extra leading trajectory axis (`bool`/`int`/`float` → `Array1D`, a 1-D
+  array → `Array2D`, ...). Names, dtypes, ranks and `Final` are checked when
+  the context is defined. `Stats` is what types `assessment.stats` for
+  pyright. *Lazy mode:* leave it out and the decorator derives a holder
+  (`MyContext.Stats`) — same runtime; `assessment.stats` is `Any` and the
+  derived class has no static name to annotate with.
+- **Type consistency.** The `context` parameter of `get_initial_state`,
+  `modify_state_with_event` and `modify_state_with_action` and the return
+  annotation of `make_context` must all name the same class; a context-driven
+  policy (`get_action(self, state, context)`) must annotate that same class
+  (or the `Ctx` placeholder for a policy generic over the MDP, as
+  `RandomPolicy` does). `assert_mdp` lets pyright flag disagreements.
+- **Construction.** `new_context(mdp, seed=0)` is the entry point: it calls
+  the MDP's `make_context()` when there is one (else builds a
+  `TrajectoryContext`) and seeds the result. A context straight out of a
+  constructor has placeholder streams; the engine reseeds per trajectory,
+  hand-driven code should not construct directly.
+- **Synthesized housekeeping.** `reseed(global_seed, eval=0, sample=0,
+  trajectory=0)` gives every generator field its own stream, in declaration
+  order (never hand-written); `reset()` zeroes every scalar and zero-fills
+  every array in place, leaving the generators alone (a hand-written `reset`
+  wins); `write_stats(out, row)` copies the collected fields into row `row`
+  of the holder (`MyContext.Stats`, i.e. `MyStats`).
+- **What comes back.** `PolicyComparer(mdp)` is a `PolicyComparer[MyStats]`;
+  `assessment.stats` is a `MyStats`: the collected fields under the same
+  names, each with a leading trajectory axis (`stats.holding` is `[n, k]`,
+  `stats.cumulative_cost` is `[n]`). For an MDP without a custom context it
+  is a `TrajectoryStats`. Raw totals, no summary API; row `i` is trajectory
+  `i` under common random numbers for every policy and backend.
+- **Warmup boundary.** For infinite-horizon evaluation the comparer calls
+  `reset()` — without reseeding — when the warmup ends, so window values and
+  `time_elapsed` restart from zero while the draw streams run on. Code that
+  reads the context mid-trajectory observes this reset.
 
 ## Advanced runtime primitives
 

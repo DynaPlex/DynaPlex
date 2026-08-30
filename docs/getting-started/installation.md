@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- **Python 3.13 or 3.14**
+- **Python 3.11 – 3.14**
 - **Platform support:**
     - Windows: AMD64
     - Linux: x86_64 (glibc 2.28 or newer, `manylinux_2_28`)

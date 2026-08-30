@@ -64,6 +64,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - What's new: changelog.md
   - Getting started:
       - Installation: getting-started/installation.md
       - Verifying your installation: getting-started/verifying-installation.md
@@ -77,6 +78,8 @@ nav:
       - Deep Controlled Learning: training/dcl.md
       - PPO: training/ppo.md
       - Vectorized gym environments: training/gym-environments.md
+  - Advanced:
+      - Custom trajectory statistics: advanced/airplane-statistics.md
   - Language reference:
       - Language reference: reference/language-reference.md
       - Troubleshooting compile errors: reference/troubleshooting.md

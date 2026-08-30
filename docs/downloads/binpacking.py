@@ -9,6 +9,7 @@ Includes:
 from dataclasses import dataclass
 
 from dynaplex.modelling import (
+    Featurizer,
     AliasSampler,
     DiscreteDist,
     GlobalStateCounter,
@@ -221,7 +222,7 @@ class FirstFitPolicy:
 
 @featurizer
 @dataclass(slots=True)
-class BinPackingFeaturizer:
+class BinPackingFeaturizer(Featurizer):
     """Default featurizer for BinPackingMDP (@featurizer derives the holder and
     synthesizes install/reset/finish — featurizers.md section 13)."""
     mdp: BinPackingMDP
@@ -237,6 +238,7 @@ class BinPackingFeaturizer:
     # {"v": TensorSpec(Dtype.float32, (self.mdp.number_of_bins + 1,))}).
     def spec(self) -> dict:
         state = probe_state(self.mdp)
-        twin = BinPackingFeaturizer(mdp=self.mdp, v=GlobalStateCounter())
+        v = GlobalStateCounter()
+        twin = BinPackingFeaturizer(mdp=self.mdp, v=v)
         twin.write_features(state)
-        return {"v": twin.v.spec()}
+        return {"v": v.spec()}

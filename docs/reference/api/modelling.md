@@ -112,9 +112,17 @@ signatures.
 
 ::: dynaplex.modelling.TrajectoryContext
 
-::: dynaplex.modelling.make_context
+::: dynaplex.modelling.TrajectoryStats
 
-::: dynaplex.modelling.reseed_context
+::: dynaplex.modelling.trajectory_context
+
+::: dynaplex.modelling.MakesContext
+
+::: dynaplex.modelling.HasStats
+
+::: dynaplex.modelling.new_context
+
+::: dynaplex.modelling.validity_scratch
 
 ::: dynaplex.modelling.Validity
 

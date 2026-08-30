@@ -33,14 +33,11 @@ slabs, [gym observations](../../training/gym-environments.md) — is keyed the
 same way). `spec()` is optional on the class: when omitted, `@featurizer`
 synthesizes one that sizes by counting on a probe state.
 
+::: dynaplex.Featurizer
+
 ::: dynaplex.featurizer
 
 ::: dynaplex.GlobalStateWriter
-
-::: dynaplex.modelling.FeaturizerProtocol
-    options:
-      members:
-        - write_features
 
 ## The observation spec
 

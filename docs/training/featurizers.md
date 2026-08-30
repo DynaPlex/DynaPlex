@@ -21,12 +21,12 @@ state through a single `GlobalStateWriter`:
 
 ```python
 from dataclasses import dataclass
-from dynaplex import featurizer, GlobalStateWriter
+from dynaplex import Featurizer, featurizer, GlobalStateWriter
 
 
 @featurizer
 @dataclass(slots=True)
-class AirplaneFeaturizer:
+class AirplaneFeaturizer(Featurizer):
     mdp: AirplaneMDP
     v: GlobalStateWriter
 
@@ -40,7 +40,11 @@ class AirplaneFeaturizer:
 
 The essentials:
 
-- Decorate a `@dataclass(slots=True)` with `@featurizer`.
+- Subclass `Featurizer` and decorate the `@dataclass(slots=True)` with
+  `@featurizer`. The base class carries no fields; it lets a type checker
+  recognise the class as a featurizer (the `features=` argument is
+  `type[Featurizer]`) and see the methods the decorator adds — the same
+  pattern as `TrajectoryContext` and `@trajectory_context`.
 - Declare an `mdp` field (the MDP this representation is for) and one **writer**
   field. For the flat featurizer that writer is a `GlobalStateWriter`.
 - `write_features(self, state)` fills one row by `append`-ing scalars in a fixed
