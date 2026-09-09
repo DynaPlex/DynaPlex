@@ -46,6 +46,7 @@ from dynaplex.modelling import (
     new_context,
     trajectory_context,
 )
+from dynaplex.validation import mdp, policy
 
 
 # ============================================================================
@@ -126,6 +127,7 @@ class AirplaneContext(TrajectoryContext):
 # MDP — one added field, one added method, three added lines
 # ============================================================================
 
+@mdp
 @const_dataclass(init=False, slots=True)
 class AirplaneMDP:
     initial_days: int
@@ -183,9 +185,10 @@ class AirplaneMDP:
     def modify_state_with_action(self, state: State, context: AirplaneContext, action: int) -> None:
         assert state.remaining_days > 0, "No selling days left"
         state.remaining_days -= 1
-        # time_elapsed was incremented by the event, so the current day is
-        # time_elapsed - 1 (0-based).
-        day = context.time_elapsed - 1
+        # The current day, 0-based. We could read context.time_elapsed here, but the
+        # MDP promises would not let us: that creates a dependency on the harness's
+        # clock (time-accumulate-only), so the day is derived from the state instead.
+        day = self.initial_days - state.remaining_days - 1
 
         if action == 0:
             context.rejected_per_type[state.customer_type] += 1          # NEW
@@ -216,6 +219,7 @@ class AirplaneMDP:
 # Policy (unchanged)
 # ============================================================================
 
+@policy
 @const_dataclass(slots=True)
 class SimplePolicy:
     mdp: AirplaneMDP
@@ -244,8 +248,8 @@ class SimplePolicy:
 @featurizer
 @dataclass(slots=True)
 class AirplaneFeaturizer(Featurizer):
-    mdp: AirplaneMDP
-    v: GlobalStateWriter
+    mdp: Final[AirplaneMDP]
+    v: Final[GlobalStateWriter]
 
     def write_features(self, state: State) -> None:
         self.v.append(state.remaining_days / self.mdp.initial_days)

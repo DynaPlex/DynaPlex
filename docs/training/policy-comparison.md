@@ -7,8 +7,8 @@ of any policy on an MDP, and compares several policies head-to-head on
 [two policy shapes](../reference/api/modelling.md#policies-the-two-shapes)) —
 a hand-written benchmark rule, a classical parameterized policy, the built-in
 [`RandomPolicy`](../reference/api/training.md#built-in-policies) — or a
-trained [`NNAgent`](dcl.md#the-result-an-nnagent) produced by [DCL](dcl.md)
-or [PPO](ppo.md).
+trained [`NNAgent`](dcl.md#the-result-an-nnagent) produced by [DCL](dcl.md),
+[PPO](ppo.md) or other DRL algorithms.
 
 ```python
 import dynaplex as dp
@@ -20,7 +20,7 @@ mdp = LostSalesMDP(p=9.0, h=1.0, leadtime=4, demand_dist=DiscreteDist.poisson(5.
 comparer = dp.PolicyComparer(mdp, number_of_trajectories=4096, seed=1)
 results = comparer.compare({
     "base-stock": BaseStockPolicy(mdp),
-    "agent": my_agent,          # e.g. an NNAgent from DCL or PPO
+    "agent": my_agent,          # e.g. an NNAgent from DCL, PPO or another DRL algorithm
 })
 print(results)
 ```
@@ -35,6 +35,14 @@ agent         6.85786   0.006526     -1.40905     0.006226
 Use `comparer.assess(policy)` for a single policy; `compare(...)` accepts
 positional policies, a list, or a dict (dict keys become the result names),
 and `benchmark=` selects the benchmark by index or name.
+
+!!! tip "Small finite MDPs can be solved exactly"
+    For a model whose reachable state space fits in memory, the
+    [exact solver](exact-solver.md) computes a policy's cost — average per
+    period on an infinite horizon, expected total per episode on a finite one
+    — without simulation noise and finds the optimal policy; that policy is a
+    normal policy and can be compared here alongside heuristics and trained
+    agents.
 
 ## What the numbers mean
 

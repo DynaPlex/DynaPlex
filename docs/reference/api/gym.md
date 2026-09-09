@@ -6,3 +6,5 @@ over DynaPlex MDPs — see the
 `gymnasium` dependency (`pip install "dynaplex[gym]"`).
 
 ::: dynaplex.gym.VectorEnv
+
+::: dynaplex.gym.TianshouVectorEnv

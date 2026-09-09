@@ -1,9 +1,5 @@
 # Airplane MDP with custom statistics
 
-!!! note "Version"
-    Trajectory-context statistics ship in the release after 1.12.3; the code
-    on this page does not run on older wheels.
-
 The [airplane tutorial](../tutorials/airplane-mdp.md) evaluates policies on a single
 number: the total cost (negative revenue) per trajectory. Real studies want
 more. For the airline, natural questions are:
@@ -140,7 +136,9 @@ arrived, whether it was accepted and what day it is. A few lines:
     def modify_state_with_action(self, state: State, context: AirplaneContext, action: int) -> None:
         assert state.remaining_days > 0, "No selling days left"
         state.remaining_days -= 1
-        day = context.time_elapsed - 1        # the event incremented time_elapsed
+        # We could read context.time_elapsed here, but the MDP promises would not
+        # let us (a dependency on the harness's clock): derive the day from the state.
+        day = self.initial_days - state.remaining_days - 1
 
         if action == 0:
             context.rejected_per_type[state.customer_type] += 1

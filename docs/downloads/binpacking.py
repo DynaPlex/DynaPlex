@@ -7,6 +7,7 @@ Includes:
 - State: The state class
 """
 from dataclasses import dataclass
+from typing import Final
 
 from dynaplex.modelling import (
     Featurizer,
@@ -22,6 +23,7 @@ from dynaplex.modelling import (
     featurizer,
     probe_state,
 )
+from dynaplex.validation import mdp, policy
 
 
 @dataclass(slots=True)
@@ -35,6 +37,7 @@ class State:
     category: StateCategory = StateCategory.AWAIT_EVENT
 
 
+@mdp
 @const_dataclass(init=False, slots=True)
 class BinPackingMDP:
     """
@@ -170,6 +173,7 @@ class BinPackingMDP:
             valid.set(i, True)
 
 
+@policy
 @const_dataclass(slots=True)
 class LowestWeightPolicy:
     """
@@ -203,6 +207,7 @@ class LowestWeightPolicy:
         return min_index
 
 
+@policy
 @const_dataclass(slots=True)
 class FirstFitPolicy:
     """
@@ -224,9 +229,9 @@ class FirstFitPolicy:
 @dataclass(slots=True)
 class BinPackingFeaturizer(Featurizer):
     """Default featurizer for BinPackingMDP (@featurizer derives the holder and
-    synthesizes install/reset/finish — featurizers.md section 13)."""
-    mdp: BinPackingMDP
-    v: GlobalStateWriter
+    synthesizes bind/reset/finish — featurizers.md section 13)."""
+    mdp: Final[BinPackingMDP]
+    v: Final[GlobalStateWriter]
 
     def write_features(self, state: State) -> None:
         self.v.extend(state.weight_vector)

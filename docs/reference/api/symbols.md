@@ -11,6 +11,7 @@ Every public name in the API, with the page where it is documented.
 | [`assert_featurizer_for_mdp`][dynaplex.modelling.assert_featurizer_for_mdp] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`assert_mdp`][dynaplex.modelling.assert_mdp] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`assert_policy_for_mdp`][dynaplex.modelling.assert_policy_for_mdp] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`check_mdp`][dynaplex.check_mdp] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`clone`][dynaplex.modelling.clone] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`clone_into`][dynaplex.runtime.clone_into] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`combine_seeds`][dynaplex.runtime.combine_seeds] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
@@ -26,10 +27,15 @@ Every public name in the API, with the page where it is documented.
 | [`DataModel`][dynaplex.runtime.DataModel] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`DCL`][dynaplex.DCL] | `dynaplex` | [Training policies](training.md) |
 | [`default_rng`][dynaplex.default_rng] | `dynaplex` | [Distributions and randomness](randomness.md) |
-| [`DiscreteDist`][dynaplex.modelling.DiscreteDist] | `dynaplex.modelling` | [Distributions and randomness](randomness.md) |
+| [`DiscreteDist`][dynaplex.modelling.DiscreteDist] | `dynaplex.modelling` | [Distributions and randomness](randomness.md), [Discrete distributions](../discrete-distributions.md) |
 | [`Dtype`][dynaplex.modelling.Dtype] | `dynaplex.modelling` | [Training policies](training.md) |
 | [`DynaPlexError`][dynaplex.DynaPlexError] | `dynaplex` | [Modelling MDPs](modelling.md) |
 | [`Engine`][dynaplex.runtime.Engine] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
+| [`ExactPolicy`][dynaplex.ExactPolicy] | `dynaplex` | [Exact solver](exact-solver.md) |
+| [`ExactResult`][dynaplex.ExactResult] | `dynaplex` | [Exact solver](exact-solver.md) |
+| [`ExactSolver`][dynaplex.ExactSolver] | `dynaplex` | [Exact solver](exact-solver.md) |
+| [`ExactTablePolicy`][dynaplex.ExactTablePolicy] | `dynaplex` | [Exact solver](exact-solver.md) |
+| [`fail`][dynaplex.fail] | `dynaplex` | [Modelling MDPs](modelling.md) |
 | [`feature_spec`][dynaplex.modelling.feature_spec] | `dynaplex.modelling` | [Training policies](training.md) |
 | [`featurizer`][dynaplex.featurizer] | `dynaplex` | [Training policies](training.md) |
 | [`Featurizer`][dynaplex.Featurizer] | `dynaplex` | [Training policies](training.md) |
@@ -39,6 +45,7 @@ Every public name in the API, with the page where it is documented.
 | [`HorizonType`][dynaplex.modelling.HorizonType] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`MDPProtocol`][dynaplex.modelling.MDPProtocol] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`MakesContext`][dynaplex.modelling.MakesContext] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`MdpCheckReport`][dynaplex.MdpCheckReport] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`HasStats`][dynaplex.modelling.HasStats] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`new_context`][dynaplex.modelling.new_context] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`MLP`][dynaplex.MLP] | `dynaplex` | [Training policies](training.md) |
@@ -54,7 +61,10 @@ Every public name in the API, with the page where it is documented.
 | [`Program`][dynaplex.runtime.Program] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`RandomPolicy`][dynaplex.RandomPolicy] | `dynaplex` | [Training policies](training.md) |
 | [`Rank`][dynaplex.modelling.Rank] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`RehearsalReport`][dynaplex.RehearsalReport] | `dynaplex` | [Evaluating policies](evaluation.md) |
+| [`rehearse`][dynaplex.rehearse] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`reseed`][dynaplex.runtime.reseed] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
+| [`static_require`][dynaplex.static_require] | `dynaplex` | [Modelling MDPs](modelling.md) |
 | [`trajectory_context`][dynaplex.modelling.trajectory_context] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`validity_scratch`][dynaplex.modelling.validity_scratch] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`SampleSet`][dynaplex.SampleSet] | `dynaplex` | [Training policies](training.md) |

@@ -150,3 +150,14 @@ The two heuristics are nearly tied at about 2.63 overflow cost per period.
 Each DCL generation improves on the previous one, and the generation-3 agent
 reaches 2.02 — beating the heuristics by roughly 23%, with the paired delta
 column showing the improvement is far outside the noise.
+
+## Solving it exactly
+
+This instance is small enough to solve exactly: three bins holding a multiple
+of 10 each and five possible arriving weights make 5000 decision states. The
+[exact solver](../training/exact-solver.md) enumerates them, computes the
+heuristics' costs exactly (both 2.6546 per period) and finds the optimal policy,
+at 0.069 per period — a policy that fills bins to exactly 100, where emptying
+costs nothing. The DCL agent above improves on the heuristics but is still far
+from that optimum; the exact solver page walks through the instance and reads
+the optimal decisions state by state.

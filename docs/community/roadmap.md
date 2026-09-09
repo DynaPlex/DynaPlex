@@ -10,10 +10,16 @@ prioritize.
 
 ## Exact solvers
 
-The original DynaPlex included exact methods based on policy iteration and
-value iteration. These are not yet available in the rewrite; porting them is
-planned. Until then, DynaPlex covers deep reinforcement learning (DCL) and
-classical parameterized policies.
+The [exact solver](../training/exact-solver.md) is available for
+infinite-horizon MDPs (average cost) and finite-horizon MDPs (expected total
+cost): discovery of the reachable state space, exact policy evaluation and
+policy iteration, single-threaded and in memory. Planned on top of it:
+
+- **Parallel sweeps** over the state space, the `workers` knob the other
+  harnesses already have.
+- **Persistence**: writing the discovery and the solved tables to a work
+  directory, so that re-running a script loads them and the optimal policy is
+  available in a fresh process without re-solving.
 
 ## Cluster / HPC job scripts
 

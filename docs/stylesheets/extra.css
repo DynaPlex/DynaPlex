@@ -29,3 +29,49 @@
   max-width: 420px;
   width: 100%;
 }
+
+/* Landing page hero: tagline + subtitle under the logo */
+.dp-hero {
+  text-align: center;
+  margin: 0.5rem auto 1.5rem auto;
+}
+.dp-hero .dp-tagline {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 1.25rem 0 0.6rem 0;
+  color: var(--md-primary-fg-color);
+}
+[data-md-color-scheme="slate"] .dp-hero .dp-tagline {
+  color: #a5c4ff;
+}
+.dp-hero .dp-sub {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  max-width: 44rem;
+  margin: 0 auto;
+  color: var(--md-default-fg-color--light);
+}
+@media screen and (max-width: 60em) {
+  .dp-hero .dp-tagline { font-size: 1.5rem; }
+}
+
+/* The feature cards: the modelling interface + the three ways to solve. One row
+   of four on wide screens, two by two in between, a column on phones. */
+.dp-features.grid.cards {
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  margin-bottom: 1.5rem;
+}
+@media screen and (min-width: 76.25em) {
+  .dp-features.grid.cards { grid-template-columns: repeat(4, 1fr); }
+}
+.dp-features.grid.cards > ul > li {
+  border-top: 4px solid var(--md-primary-fg-color);
+}
+[data-md-color-scheme="slate"] .dp-features.grid.cards > ul > li {
+  border-top-color: #82a8ec;
+}
+.dp-features.grid.cards > ul > li > p:first-child {
+  font-size: 1.05rem;
+}

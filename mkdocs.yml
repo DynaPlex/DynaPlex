@@ -74,20 +74,25 @@ nav:
       - Bin packing MDP: tutorials/binpacking-mdp.md
   - Training and evaluation:
       - Comparing policies: training/policy-comparison.md
+      - Exact solver: training/exact-solver.md
       - Featurizers: training/featurizers.md
       - Deep Controlled Learning: training/dcl.md
+      - Machines and execution plans: training/machines.md
       - PPO: training/ppo.md
       - Vectorized gym environments: training/gym-environments.md
   - Advanced:
       - Custom trajectory statistics: advanced/airplane-statistics.md
   - Language reference:
       - Language reference: reference/language-reference.md
+      - Discrete distributions: reference/discrete-distributions.md
       - Troubleshooting compile errors: reference/troubleshooting.md
+      - Promises (model validation): reference/promises.md
   - API reference:
       - Modelling MDPs: reference/api/modelling.md
       - Distributions and randomness: reference/api/randomness.md
       - Training policies: reference/api/training.md
       - Evaluating policies: reference/api/evaluation.md
+      - Exact solver: reference/api/exact-solver.md
       - Gym interop: reference/api/gym.md
       - Advanced runtime: reference/api/runtime.md
       - All symbols A–Z: reference/api/symbols.md

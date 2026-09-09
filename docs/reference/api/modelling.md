@@ -177,6 +177,45 @@ and [NumPy arrays](../language-reference.md#numpy-arrays).
 
 ::: dynaplex.modelling.conforms
 
+## Promises
+
+A class can carry **promises** about what its methods do to their parameters;
+the compiler checks them whenever the methods compile (the named promises, their assumptions and fixes: [Promises reference](../promises.md);
+the short form: [language reference → Promises](../language-reference.md#promises-what-a-method-may-do-to-a-parameter)).
+
+- `dynaplex.mdp` — class decorator, above `@const_dataclass`: the class promises
+  the base MDP contract (`dynaplex.validation.BASE_MDP_CONTRACT`) for
+  `modify_state_with_event`, `modify_state_with_action` and
+  `write_action_validity`. `@mdp(promises=contract)` appends a further
+  `RoleContract`.
+- `dynaplex.policy` — the same for a policy's `get_action`
+  (`BASE_POLICY_CONTRACT`). `@featurizer` attaches `FEATURIZER_CONTRACT`
+  (`write_features` only reads the state) by itself.
+- `dynaplex.validation` — `validate(engine_or_program, contract, cls=...)`
+  returning a `Verdict` (`ok`, `violations`, `format()`, `raise_if_any()`), and
+  `DISCRETE_IDENTIFIABLE_EVENTS`, the set the exact solver requires.
+
+```python
+from dynaplex import Engine, mdp, const_dataclass
+from dynaplex.validation import DISCRETE_IDENTIFIABLE_EVENTS, validate
+
+@mdp
+@const_dataclass(init=False, slots=True)
+class MyMDP:
+    ...
+
+verdict = validate(Engine(MyMDP, *ctor_args), DISCRETE_IDENTIFIABLE_EVENTS, cls=MyMDP)
+print(verdict.format())          # "ok (2 function(s) checked)" or the violations
+```
+
+## Failing on purpose
+
+::: dynaplex.fail
+
+## Compile-time requirements
+
+::: dynaplex.static_require
+
 ## Errors
 
 ::: dynaplex.DynaPlexError

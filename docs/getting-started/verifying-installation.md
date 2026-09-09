@@ -51,11 +51,11 @@ Expected output on a healthy install (details will differ per machine):
 ```text
 DynaPlex installation self-test
 ================================================
-  dynaplex version : 1.10.0
+  dynaplex version : 1.14.0
   build config     : Release
   JIT enabled      : True
   python           : 3.13.12 (/path/to/python)
-  platform         : macOS-14.5-arm64 / arm64
+  platform         : macOS-26.6.2-arm64-arm-64bit-Mach-O / arm64
 ================================================
 
   [ OK ]  import dynaplex + numpy

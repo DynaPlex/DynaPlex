@@ -1,18 +1,70 @@
 <div class="dp-hero" markdown>
 ![DynaPlex logo](assets/images/logo.png){ width="420" }
+
+<p class="dp-tagline">One intuitive modelling interface.<br>Three ways to solve.</p>
+
+<p class="dp-sub">Write a Markov decision process once, in <strong>DynaML</strong> — canonical
+Python, compiled to vectorized C++ speed using LLVM JIT — and deploy and compare a range of methods.</p>
 </div>
 
-DynaPlex is an optimization library for solving Markov Decision Processes and
-related sequential decision making problems (POMDP, HMM). 
+<div class="grid cards dp-features" markdown>
 
-The DynaPlex design enables clean modelling and efficient solving of problems arising in operations management (OM) and related fields, e.g. in supply chain management, transportation, manufacturing, warehousing, maintenance optimization, process optimization, etc. Models are written in
-**DynaML**: a purpose-built modelling language whose syntax is canonical Python, extended with modelling primitives such as discrete distributions. Models are executed by a multi-threaded engine with a bundled LLVM JIT, allowing the user to read and write canonical Python code, and get auto-vectorized C++ speed. 
+-   :material-pencil-ruler:{ .lg .middle } **Intuitive & correct MDP models**
 
-Just as importantly, the library bundles algorithms such as [Deep Controlled Learning (DCL)](training/dcl.md), specifically designed for the highly stochastic problems that arise in typical OM applications, as well as canonical implementations of DRL algorithms such as [Proximal Policy Optimization (PPO)](training/ppo.md), which benefit from accelerated training due to the compiled vectorized environments. There is also first-class support for [comparing](training/policy-comparison.md) and optimizing classical parameterized policies, as well as [planned](community/roadmap.md) support for exact algorithms. 
+    ---
+
+    Write the state, the random events that move it, the actions that shape
+    it and the costs they incur in plain Python that mirrors the MDP
+    definition — and is checked against it. One model feeds all three
+    methods.
+
+    [:octicons-arrow-right-24: Modelling an MDP](getting-started/introduction-to-mdps.md)
+
+-   :material-rocket-launch:{ .lg .middle } **Vectorized reinforcement learning**
+
+    ---
+
+    Compiled, vectorized environments drive
+    [Deep Controlled Learning](training/dcl.md), designed for the highly
+    stochastic problems of operations management, and DRL algorithms ([PPO](training/ppo.md), etc) through a vectorized
+    [gym interface](training/gym-environments.md).
+
+    [:octicons-arrow-right-24: Deep Controlled Learning](training/dcl.md)
+
+-   :material-scale-balance:{ .lg .middle } **Compare & optimize policies**
+
+    ---
+
+    Evaluate heuristics and parameterized policies against each other on
+    common random numbers, with statistical error bars, and optimize their
+    parameters — all at compiled speed.
+
+    [:octicons-arrow-right-24: Comparing policies](training/policy-comparison.md)
+
+-   :material-function-variant:{ .lg .middle } **Exact dynamic programming**
+
+    ---
+
+    Where the state space can be enumerated and events are discrete: exact optimal policies, for finite and infinite horizons — a powerfull yardstick to benchmark heuristic and trained agents.
+
+    [:octicons-arrow-right-24: Exact solver](training/exact-solver.md)
+
+</div>
 
 ```bash
 pip install dynaplex
 ```
+
+DynaPlex is an optimization library for formulating and solving Markov Decision
+Processes, i.e. for identifying well-performing policies that select actions
+based on complete or partial observations of the state space. Its design
+enables clean modelling and efficient solving of problems arising in operations
+management (OM) and related fields — supply chain management, transportation,
+manufacturing, warehousing, maintenance and process optimization. Models are
+written in **DynaML**, a purpose-built modelling language whose syntax is
+canonical Python, extended with modelling primitives such as discrete
+distributions, and executed by a multi-threaded engine with a bundled LLVM JIT:
+you read and write plain Python, and get auto-vectorized C++ speed.
 
 !!! tip "New to MDPs?"
     Start with the [introduction to MDPs](getting-started/introduction-to-mdps.md),

@@ -119,6 +119,20 @@ random numbers.
     [Custom trajectory statistics](../advanced/airplane-statistics.md) extends
     this very model that way.
 
+!!! tip "Solve it exactly"
+    The state space of this model is small — 660 decision states on the
+    instance below — so the [exact solver](../training/exact-solver.md)
+    computes the rule-based policy's expected revenue without simulation noise
+    and finds the optimal policy, which then runs in the `PolicyComparer` like
+    any other:
+
+    ```python
+    solver = dynaplex.ExactSolver(mdp)
+    print(solver.evaluate(policy))          # expected total cost -25074.7 (revenue 25 075)
+    opt = solver.solve(warm_start=policy)   # expected total cost -28769.2 (revenue 28 769)
+    exact_policy = opt.get_policy()
+    ```
+
 Below is the full code for reference:
 
 ```python title="airplane_mdp_example.py" linenums="1"

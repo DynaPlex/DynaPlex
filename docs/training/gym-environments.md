@@ -101,8 +101,105 @@ develop against `"python"` and switch on the speed later.
 See [`dynaplex.gym.VectorEnv`](../reference/api/gym.md) for all constructor
 options (`num_envs`, `max_episode_steps`, `workers`, `backend`, `jit`, ...).
 
-## Current limits
+## Park mode: collectors that reset environments themselves
 
-`autoreset=False` (park mode, for external collectors that reset environments
-themselves, e.g. Tianshou's) and per-environment subset resets are designed
-but not yet implemented.
+Some RL libraries do not want autoreset. Their collector notices `done`,
+keeps the terminal observation, and resets the finished environments itself.
+`autoreset=False` gives them that:
+
+```python
+env = dp.gym.VectorEnv(mdp, features=LostSalesFeaturizer, num_envs=256,
+                       autoreset=False)
+obs, infos = env.reset(seed=42)
+obs, rewards, terminated, truncated, infos = env.step(actions)
+
+parked = np.flatnonzero(~infos["live"])          # episodes that ended this step
+if parked.size:
+    obs_new, infos_new = env.reset(env_id=parked)  # only those rows come back
+```
+
+- The returned observation **is** the terminal one — there is no
+  `final_observation` channel in this mode, because the regular row already
+  carries the end state.
+- A parked environment is skipped by `step`: it pays reward 0 and **holds** its
+  terminal flags, so the row keeps saying *done, reset me*. Stepping one is a
+  no-op, not an error.
+- `reset(env_id=...)` revives exactly those environments at their stream's next
+  episode, and returns only those rows, in the order you asked for.
+- `step(actions, ready_env_ids)` likewise addresses a subset: pass one action
+  per id (or a full-width array), and every return covers just those rows.
+
+Because episode streams are seeded per (environment, episode index), parking
+and immediately reviving reproduces the autoreset run **bit for bit** — the two
+modes differ only in where the terminal observation surfaces.
+
+## Tianshou
+
+[Tianshou](https://tianshou.org)'s vector-env contract differs from
+Gymnasium's in ways one object cannot satisfy at once: `reset(env_id)` puts
+environment ids where Gymnasium's `reset(seed)` puts the seed, observations
+and infos are object arrays of per-environment dicts, and the spaces are
+per-environment lists. `dynaplex.gym.TianshouVectorEnv` is the adapter, over a
+park-mode env:
+
+```python
+from dynaplex.gym import TianshouVectorEnv
+from tianshou.data import Collector, VectorReplayBuffer
+
+env = TianshouVectorEnv(mdp, features=LostSalesFeaturizer, num_envs=64)
+collector = Collector(algorithm, env, VectorReplayBuffer(50_000, len(env)))
+```
+
+It takes the same arguments as `VectorEnv` apart from `autoreset`. The
+action-validity mask rides **inside the observation** under the key `"mask"`,
+which is where Tianshou's discrete algorithms look for it (`batch.obs.mask`) —
+so a featurizer may not declare a tensor called `mask`. Off-policy and
+on-policy algorithms both work; DQN and Reinforce are the ones under test.
+
+Requires `pip install "dynaplex[tianshou]"`.
+
+!!! warning "Write your own network module"
+    Tianshou's stock networks (`tianshou.utils.net.common.Net` and friends)
+    assume the observation is one flat array and call `torch.as_tensor(obs)` on
+    it. A DynaPlex observation is a **bundle** — the featurizer's named tensors
+    plus `"mask"` — so those will fail. Write a small module that reads the spec
+    tensors by name instead, as the example below does; it is a handful of
+    lines, and it is the same module a [`Net` factory](ppo.md) builds, so the
+    trained weights stay usable from DynaPlex afterwards. A featurizer with more
+    than one tensor (object/token writers) needs such a factory anyway —
+    `dynaplex.MLP()` only builds for a single flat tensor.
+
+!!! note "What it costs"
+    Observations stay **batched** across the boundary — they go out as a
+    Tianshou `Batch` of `[num_envs, ...]` arrays, which is what the collector
+    converts to anyway. Only the infos are per environment, because Tianshou
+    requires an object array there. So the adapter keeps scaling, at roughly
+    a constant factor behind the raw env (same MDP, random-valid actions,
+    Apple M4 Pro):
+
+    | num_envs | `VectorEnv` | `TianshouVectorEnv` |
+    |---:|---:|---:|
+    | 64 | 1.4M steps/s | 1.2M steps/s |
+    | 256 | 7.5M steps/s | 4.0M steps/s |
+    | 1024 | 17.4M steps/s | 6.4M steps/s |
+    | 4096 | 34.1M steps/s | 8.4M steps/s |
+
+    Either way this is well ahead of stepping `num_envs` Python environments
+    one at a time, which is what a stock vector env does.
+
+### Worked example
+
+[:material-download: tianshou_dqn_example.py](../downloads/tianshou_dqn_example.py){ .md-button }
+
+Trains a DQN agent with Tianshou and then scores it with the DynaPlex
+[comparer](policy-comparison.md) against a domain heuristic on common random
+numbers — the round trip that makes the number mean something:
+
+```python title="tianshou_dqn_example.py"
+--8<-- "docs/downloads/tianshou_dqn_example.py"
+```
+
+The network is built by a DynaPlex `Net` factory and wrapped in a small adapter
+for Tianshou's `(obs, state) -> (logits, state)` calling convention, so one set
+of weights serves both sides and the trained module drops straight into an
+[`NNAgent`](../reference/api/training.md).

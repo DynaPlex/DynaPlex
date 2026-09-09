@@ -9,6 +9,7 @@ This demonstrates the definition of an MDP and a policy in DynaPlex:
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Final
 
 import numpy as np
 from numpy.typing import NDArray
@@ -29,6 +30,7 @@ from dynaplex.modelling import (
     featurizer,
     new_context,
 )
+from dynaplex.validation import mdp, policy
 
 
 # ============================================================================
@@ -48,6 +50,7 @@ class State:
     category: StateCategory = StateCategory.AWAIT_EVENT
     
 
+@mdp
 @const_dataclass(init=False, slots=True)
 class AirplaneMDP:
     """
@@ -214,6 +217,7 @@ class AirplaneMDP:
 # Policy Definition
 # ============================================================================
 
+@policy
 @const_dataclass(slots=True)
 class SimplePolicy:
     """
@@ -268,10 +272,10 @@ class SimplePolicy:
 class AirplaneFeaturizer(Featurizer):
     """Featurizer: writer fields declare the representation, write_features fills one
     batch row through them. @featurizer derives the FeatureHolder class (attached as
-    AirplaneFeaturizer.Holder) and synthesizes the install/reset/finish field-walks —
+    AirplaneFeaturizer.Holder) and synthesizes the bind/reset/finish field-walks —
     hand-writing them remains possible."""
-    mdp: AirplaneMDP
-    v: GlobalStateWriter
+    mdp: Final[AirplaneMDP]
+    v: Final[GlobalStateWriter]
 
     def write_features(self, state: State) -> None:
         # NOTE: must be valid DynaML code.

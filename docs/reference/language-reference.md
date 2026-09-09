@@ -255,6 +255,12 @@ Methods can be added to dataclasses. The following rules apply:
   `__lt__`, etc.) are not supported; make use of the default equality and
   ordering machinery of dataclasses. `__init__` and `__post_init__` *are*
   supported, under the rules in the next section.
+- `@classmethod` and `@staticmethod` are supported and are called on the
+  class: `Point.origin()`, `Point.manhattan(a, b)`. Inside a classmethod,
+  `cls` names the class, so `cls(...)` builds an instance and
+  `cls.other(...)` calls another classmethod; `cls` itself takes no
+  annotation and is not a runtime argument. A classmethod or staticmethod
+  compiles only when something calls it.
 
 Example of a dataclass with a method:
 
@@ -397,6 +403,12 @@ implicit coercion between union members — the argument must match one member
 exactly. (Unions with `None`, like `Node | None`, are not overloads; they
 are the nullable object annotations described above.)
 
+Overload sets work on methods, free functions and classmethods alike. A
+variant is compiled only when some call site dispatches to it, so a member
+whose body cannot compile for that type — a `static_require(False, ...)`
+saying the operation is unavailable — costs nothing until it is used, and
+then fails with that message at compile time.
+
 ## Function bodies
 
 DynaML supports most mathematical constructs that Python supports for
@@ -434,10 +446,59 @@ DynaML supports the usual arithmetic operators on scalar types (`bool`,
 The supported binary operators are `+`, `-`, `*`, `/`, `//`, `%`, and `**`.
 For `+`, `-`, `*`, `//`, `%`, and `**`, the result type is `float` if either
 operand is a `float`, and `int` otherwise, while `/` always produces a
-`float`, even when both operands are `int`. Boolean values participate in
+`float`, even when both operands are `int`. `//` and `%` follow Python's
+floor semantics on integers and floats alike (`-7 // 2 == -4`, `-7 % 2 == 1`,
+`-7.0 % 2.0 == 1.0`, `1.0 // 0.1 == 9.0`), not C's truncation or `fmod`.
+`**` on two integers is an exact integer power. Boolean values participate in
 arithmetic as `0` (`False`) or `1` (`True`), conforming to Python. Augmented
 assignment on numeric locals and fields is also supported for all of these
 operators: `+=`, `-=`, `*=`, `/=`, `//=`, `%=`, and `**=`.
+
+Integers are 64-bit, which is where the semantics depart from Python's
+unbounded ints. A result of `+`, `-`, `*`, `**`, `<<`, unary `-` or `abs`
+that leaves the range -2**63 to 2**63-1 is an **error in checked mode**
+(`integer overflow: 9223372036854775807 + 1 does not fit in a 64-bit int`),
+and **wraps modulo 2**64 in fast mode**, silently; a Python int outside that
+range is rejected at ingestion. So a model whose counts could leave the range
+fails in rehearsal rather than continuing with a wrapped number. Counts and
+money in integer cents fit comfortably; products of large quantities may not,
+and belong in a `float`. One more consequence for `**`: a negative exponent gives a `float` in
+Python, but `int ** int` is an `int` in DynaML, so it yields that float
+truncated (`2 ** -1 == 0`, `1 ** -5 == 1`, `(-1) ** -3 == -1`).
+
+Where Python raises, DynaML raises in checked mode and computes a defined
+value in fast mode (see [Runtime checks and fast mode](#runtime-checks-and-fast-mode)):
+
+- **Integer `//` and `%` by zero** are Python's `ZeroDivisionError` in checked
+  mode. In fast mode both yield `0`. `-2**63 // -1` is the one division that
+  overflows: an overflow error in checked mode, the wrap `-2**63` in fast mode;
+  nothing traps.
+- **`int(x)`, `math.floor(x)`, `math.ceil(x)` and `round(x)` of a float** that
+  is NaN, infinite, or outside the 64-bit range raise in checked mode with
+  Python's message (`ValueError` for NaN, `OverflowError` for infinity; a
+  finite value beyond 2**63, which Python would turn into a big int, gets a
+  DynaPlex message). In fast mode the conversion saturates: NaN gives `0`,
+  anything beyond the range gives the nearest int64 limit, on every platform.
+- **Floats are IEEE and never raise.** `x / 0.0` is `inf` or `nan`,
+  `0.0 ** -1.0` is `inf`, and a negative base with a fractional exponent is
+  `nan` where Python returns a complex number. An `int` that meets a `float`
+  is converted to a double first, in a comparison and in `/` (which divides
+  as floats even for two ints), so both are exact only below 2**53:
+  `2**53 + 1 == 2.0**53` is `True`, and `(2**53 + 1) / 3` can differ from
+  Python's correctly rounded quotient in the last bit.
+
+**Bitwise and shift operators.** `&`, `|`, `^`, `<<`, `>>` and unary `~`
+are supported on `int` and `bool` operands with Python's meaning and types:
+`&`, `|`, `^` give a `bool` when both operands are `bool` and an `int`
+otherwise; `<<` and `>>` always give an `int`; `~` takes an `int` (Python
+deprecates `~` on a `bool`; use `not`). A `float` operand is a compile-time
+error, as it is a `TypeError` in Python. The augmented forms `&=`, `|=`,
+`^=`, `<<=`, `>>=` work on locals, fields and list elements. The 64-bit rule
+above applies: `x << n` wraps modulo 2**64 like every other integer operation,
+a shift count of 64 or more yields `0` for `<<` and the sign fill (`0` or `-1`)
+for `>>`, exactly Python's value. A negative shift count is a `ValueError` in
+Python; in DynaML it is an error in checked mode, and in fast mode the shift
+returns the same value as an over-large count.
 
 ```python
 def arithmetic_examples(inv: int, sold: int, price: float, factor: float, flag: bool) -> None:
@@ -466,6 +527,15 @@ field, a nested list (`list[list[...]]`), or a reference cycle; such a
 comparison is rejected at compile time, and you can exclude the offending
 field with `dataclasses.field(compare=False)` (which drops it from
 equality, exactly as in Python).
+
+**Value equality with arrays** — `dynaplex.equals(a, b)` is `==` with
+`NDArray` fields (and arrays passed directly) compared as values: same
+shape, same dtype, elementwise equal, `NaN` unequal. On everything else it
+is exactly `==`, including a class's own `__eq__` and the
+`compare=False` opt-out. Both operands must have the same static type. Use
+it wherever two states must be compared as values; plain `==` keeps
+Python's meaning, where `array == array` is elementwise. `deep_hash`
+hashes arrays the same way, so equal values hash equal.
 
 **Ordering** (`<`, `<=`, `>`, `>=`) is supported for scalars, for
 *orderable objects*, and for flat lists whose elements are orderable —
@@ -551,14 +621,70 @@ def sum_points(points: list[Point]) -> tuple[int, int]:
     return sum_x, sum_y
 ```
 
-### Assertions
+### Assertions, `__debug__` and `dynaplex.fail`
 
-`assert condition` and `assert condition, "message"` are supported. The
-message may be a string literal or a simple f-string containing bare
-`{expr}` placeholders, which is convenient when debugging:
+`assert condition, "message"` is supported and means what it means in
+Python: a **check**, present when the program runs with checks and absent
+when it does not — exactly as CPython drops `assert` under `python -O`. The
+message is required and may be a string literal or a simple f-string with
+bare `{expr}` placeholders:
 
 ```python
 assert state.remaining_seats >= 0, f"negative seats: {state.remaining_seats}"
+```
+
+DynaPlex compiles every model twice over its life: once **checked**, where
+each `assert` is live and a violation raises `DynaPlexError` with the
+message, and once **fast**, where the asserts (and the bounds checks on list
+indexing) are compiled out so the hot loops run branch-free. Which one you
+get is described in [Runtime checks and fast mode](#runtime-checks-and-fast-mode);
+by default every algorithm rehearses your model checked before running it
+fast. Two consequences follow from the Python semantics:
+
+- an `assert` condition must be pure — it is not evaluated in fast mode, so
+  it cannot be the thing that advances the state;
+- an `assert` is not the way to *fail on purpose*. For the branch that must
+  never be reached — no feasible action, an impossible case — use
+  **`dynaplex.fail("message")`**. It fires in every mode, in CPython it
+  raises `DynaPlexError`, and the compiler treats it as never returning, so
+  a method may end on it and code after it is dead:
+
+```python
+def get_action(self, state: State) -> int:
+    for a in range(self.mdp.num_actions):
+        if self.feasible(state, a):
+            return a
+    dynaplex.fail("no feasible action")     # NoReturn: the method ends here
+```
+
+A third form is decided before anything runs: **`dynaplex.static_require(condition,
+"message")`** requires something of the *configuration* being compiled. The
+condition must be a compile-time constant — a literal, an expression over
+`Final[...]` fields of the engine root (an MDP parameter, an enum such as
+`horizon_type`), or `implements(obj, Protocol)` — and the compiler settles it
+while compiling the method: when it holds, nothing is emitted; when it fails,
+compilation stops with the message, the line, and the chain of calls that
+pulled the method into the program; when it cannot be decided,
+compilation stops saying which field made it unknown. It is never stripped.
+Because it fires only where the statement is actually compiled, a method whose
+body is `static_require(False, "...")` compiles fine until something calls it,
+which makes it the way to say "this method is not available in this
+configuration". In plain Python the same call is an always-on check that
+raises `DynaPlexError`:
+
+```python
+def modify_state_with_action(self, state: State, context: Ctx, action: int) -> None:
+    static_require(self.horizon_type == HorizonType.FINITE, "this model is finite-horizon only")
+    ...
+```
+
+`__debug__` is the compile-time checks flag (`True` checked, `False` fast),
+as in CPython. `if __debug__:` compiles only the taken branch, so an
+expensive invariant walk costs nothing in fast mode:
+
+```python
+if __debug__:
+    self.verify_invariants()
 ```
 
 `print(...)` is *accepted but ignored* in compiled code: no instructions are
@@ -728,7 +854,8 @@ exactly as its CPython counterpart unless noted otherwise.
 | `len(xs)` | list length |
 | `sorted(xs)` | new sorted list; same element requirements as `.sort()` |
 | `range(...)`, `enumerate(...)` | loop headers only, see [control flow](#control-flow) |
-| `assert cond, msg` | supported; `msg` may be a simple f-string |
+| `assert cond, msg` | a *check*: live in checked mode, compiled out in fast mode (Python `-O` semantics); `msg` may be a simple f-string |
+| `__debug__` | compile-time bool: `True` checked, `False` fast; `if __debug__:` keeps only the taken branch |
 | `print(...)` | accepted but **ignored** (no code generated) |
 
 ### `math` module
@@ -890,10 +1017,9 @@ Methods on both families:
       `0, ..., n-1`;
     - `rng.choice(xs)` with a list or 1-D array: a uniform draw of an
       element;
-    - either form with weights: `rng.choice(xs, p=probs)`, where `probs` is
-      a `list[float]` or 1-D float array summing to one.
     - The NumPy-only keyword arguments `size=`, `replace=`, `axis=`, and
-      `shuffle=` are not supported.
+      `shuffle=` are not supported, and neither is the weighted form
+      `p=probs` (see the note below).
 
 !!! note "Reproducibility"
     For the NumPy family, `rng.random()` and `rng.uniform()` reproduce
@@ -901,12 +1027,13 @@ Methods on both families:
     different integer-sampling algorithm than NumPy and will generally
     return a different (equally uniform) stream for the same seed. 
 
-!!! warning "Weights must sum to one"
-    Compiled DynaPlex execution normalizes any positive weights, but NumPy
-    itself rejects a `p` that does not sum to one (within ~1.5e-8). A
-    NumPy-family model that relies on normalization therefore runs compiled
-    but raises in plain CPython. Do not rely on the normalization: keep
-    weights summing to one, as NumPy requires.
+!!! note "Weighted draws"
+    `rng.choice(xs, p=probs)` is not available in released DynaPlex: it
+    rescanned and renormalized `probs` on every draw. Weighted draws go
+    through a [discrete distribution](discrete-distributions.md) built
+    once, `DiscreteDist.custom(probs)`, and sampled through its
+    `alias_sampler()` (constant time per draw) or `cdf_sampler()`. Passing
+    `p=` is a compile-time error that names this replacement.
 
 ### DynaPlex built-ins
 
@@ -914,12 +1041,26 @@ Methods on both families:
 object graph, list, or array, callable inside compiled DynaML code.
 Constant (`@const_dataclass`) parts are shared rather than copied.
 
+**`dynaplex.fail(msg)`** — unconditional failure: raises `DynaPlexError(msg)`
+in every mode (checked, fast and CPython) and never returns. `msg` follows the
+assert-message rules. See [Assertions](#assertions-__debug__-and-dynaplexfail).
+
+**`dynaplex.static_require(condition, msg)`** — a requirement settled at
+compile time: `condition` must be a compile-time constant (`Final` fields of
+the engine root, literals, `implements(...)`); a failed requirement is a
+compile error carrying `msg`, a met one emits nothing. In plain Python an
+always-on check raising `DynaPlexError(msg)`. See
+[Assertions](#assertions-__debug__-and-dynaplexfail).
+
 ### Distributions and samplers
 
 The modelling toolkit provides `DiscreteDist` — an explicit distribution
 over a finite range of integers — together with two O(1) samplers. These
 are ordinary DynaPlex classes: construct them in your MDP's `__init__`,
 store them in (const) fields, and call their methods from compiled code.
+A high-level tour of what they can do is on the
+[Discrete distributions](discrete-distributions.md) page; this section
+lists the compilable surface.
 
 - Factories: `DiscreteDist.constant(v)`, `DiscreteDist.custom(probs,
   offset=0)`, `DiscreteDist.poisson(mean)`, `DiscreteDist.geometric(mean)`,
@@ -934,7 +1075,9 @@ store them in (const) fields, and call their methods from compiled code.
   `fractile(alpha)`.
 - One-shot draws without building a distribution:
   `DiscreteDist.poisson_sample(mean, rng)` and the analogous
-  `*_sample` classmethods.
+  `*_sample` classmethods — a few tens of nanoseconds per draw for the
+  small means typical of per-period demand, with no per-parameter setup, so
+  the parameters may change every draw.
 - **Whenever the distribution is static** (the same for every state — the
   usual case), build a sampler once in the MDP's `__init__` —
   `dist.alias_sampler()` — and draw with `sampler.sample(rng)`: O(1) per
@@ -1041,6 +1184,100 @@ the MDP is bound (`infer_context_type`):
   `time_elapsed` restart from zero while the draw streams run on. Code that
   reads the context mid-trajectory observes this reset.
 
+## Promises: what a method may do to a parameter
+
+The rules above are about *types*. A second family of rules is about *roles*:
+`modify_state_with_action` must not draw random numbers, the context's cost
+accumulator is an output channel that a model may only add to, a policy must
+not modify the state it is given. Nothing about a method's signature says so,
+and a model that breaks one of these compiles and runs — and then fails
+subtly, because every harness (the comparer, DCL, PPO) relies on them. DynaPlex
+therefore lets a class **carry promises** about its methods, and the compiler
+checks them whenever the methods compile.
+
+A promise is always *a method's* promise about *one of its parameters*: what
+may happen to the parameter, or to a named field under it, or to every value of
+a given type reachable from it. The same context field can be accumulate-only
+in the event function and freely readable in a policy — promises are never
+attached to fields.
+
+### `@mdp` and `@policy`
+
+Put `@mdp` above `@const_dataclass` on an MDP class and `@policy` above a
+policy class (both importable from `dynaplex`). Featurizers get their promise
+from `@featurizer`. An undecorated class carries no promises and nothing is
+checked.
+
+```python
+from dynaplex import mdp, policy, const_dataclass
+
+@mdp
+@const_dataclass(init=False, slots=True)
+class LostSalesMDP:
+    ...
+
+@policy
+@const_dataclass(slots=True)
+class BaseStockPolicy:
+    ...
+```
+
+`@mdp` promises, for every compiled variant of the method:
+
+| method | promise |
+|---|---|
+| `modify_state_with_event(state, context)` | `context.cumulative_cost` appears only as the target of `+=` / `-=`; `context.time_elapsed` only as the target of `+=`; no generator under `context` (`rng`, `policy_rng`, or any stream your own context adds) is re-bound or stored into a field or container |
+| `modify_state_with_action(state, context, action)` | the same, and **no generator under `context` is used at all** |
+| `write_action_validity(state, valid)` | `state` is only read |
+
+`@policy` promises for `get_action(state)` / `get_action(state, context)`:
+`state` is only read; no generator under `context` other than
+`context.policy_rng` is used; `context.cumulative_cost` is not read.
+`@featurizer` promises that `write_features(state)` only reads the state.
+
+"Only read" is transitive: passing the state to a helper that modifies it
+counts, and so does `state.pipeline.pop_front()`. "Used" covers reads, calls,
+and handing the value to another function. The checks are static, over the
+compiled code; plain CPython (running the same methods without DynaPlex) stays
+permissive, as for every other rule in this reference.
+
+A violation is a compile error naming the model's line and teaching the rule:
+
+```
+MDP model validation failed:
+In function 'MyMDP.modify_state_with_action$State$TrajectoryContext$Int' (my_model.py), line 2:
+context.rng is used (load) — breaks the MDP promise 'action-deterministic' (NoUse on every Generator under context).
+  modify_state_with_action must be deterministic given (state, action): randomness belongs in
+  modify_state_with_event, so every policy sees the same event stream (common random numbers).
+  Line 2:     state.on_hand += int(context.rng.random())
+```
+
+### An algorithm's promises
+
+Some algorithms need more than the base contract. The exact solver, for
+instance, enumerates the draws of `modify_state_with_event` and of
+`get_initial_state` and needs every one of them to be discrete (a library
+sampler, a one-shot family draw, or `rng.choice`), never `rng.random()` or
+`rng.uniform()`. Such a set is a `RoleContract`
+(here `dynaplex.validation.DISCRETE_IDENTIFIABLE_EVENTS`). An algorithm checks it when it
+is constructed; a model author who wants the check at compile time declares
+it up front:
+
+```python
+from dynaplex.validation import DISCRETE_IDENTIFIABLE_EVENTS
+
+@mdp(promises=DISCRETE_IDENTIFIABLE_EVENTS)
+@const_dataclass(init=False, slots=True)
+class LostSalesMDP:
+    ...
+```
+
+Every promise is named; the [promises reference](promises.md) states each
+assumption, what breaks it and how to fix it.
+`dynaplex.validation.validate(engine, contract, cls=MyMDP)` evaluates a set
+without raising, returning a verdict with the violations. See the API page
+[Modelling MDPs → Promises](api/modelling.md#promises).
+
 ## Advanced runtime primitives
 
 The functions below are also callable inside compiled DynaML code, but they
@@ -1072,6 +1309,61 @@ harnesses on top of the engine (see the
     non-deterministic built-ins. Clock values must only be written to
     timing/diagnostic buffers — never into state that affects transitions,
     costs, or sampled results.
+
+## Runtime checks and fast mode
+
+Compiled code can run in two modes. **Checked** keeps every runtime check:
+`assert` statements, `if __debug__:` blocks, the bounds checks on list and
+array indexing (`xs[i]` raises on an index out of range, as in Python), and
+the numeric guards that mirror Python's exceptions: a negative shift count,
+an integer `//` or `%` by zero, a float-to-int conversion of NaN, infinity
+or a value outside the 64-bit range, and a 64-bit integer overflow, which
+Python's unbounded ints never have (see [Arithmetic](#arithmetic)). **Fast**
+compiles all of those out: an `assert` costs nothing, `xs[i]` is a plain
+load with Python's negative-index wrap but no range check, the numeric
+operations compute their documented fast-mode values, and the loops the
+featurizers and policies spend their time in become branch-free — which is
+what lets the JIT hoist and vectorize them. In fast mode a violated check is
+*undefined behaviour*, the same trade a C release build makes: an index out
+of range reads or writes the wrong memory instead of raising. Results are
+bit-identical between the modes whenever no check would have fired.
+
+The mode is a single flag on the compile entry points and on every algorithm:
+
+```python
+dynaplex.Engine(Root, ..., checks=False)        # fast
+dynaplex.Program(fns, checks=True)              # checked (the default for Engine/Program)
+dynaplex.PolicyComparer(mdp, checks="rehearsal")   # the default for the algorithms
+dynaplex.DCL(mdp, policy, features=F, checks="rehearsal")
+dynaplex.gym.VectorEnv(mdp, features=F, checks="rehearsal")
+```
+
+For the algorithms the default is **`"rehearsal"`**: the algorithm first
+compiles the model checked and runs a short seeded pass through the very
+same kernels it will use — the comparer evaluates each policy on 32
+trajectories, the gym env steps a small twin with random valid actions, DCL
+runs a tiny collection — and only then compiles fast and does the real work.
+A deterministic misuse (a feature-count mismatch, an always-violated assert)
+therefore raises before the fast run starts, with the message you wrote.
+`checks=True` runs everything checked; `checks=False` skips the rehearsal.
+On `DCL` the flag covers the generation-0 collection only: later generations
+always collect fast (see *Training → Machines*).
+
+Rare-state failures are probabilistic and can slip through a rehearsal. The
+environment variable **`DYNAPLEX_CHECKS=1`** reruns any script fully checked
+without a code change (`DYNAPLEX_CHECKS=0` forces fast); an explicit
+`checks=` argument always wins over the environment. To check a model on its
+own, before any experiment, call the same step directly:
+
+```python
+report = dynaplex.rehearse(mdp, policy, features=MyFeaturizer, trajectories=64)
+```
+
+`rehearse` validates the policy shape and the featurizer declaration, runs the
+checked simulation, and additionally compares the compiled results bytewise
+against the same trajectories in CPython — a compiler divergence is the one
+class of problem a model author cannot see, and it is reported here as a
+`RuntimeError`. See [`dynaplex.rehearse`](api/evaluation.md#rehearsal).
 
 ## Common pitfalls
 
