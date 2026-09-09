@@ -1,12 +1,36 @@
 # DynaPlex
 
-DynaPlex is an optimization library for solving Markov Decision Processes and
-related sequential decision making problems (POMDP, HMM). 
+**One intuitive modelling interface. Three ways to solve.**
 
-The DynaPlex design enables clean modelling and efficient solving of problems arising in operations management (OM) and related fields, e.g. in supply chain management, transportation, manufacturing, warehousing, maintenance optimization, process optimization, etc. Models are written in
-**DynaML**: a purpose-built modelling language whose syntax is canonical Python, extended with modelling primitives such as discrete distributions. Models execute on a multi-threaded bundled LLVM JIT, allowing the user to read and write canonical Python code, and get auto-vectorized C++ speed. 
+DynaPlex is an optimization library for formulating and solving Markov Decision
+Processes (MDPs), i.e. for identifying well-performing policies that select
+actions based on complete or partial observations of the state. Its design
+enables clean modelling and efficient solving of problems arising in operations
+management (OM) and related fields: supply chain management, transportation,
+manufacturing, warehousing, maintenance and process optimization.
 
-Just as importantly, the library bundles algorithms such as Deep Controlled Learning (DCL), specifically designed for the highly stochastic problems that arise in typical OM applications, as well as canonical implementations of DRL algorithms such as Proximal Policy Optimization (PPO), which benefit from the compiled vectorized environment to accelerate training. There is also first-class support for comparing and optimizing classical parameterized policies, as well as planned support for exact algorithms. 
+You write a model **once**, in **DynaML**: a purpose-built modelling language
+whose syntax is canonical Python, extended with modelling primitives such as
+discrete distributions. Models execute on a multi-threaded engine with a bundled
+LLVM JIT, so you read and write plain Python and get auto-vectorized C++ speed.
+That one model then feeds every method in the library:
+
+- **Reinforcement learning** on compiled, vectorized environments:
+  [Deep Controlled Learning (DCL)](https://dynaplex.github.io/DynaPlex/latest/training/dcl/),
+  designed for the highly stochastic problems of operations management, and
+  canonical DRL algorithms such as
+  [PPO](https://dynaplex.github.io/DynaPlex/latest/training/ppo/), through a
+  vectorized [gym interface](https://dynaplex.github.io/DynaPlex/latest/training/gym-environments/).
+- **Policy comparison and optimization**: evaluate heuristics and
+  parameterized policies against each other on common random numbers, with
+  statistical error bars, and
+  [optimize their parameters](https://dynaplex.github.io/DynaPlex/latest/training/policy-comparison/),
+  all at compiled speed.
+- **Exact dynamic programming**: where the state space can be enumerated and
+  events are discrete, the
+  [exact solver](https://dynaplex.github.io/DynaPlex/latest/training/exact-solver/)
+  computes exact policy costs and optimal policies for finite and infinite
+  horizons, a yardstick for heuristics and trained agents.
 
 **[Documentation & tutorials](https://dynaplex.github.io/DynaPlex/)** ·
 **[PyPI](https://pypi.org/project/dynaplex/)** ·
@@ -39,7 +63,7 @@ build-from-source step and no external LLVM to install.
 
 | | |
 |---|---|
-| Python | 3.13 only |
+| Python | 3.11 – 3.14 |
 | macOS (Apple Silicon) | arm64, macOS 14.0 or newer |
 | macOS (Intel) | x86_64, macOS 15.0 or newer |
 | Linux | x86_64, glibc 2.28 or newer (`manylinux_2_28`) |
