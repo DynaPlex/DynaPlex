@@ -1,0 +1,2477 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.14/changelog/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../getting-started/installation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>What's new - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#whats-new" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              What's new
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's new
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1140" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.14.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.14.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dcl-warm-up-and-restart-legacy-defaults-sample-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCL: warm-up and restart, legacy defaults, sample provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcl-on-gpus-and-cluster-nodes-machine-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCL on GPUs and cluster nodes: machine plans
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exact-solver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact solver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bitwise-and-shift-operators-and-floor-like-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bitwise and shift operators; // and % floor like Python
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplexequals-value-equality-that-includes-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dynaplex.equals: value equality that includes arrays
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classmethod-and-staticmethod-on-dataclasses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        @classmethod and @staticmethod on dataclasses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weighted-rngchoicep-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weighted rng.choice(p=...) retired
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tianshou" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tianshou
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-checks-assert-follows-python-dynaplexfail-fast-mode-and-rehearsal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime checks: assert follows Python, dynaplex.fail, fast mode and rehearsal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-validation-classes-carry-promises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model validation: classes carry promises
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile-time-configuration-static-and-value-folding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compile-time configuration: static() and value folding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1130" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.13.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1123" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.12.3
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/machines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machines and execution plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/airplane-statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom trajectory statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/discrete-distributions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discrete distributions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/promises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Promises (model validation)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1140" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.14.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.14.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dcl-warm-up-and-restart-legacy-defaults-sample-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCL: warm-up and restart, legacy defaults, sample provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcl-on-gpus-and-cluster-nodes-machine-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCL on GPUs and cluster nodes: machine plans
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exact-solver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact solver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bitwise-and-shift-operators-and-floor-like-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bitwise and shift operators; // and % floor like Python
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplexequals-value-equality-that-includes-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dynaplex.equals: value equality that includes arrays
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classmethod-and-staticmethod-on-dataclasses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        @classmethod and @staticmethod on dataclasses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weighted-rngchoicep-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weighted rng.choice(p=...) retired
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tianshou" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tianshou
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-checks-assert-follows-python-dynaplexfail-fast-mode-and-rehearsal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime checks: assert follows Python, dynaplex.fail, fast mode and rehearsal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-validation-classes-carry-promises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model validation: classes carry promises
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile-time-configuration-static-and-value-folding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compile-time configuration: static() and value folding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1130" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.13.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1123" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.12.3
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="whats-new">What's new<a class="headerlink" href="#whats-new" title="Permanent link">&para;</a></h1>
+<p>Changes per release, newest first. Breaking changes are marked <strong>breaking</strong>.</p>
+<h2 id="1140">1.14.0<a class="headerlink" href="#1140" title="Permanent link">&para;</a></h2>
+<h3 id="dcl-warm-up-and-restart-legacy-defaults-sample-provenance">DCL: warm-up and restart, legacy defaults, sample provenance<a class="headerlink" href="#dcl-warm-up-and-restart-legacy-defaults-sample-provenance" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>warmup_time</code></strong> (the legacy <code>L</code>): on an infinite-horizon MDP a trajectory first runs
+  for <code>warmup_time</code> periods under the generation's own rollout policy before its decision
+  states are labeled. The initial state is the modeller's artifact, not a state the system
+  spends time in; warming up samples the stationary behaviour of the policy being
+  improved, and the sampled states follow the policy as it improves generation by
+  generation. Default 100 on an infinite horizon, forced to 0 on a finite one (there the
+  initial state is the honest start of an episode); <code>warmup_time=0</code> turns it off.</li>
+<li><strong><code>restart_after</code></strong> (the legacy <code>reinitiate_counter</code>): after that many labels a
+  trajectory is thrown away and restarts from the initial state with a fresh warm-up, so
+  that consecutive samples do not all come from one long trajectory sitting in one basin.
+  Off by default. Both knobs are part of the experiment identity, on <code>DCL(...)</code> and
+  <code>collect_samples(...)</code> alike.</li>
+<li><strong>Legacy defaults.</strong> <code>n=5000</code> samples per generation, <code>m=1000</code> rollouts per candidate
+  action, <code>h=40</code> on a finite-horizon MDP and <code>256</code> on an infinite-horizon one, and the
+  legacy training regimen (5 % held out, validated every 5 epochs, best-validation weights
+  restored, stop when the epochs since the last improvement exceed the patience). A legacy
+  DCL configuration now ports one to one; pass any of them explicitly to override.</li>
+<li><strong>Sample provenance.</strong> <code>DCL(sample_info=True)</code> / <code>collect_samples(sample_info=True)</code>
+  records, per labeled sample, which controller and trajectory produced it, the
+  trajectory it was warmed up from, the label's index along its trajectory and the time it
+  was labeled at, as an <code>info</code> slab on the <code>SampleSet</code> (carried by save, load and merge).
+  With it the origin of every training row can be reconstructed and replayed from its
+  seeds, which is what <code>scripts/dcl_audit.py</code> does.</li>
+<li><strong><code>Engine.view()</code></strong> opens the engine's root object for reading from Python: a live view
+  whose fields, list elements and arrays reflect the engine's current state, valid while
+  the engine lives and no call is in flight. The same views the test suite compares
+  compiled results against, now available on any engine.</li>
+<li><strong>Generation 0 runs on all processes</strong> of the plan, like the later generations; the
+  result is byte-identical to the single-process collection.</li>
+</ul>
+<h3 id="dcl-on-gpus-and-cluster-nodes-machine-plans">DCL on GPUs and cluster nodes: machine plans<a class="headerlink" href="#dcl-on-gpus-and-cluster-nodes-machine-plans" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>DCL(machine=...)</code></strong> selects an execution plan — processes (one per GPU), engines,
+  workers, slots, the device the network runs on — engineered per machine: the Snellius
+  H100 and A100 nodes in quarter/half/whole units, a whole Genoa node, and <code>laptop</code>, which
+  is derived from what the machine has (Metal on Apple silicon, cuda elsewhere, else cpu).
+  <code>machine="auto"</code>, <strong>the default</strong>, recognizes the allocation among those plans and
+  refuses anything else — a machine without a preset fails up front rather than run on an
+  untuned shape; pass <code>machine=None</code> to use the explicit knobs as before. Every plan is
+  verified against the allocation before a collection starts. See <em>Training and
+  evaluation → Machines and execution plans</em>.</li>
+<li><strong>Two shapes per plan, <code>dynaplex.Shape</code>.</strong> Generation 0 rolls out the heuristic
+  in-machine and has no network forward to place, so every plan carries a separate
+  generation-0 shape — one engine per process, workers filling the cores, 512 slots — next
+  to the trained policy's shape (two engines to drive an accelerator, cores reserved for
+  torch threads on the cpu). Measured on Snellius: about 10 % faster generation-0
+  collection on the Genoa and H100 units than the trained shape gives, and one thread per
+  process too many halves it. <code>DCL(gen0=, trained=)</code> overlay the plan's shapes field by
+  field with a <code>dynaplex.Shape(processes, engines, workers, slots)</code>: <code>Shape(workers=8)</code>
+  changes the workers only; without a plan the base is 1 × 1 × 1 × 512. Both shapes are
+  part of the experiment identity (<code>params.gen0</code> / <code>params.trained</code> in <code>dcl.json</code>). The
+  generation-0 run header says that the rollout policy runs in-machine and the device is
+  unused. <strong>Breaking:</strong> the explicit <code>controllers</code>, <code>workers</code>, <code>slots</code> arguments of
+  <code>DCL(...)</code> are gone; pass <code>gen0=dp.Shape(...)</code> / <code>trained=dp.Shape(...)</code> instead
+  (<code>collect_samples</code> keeps its scalar arguments).</li>
+<li><strong><code>dynaplex.machine</code></strong>: hardware-vs-allocation detection (affinity mask, cgroup limits,
+  visible GPUs, SLURM variables); <code>python -m dynaplex.machine</code> prints it.</li>
+<li>The CPU plan <code>genoa</code> is 32 processes of one engine with 4 workers each, 512 slots per
+  worker and 2 torch threads per process. With the network on the same cores as the
+  workers the rule is <code>processes × (workers + torch threads) ≤ cores</code>, because workers
+  spin at the barrier rather than yielding their cores to the forward. Measured on 2000
+  generation-1 samples: 15 s for lost sales and 38 s for lot sizing K=5, against 271 s
+  and 1002 s for a single engine with 190 workers.</li>
+<li><strong>Generation ≥ 1 collection</strong> now alternates engines so the network's forward for one
+  engine overlaps the other engine's simulation, with asynchronous device bindings (pinned
+  buffers; on cuda one CUDA-graph replay per round) and <code>processes=P</code> spawning one
+  controller group per GPU. Results are byte-identical to the previous single-loop
+  collection on the same device. Measured on a stochastic lot-sizing example (K=5, 150 000 samples
+  per generation): 23 minutes per generation on one H100 node, where the previous loop
+  needed hours.</li>
+</ul>
+<h3 id="exact-solver">Exact solver<a class="headerlink" href="#exact-solver" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>dynaplex.ExactSolver</code></strong>: exact policy evaluation and optimization of a finite-state
+  MDP. Construction discovers every decision state reachable under the model's own
+  dynamics, running the model's transition methods compiled in the engine with each random
+  draw enumerated instead of sampled; <code>evaluate(policy)</code> then computes a compiled policy's
+  exact cost and <code>solve(warm_start=None)</code> the optimal policy by modified policy iteration.
+  The result carries the cost, the value and action tables and <code>get_policy()</code>; the latter
+  is a normal compiled policy (<code>ExactPolicy</code>, or <code>ExactTablePolicy</code> when the state space
+  has several shapes) that runs in the comparer and as a DCL generation-0 policy. Models
+  need discrete, enumerable events (the <code>DISCRETE_IDENTIFIABLE_EVENTS</code> promises) and an
+  integer-valued state; guardrails <code>max_states</code> and <code>max_event_branches</code> bound discovery.
+  Single-threaded and in memory in this version. See <em>Training and evaluation → Exact
+  solver</em>.</li>
+<li><strong>Both horizons.</strong> On an infinite-horizon MDP the cost is the long-run average cost per
+  period and <code>res.values</code> the bias (<code>get_bias_function()</code>). On a finite-horizon MDP it is
+  the expected total cost of an episode, from <code>get_initial_state</code> until the state becomes
+  <code>FINAL</code>, and <code>res.values</code> the expected cost-to-go (<code>get_value_function()</code>);
+  <code>res.stats["horizon"]</code> says which. Both forms of ending are covered — an internal clock
+  such as the airplane's <code>remaining_days</code>, and stopping problems where reaching <code>FINAL</code>
+  depends on the action — under the assumption, not checked, that every policy reaches
+  <code>FINAL</code> with probability one (a model that does not shows as non-convergence). The
+  initial distribution is enumerated like the events, so <code>get_initial_state</code> may draw
+  discretely: the promise <code>discrete-initial-draws-only</code> replaces the deterministic-start
+  rule. Finite-horizon sweeps update values in place and can follow an order the model
+  supplies (an optional <code>sweep_rank(self, state) -&gt; int</code>; the airplane model returns
+  <code>remaining_days</code>, which makes the solve a single backward-induction pass).</li>
+</ul>
+<h3 id="bitwise-and-shift-operators-and-floor-like-python">Bitwise and shift operators; <code>//</code> and <code>%</code> floor like Python<a class="headerlink" href="#bitwise-and-shift-operators-and-floor-like-python" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>~</code></strong> and the augmented forms <code>&amp;=</code>, <code>|=</code>, <code>^=</code>,
+  <code>&lt;&lt;=</code>, <code>&gt;&gt;=</code> now compile, on <code>int</code> and <code>bool</code> operands with Python's types
+  (<code>bool &amp; bool</code> is a <code>bool</code>, shifts are <code>int</code>; a <code>float</code> operand is a compile-time
+  error, <code>~</code> takes an <code>int</code>). They are native instructions in both tiers, so bit
+  packing that previously had to be a builtin (<code>combine_seeds</code>-style) can be written
+  in DynaML. Integers are 64-bit: a left shift wraps modulo 2<em><em>64, a count of 64 or
+  more gives <code>0</code> (<code>&lt;&lt;</code>) or the sign fill (<code>&gt;&gt;</code>), and a negative count raises in
+  checked mode (fast mode saturates). Known values fold at compile time, so
+  <code>static(self.cfg.mask &amp; 4 == 4)</code> prunes like any other known condition. See
+  </em>Language reference → Arithmetic</em>.</li>
+<li><strong><code>//</code> and <code>%</code> on integers now follow Python</strong> for negative operands
+  (<code>-7 // 2 == -4</code>, <code>-7 % 2 == 1</code>); until now they truncated toward zero like C++
+  (<code>-3</code>, <code>-1</code>). A model that divided or reduced negative integers changes result.
+  Float <code>//</code> and <code>%</code> were already Python's.</li>
+</ul>
+<h3 id="dynaplexequals-value-equality-that-includes-arrays"><code>dynaplex.equals</code>: value equality that includes arrays<a class="headerlink" href="#dynaplexequals-value-equality-that-includes-arrays" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>dynaplex.equals(a, b)</code></strong> compares two values of the same type as values,
+  arrays included: <code>NDArray</code> fields (and arrays passed directly) are equal when shape,
+  dtype and every element agree. On everything else it is exactly <code>==</code>, so a class's
+  own <code>__eq__</code> and <code>dataclasses.field(compare=False)</code> behave as before. It compiles
+  in DynaML like <code>==</code> does. Until now a state holding an array could only take
+  part in equality by marking the array <code>compare=False</code>, which also dropped it
+  from <code>deep_hash</code>; <strong><code>deep_hash</code> now hashes arrays</strong> (axis lengths, then elements),
+  consistent with <code>equals</code>, so such fields no longer need the opt-out. Plain <code>==</code>
+  is unchanged and still refuses array fields, to align with CPython semantics.</li>
+</ul>
+<h3 id="classmethod-and-staticmethod-on-dataclasses"><code>@classmethod</code> and <code>@staticmethod</code> on dataclasses<a class="headerlink" href="#classmethod-and-staticmethod-on-dataclasses" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>@classmethod</code> and <code>@staticmethod</code></strong> now compile on dataclasses, called on the
+  class: <code>Point.origin()</code>, <code>Point.manhattan(a, b)</code>. Inside a classmethod <code>cls(...)</code>
+  builds an instance and <code>cls.other(...)</code> calls another classmethod, so factory
+  methods work as in Python. Calling either through an instance is not supported;
+  use the class name. See <em>Language reference → Method signatures</em>.</li>
+</ul>
+<h3 id="weighted-rngchoicep-retired">Weighted <code>rng.choice(p=...)</code> retired<a class="headerlink" href="#weighted-rngchoicep-retired" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>breaking</strong> — the weighted form <code>rng.choice(xs, p=probs)</code> no longer compiles:
+  every draw rescanned and renormalized <code>probs</code>, and <code>DiscreteDist.custom(probs)</code>
+  with an <code>alias_sampler()</code> (constant time per draw) or <code>cdf_sampler()</code> is the
+  precomputed replacement. Passing <code>p=</code> is now a compile-time error naming that
+  replacement, and the plain-Python <code>dynaplex.Generator.choice</code> rejects <code>p=</code> the
+  same way. The unweighted forms <code>rng.choice(n)</code> and <code>rng.choice(xs)</code> are unchanged.
+  <code>dynaplex._core.HAS_WEIGHTED_CHOICE</code> reports whether a build carries the weighted
+  kernels (<code>False</code> on released wheels).</li>
+</ul>
+<h3 id="tianshou">Tianshou<a class="headerlink" href="#tianshou" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>dynaplex.gym.TianshouVectorEnv</code></strong> runs a DynaPlex MDP under
+  <a href="https://tianshou.org">Tianshou</a>'s vector-env contract: per-environment observation
+  and info dicts, list-valued spaces, subset <code>step(action, id)</code> / <code>reset(env_id)</code>, and
+  the action-validity mask inside the observation under <code>"mask"</code>, where Tianshou's
+  discrete algorithms read it. The MDP still steps batched in the compiled kernel; only
+  the boundary layer is per environment. Install with <code>pip install "dynaplex[tianshou]"</code>;
+  see <em>Training and evaluation → Vectorized gym environments</em>, which walks through a
+  worked DQN script that scores its result against a heuristic with the comparer.</li>
+<li>It runs on a new <strong><code>VectorEnv(autoreset=False)</code></strong> park mode, also usable on its own: an
+  ended episode leaves its terminal observation in the row and the environment stands
+  parked — skipped by <code>step</code>, keeping its terminal flags — until <code>reset(env_id=...)</code>
+  revives it. Episode streams are unaffected, so parking and reviving reproduces an
+  autoreset run bit for bit.</li>
+</ul>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New <a href="../reference/discrete-distributions/">Discrete distributions</a> page: a high-level
+  inventory of <code>DiscreteDist</code> — supported families and the two-moment fit, inspection,
+  convolution and mixing, the three ways to draw, exact enumeration, and the tail
+  truncation that makes it unsuitable for rare-event probabilities.</li>
+</ul>
+<h3 id="runtime-checks-assert-follows-python-dynaplexfail-fast-mode-and-rehearsal">Runtime checks: <code>assert</code> follows Python, <code>dynaplex.fail</code>, fast mode and rehearsal<a class="headerlink" href="#runtime-checks-assert-follows-python-dynaplexfail-fast-mode-and-rehearsal" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>assert</code> is a check, as in Python.</strong> Compiled code now runs in one of two modes:
+  <em>checked</em>, where every <code>assert</code>, <code>if __debug__:</code> block and list bounds check is live,
+  and <em>fast</em>, where they are compiled out (Python <code>-O</code> semantics; an index out of range
+  is then undefined behaviour, the C release-build trade). Running fast makes
+  featurization and policy loops about 20 % faster, with bit-identical results.</li>
+<li><strong><code>dynaplex.fail(msg)</code></strong> is the way to fail on purpose: it raises <code>DynaPlexError(msg)</code>
+  in every mode (and in CPython) and never returns, so a method may end on it. Use it
+  for the branch that must not be reached; keep <code>assert</code> for invariants.</li>
+<li><strong><code>__debug__</code></strong> is the compile-time checks flag; <code>if __debug__:</code> compiles only the
+  taken branch.</li>
+<li><strong><code>checks=</code></strong> on <code>Engine</code>/<code>Program</code> (<code>True</code>/<code>False</code>, default checked) and on
+  <code>PolicyComparer</code>, <code>DCL</code> and <code>VectorEnv</code> (<code>True</code>/<code>False</code>/<code>"rehearsal"</code>). The algorithms
+  default to <strong><code>"rehearsal"</code></strong>: a short seeded pass through their own kernels compiled
+  checked, then the fast compile. <strong><code>DYNAPLEX_CHECKS=0|1</code></strong> overrides any default from
+  the environment (rerun a misbehaving script fully checked, no code change).</li>
+<li><strong><code>dynaplex.rehearse(mdp, policy, features=..., trajectories=...)</code></strong> — the checked pass
+  as a standalone model checker, plus a bytewise CPython-vs-compiled parity comparison.</li>
+<li><strong><code>dynaplex.check_mdp(mdp, policy=None, seeds=64, periods=128)</code></strong> — the model check
+  to run before compiling anything: plain Python, seeded trajectories under the policy
+  (default: a random policy over the valid actions), and a failure names the method
+  and the bug — a state category that never changes, an infinite-horizon model that
+  never advances <code>time_elapsed</code> or reaches <code>FINAL</code>, a validity mask with unwritten
+  entries or no valid action, a policy choosing an invalid action, a model that keeps
+  state outside the <code>State</code> object (two runs of the same seed diverge), and a model
+  whose every decision state has exactly one valid action — the case that used to
+  stall DCL silently before its first round. With <code>features=</code> it also featurizes
+  every decision state of the first trajectory and fails on a NaN or infinite
+  feature value. Returns the counts (events, decisions, valid actions per decision,
+  feature rows) when it passes. Opt-outs: <code>relax_program_flow</code>,
+  <code>skip_no_decisions_check</code>. Run it first, <code>rehearse</code> second.</li>
+</ul>
+<h3 id="model-validation-classes-carry-promises">Model validation: classes carry promises<a class="headerlink" href="#model-validation-classes-carry-promises" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>@mdp</code> and <code>@policy</code></strong> (importable from <code>dynaplex</code>; apply above <code>@const_dataclass</code>):
+  the class promises the MDP / policy contract for its methods — in <code>get_initial_state</code> and the transitions, the cost accumulator is
+  <code>+=</code>/<code>-=</code>-only, <code>time_elapsed</code> is <code>+=</code>-only, no generator is used in
+  <code>modify_state_with_action</code>, the event step never draws from <code>policy_rng</code>, generators are
+  never re-bound or stored, <code>write_action_validity</code> and <code>get_action</code> only read the state, a
+  policy draws from <code>policy_rng</code> only, never re-seeds or stores it, and never reads the cost.
+  Statistics and <code>Scratch</code> fields you add to the context are unconstrained in every role. Each rule also sees through
+  helpers: handing the state or a stream to a method that mutates or draws counts. <code>@featurizer</code> promises that <code>write_features</code> only reads the state. The compiler
+  checks every promise whenever the methods compile; a violation is a compile error naming
+  the model's line and explaining the rule. Undecorated classes are unchanged. See
+  <em>Language reference → Promises</em>.</li>
+<li><strong><code>@mdp(promises=...)</code></strong> appends an algorithm's set; <code>dynaplex.validation.validate(engine,
+  contract)</code> gives a non-raising verdict, and <code>DISCRETE_IDENTIFIABLE_EVENTS</code> is the set the
+  exact solver requires.</li>
+<li>The shipped models (<code>dynaplex.models</code>) and the examples now carry <code>@mdp</code> / <code>@policy</code>.</li>
+<li><strong>breaking</strong> — <code>PolicyComparer(backend=...)</code> and <code>gym.VectorEnv(backend=...)</code> default to
+  <code>"engine"</code>: a model that fails to compile, or violates a promise, raises instead of
+  silently running on the Python kernel. <code>"auto"</code> remains available as the explicit
+  opt-in to that fallback and now warns when it falls back. Violations raise
+  <code>dynaplex.validation.PromiseViolation</code> (a <code>ValueError</code>).</li>
+</ul>
+<h3 id="compile-time-configuration-static-and-value-folding">Compile-time configuration: <code>static()</code> and value folding<a class="headerlink" href="#compile-time-configuration-static-and-value-folding" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>static(expr)</code></strong> (<code>dynaplex.modelling.static</code>): a compile-time branch decision.
+  <code>if static(self.mdp.has_lead_time):</code> selects the branch from the configuration the
+  engine was constructed with; the untaken branch is discarded <em>before</em> type-checking,
+  so one model body can serve a whole MDP family whose variants have different fields.
+  <code>expr</code> must be statically known (a chain of <code>Final</code>/<code>@const_dataclass</code> hops from the
+  engine root, or from a world's known constructor arguments); otherwise compilation
+  fails with a message naming the hop or the call/spawn site that broke the chain.
+  See <em>Advanced → Compile-time configuration with <code>static()</code></em>.</li>
+<li><strong>Specialization.</strong> Methods called on a known configuration object, and
+  <code>@separate_world_class</code> worlds created with known constructor arguments, are compiled
+  once per distinct configuration. Known configuration values (<code>self.mdp.scale</code>,
+  <code>self.horizon</code> in such a world) compile to constants, so the JIT can fold compares,
+  dead branches and constant loop bounds. Results are bit-identical to unspecialized code.</li>
+<li><code>DYNAPLEX_DISABLE_FOLDING=1</code> disables all of the above (models using <code>static()</code> then
+  fail to compile, deliberately).</li>
+</ul>
+<h3 id="fixes">Fixes<a class="headerlink" href="#fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Integer division by zero and float-to-int overflow no longer depend on the
+  hardware.</strong> An integer <code>//</code> or <code>%</code> by zero was a silent <code>0</code> on arm64 and a process-killing
+  SIGFPE on x86; <code>int()</code>, <code>math.floor()</code>, <code>math.ceil()</code> and <code>round()</code> of NaN, infinity or a
+  float outside the 64-bit range saturated on arm64 and returned the minimum int on x86.
+  Both are now checked-mode errors with Python's message (<code>ZeroDivisionError</code>,
+  <code>ValueError</code>, <code>OverflowError</code> texts), emitted like the negative-shift check, and in fast
+  mode compute the same value everywhere: <code>0</code> for the division, a saturated int for the
+  conversion (NaN gives <code>0</code>). <code>-2**63 // -1</code> wraps instead of trapping. Documented under
+  <em>Arithmetic</em> in the language reference.</li>
+<li><strong>64-bit integer overflow is a checked-mode error.</strong> Python ints are unbounded; DynaML's
+  are 64-bit and wrap. A result of <code>+</code>, <code>-</code>, <code>*</code>, <code>**</code>, <code>&lt;&lt;</code>, unary <code>-</code> or <code>abs</code> (or
+  <code>-2**63 // -1</code>) that leaves the range now raises in checked mode with the offending
+  expression (<code>integer overflow: 9223372036854775807 + 1 does not fit in a 64-bit int</code>),
+  so a model whose counts could leave the range fails in rehearsal. Fast mode is unchanged
+  and still wraps; a compile-time constant that would overflow is no longer folded, so the
+  same rule applies to it.</li>
+<li><strong><code>abs(-0.0)</code>, and <code>min</code>/<code>max</code> on floats with a tie or a NaN, now follow Python.</strong>
+  <code>abs(-0.0)</code> returned <code>-0.0</code> (now <code>0.0</code>); two-argument <code>min</code>/<code>max</code> picked the second
+  argument on a tie and whenever a NaN was involved, where Python keeps the first unless
+  the second is strictly smaller or larger (<code>max(0.0, -0.0) == 0.0</code>, <code>max(0.5, nan) == 0.5</code>,
+  <code>max(nan, 0.5)</code> is <code>nan</code>). The three-or-more-argument and list forms already did.</li>
+<li><strong><code>%</code> and <code>//</code> on floats, <code>**</code> on ints, now follow Python.</strong> Float <code>%</code> was C's
+  <code>fmod</code>, so the remainder took the sign of the dividend (<code>-7.0 % 2.0</code> gave <code>-1.0</code>, Python
+  gives <code>1.0</code>); float <code>//</code> was the floor of the rounded quotient (<code>1.0 // 0.1</code> gave <code>10.0</code>,
+  Python gives <code>9.0</code>); and int <code>**</code> went through a double, losing digits above 2<strong>53
+  (<code>3 ** 39</code> came back wrong by rounding). All three now compute CPython's value on both
+  tiers, with int <code>**</code> an exact integer power that wraps modulo 2</strong>64 like <code>*</code>. Seeded
+  results that go through one of these operators on such operands change accordingly.</li>
+<li>The comparer's NN path no longer hands the network a feature row it never wrote. An
+  episode that ends without ever awaiting an action is legitimate — events alone can
+  finish a trajectory before the first decision — and it still counts in the average,
+  since no policy could have influenced it; but it leaves its episode slot parked, and
+  with <code>nn_batch</code> at or above the number of trajectories each slot hosts exactly one
+  episode, so a single such episode used to put all-zero features under an all-empty
+  action mask into the forward batch. Parked rows are now filled from a live slot before
+  each forward, so the network only ever sees a complete featurization of a real decision
+  state; results are unchanged, since a parked slot's action was already discarded. A
+  comparison in which <em>no</em> episode ever awaited an action now raises instead of reporting
+  numbers that measure nothing.</li>
+<li>Compile errors inside a method that was compiled because another method calls it now
+  end with that chain of calls, nearest caller first, each with its file, line and the
+  call itself — so an error raised in library code points back at your model.</li>
+<li>The one-shot draw methods on <code>DiscreteDist</code> (<code>poisson_sample</code>, <code>binomial_sample</code>,
+  <code>negative_binomial_sample</code>, <code>geometric_sample</code>, <code>adan_eenige_resing_sample</code>) use a
+  faster sampling scheme; draws remain exact, but the <strong>draw sequence changes</strong>, so
+  seeded results that go through them differ from 1.13.</li>
+<li>The documentation links in compile-error and validation messages now point at the docs
+  for the <strong>installed</strong> version (<code>.../DynaPlex/1.14/...</code>); a development build links to
+  <code>latest</code>. Previously every such link was unversioned and 404ed on the versioned site.</li>
+<li>Enum-typed dataclass fields with a default (<code>act: Action = Action.UP</code>) can now be
+  omitted in constructor calls inside compiled code; previously the default was rejected
+  with "expected Enum(...), got Int".</li>
+</ul>
+<h2 id="1130">1.13.0<a class="headerlink" href="#1130" title="Permanent link">&para;</a></h2>
+<p><strong>Platform</strong></p>
+<ul>
+<li><strong>Python 3.11 and 3.12 supported</strong> (previously 3.13+). Wheels ship for
+  CPython 3.11–3.14. One documented semantic note: generated <code>__eq__</code> on
+  model classes follows CPython 3.13 dataclass semantics (per-field <code>==</code>,
+  no identity shortcut for a shared NaN or non-reflexive field object) on
+  every Python version.</li>
+</ul>
+<p><strong>Modelling</strong></p>
+<ul>
+<li>
+<p><strong><code>Featurizer</code> base class.</strong> Featurizers now subclass <code>dynaplex.Featurizer</code>
+  (<code>@featurizer @dataclass(slots=True) class Mine(Featurizer): ...</code>), mirroring
+  <code>TrajectoryContext</code>. The base carries no fields and no behaviour; it exists so
+  type checkers accept a featurizer where <code>features=</code> is expected
+  (<code>DCL</code>, <code>PPO</code>, <code>VectorEnv</code>) and see the synthesized <code>install</code>/<code>reset</code>/
+  <code>finish</code>/<code>spec</code>/<code>Holder</code>. Existing featurizers keep working at runtime
+  without the base — only the static type changes. <em>Breaking for type
+  checkers only.</em></p>
+</li>
+<li>
+<p><strong>Trajectory-context statistics.</strong> An MDP can declare its own trajectory
+  context — a <code>@trajectory_context</code> dataclass carrying per-trajectory
+  statistics (scalars and fixed-shape arrays) — and construct it in
+  <code>make_context(self)</code>. <code>PolicyComparer</code> returns them as
+  <code>assessment.stats</code>, one <code>[n, *shape]</code> array per statistic, rows aligned
+  across policies under common random numbers. The holder is a dataclass
+  you declare (<code>class MyStats(TrajectoryStats)</code>, named on the context as
+  <code>Stats = MyStats</code>), so <code>PolicyComparer(mdp)</code> is a <code>PolicyComparer[MyStats]</code>
+  and <code>assessment.stats</code> is typed in the editor; leave <code>Stats</code> out and a
+  holder is derived (untyped).
+  See the <a href="../advanced/airplane-statistics/">tutorial</a> and the
+  <a href="../reference/language-reference/#trajectory-contexts-and-statistics">language reference</a>.</p>
+</li>
+<li><strong>Context scratch.</strong> <code>Scratch[...]</code> marks a context scalar or array as
+  per-trajectory scratch — carried by clones, but neither collected into
+  <code>Stats</code> nor touched by <code>reset()</code>: it belongs to the context-driven policy
+  that uses it (a plan computed once per period), which decides from the
+  state when it is stale. Policy bookkeeping without putting it in the state.</li>
+<li><strong>Dataclass inheritance</strong> (one base, one level): fields and methods are
+  inherited as in CPython, overrides may call the base version
+  (<code>super().m(...)</code> / <code>Base.m(self, ...)</code>), and a hand-written subclass
+  <code>__init__</code> calls the base's. Custom trajectory contexts now inherit from
+  <code>TrajectoryContext</code> instead of repeating its five members; <code>slots=True</code> is
+  no longer required on a context. <code>@trajectory_context</code> rejects, at class
+  definition, a subclass whose <code>@dataclass</code> generated an <code>__init__</code> over the
+  base's hand-written one (the mix the compiler also rejects; in plain
+  CPython it silently yields a positional-over-all-fields constructor).
+  <a href="../reference/language-reference/#inheritance">Reference</a>.</li>
+<li><strong>Custom <code>__init__</code> and <code>__post_init__</code></strong> on DynaML dataclasses (states,
+  contexts, helper objects): construct with your own signature, fields are
+  checked for definite assignment at compile time.
+  <a href="../reference/language-reference/#custom-__init__-and-__post_init__">Reference</a>.</li>
+<li><strong>For-loop targets are scoped to the loop</strong>: using the loop variable after
+  the loop (or shadowing an outer name) is rejected, matching what compiled
+  code actually did.</li>
+<li><code>GlobalStateWriter(h.v)</code> — the writer sizes itself from its array;
+  hand-written <code>install</code> bodies no longer pass the width.</li>
+</ul>
+<p><strong>Evaluation</strong></p>
+<ul>
+<li><code>PolicyAssessment.stats</code> (see above). For the vanilla context this holds
+  <code>cumulative_cost</code> and <code>time_elapsed</code> per trajectory.</li>
+<li>Infinite-horizon evaluation resets the context (not the streams) at the
+  warmup boundary; window values restart from zero.</li>
+</ul>
+<p><strong>Tooling</strong></p>
+<ul>
+<li><code>dynaplex.set_jit_opt_level(level)</code> selects the LLVM optimisation level
+  for compiled kernels (default 2; 0 compiles ~5x faster with bit-identical
+  results — the test suite runs at 0).</li>
+</ul>
+<p><strong>Breaking</strong></p>
+<ul>
+<li><code>make_context(mdp, seed)</code> and <code>reseed_context(...)</code> are removed. Construct a
+  seeded context with <code>dynaplex.modelling.new_context(mdp, seed)</code> — the MDP's
+  own context when it declares <code>make_context()</code>, else a <code>TrajectoryContext</code>
+  (<code>context.reseed(seed)</code> re-seeds an existing one).</li>
+<li><code>TrajectoryContext</code> is no longer constructed positionally
+  (<code>TrajectoryContext(rng, rng, 0.0, 0, valid)</code>); use <code>TrajectoryContext(mdp)</code>.</li>
+<li>A context-driven policy must annotate <code>context</code> with the MDP's context
+  class (<code>TrajectoryContext</code> for MDPs without a custom context).</li>
+</ul>
+<p><strong>Fixes</strong></p>
+<ul>
+<li>The airplane tutorial MDP now compiles on the engine (it silently ran on
+  the Python backend before) and draws customer types from a
+  <code>DiscreteDist</code> / <code>AliasSampler</code>.</li>
+<li>CPython <code>clone()</code> of an object whose class has a hand-written <code>__init__</code>.</li>
+</ul>
+<h2 id="1123">1.12.3<a class="headerlink" href="#1123" title="Permanent link">&para;</a></h2>
+<ul>
+<li>First public release on PyPI.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../getting-started/installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Installation">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Installation
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

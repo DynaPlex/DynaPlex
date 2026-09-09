@@ -1,0 +1,2457 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.14/reference/promises/">
+      
+      
+        <link rel="prev" href="../troubleshooting/">
+      
+      
+        <link rel="next" href="../api/modelling/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Promises (model validation) - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#what-dynaplex-expects-from-an-mdp-and-a-policy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Promises (model validation)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/machines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machines and execution plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/airplane-statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom trajectory statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../discrete-distributions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discrete distributions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Promises (model validation)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Promises (model validation)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-promises-are-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How promises are checked
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How promises are checked">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-the-model-dynamically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the model dynamically
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MDP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MDP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cost-accumulate-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cost-accumulate-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#time-accumulate-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        time-accumulate-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rng-bind-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rng-bind-once
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-stream-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        event-stream-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        action-deterministic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-stream-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        policy-stream-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-no-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        policy-no-cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#featurizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Featurizer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-state-is-read-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The state is read-only
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The state is read-only">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#state-read-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        state-read-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discrete-identifiable-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discrete identifiable events
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discrete identifiable events">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#discrete-draws-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discrete-draws-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discrete-initial-draws-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discrete-initial-draws-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-a-validation-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading a validation failure
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-promises-are-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How promises are checked
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How promises are checked">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-the-model-dynamically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the model dynamically
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MDP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MDP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cost-accumulate-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cost-accumulate-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#time-accumulate-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        time-accumulate-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rng-bind-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rng-bind-once
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-stream-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        event-stream-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        action-deterministic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-stream-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        policy-stream-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-no-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        policy-no-cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#featurizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Featurizer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-state-is-read-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The state is read-only
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The state is read-only">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#state-read-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        state-read-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discrete-identifiable-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discrete identifiable events
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discrete identifiable events">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#discrete-draws-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discrete-draws-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discrete-initial-draws-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discrete-initial-draws-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-a-validation-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading a validation failure
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="what-dynaplex-expects-from-an-mdp-and-a-policy">What DynaPlex expects from an MDP and a policy<a class="headerlink" href="#what-dynaplex-expects-from-an-mdp-and-a-policy" title="Permanent link">&para;</a></h1>
+<p>DynaPlex's harnesses — the policy comparer, DCL, PPO, the exact solver — rely on
+a handful of assumptions about what an MDP's methods and a policy's <code>get_action</code>
+do. None of them is visible in a signature, and a model that breaks one still
+compiles and runs; it just gives wrong answers, quietly. This page states those
+expectations in prose, set by set: what we expect from an <strong>MDP</strong>, from a
+<strong>policy</strong>, from a <strong>featurizer</strong>, and — for the exact solver — from an MDP with
+<strong>discrete identifiable events</strong>. One promise, <a href="#state-read-only">state-read-only</a>,
+is shared by all three roles and has its own section. Each expectation is a named <em>promise</em>; a model
+class carries its promises (<code>@mdp</code>, <code>@policy</code>, <code>@featurizer</code>), the compiler checks
+each one whenever the promised method compiles, and a broken promise is reported
+as an <em>MDP model validation</em> (or <em>policy model validation</em>) failure naming the
+promise, the line and the rule, with a link back to its section here.</p>
+<h2 id="how-promises-are-checked">How promises are checked<a class="headerlink" href="#how-promises-are-checked" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Statically, at compile time.</strong> The compiler records, for every compiled
+  method, what happens to each parameter: which fields are read, assigned,
+  updated in place, handed to another function, or stored somewhere. A promise
+  is a rule over those records. Nothing is executed to check it.</li>
+<li><strong>Transitively.</strong> Passing the state to a helper that modifies it counts as
+  modifying the state; <code>state.pipeline.pop_front()</code> counts, because
+  <code>FifoQueue.pop_front</code> modifies the queue. Passing the rng to a sampler counts
+  as using the rng.</li>
+<li><strong>Per method, per parameter.</strong> A promise never attaches to a field or a class
+  as such: the same context field is accumulate-only in the event function and
+  freely readable in a policy.</li>
+<li><strong>By type where that matters.</strong> Rules about random streams apply to <em>every</em>
+  generator reachable from the context — <code>rng</code>, <code>policy_rng</code>, and any stream
+  your own context class adds — not to a fixed list of names.</li>
+<li><strong>Only the named fields are constrained.</strong> Statistics fields you add to the
+  context (counters, per-type arrays, flags) and <code>Scratch</code> fields are yours:
+  read and write them in any role. The reserved names are matched as whole
+  fields, so a statistic called <code>cumulative_cost_by_type</code> is not mistaken for
+  <code>cumulative_cost</code>.</li>
+<li><strong>Only when the method compiles.</strong> A role method that no harness calls (a
+  state-only policy never triggers <code>write_action_validity</code>) is not compiled
+  and therefore not checked in that run. Plain CPython execution of the same
+  classes is never checked — as for every other DynaML rule.</li>
+<li><strong>Never silently bypassed.</strong> With the default <code>backend="engine"</code>, a broken
+  promise raises. <code>backend="auto"</code> is an explicit opt-in to falling back to
+  the Python kernel, and it warns when it does.</li>
+</ul>
+<p>An undecorated class carries no promises; nothing is checked for it.</p>
+<h3 id="checking-the-model-dynamically">Checking the model dynamically<a class="headerlink" href="#checking-the-model-dynamically" title="Permanent link">&para;</a></h3>
+<p>Promises are rules over what a method <em>may do</em>; they cannot see what a model
+<em>does</em> over a trajectory. <code>dynaplex.check_mdp(mdp, policy=None)</code> covers that
+side in plain Python, before anything compiles: it runs seeded trajectories
+under the policy (by default a random policy over the valid actions) and fails
+with a hint naming the method when the state category never changes, an
+infinite-horizon model never advances <code>time_elapsed</code> or reaches <code>FINAL</code>, the
+validity mask is left partly unwritten or marks no action valid, the policy
+picks an invalid action, two runs of the same seed diverge (state kept outside
+the <code>State</code> object), or every decision state offers exactly one valid action —
+the model would then stall DCL before its first round. With <code>features=</code> it
+also featurizes every decision state of the first trajectory and fails on a
+NaN or infinite feature value. Run it first, then
+<a class="autorefs autorefs-internal" title="rehearse" href="../api/evaluation/#dynaplex.rehearse"><code>rehearse</code></a> for the checked compiled pass. Reference:
+<a class="autorefs autorefs-internal" title="check_mdp" href="../api/evaluation/#dynaplex.check_mdp"><code>check_mdp</code></a>.</p>
+<h2 id="mdp">MDP<a class="headerlink" href="#mdp" title="Permanent link">&para;</a></h2>
+<p>What we expect from every MDP class (<code>@mdp</code> above <code>@const_dataclass</code>): its
+event-side methods — <code>get_initial_state</code> and the two transitions — treat the
+context as the harness's bookkeeping, and its query methods leave the state
+alone. In detail:</p>
+<h3 id="cost-accumulate-only">cost-accumulate-only<a class="headerlink" href="#cost-accumulate-only" title="Permanent link">&para;</a></h3>
+<p><em>Methods:</em> <code>get_initial_state</code>, <code>modify_state_with_event</code>, <code>modify_state_with_action</code>.
+<em>Rule:</em> <code>context.cumulative_cost</code> appears only as the target of <code>+=</code> or <code>-=</code>.</p>
+<p><strong>Assumption.</strong> The cost accumulator is an <em>output channel</em> owned by the
+algorithm. The comparer resets it to zero at the end of warm-up; DCL zeroes it
+per rollout; PPO reads and rebases it per step. A model that reads it makes its
+dynamics depend on the harness's bookkeeping — the process is no longer an MDP
+in its state — and a model that assigns it discards cost the harness has
+already accounted.</p>
+<p><strong>Breaks it:</strong> <code>if context.cumulative_cost &gt; 100:</code>, <code>context.cumulative_cost =
+...</code>, <code>context.cumulative_cost *= ...</code>, passing the value to a helper —
+including <code>context.cumulative_cost = 0.0</code> in <code>get_initial_state</code>: the harness
+starts every trajectory at zero itself, and resets after warm-up.
+<strong>Fix:</strong> if a decision or transition depends on cost so far, make that quantity
+part of your State and maintain it there.</p>
+<h3 id="time-accumulate-only">time-accumulate-only<a class="headerlink" href="#time-accumulate-only" title="Permanent link">&para;</a></h3>
+<p><em>Methods:</em> <code>get_initial_state</code>, <code>modify_state_with_event</code>, <code>modify_state_with_action</code>.
+<em>Rule:</em> <code>context.time_elapsed</code> appears only as the target of <code>+=</code>.</p>
+<p><strong>Assumption.</strong> Elapsed time is harness bookkeeping too: the comparer's warm-up
+window and horizon are counted on it, and it may be rebased. Time-dependent
+dynamics belong in the State (the airplane model keeps <code>remaining_days</code>).</p>
+<p><strong>Breaks it:</strong> reading it in a condition, assigning it, <code>-=</code>.
+<strong>Fix:</strong> carry your own clock in the State.</p>
+<h3 id="rng-bind-once">rng-bind-once<a class="headerlink" href="#rng-bind-once" title="Permanent link">&para;</a></h3>
+<p><em>Methods:</em> <code>get_initial_state</code>, <code>modify_state_with_event</code>, <code>modify_state_with_action</code>
+(and, under <code>@policy</code>, <code>get_action</code>).
+<em>Rule:</em> no generator under <code>context</code> is re-bound, re-seeded, or stored into a
+field or a container; the only thing a model does to a stream is draw from it.
+This covers every stream on the context — <code>rng</code>, <code>policy_rng</code>, and any stream
+your own context class adds.</p>
+<p><strong>Assumption.</strong> The harness owns the identity of every random stream: it
+reseeds them in place per trajectory and, in DCL, recycles them across
+rollouts. A generator aliased into long-lived storage would keep drawing from a
+stream the harness believes it has replaced, and common-random-number
+comparisons across policies would silently break.</p>
+<p><strong>Breaks it:</strong> <code>reseed(context.rng, 42)</code> (<code>reseed</code> is imported from
+<code>dynaplex.runtime</code>), <code>state.saved_rng = context.rng</code>,
+<code>some_list.append(context.rng)</code>. (Re-seeding inside a model would restart the
+event stream every step — the costs it produces are meaningless.)
+Re-binding the stream itself (<code>context.rng = default_rng(42)</code>) is refused one
+layer earlier, as an assignment to a <code>Final</code> field — every context declares its
+streams <code>Final[Generator]</code> — so you will see a compile error for that, not a
+promise failure; the promise adds the aliasing rule that <code>Final</code> cannot express.
+<strong>Fix:</strong> draw from the stream where you need it; never keep a reference.</p>
+<h3 id="event-stream-only">event-stream-only<a class="headerlink" href="#event-stream-only" title="Permanent link">&para;</a></h3>
+<p><em>Methods:</em> <code>get_initial_state</code>, <code>modify_state_with_event</code>.
+<em>Rule:</em> <code>context.policy_rng</code> is not used — not directly, not through a
+sampler, not by handing it to a helper that draws. (<code>get_initial_state</code> <em>may</em>
+draw from <code>context.rng</code>: a random start is fine under this contract, and the
+exact solver's <a href="#discrete-initial-draws-only">discrete-initial-draws-only</a>
+only asks that those draws be discrete.)</p>
+<p><strong>Assumption.</strong> The policy stream belongs to the policy. The event step draws
+from <code>context.rng</code> (or from a stream your own context adds, such as a separate
+lead-time stream); a randomized policy draws from <code>context.policy_rng</code>. Keeping
+the two apart is what makes the event sequence a function of the seed alone:
+swap the policy, or make it draw more often, and the demands, arrivals and
+failures stay the same. An event step that draws from the policy stream ties
+the events to how often the policy happened to draw.</p>
+<p><strong>Breaks it:</strong> <code>context.policy_rng.random()</code>, <code>self.sampler.sample(context.policy_rng)</code>,
+<code>self.helper.draw(context.policy_rng)</code> inside the event step.
+<strong>Fix:</strong> use <code>context.rng</code>, or add a stream to your context for a second
+independent source.</p>
+<h3 id="action-deterministic">action-deterministic<a class="headerlink" href="#action-deterministic" title="Permanent link">&para;</a></h3>
+<p><em>Method:</em> <code>modify_state_with_action</code>.
+<em>Rule:</em> no generator under <code>context</code> is used at all — not <code>rng</code>, not
+<code>policy_rng</code>, not a stream your context adds; not directly, not through a
+sampler.</p>
+<p><strong>Assumption.</strong> The transition on an action is a deterministic function of
+(state, action). All randomness lives in <code>modify_state_with_event</code>, so that
+two policies evaluated on the same seeds see exactly the same event stream —
+this is what makes the comparer's paired comparisons and DCL's sample
+generation valid. A random action transition would also make the exact
+solver's enumeration wrong.</p>
+<p><strong>Breaks it:</strong> <code>context.rng.random()</code> or <code>self.sampler.sample(context.rng)</code>
+inside the action step.
+<strong>Fix:</strong> move the draw into the event step and, if needed, carry its outcome
+in the State until the action step needs it.</p>
+<p>An MDP also promises <strong>state-read-only</strong> for <code>write_action_validity</code>. That
+promise is shared with policies and featurizers and stated once, in
+<a href="#state-read-only">The state is read-only</a>.</p>
+<h2 id="policy">Policy<a class="headerlink" href="#policy" title="Permanent link">&para;</a></h2>
+<p>What we expect from every policy class (<code>@policy</code>): <code>get_action</code> is a pure
+query of the state that, if randomized, draws from its own stream and never
+looks at the harness's cost accounting.</p>
+<p>A policy also promises <strong>state-read-only</strong> for <code>get_action</code> — see
+<a href="#state-read-only">The state is read-only</a> — and <strong>rng-bind-once</strong> for its own
+stream: <code>reseed(context.policy_rng, ...)</code> inside <code>get_action</code> would restart the
+policy stream at every decision, and storing the generator keeps a handle the
+harness believes it has replaced (see <a href="#rng-bind-once">rng-bind-once</a>).</p>
+<h3 id="policy-stream-only">policy-stream-only<a class="headerlink" href="#policy-stream-only" title="Permanent link">&para;</a></h3>
+<p><em>Method:</em> <code>get_action(state, context)</code>.
+<em>Rule:</em> of the generators under <code>context</code>, only <code>context.policy_rng</code> may be
+used.</p>
+<p><strong>Assumption.</strong> A randomized policy draws from its own stream so that its
+draws never perturb the <em>event</em> stream. Otherwise evaluating a randomized
+policy would change the demands, arrivals or failures the model sees, and the
+comparison against another policy on "the same" seeds would not be paired at
+all.</p>
+<p><strong>Breaks it:</strong> <code>context.rng.random()</code>, <code>sampler.sample(context.rng)</code>, or a
+user-added stream in <code>get_action</code>.
+<strong>Fix:</strong> use <code>context.policy_rng</code>.</p>
+<h3 id="policy-no-cost">policy-no-cost<a class="headerlink" href="#policy-no-cost" title="Permanent link">&para;</a></h3>
+<p><em>Method:</em> <code>get_action(state, context)</code>.
+<em>Rule:</em> <code>context.cumulative_cost</code> is not used at all — neither read nor
+written. Costs of a decision belong to the MDP's <code>modify_state_with_action</code>.</p>
+<p><strong>Assumption.</strong> The same as <code>cost-accumulate-only</code>: the accumulator is rebased
+by the harness, so a decision that depends on it depends on bookkeeping.
+<code>context.time_elapsed</code> <em>is</em> readable in a policy (a policy may want the time).</p>
+<h2 id="featurizer">Featurizer<a class="headerlink" href="#featurizer" title="Permanent link">&para;</a></h2>
+<p>What we expect from a featurizer (<code>@featurizer</code> attaches this by itself):
+<strong>state-read-only</strong> for <code>write_features</code> — the featurizer describes the state,
+it never changes it. See <a href="#state-read-only">The state is read-only</a>.</p>
+<h2 id="the-state-is-read-only">The state is read-only<a class="headerlink" href="#the-state-is-read-only" title="Permanent link">&para;</a></h2>
+<p>One promise is made by all three roles. The transition methods
+(<code>modify_state_with_event</code>, <code>modify_state_with_action</code>) are the <em>only</em> methods
+that change a state; everything else that receives a state is a <strong>query</strong> and
+must leave it exactly as it found it.</p>
+<h3 id="state-read-only">state-read-only<a class="headerlink" href="#state-read-only" title="Permanent link">&para;</a></h3>
+<p><em>Methods:</em></p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Method</th>
+<th>Attached by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MDP</td>
+<td><code>write_action_validity(state, ...)</code></td>
+<td><code>@mdp</code></td>
+</tr>
+<tr>
+<td>policy</td>
+<td><code>get_action(state)</code> / <code>get_action(state, context)</code></td>
+<td><code>@policy</code></td>
+</tr>
+<tr>
+<td>featurizer</td>
+<td><code>write_features(state, ...)</code></td>
+<td><code>@featurizer</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Rule:</em> the <code>state</code> parameter is only read — no field store, no in-place
+container update, no mutating method call, no passing it to a helper that
+modifies it, no storing it into another object.</p>
+<p><strong>Assumption.</strong> These methods are <em>queries</em>. The harnesses call them any
+number of times per decision and in any order — the validity mask, the
+features and the policy are all asked about the <em>same</em> state, and the exact
+solver enumerates from states it visits again. All of that assumes the state
+is unchanged afterwards. A mutation in a query changes the trajectory in ways
+no harness can account for, and in ways that depend on which harness is
+running, so the same model would behave differently under the comparer than
+under DCL.</p>
+<p><strong>Breaks it:</strong> <code>state.x = 0</code>, <code>state.items.append(...)</code>, <code>state.queue.pop_front()</code>,
+<code>self.helper.advance(state)</code>, <code>s = state; s.x += 1</code>.
+<strong>Fix:</strong> compute what you need into locals; if a query needs derived
+quantities, cache them in the State during the transition methods, where
+mutation belongs.</p>
+<p>The failure message names the role whose promise was broken (<em>"breaks the MDP
+promise 'state-read-only' in LostSales.write_action_validity"</em>, <em>"the policy
+promise ..."</em>), so you can tell which method to fix; the rule is the same for
+all of them.</p>
+<h2 id="discrete-identifiable-events">Discrete identifiable events<a class="headerlink" href="#discrete-identifiable-events" title="Permanent link">&para;</a></h2>
+<p>What the exact solver expects on top of the MDP promises.</p>
+<p>The exact solver runs the model's own <code>modify_state_with_event</code> once per
+outcome of its draws and enumerates the successors. That needs more than the
+base contract. The set is <code>dynaplex.validation.DISCRETE_IDENTIFIABLE_EVENTS</code>:
+its name says exactly what static analysis can establish — every draw in the
+event step is a discrete one the solver can enumerate. It is <em>not</em> a promise
+of solvability: whether the reachable state space is finite and small enough
+is something the solver discovers at run time, and no static check can vouch
+for it. The solver checks this set when constructed; a model can declare it up
+front with <code>@mdp(promises=DISCRETE_IDENTIFIABLE_EVENTS)</code>.</p>
+<h3 id="discrete-draws-only">discrete-draws-only<a class="headerlink" href="#discrete-draws-only" title="Permanent link">&para;</a></h3>
+<p><em>Method:</em> <code>modify_state_with_event</code>.
+<em>Rule:</em> every draw from a generator under <code>context</code> is a discrete one:
+<code>.sample</code> / <code>.conditional_sample</code> on a <code>DiscreteDist</code>, <code>AliasSampler</code> or
+<code>CdfSampler</code>, a one-shot <code>DiscreteDist.&lt;family&gt;_sample(..., rng)</code>
+(<code>poisson_sample</code>, <code>binomial_sample</code>, ...), or <code>rng.choice(n)</code>. Any number of
+draws, in any order, under any control flow, on any receiver expression —
+<code>self.dists[state.regime]</code>, <code>self.pick(state).sample(...)</code>. The generator
+itself is handed only to those draws: a helper receives a drawn value, not
+the generator.</p>
+<p><strong>Assumption.</strong> The solver replaces each draw by an enumerated value and runs
+the method once per leaf of the draw tree; later draws may depend on the state
+and on earlier outcomes. That is only exact if every draw has a finite support
+the solver can list — a continuous draw has none.</p>
+<p><strong>Breaks it:</strong> <code>context.rng.random()</code>, <code>context.rng.uniform(a, b)</code>,
+<code>self.helper(context.rng)</code>.
+<strong>Fix:</strong> express the randomness as a discrete distribution (<code>DiscreteDist</code>
+families, <code>DiscreteDist.custom</code>, or <code>rng.choice</code>); draw in the event method
+and pass the value to helpers.</p>
+<h3 id="discrete-initial-draws-only">discrete-initial-draws-only<a class="headerlink" href="#discrete-initial-draws-only" title="Permanent link">&para;</a></h3>
+<p><em>Method:</em> <code>get_initial_state</code>.
+<em>Rule:</em> the same as <a href="#discrete-draws-only">discrete-draws-only</a>, on the
+initial state: every draw from a generator under <code>context</code> goes through a
+discrete distribution or <code>rng.choice(n)</code>, and the generator is handed to no
+helper.</p>
+<p><strong>Assumption.</strong> The solver enumerates the initial distribution the way it
+enumerates events: every discrete outcome of <code>get_initial_state</code>, advanced
+through events to the first decision. Under a finite horizon that distribution
+weighs the expected total cost; under an infinite horizon the average cost
+does not depend on the start, but the start states still seed discovery.</p>
+<p><strong>Fix:</strong> as for discrete-draws-only — express the randomness as a discrete
+distribution and draw from it in <code>get_initial_state</code>.</p>
+<h2 id="reading-a-validation-failure">Reading a validation failure<a class="headerlink" href="#reading-a-validation-failure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>dynaplex.validation.PromiseViolation: MDP model validation failed:
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>In function 'LostSales.modify_state_with_action@k1$State$TrajectoryContext$Int' (my_model.py), line 3:
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>context.rng is used (load) — breaks the MDP promise 'action-deterministic' (NoUse on every Generator under context).
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  modify_state_with_action must be deterministic given (state, action): randomness belongs in
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  modify_state_with_event, so every policy sees the same event stream (common random numbers).
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  Line 3:     state.on_hand -= int(context.rng.random() * 2)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>MDP model validation failed: the model breaks the MDP promise 'action-deterministic' in
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>LostSales.modify_state_with_action; what DynaPlex
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>expects from an MDP and a policy is stated at https://dynaplex.github.io/DynaPlex/reference/promises/#action-deterministic
+</code></pre></div>
+<p>The function name carries the compiler's variant suffix (<code>@k1</code>, <code>$State...</code>):
+one source method may compile several times. Line numbers are relative to the
+method (<code>def</code> is line 1), and the offending source line is printed.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../troubleshooting/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Troubleshooting compile errors">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Troubleshooting compile errors
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../api/modelling/" class="md-footer__link md-footer__link--next" aria-label="Next: Modelling MDPs">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Modelling MDPs
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

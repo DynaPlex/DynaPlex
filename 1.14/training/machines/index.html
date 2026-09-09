@@ -1,0 +1,2359 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.14/training/machines/">
+      
+      
+        <link rel="prev" href="../dcl/">
+      
+      
+        <link rel="next" href="../ppo/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Machines and execution plans - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#machines-running-dcl-on-a-laptop-or-a-cluster-node" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Machines and execution plans
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machines and execution plans
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machines and execution plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#three-ways-to-say-where-a-run-happens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three ways to say where a run happens
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-shapes-generation-0-and-the-trained-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two shapes: generation 0 and the trained policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Two shapes: generation 0 and the trained policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-no-plan-matches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When no plan matches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plans
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-units-fixed-engineered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster units (fixed, engineered)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#laptop-derived-from-what-the-machine-has" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        laptop (derived from what the machine has)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seeing-what-is-detected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seeing what is detected
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-runs-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What runs where
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-happens-inside-a-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What happens inside a collection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-a-plan-for-a-machine-without-a-preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a plan for a machine without a preset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproducibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproducibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/airplane-statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom trajectory statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/discrete-distributions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discrete distributions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/promises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Promises (model validation)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#three-ways-to-say-where-a-run-happens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three ways to say where a run happens
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-shapes-generation-0-and-the-trained-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two shapes: generation 0 and the trained policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Two shapes: generation 0 and the trained policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-no-plan-matches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When no plan matches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plans
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-units-fixed-engineered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster units (fixed, engineered)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#laptop-derived-from-what-the-machine-has" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        laptop (derived from what the machine has)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seeing-what-is-detected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seeing what is detected
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-runs-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What runs where
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-happens-inside-a-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What happens inside a collection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-a-plan-for-a-machine-without-a-preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a plan for a machine without a preset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproducibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproducibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="machines-running-dcl-on-a-laptop-or-a-cluster-node">Machines: running DCL on a laptop or a cluster node<a class="headerlink" href="#machines-running-dcl-on-a-laptop-or-a-cluster-node" title="Permanent link">&para;</a></h1>
+<p>Deep Controlled Learning collects samples by simulating rollouts on many CPU cores while a
+neural network decides the actions. From generation 1 on, that network runs on whatever
+accelerator the machine has. How many worker threads, how many engines, how many
+processes, and where the network lives are <em>execution</em> choices: they change how fast a
+collection runs, not what it computes. DynaPlex packages those choices as a <strong>machine
+plan</strong>, and <code>DCL(machine=...)</code> selects one.</p>
+<div class="admonition note">
+<p class="admonition-title">Since 1.14</p>
+<p>Machine plans, <code>dynaplex.machine</code>, and the <code>processes</code> / <code>policy_binding</code> arguments of
+<code>collect_samples</code> are new in 1.14. The explicit <code>controllers</code>, <code>workers</code>, <code>slots</code>
+arguments of <code>DCL(...)</code> are gone: a collection's split is a <code>dynaplex.Shape</code>, and DCL
+takes one per side, <code>gen0=</code> and <code>trained=</code> (see <a href="#two-shapes-generation-0-and-the-trained-policy">Two shapes</a>).</p>
+</div>
+<h2 id="three-ways-to-say-where-a-run-happens">Three ways to say where a run happens<a class="headerlink" href="#three-ways-to-say-where-a-run-happens" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dcl</span> <span class="o">=</span> <span class="n">dynaplex</span><span class="o">.</span><span class="n">DCL</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">heuristic</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">MyFeaturizer</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">150_000</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                   <span class="n">machine</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">)</span>        <span class="c1"># recognize this allocation (the default)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th><code>machine=</code></th>
+<th>what happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"auto"</code> (default)</td>
+<td>DynaPlex detects the allocation and <strong>recognizes</strong> which plan it is: <code>laptop</code> on macOS and Windows, one of the cluster presets on Linux. It never invents one: an allocation that matches no plan raises <code>MachineMismatchError</code> rather than run on a shape nobody tuned and look slow; see <a href="#when-no-plan-matches">When no plan matches</a>.</td>
+</tr>
+<tr>
+<td>a plan name</td>
+<td>That plan's two shapes and device settings are used; <code>gen0=</code> / <code>trained=</code> overlay them field by field. The plan is <strong>verified</strong> against the allocation when a collection starts.</td>
+</tr>
+<tr>
+<td><code>None</code></td>
+<td>No detection, no plan. Both shapes are <code>Shape.TRIVIAL</code> (1 process, 1 engine, 1 worker, 512 slots, cpu) unless <code>gen0=</code> / <code>trained=</code> say otherwise.</td>
+</tr>
+<tr>
+<td>a <code>dynaplex.machine.DclPlan</code></td>
+<td>Your own plan object, verified like a named one.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="two-shapes-generation-0-and-the-trained-policy">Two shapes: generation 0 and the trained policy<a class="headerlink" href="#two-shapes-generation-0-and-the-trained-policy" title="Permanent link">&para;</a></h2>
+<p>A <strong>shape</strong> is the split of one collection: <code>processes</code>, <code>engines</code> per process, <code>workers</code>
+per engine, <code>slots</code> per worker. Generation 0 and the later generations do different work,
+so a plan carries two of them:</p>
+<ul>
+<li><strong><code>gen0</code></strong> — the rollout policy is the heuristic, compiled into the engines. There is
+  no network forward to place, so the shape is one engine per process with the workers
+  filling the cores (<code>processes × (workers + 1 driver thread) ≤ cores</code>) and 512 slots.</li>
+<li><strong><code>trained</code></strong> — the trained policy forwards on the plan's device. On an accelerator
+  that takes two engines per process (one engine's batch on the device while the other's
+  workers simulate) and large slots; on the cpu it takes cores reserved for the forward's
+  torch threads.</li>
+</ul>
+<p>Each shape is part of the experiment identity for the generations it runs: the run
+record stores, per shape, <code>controllers</code> (the total number of engines, <code>processes × engines</code>)
+and <code>slots_per_controller</code> (<code>workers × slots</code>). Labels are bit-identical at constant values of
+those two, whatever the split; two different shapes are two different experiments.</p>
+<p><code>DCL(gen0=..., trained=...)</code> take a <code>dynaplex.Shape</code> each, and a shape is an <strong>overlay</strong>: a
+field you set replaces the plan's, a field you leave <code>None</code> keeps it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dp</span><span class="o">.</span><span class="n">DCL</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">heuristic</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">F</span><span class="p">)</span>                                  <span class="c1"># both shapes from the plan</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">dp</span><span class="o">.</span><span class="n">DCL</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">heuristic</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">trained</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">workers</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>     <span class="c1"># trained side: 6 workers, rest as planned</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">dp</span><span class="o">.</span><span class="n">DCL</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">heuristic</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">gen0</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">workers</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>        <span class="c1"># generation 0 only</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">dp</span><span class="o">.</span><span class="n">DCL</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">heuristic</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>       <span class="n">gen0</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">workers</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <span class="n">trained</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">engines</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="mi">4096</span><span class="p">))</span>
+</code></pre></div>
+<p>Without a plan the base is <code>Shape.TRIVIAL</code>, so <code>gen0=dp.Shape(workers=8)</code> is one process,
+one engine, 8 workers, 512 slots. Under a plan, overriding <code>workers</code> alone changes
+<code>slots_per_controller</code> and so the identity, exactly as the old <code>workers=</code> did; the
+identity-preserving move (workers up, slots down at a constant product) is a two-field shape.</p>
+<h3 id="when-no-plan-matches">When no plan matches<a class="headerlink" href="#when-no-plan-matches" title="Permanent link">&para;</a></h3>
+<p><code>machine="auto"</code> on an allocation DynaPlex does not recognize stops before any work is
+done, with a <code>MachineMismatchError</code> that names what it detected (host, allowed CPUs, cuda
+devices, SLURM partition) and the plans that exist. You then have three ways forward, in
+order of preference:</p>
+<ol>
+<li><strong>A Linux desktop or workstation:</strong> pass <code>machine="laptop"</code>. It is derived from the
+   cores and accelerator present and fits any single machine; <code>auto</code> only refuses to
+   guess it on Linux because that is where cluster nodes live.</li>
+<li><strong>A cluster allocation of a different shape:</strong> request one of the allocations a
+   preset was engineered for (the <code>sbatch</code> lines are in the plan notes above), or write a
+   <code>dynaplex.machine.DclPlan</code> of your own for the shape you have. The rules the presets
+   follow are in
+   <a href="#choosing-a-plan-for-a-machine-without-a-preset">Choosing a plan for a machine without a preset</a>.</li>
+<li><strong>Just run:</strong> <code>machine=None</code> switches detection off and uses <code>Shape.TRIVIAL</code> (1 process,
+   1 engine, 1 worker, 512 slots on the cpu) for both sides, overlaid by whatever <code>gen0=</code> /
+   <code>trained=</code> you pass. Fine for a smoke test; expect it to be slow at scale.</li>
+</ol>
+<p>And in every case, please <a href="https://github.com/DynaPlex/DynaPlex/issues">open an issue</a>
+with the output of <code>python -m dynaplex.machine --json</code>. A machine that people run DCL on
+should have a tuned plan, and the detection record is what is needed to write one.</p>
+<h2 id="the-plans">The plans<a class="headerlink" href="#the-plans" title="Permanent link">&para;</a></h2>
+<p>A plan fixes two shapes — <strong>processes</strong> (one per GPU), <strong>engines</strong> per process, <strong>workers</strong>
+per engine, <strong>slots</strong> per worker, once for generation 0 and once for the trained policy —
+plus the <strong>device</strong> the network runs on and the <strong>policy binding</strong> (how actions get from
+the network to the engines; see below).</p>
+<h3 id="cluster-units-fixed-engineered">Cluster units (fixed, engineered)<a class="headerlink" href="#cluster-units-fixed-engineered" title="Permanent link">&para;</a></h3>
+<p>These match the allocation units SLURM hands out on Snellius, and they exist in quarter,
+half and whole variants with the same per-GPU shape:</p>
+<table>
+<thead>
+<tr>
+<th>plan</th>
+<th>allocation</th>
+<th>generation 0: processes × engines × workers × slots</th>
+<th>trained policy: processes × engines × workers × slots</th>
+<th>device</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gpu_h100_quarter</code></td>
+<td>1 H100, 16 cores</td>
+<td>1 × 1 × 15 × 512</td>
+<td>1 × 2 × 7 × 1024</td>
+<td>cuda</td>
+</tr>
+<tr>
+<td><code>gpu_h100_half</code></td>
+<td>2 H100, 32 cores</td>
+<td>2 × 1 × 15 × 512</td>
+<td>2 × 2 × 7 × 1024</td>
+<td>cuda</td>
+</tr>
+<tr>
+<td><code>gpu_h100</code></td>
+<td>4 H100, 64 cores (whole node)</td>
+<td>4 × 1 × 15 × 512</td>
+<td>4 × 2 × 7 × 1024</td>
+<td>cuda</td>
+</tr>
+<tr>
+<td><code>gpu_a100_quarter</code></td>
+<td>1 A100, 18 cores</td>
+<td>1 × 1 × 17 × 512</td>
+<td>1 × 2 × 8 × 1024</td>
+<td>cuda</td>
+</tr>
+<tr>
+<td><code>gpu_a100_half</code></td>
+<td>2 A100, 36 cores</td>
+<td>2 × 1 × 17 × 512</td>
+<td>2 × 2 × 8 × 1024</td>
+<td>cuda</td>
+</tr>
+<tr>
+<td><code>gpu_a100</code></td>
+<td>4 A100, 72 cores (whole node)</td>
+<td>4 × 1 × 17 × 512</td>
+<td>4 × 2 × 8 × 1024</td>
+<td>cuda</td>
+</tr>
+<tr>
+<td><code>genoa</code></td>
+<td>192-core Genoa node</td>
+<td>32 × 1 × 5 × 512</td>
+<td>32 × 1 × 4 × 512</td>
+<td>cpu</td>
+</tr>
+</tbody>
+</table>
+<p>The matching <code>sbatch</code> line is in each plan's note (<code>dynaplex.machine.plan("gpu_a100").describe()</code>),
+for example <code>--partition=gpu_a100 --gpus=4 --cpus-per-task=72 --exclusive</code> for the whole
+A100 node. A quarter node is the smallest unit the scheduler gives out and usually starts
+within minutes; whole nodes wait for a node to drain.</p>
+<p>All GPU units use 1024 rollout slots per worker for the trained policy (the measured
+optimum: the barrier per engine step amortizes, and larger slabs gain nothing further on
+the cluster). Generation 0 runs one engine per GPU process with all but one of the
+process's cores as workers: with no forward to overlap, the second engine would only cost
+its build, and the driver thread is the one core kept free.
+Throughput is linear in the total number of workers, and one GPU keeps up with far more
+workers than one unit has, so pick the unit by how many cores you can get, not by GPU count.
+Measured on a stochastic lot-sizing example (K=5, 150 000 samples, m=1000, h=30): 23 minutes per
+generation on a whole H100 node, 25 on a whole A100 node, 45 on half an H100 node.</p>
+<p><code>genoa</code> is the CPU unit, and its trained shape follows from the network running on the same
+cores as the workers: <strong>32 processes of one engine with 4 workers each</strong>, 512 slots per
+worker, and 2 torch threads per process. The rule the sweeps taught is <code>processes × (workers + torch
+threads) ≤ cores</code> — workers spin at the barrier, so the forward's threads need cores of their
+own rather than borrowing idle ones. Two torch threads beat every larger number once there
+are 16 or more processes; fewer, fatter processes make the per-process forward the
+bottleneck. Measured on 2000 generation-1 samples (m=1000, h=30, <code>[128, 128]</code>): 15 s for lost
+sales and 38 s for lot sizing K=5, against 271 s and 1002 s for the single engine with 190
+workers that this plan used before. Generation 0 has no forward to place and runs the same
+32 processes of one engine each with <strong>5 workers</strong>: the two cores per process the trained
+shape keeps for torch simulate instead (<code>32 × (5 + 1 driver) = 192</code>).</p>
+<h3 id="laptop-derived-from-what-the-machine-has"><code>laptop</code> (derived from what the machine has)<a class="headerlink" href="#laptop-derived-from-what-the-machine-has" title="Permanent link">&para;</a></h3>
+<p><code>laptop</code> is the one plan that is computed rather than fixed, so it fits any Mac, Windows or
+Linux machine you run it on:</p>
+<ol>
+<li>Detect an accelerator: cuda through torch (a CPU-only torch build counts as <strong>no</strong> GPU),
+   or Metal (<code>mps</code>) on Apple silicon.</li>
+<li>With an accelerator and at least 6 cores, the trained shape is one process, <strong>two
+   engines</strong> on the accelerator, <code>cores - 2</code> workers split over them, 4096 slots per worker.
+   Two engines let the network run on one engine's batch while the other engine's workers
+   simulate; a single engine on an accelerator is slower than the CPU because of launch
+   overhead. The large slots amortize the launch cost per round on Metal, which is fixed,
+   so larger slabs keep paying (measured on an M4 Pro: 512 to 4096 slots is a 3x
+   throughput difference).</li>
+<li>Otherwise the trained shape is one engine on the cpu with <code>cores - 2</code> workers, 512 slots.</li>
+</ol>
+<p>Generation 0 is always one engine with <code>cores - 2</code> workers and 512 slots, accelerator or not:
+with no forward to overlap, the two-engine shape only adds the second engine's build
+(measured on an M4 Pro, lost sales, m=1000, h=30: <code>2 × 4 × 4096</code> and <code>1 × 8 × 512</code> are equal
+per sample at steady state). Cores are Apple performance cores where known, else the
+logical CPUs. The plan's note says what was chosen and why, e.g. <code>derived on mymac (Darwin):
+10 performance cores; using mps, 2 engines from generation 1</code> or <code>...; cpu only — torch
+2.13.0+cpu is a CPU-only build (install the CUDA wheel to use a GPU)</code>. <code>macbook</code>, <code>ms-laptop</code>, <code>mac</code> and <code>local</code> are aliases of <code>laptop</code>.</p>
+<p><code>machine="auto"</code> resolves to <code>laptop</code> on macOS and Windows. On Linux it only recognizes the
+cluster units above; pass <code>"laptop"</code> explicitly on a Linux desktop.</p>
+<h2 id="seeing-what-is-detected">Seeing what is detected<a class="headerlink" href="#seeing-what-is-detected" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>-m<span class="w"> </span>dynaplex.machine<span class="w">          </span><span class="c1"># human summary; --json for the record; --no-torch to skip torch</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>machine: gcn159 (Linux; AMD EPYC 9334 32-Core Processor)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  hardware:   64 logical CPUs / 64 physical cores; 756 GiB RAM; 2 NUMA nodes; 1 GPU(s) on node
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  allocation: 16 logical CPUs / 16 physical cores = PART of the node; 1 NUMA node(s); memory limit 180 GiB
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>              CPU ids 16-31
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  gpu:        cuda:0 NVIDIA H100, 93 GiB
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  scheduler:  SLURM_JOB_ID=..., SLURM_CPUS_PER_TASK=16, SLURM_GPUS=1, CUDA_VISIBLE_DEVICES=0, ...
+</code></pre></div>
+<p>Detection separates the <strong>hardware</strong> (what the node has) from the <strong>allocation</strong> (what this
+process may use: the CPU affinity mask the scheduler enforces, the cgroup memory limit, the
+GPUs torch can see). Plans are verified against the allocation, so a plan engineered for a
+whole node refuses to run on a quarter of one instead of silently oversubscribing it.
+<code>dynaplex.machine.detect()</code> returns the same information as a <code>Machine</code> record.</p>
+<h2 id="what-runs-where">What runs where<a class="headerlink" href="#what-runs-where" title="Permanent link">&para;</a></h2>
+<p>Under a plan, each stage of a DCL generation has a fixed home:</p>
+<table>
+<thead>
+<tr>
+<th>stage</th>
+<th>where</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>generation-0 rollouts (heuristic policy)</td>
+<td>CPU workers, the plan's <code>gen0</code> shape</td>
+<td>the policy is compiled into the engine; no accelerator involved; one engine per process, workers filling the cores</td>
+</tr>
+<tr>
+<td>generation ≥ 1 rollouts: simulation, featurization, action masks</td>
+<td>CPU workers, the plan's <code>trained</code> shape</td>
+<td>the bulk of the work; throughput is linear in workers</td>
+</tr>
+<tr>
+<td>generation ≥ 1 rollouts: the network's forward + masked argmax</td>
+<td>the plan's device</td>
+<td>cuda: one CUDA-graph replay per engine per round; mps: asynchronous device binding; cpu: blocking</td>
+</tr>
+<tr>
+<td>training the next network</td>
+<td>the plan's device</td>
+<td>data moves to the device once; the minibatch order comes from the seeded CPU generator, so it is the same on every device; <code>train=dict(device=...)</code> overrides</td>
+</tr>
+<tr>
+<td>evaluation (<code>PolicyComparer</code>)</td>
+<td>CPU workers, single engine; the agent's device for the forward</td>
+<td>no plan needed; move the agent with <code>agent.to("cuda")</code> if you want</td>
+</tr>
+</tbody>
+</table>
+<p>On a cluster GPU plan everything that can use the GPU does. On <code>laptop</code> the same holds
+for whatever accelerator was found. Note that for small networks at the default batch
+size of 64, training on an accelerator is not necessarily faster than on the cpu; the
+per-step launch overhead dominates a 24k-weight MLP. It is still the plan's device by
+default so that a run's artifacts come from one place; override with <code>train=</code>.</p>
+<h2 id="what-happens-inside-a-collection">What happens inside a collection<a class="headerlink" href="#what-happens-inside-a-collection" title="Permanent link">&para;</a></h2>
+<p><strong>Processes.</strong> With <code>processes = P</code>, DynaPlex spawns P worker processes, each owning a
+contiguous group of engines, a contiguous slice of the allowed CPUs, and one GPU
+(<code>cuda:0</code>, <code>cuda:1</code>, ...). Each process collects its own share of the samples; the shares are
+concatenated at the end. The result is byte-for-byte the same as one process running all
+the engines, so the process count is a pure speed knob.</p>
+<p><strong>Engines and the policy binding.</strong> Within a process the engines alternate: while engine A's
+workers simulate, the network computes engine B's actions. The <em>binding</em> is how that call is
+made, chosen automatically from the device:</p>
+<table>
+<thead>
+<tr>
+<th>device</th>
+<th>binding</th>
+<th>mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cpu</td>
+<td>blocking</td>
+<td>one <code>agent.act</code> call per engine</td>
+</tr>
+<tr>
+<td>mps</td>
+<td>device</td>
+<td>asynchronous forward with reused buffers, an event per engine</td>
+</tr>
+<tr>
+<td>cuda</td>
+<td>graph</td>
+<td>the whole copy-forward-argmax-copy sequence captured once as a CUDA graph and replayed per round</td>
+</tr>
+</tbody>
+</table>
+<p>All three produce identical actions on a given device. <code>collect_samples(policy_binding=...)</code>
+overrides the choice.</p>
+<p><strong>Precision of the policy call.</strong> For attention-sized networks the forward is arithmetic, not
+overhead, and <code>policy_precision</code> (<code>"fp32"</code> default, <code>"tf32"</code>, <code>"fp16"</code>, <code>"bf16"</code>; on DCL, a plan
+or <code>collect_samples</code>) trades rounding for speed: tf32 uses the tensor cores for every matmul,
+fp16/bf16 run the forward under autocast with the masked argmax still in fp32. Measured on an
+A100 for a 69-token transformer policy over 8192 states: fp32 40 ms, tf32 23 ms, fp16 18 ms,
+with 100% (tf32, fp16) and 99.95% (bf16) of the chosen actions unchanged. Features and stored
+samples stay fp32; the cast happens on the device. Lower precision can move near-tie actions,
+as a different device can.</p>
+<p><strong>Generation 0</strong> (heuristic rollouts) runs the rollout policy inside the engines, on the cpu,
+in the plan's <code>gen0</code> shape; the device, binding and precision only matter from generation 1,
+and the run header of a generation-0 collection says so.</p>
+<p><strong>Checks and the rehearsal.</strong> <code>DCL(checks=...)</code> applies to the generation-0 collection only.
+The default, <code>"rehearsal"</code>, first runs that collection once with every runtime check on at a
+tiny budget, so an out-of-range index or a failing <code>assert</code> in the model or featurizer is
+reported before the fast compile. The rehearsal is not a model checker: run
+<a href="../../reference/api/evaluation/"><code>check_mdp</code></a> for that. Two model faults that used to stall
+a collection fail with a named cause in every mode instead: a decision state with no valid
+action, and an MDP whose decision states never offer more than one valid action (nothing
+to label).
+Generations 1 and up always collect fast: a fault the generation-0 rehearsal does not
+surface is unlikely to surface under a later policy, and checking every generation would
+cost speed. A resumed run that skips generation 0 does not rehearse.</p>
+<h2 id="choosing-a-plan-for-a-machine-without-a-preset">Choosing a plan for a machine without a preset<a class="headerlink" href="#choosing-a-plan-for-a-machine-without-a-preset" title="Permanent link">&para;</a></h2>
+<p>When no preset matches your machine or your allocation, pass <code>machine=None</code> and the two
+shapes to <code>DCL(gen0=dp.Shape(...), trained=dp.Shape(...))</code> — <code>processes</code>, <code>engines</code> (per
+process), <code>workers</code> (per engine), <code>slots</code> (per worker) — and, on the cpu, <code>torch_threads</code>
+(<code>collect_samples</code> takes no plan and the same numbers as scalar arguments, <code>controllers</code>
+being its name for engines per process). The rules below are the ones the cluster presets
+were tuned by; the generation-0 shape is the simpler one: one engine per process,
+<code>processes × (workers + 1) ≤ cores</code>, 512 slots.</p>
+<p><strong>One engine per process, two to drive a GPU.</strong> Engines inside one process step in turn,
+so a third engine adds no parallelism, only build time and memory; more than 2 engines per
+process is refused. Use one engine per process on the cpu. Use two engines per process on an
+accelerator: while the network computes engine A's actions, engine B's workers simulate,
+and a single engine on an accelerator idles the device between launches. Parallelism comes
+from <code>processes</code>: each process builds its own engine, in parallel, and the result is
+byte-identical to any other split with the same total number of engines and the same
+<code>workers * slots</code>.</p>
+<p><strong>Cores.</strong> Workers spin at the round barrier, so give them cores of their own and count
+the network's threads next to them:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>processes × (workers + torch_threads) ≤ cores        (trained policy, cpu network)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>processes = number of GPUs; workers ≈ cores per GPU / 2 per engine   (trained policy, accelerator)
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>processes × (workers + 1) ≤ cores, one engine        (generation 0: no network, one driver thread per process)
+</code></pre></div>
+<p>On the cpu, 2 torch threads per process is enough once there are 16 or more processes;
+fewer, fatter processes make each process's forward the bottleneck. Start from the <code>genoa</code>
+shape scaled to your core count: with <code>c</code> cores, <code>processes = c / 6</code>, one engine, 4
+workers, 2 torch threads. On a GPU, one process per GPU with two engines and half the
+process's cores per engine; giving each engine all of the cores oversubscribes them (measured:
+almost five times slower on a quarter H100 node).</p>
+<p><strong>Slots.</strong> 512 per worker on the cpu and at generation 0; 1024 on a cluster GPU; up to 4096
+on Metal, where the per-round launch cost is fixed and larger slabs keep paying. Slots trade
+memory for a longer round between barriers; past the optimum nothing is gained.</p>
+<p><strong>Samples per controller.</strong> <code>n</code> must reach the total number of engines of either shape, and
+each engine collects <code>n / engines</code> samples along a few on-policy trajectories. On a finite-horizon MDP,
+keep that share well above the number of decisions in an episode, or the trajectories never
+reach the end and the collection warns about possible data skew (the count per engine is in
+the sample set's <code>manifest["execution"]["episodes_completed"]</code>).</p>
+<p><strong>Record what you chose.</strong> The execution block of every sample set records the split,
+device, binding, precision and host, so a run can be reproduced on the same kind of machine.
+Once a shape has proven itself, wrap it as a <code>DclPlan</code> and pass it as <code>machine=</code>; the plan is
+then verified against the allocation on every run.</p>
+<h2 id="reproducibility">Reproducibility<a class="headerlink" href="#reproducibility" title="Permanent link">&para;</a></h2>
+<p>A collection is bit-reproducible for a fixed shape. Different shapes draw the same
+<em>distribution</em> of samples but not the same samples, in the same way that a different worker
+count does; generation 0 and the later generations running different shapes is the normal
+case under every plan. Across devices, near-tie action choices can differ between a cpu and a cuda
+forward, so resume a run on the kind of machine it started on when byte-identity matters;
+statistically the trained agents agree (on a stochastic lot-sizing example, four different plans gave
+generation-2 agents within 0.6% of each other).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../dcl/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Deep Controlled Learning">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Deep Controlled Learning
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../ppo/" class="md-footer__link md-footer__link--next" aria-label="Next: PPO">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                PPO
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

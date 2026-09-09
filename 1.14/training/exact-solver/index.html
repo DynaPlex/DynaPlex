@@ -1,0 +1,2181 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.14/training/exact-solver/">
+      
+      
+        <link rel="prev" href="../policy-comparison/">
+      
+      
+        <link rel="next" href="../featurizers/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Exact solver - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#exact-solver" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Exact solver
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-numbers-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the numbers mean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-finite-horizon-model-the-airplane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A finite-horizon model: the airplane
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-solver-needs-from-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the solver needs from the model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-optimal-policy-is-a-normal-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The optimal policy is a normal policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspecting-the-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting the solution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-state-identity-and-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery, state identity and scale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../machines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machines and execution plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/airplane-statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom trajectory statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/discrete-distributions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discrete distributions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/promises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Promises (model validation)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-numbers-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the numbers mean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-finite-horizon-model-the-airplane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A finite-horizon model: the airplane
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-solver-needs-from-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the solver needs from the model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-optimal-policy-is-a-normal-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The optimal policy is a normal policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspecting-the-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting the solution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-state-identity-and-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery, state identity and scale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="exact-solver">Exact solver<a class="headerlink" href="#exact-solver" title="Permanent link">&para;</a></h1>
+<p><code>ExactSolver</code> is DynaPlex's exact method for <strong>finite-state MDPs</strong>. It
+enumerates every decision state reachable under the model's own dynamics,
+computes the <strong>exact</strong> cost of any compiled policy — the long-run average cost
+per period of an infinite-horizon model, the expected total cost of an episode
+of a finite-horizon one — and finds the <strong>optimal</strong> policy by policy
+iteration. Where the
+<a href="../policy-comparison/"><code>PolicyComparer</code></a> estimates a cost from simulated
+trajectories, the solver computes it to a chosen tolerance and, for the
+optimum, tells you how much room any heuristic or trained agent leaves on the
+table. It applies to models whose reachable state space fits in memory — up to
+a few million states; everything larger stays with simulation.</p>
+<p>The running example is the <a href="../../tutorials/binpacking-mdp/">bin packing MDP</a>
+on the instance the tutorial trains a DCL agent on: three bins of capacity 100
+and weights 10, 20, 30, 40 or 50.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">dynaplex</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex.modelling</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteDist</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex.models.binpacking</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinPackingMDP</span><span class="p">,</span> <span class="n">FirstFitPolicy</span><span class="p">,</span> <span class="n">LowestWeightPolicy</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">weight_probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">41</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">weight_probs</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">mdp</span> <span class="o">=</span> <span class="n">BinPackingMDP</span><span class="p">(</span><span class="n">max_bin_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">number_of_bins</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                    <span class="n">weight_dist</span><span class="o">=</span><span class="n">DiscreteDist</span><span class="o">.</span><span class="n">custom</span><span class="p">(</span><span class="n">weight_probs</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">lowest_weight</span> <span class="o">=</span> <span class="n">LowestWeightPolicy</span><span class="p">(</span><span class="n">mdp</span><span class="o">=</span><span class="n">mdp</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">first_fit</span> <span class="o">=</span> <span class="n">FirstFitPolicy</span><span class="p">(</span><span class="n">mdp</span><span class="o">=</span><span class="n">mdp</span><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">solver</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">ExactSolver</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>                    <span class="c1"># discovers every reachable decision state</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nb">print</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"lowest-weight:"</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lowest_weight</span><span class="p">))</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"first-fit:    "</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">first_fit</span><span class="p">))</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="n">opt</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">warm_start</span><span class="o">=</span><span class="n">first_fit</span><span class="p">)</span>        <span class="c1"># the optimal policy</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"optimal:      "</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ExactSolver: 5000 states (0.67 s)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>lowest-weight: cost/period 2.6546  (5000 states, 143 sweeps, 0 improvements, span 5.9e-07, 0.70 s)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>first-fit:     cost/period 2.6546  (5000 states, 1144 sweeps, 0 improvements, span 9.0e-07, 0.76 s)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>optimal:       cost/period 0.0688667  (5000 states, 88 sweeps, 8 improvements, span 2.0e-07, 0.74 s)
+</code></pre></div>
+<p>Three bins holding a multiple of 10 each, times five possible upcoming
+weights, gives 5000 decision states. The two heuristics cost 2.65 per period,
+and they cost <em>exactly the same</em> — the simulation in the tutorial could only
+say they are within noise of each other. The optimum is 0.069 per period,
+almost forty times lower: a bin that reaches exactly 100 empties at no cost,
+and with weights in multiples of 10 a policy that aims for exact fills almost
+never overflows. The tutorial's generation-3 DCL agent reaches 2.02, so the
+solver also shows how far that agent still is from optimal.</p>
+<p>Construction runs the discovery; <code>evaluate</code> and <code>solve</code> reuse it, so
+evaluating several policies on one solver costs one discovery. Call
+<code>solver.close()</code> when done to release the compiled engines.</p>
+<h2 id="what-the-numbers-mean">What the numbers mean<a class="headerlink" href="#what-the-numbers-mean" title="Permanent link">&para;</a></h2>
+<p>The metric is the MDP's <strong>native cost</strong> — the same number the comparer
+estimates — computed exactly. Which number depends on the model's
+<code>horizon_type</code>:</p>
+<ul>
+<li><strong>Infinite horizon</strong> (<code>HorizonType.INFINITE</code>): <code>res.cost</code> is the long-run
+  <strong>average cost per period</strong>, converged until the span of the value
+  increments is below <code>epsilon</code> (default <code>1e-6</code>). <code>res.values</code> is the <strong>bias</strong>
+  (relative value) per state; <code>res.get_bias_function()</code> wraps it as a callable
+  <code>state -&gt; float</code> for plain Python states (the best state has bias 0; a
+  larger bias means a worse state to be in).</li>
+<li><strong>Finite horizon</strong> (<code>HorizonType.FINITE</code>): <code>res.cost</code> is the <strong>expected
+  total cost</strong> of an episode, from <code>get_initial_state</code> until the state becomes
+  <code>FINAL</code>, converged until the largest value increment is below <code>epsilon</code>.
+  <code>res.values</code> is the <strong>expected cost-to-go</strong> per decision state;
+  <code>res.get_value_function()</code> wraps it as <code>state -&gt; float</code>. The initial
+  distribution is enumerated like the events: every discrete outcome of
+  <code>get_initial_state</code>, advanced through events to the first decision, with
+  the cost accrued on the way.</li>
+<li><code>res.actions</code> is the action per state, indexed like <code>res.values</code> by the
+  solver's global state index. <code>res.stats</code> carries <code>states</code>, <code>transitions</code>,
+  <code>leaves</code> (the enumerated successors), <code>horizon</code>, <code>sweeps</code>, <code>improvements</code>,
+  the final <code>span</code>, <code>seconds</code> and <code>discovery_seconds</code>. <code>print(res)</code> is the
+  one-line summary shown above.</li>
+</ul>
+<p><code>evaluate(policy)</code> runs policy evaluation only: <code>improvements</code> is 0 and the
+cost is that policy's. <code>solve()</code> alternates evaluation sweeps and policy
+improvement (modified policy iteration, <code>m</code> evaluation sweeps per improvement)
+until no state changes its action. <code>solve(warm_start=policy)</code> starts from a
+policy's actions instead of the lowest valid action in every state; a good
+warm start saves improvement rounds but does not change the optimum.</p>
+<h2 id="a-finite-horizon-model-the-airplane">A finite-horizon model: the airplane<a class="headerlink" href="#a-finite-horizon-model-the-airplane" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../tutorials/airplane-mdp/">airplane MDP</a> sells the seats of one flight
+over a fixed number of days and ends when the days run out — a finite horizon.
+The solver then reports the <strong>expected total cost</strong> of an episode (here the
+negative revenue), from the initial state to the <code>FINAL</code> state, on the
+tutorial's instance: 25 days, 10 seats, customers paying 3000, 2000 or 1000
+with probabilities 0.4, 0.3 and 0.3.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">dynaplex</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex.models.airplane</span><span class="w"> </span><span class="kn">import</span> <span class="n">AirplaneMDP</span><span class="p">,</span> <span class="n">SimplePolicy</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">mdp</span> <span class="o">=</span> <span class="n">AirplaneMDP</span><span class="p">(</span><span class="n">initial_days</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">initial_seats</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                  <span class="n">prices_per_customer_type</span><span class="o">=</span><span class="p">[</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                  <span class="n">customer_type_probs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">rule</span> <span class="o">=</span> <span class="n">SimplePolicy</span><span class="p">(</span><span class="n">mdp</span><span class="o">=</span><span class="n">mdp</span><span class="p">)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">solver</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">ExactSolver</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"rule-based:"</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">rule</span><span class="p">))</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">opt</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">warm_start</span><span class="o">=</span><span class="n">rule</span><span class="p">)</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"optimal:   "</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>rule-based: expected total cost -25074.7  (660 states, 2 sweeps, 0 improvements, span 0.0e+00, 0.69 s)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>optimal:    expected total cost -28769.2  (660 states, 4 sweeps, 2 improvements, span 0.0e+00, 0.68 s)
+</code></pre></div>
+<p>The rule-based policy earns 25 075 in expectation, the optimal policy 28 769 —
+about 15% more, exactly, where the tutorial's <code>PolicyComparer</code> run puts the
+same two policies at 25 124 ± 64 and 28 714 ± 54. Finite-horizon models need
+no clock: a <em>stopping problem</em>, where reaching <code>FINAL</code> depends on the action
+and states can repeat, is solved the same way, iterating to <code>epsilon</code>.</p>
+<details class="note">
+<summary>Sweep order</summary>
+<p>Finite-horizon sweeps update each state's value in place and, when the
+model defines an optional <code>sweep_rank(self, state) -&gt; int</code>, visit states in
+ascending rank. The library's airplane model returns <code>remaining_days</code>, so
+the last day is swept first and the solve above is one backward-induction
+pass plus a confirmation — hence the low sweep counts. Without the method
+the solver sweeps in index order and converges all the same, in more
+passes. The hook is provisional and may change shape.</p>
+</details>
+<h2 id="what-the-solver-needs-from-the-model">What the solver needs from the model<a class="headerlink" href="#what-the-solver-needs-from-the-model" title="Permanent link">&para;</a></h2>
+<p>The solver runs the model's own <code>modify_state_with_event</code> once per outcome of
+its random draws, so a model that runs in the comparer runs in the solver, with
+three conditions on top:</p>
+<ul>
+<li><strong>Episodes that end (finite horizon).</strong> A finite-horizon model must reach a
+  <code>FINAL</code> state with probability one under <em>every</em> policy — the assumption is
+  the model's, not checked by the solver, exactly as in legacy DynaPlex. A
+  model with an internal clock (the airplane's <code>remaining_days</code>) satisfies it
+  by construction. In a stopping problem, where ending depends on the action,
+  a policy that never stops has no finite total cost; the solver then reports
+  non-convergence (or, when the cycle costs nothing, converges to a
+  meaningless answer). How <code>time_elapsed</code> advances is irrelevant under a
+  finite horizon; under an infinite horizon every decision-to-decision
+  transition must advance it by exactly one period.</li>
+<li><strong>Discrete, enumerable events.</strong> Every draw in the event step must be a
+  discrete one the solver can enumerate — <code>.sample</code> on a <code>DiscreteDist</code>,
+  <code>AliasSampler</code> or <code>CdfSampler</code>, a one-shot <code>DiscreteDist.&lt;family&gt;_sample</code>,
+  or <code>rng.choice(n)</code> — and so must every draw in <code>get_initial_state</code> (a random
+  start is enumerated as the initial distribution). This is the promise set
+  <code>DISCRETE_IDENTIFIABLE_EVENTS</code>, described under
+  <a href="../../reference/promises/#discrete-identifiable-events">Promises → Discrete identifiable events</a>;
+  the solver checks it at construction and a continuous draw such as
+  <code>rng.random()</code> is a compile error naming the line. Any number of draws, in
+  any order and under any control flow, is fine: the bin packing event draws
+  one weight, the lost-sales event draws one demand, and a model that draws a
+  regime and then a regime-dependent demand enumerates the product.</li>
+<li><strong>A countable state.</strong> State fields must be integers, booleans, enums,
+  <code>list[int]</code>, <code>FifoQueue</code>, integer arrays, or nested objects of those. A
+  float field is refused at construction, naming the field: an exactly
+  solvable state takes finitely many values, so a float that does is an index
+  and should be modelled as one.</li>
+</ul>
+<p>Whether the reachable state space is <em>finite and small enough</em> is not
+something the compiler can establish; the solver discovers it. Discovery
+stops with an error when it passes <code>max_states</code> (default <code>1 &lt;&lt; 22</code>, about
+four million) or when a single <code>(state, action)</code> expands to more than
+<code>max_event_branches</code> successors. The action validity mask is what usually
+keeps a state space finite: in the lost-sales model, for example, the bound on
+the inventory position in <code>write_action_validity</code> is what makes the model
+solvable, and every model with unbounded accumulation needs such a bound.</p>
+<p><strong>Policies</strong> are compiled DynaML policies with <code>get_action(state)</code> or
+<code>get_action(state, context)</code>, as in the comparer; a policy that draws from
+the context cannot be evaluated exactly. <code>evaluate</code> expects the policy to
+respect the validity mask: a policy that takes a forbidden action in a
+discovered state fails loudly rather than silently. <code>solve</code> takes the mask as
+given and optimizes over the valid actions.</p>
+<h2 id="the-optimal-policy-is-a-normal-policy">The optimal policy is a normal policy<a class="headerlink" href="#the-optimal-policy-is-a-normal-policy" title="Permanent link">&para;</a></h2>
+<p><code>opt.get_policy()</code> returns the action table as a compiled policy — an
+<code>ExactPolicy</code> holding the state encoding and one action per state. It goes
+wherever a policy goes: into the comparer, as the generation-0 policy of
+<a href="../dcl/">DCL</a>, or called on a plain Python state.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">exact</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_policy</span><span class="p">()</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">comparer</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyComparer</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">number_of_trajectories</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>                             <span class="n">warmup_time</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">comparer</span><span class="o">.</span><span class="n">compare</span><span class="p">({</span><span class="s2">"LowestWeight"</span><span class="p">:</span> <span class="n">lowest_weight</span><span class="p">,</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>                        <span class="s2">"FirstFit"</span><span class="p">:</span> <span class="n">first_fit</span><span class="p">,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>                        <span class="s2">"Exact"</span><span class="p">:</span> <span class="n">exact</span><span class="p">}))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>policy                  mean       error    delta_mean  delta_error
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>LowestWeight *        2.6381     0.01583             0            0
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>FirstFit              2.6298     0.01543       -0.0083     0.004839
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Exact                 0.0711    0.003372        -2.567      0.01618
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>(* = benchmark; delta = policy - benchmark, paired on common random numbers)
+</code></pre></div>
+<p>The comparer's estimate of the exact policy, 0.071 ± 0.003, agrees with the
+solver's 0.0689; the simulated heuristic costs agree with the exact 2.6546
+within their standard errors. Running the exact policy through the comparer
+is the natural way to put it in one table with policies the solver cannot
+evaluate, such as a trained <code>NNAgent</code>.</p>
+<p>The exact policy has an action only for states the solver discovered. Calling
+it on an unreachable state (one the dynamics can never produce) raises an
+assertion; build states through the model, or take them from
+<code>solver.states()</code> as below.</p>
+<h2 id="inspecting-the-solution">Inspecting the solution<a class="headerlink" href="#inspecting-the-solution" title="Permanent link">&para;</a></h2>
+<p><code>solver.states()</code> yields every discovered decision state as a plain Python
+object together with its global index, in index order. With the bias function
+and the policies as Python callables, the optimal decisions can be read state
+by state:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">bias</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_bias_function</span><span class="p">()</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"bins          arrival  optimal  first-fit  lowest  bias"</span><span class="p">)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">solver</span><span class="o">.</span><span class="n">states</span><span class="p">():</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">upcoming_weight</span> <span class="o">==</span> <span class="mi">40</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">weight_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">state</span><span class="o">.</span><span class="n">weight_vector</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">weight_vector</span><span class="p">)</span><span class="si">:</span><span class="s2">13</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">upcoming_weight</span><span class="si">:</span><span class="s2">7</span><span class="si">}</span><span class="s2">  "</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>              <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">exact</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="si">:</span><span class="s2">7</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">first_fit</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="si">:</span><span class="s2">9</span><span class="si">}</span><span class="s2">  "</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>              <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">lowest_weight</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="si">:</span><span class="s2">6</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">bias</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="si">:</span><span class="s2">5.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>bins          arrival  optimal  first-fit  lowest  bias
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>[0, 0, 0]          40        1          0       0  0.118
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>[10, 0, 0]         40        0          0       1  0.115
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>[20, 0, 0]         40        0          0       1  0.174
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>[30, 0, 0]         40        0          0       1  0.127
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>[40, 0, 0]         40        0          0       1  0.317
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>[50, 0, 0]         40        1          0       1  0.322
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>[60, 0, 0]         40        0          0       1  0.000
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>[70, 0, 0]         40        1          1       1  0.344
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>[80, 0, 0]         40        1          1       1  0.778
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>[90, 0, 0]         40        1          1       1  1.799
+</code></pre></div>
+<p>A weight of 40 arriving at a bin holding 60 completes it exactly, and that
+state has bias 0: it is the best state to be in. At 50 the optimum keeps the
+bin open for a 50 rather than fill it to 90; first fit adds the 40 anyway. A
+bin holding 90 can only be completed by a 10, and the bias of 1.8 says what
+that liability costs relative to the best state. Empty bins are
+interchangeable, so the first row's choice of bin 1 over bin 0 is a tie.</p>
+<h2 id="discovery-state-identity-and-scale">Discovery, state identity and scale<a class="headerlink" href="#discovery-state-identity-and-scale" title="Permanent link">&para;</a></h2>
+<p>Discovery starts from the initial state and expands every valid action and
+every event outcome, running the model's transition methods compiled in the
+engine. <code>solver.report()</code> describes what it found:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>5000 states in 1 shape(s), 15000 transitions, 75000 leaves — perfect (mixed-radix) path
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>shape 0 [3]: 5000 states, index space 5000, density 1.000
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  [0] weight_vector[0]: radix 10 (affine, 0..90)
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  [1] weight_vector[1]: radix 10 (affine, 0..90)
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>  [2] weight_vector[2]: radix 10 (affine, 0..90)
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>  [3] upcoming_weight: radix 5 (affine, 10..50)
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  [4] category: radix 1 (constant, 2..2)
+</code></pre></div>
+<p>A <strong>shape</strong> is the state class with its runtime dimensions filled in (list
+lengths, queue lengths, array dims); a model whose lists never change length
+has one shape. Within a shape the solver identifies a state by a <strong>mixed-radix
+code</strong>: each field becomes a digit over the values it was seen to take, and the
+code indexes the value and action tables directly. That is the <em>perfect</em> path.
+When the states of a shape do not fit such a code densely enough, or the model
+has several shapes, the solver falls back to the <em>table</em> path (a sorted row
+table with binary-search lookup) and <code>get_policy()</code> returns an
+<code>ExactTablePolicy</code> instead — the same policy interface, slightly slower to
+call. <code>ExactSolver(path=...)</code> accepts <code>"auto"</code> (the default), <code>"perfect"</code> or
+<code>"table"</code>.</p>
+<p>The cost of a solve is roughly linear in the number of leaves (enumerated
+successors) times the number of sweeps. On a laptop, the bin packing instance
+with more bins:</p>
+<table>
+<thead>
+<tr>
+<th>bins</th>
+<th>states</th>
+<th>discovery</th>
+<th>evaluate first fit</th>
+<th>solve</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>5 000</td>
+<td>0.7 s</td>
+<td>0.8 s</td>
+<td>0.7 s</td>
+</tr>
+<tr>
+<td>4</td>
+<td>50 000</td>
+<td>1.0 s</td>
+<td>1.6 s</td>
+<td>1.2 s</td>
+</tr>
+<tr>
+<td>5</td>
+<td>500 000</td>
+<td>2.2 s</td>
+<td>7.8 s</td>
+<td>6.4 s</td>
+</tr>
+</tbody>
+</table>
+<p>The optimal cost falls from 0.069 to 0.0017 to 0.000007 per period as bins
+are added, while both heuristics stay at 2.6546. This version runs
+single-threaded and keeps the tables in memory; four million states is the
+default guardrail.</p>
+<h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">dp</span><span class="o">.</span><span class="n">ExactSolver</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>               <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>                <span class="c1"># convergence: span of the value increments</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>               <span class="n">max_states</span><span class="o">=</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">22</span><span class="p">,</span>          <span class="c1"># discovery guardrail</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>               <span class="n">max_event_branches</span><span class="o">=</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">,</span>  <span class="c1"># successors of one (state, action)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>               <span class="n">m</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>                        <span class="c1"># evaluation sweeps per improvement</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>               <span class="n">path</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>                 <span class="c1"># "auto" | "perfect" | "table"</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>               <span class="n">checks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>                <span class="c1"># True: run the model in checked mode</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>               <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>               <span class="c1"># print the discovery and each result</span>
+</code></pre></div>
+<p><code>checks=True</code> runs the model's transition methods with the runtime checks on
+(bounds, overflow, asserts) — use it when a model misbehaves under
+enumeration; the default is fast mode, since the model is validated elsewhere.
+<code>verbose=True</code> prints the discovery report and every result as it is
+computed.</p>
+<div class="admonition note">
+<p class="admonition-title">Not in this version</p>
+<p>Parallel sweeps (<code>workers</code> must be 0) and persisting the tables to a work
+directory are planned; see
+<a href="../../community/roadmap/#exact-solvers">Planned features</a>.</p>
+</div>
+<p>See the <a href="../../reference/api/exact-solver/">API reference</a> for all options.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../policy-comparison/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Comparing policies">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Comparing policies
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../featurizers/" class="md-footer__link md-footer__link--next" aria-label="Next: Featurizers">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Featurizers
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

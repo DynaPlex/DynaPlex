@@ -1,0 +1,3308 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.14/reference/api/runtime/">
+      
+      
+        <link rel="prev" href="../gym/">
+      
+      
+        <link rel="next" href="../symbols/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Advanced runtime - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#advanced-runtime" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Advanced runtime
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/machines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machines and execution plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../training/gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../advanced/airplane-statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom trajectory statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../discrete-distributions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discrete distributions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../promises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Promises (model validation)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.uses_jit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uses_jit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        call
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        view
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.collect_garbage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        collect_garbage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.enable_deferred_gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        enable_deferred_gc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.take_gc_request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        take_gc_request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.set_gc_threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_gc_threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.set_gc_force_at_safe_points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_gc_force_at_safe_points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.net_live_bytes_tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        net_live_bytes_tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-recycling-and-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State recycling and streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.clone_into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone_into
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.reseed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reseed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.combine_seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        combine_seeds
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="combine_seeds">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.combine_seeds.combine_seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        combine_seeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.monotonic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        monotonic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concurrent-worlds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrent worlds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.separate_world_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        separate_world_class
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.sync_worlds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sync_worlds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compilation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compilation pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Program" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Program
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.compile_function_from_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_function_from_string
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.DataModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DataModel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.TypedWordHandle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TypedWordHandle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.TypedWordView" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TypedWordView
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.uses_jit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uses_jit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        call
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        view
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.collect_garbage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        collect_garbage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.enable_deferred_gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        enable_deferred_gc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.take_gc_request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        take_gc_request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.set_gc_threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_gc_threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.set_gc_force_at_safe_points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_gc_force_at_safe_points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Engine.net_live_bytes_tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        net_live_bytes_tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-recycling-and-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State recycling and streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.clone_into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clone_into
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.reseed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reseed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.combine_seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        combine_seeds
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="combine_seeds">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dynaplex.runtime.combine_seeds.combine_seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        combine_seeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.monotonic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        monotonic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concurrent-worlds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrent worlds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.separate_world_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        separate_world_class
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.sync_worlds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sync_worlds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compilation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compilation pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.Program" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Program
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.compile_function_from_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_function_from_string
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.DataModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DataModel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.TypedWordHandle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TypedWordHandle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynaplex.runtime.TypedWordView" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TypedWordView
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="advanced-runtime">Advanced runtime<a class="headerlink" href="#advanced-runtime" title="Permanent link">&para;</a></h1>
+<p>Advanced runtime primitives, for authors of custom algorithm harnesses.
+Everything on this page lives in <code>dynaplex.runtime</code>. Everyday modelling
+and solving does not need anything here.</p>
+<h2 id="engine">Engine<a class="headerlink" href="#engine" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.runtime.Engine" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Engine</span>
+
+
+<a href="#dynaplex.runtime.Engine" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">Engine</span><span class="p">(</span><span class="n">root_class</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">,</span> <span class="o">*</span><span class="n">ctor_args</span><span class="p">:</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n">type_bindings</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="type">type</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">jit</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">checks</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Compile a dataclass and run its methods on the DynaPlex engine.</p>
+<p>An Engine takes one <em>root class</em> (a DynaML dataclass), compiles the class,
+its methods, and everything reachable from them, constructs a single root
+object, and then executes method calls on that object inside the engine —
+interpreted or JIT-compiled. State lives engine-side between calls, so a
+long-lived stateful computation pays the Python boundary cost only at the
+<code>call</code> sites.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>root_class</code>
+            </td>
+            <td>
+                  <code><span title="type">type</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The dataclass to compile and instantiate. All of its
+public methods become callable entry points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>*ctor_args</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Arguments passed to <code>root_class(...)</code> to build the root
+object (this construction runs in plain CPython, so the class's
+<code>__init__</code> may use arbitrary Python).</p>
+              </div>
+            </td>
+            <td>
+                  <code>()</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>type_bindings</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="type">type</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional mapping of placeholder annotation names to
+concrete dataclasses (e.g. <code>{"MDP": MyMDP}</code>), for compiling a
+generic root class against caller-chosen types.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>jit</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>None</code> (default) uses the JIT when available and applicable,
+<code>True</code> requires it (raises if unavailable), <code>False</code> always
+interprets.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>checks</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>True</code> keeps the runtime checks (<code>assert</code>, <code>if __debug__:</code>
+blocks, checked list access) in the compiled methods; <code>False</code>
+compiles them out (fast mode — misuse is undefined behaviour).
+<code>None</code> (default) takes the <code>DYNAPLEX_CHECKS=0|1</code> environment
+override if set, else <code>True</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">engine</span> <span class="o">=</span> <span class="n">Engine</span><span class="p">(</span><span class="n">Counter</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>   <span class="c1"># Counter(10) built and ingested</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">engine</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">"increment"</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>    <span class="c1"># runs compiled Counter.increment</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">engine</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">"total"</span><span class="p">)</span>           <span class="c1"># -&gt; 15</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="dynaplex.runtime.Engine.uses_jit" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">uses_jit</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#dynaplex.runtime.Engine.uses_jit" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">uses_jit</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>True iff calls will run via the JIT (backend linked and not disabled).</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.close" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">close</span>
+
+
+<a href="#dynaplex.runtime.Engine.close" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">close</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Tear the engine down now: release the root object, the DataStore and every
+world thread, and drop the compile state. Idempotent; call() raises RuntimeError
+afterwards. Dropping the last reference does the same (see <strong>del</strong>), so explicit
+close() is for when the teardown moment matters (e.g. before measuring threads).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.call" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">call</span>
+
+
+<a href="#dynaplex.runtime.Engine.call" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">call</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="object">object</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Any">Any</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Call a method on the root object. Arguments and the return value must be numeric
+primitives or ndarrays. Returns the native Python result (scalar / numpy array),
+None for a void method, or a tuple for multiple return values.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.view" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">view</span>
+
+
+<a href="#dynaplex.runtime.Engine.view" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">view</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A LIVE, read-only view of the root object: <code>engine.view().field[i].attr</code>.</p>
+<p>The read-side door of the engine (docs/asbuilt/dcl_sample_info.md). The view is
+non-owning and re-reads the store on every access, so it always shows the current
+state — including lists the root grew during later calls — and it survives GC
+sweeps (everything reachable from the root is never swept; ids are stable). Leaves
+come back as Python ints/floats/bools/enums, ndarrays as numpy arrays sharing the
+backing, objects and lists as nested views. Valid while the engine lives and no
+call is in flight (worker worlds are quiescent between calls). Views do not cross
+processes: materialize what you need (a flat dataclass is one <code>getattr</code> per field).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.collect_garbage" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">collect_garbage</span>
+
+
+<a href="#dynaplex.runtime.Engine.collect_garbage" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">collect_garbage</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Whole-tree mark-and-sweep GC: the root store and every contained world, each on its
+own thread. Safe to call between engine.call() invocations.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.enable_deferred_gc" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">enable_deferred_gc</span>
+
+
+<a href="#dynaplex.runtime.Engine.enable_deferred_gc" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">enable_deferred_gc</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Deferred (aligned) auto-GC: stores RAISE a request flag when their adaptive
+threshold trips instead of self-sweeping mid-task; poll <code>take_gc_request()</code> and run
+<code>collect_garbage()</code> at a safe boundary (e.g. between DCL rounds — the sweep then
+never stalls a running round). Call before the first world-spawning call (like
+<code>set_gc_threshold</code>); contained worlds inherit the flag at construction.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.take_gc_request" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">take_gc_request</span>
+
+
+<a href="#dynaplex.runtime.Engine.take_gc_request" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">take_gc_request</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Read-and-clear the deferred auto-GC request (any store over threshold since the
+last call). Meaningful only after <code>enable_deferred_gc()</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.set_gc_threshold" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">set_gc_threshold</span>
+
+
+<a href="#dynaplex.runtime.Engine.set_gc_threshold" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">set_gc_threshold</span><span class="p">(</span><span class="n">num_bytes</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Set the automatic-GC trigger threshold (bytes since last sweep). Worlds created
+afterward inherit it; the threshold adapts per sweep and is floored at 1 MiB. Set this
+before the first call that spawns worlds (e.g. setup) so it propagates through the tree.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.set_gc_force_at_safe_points" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">set_gc_force_at_safe_points</span>
+
+
+<a href="#dynaplex.runtime.Engine.set_gc_force_at_safe_points" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">set_gc_force_at_safe_points</span><span class="p">(</span><span class="n">on</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>TEST KNOB: sweep at every GC safe point — task-top and <code>dynaplex.gc()</code> — regardless
+of the allocation threshold, so a handle that a safe point failed to keep alive is freed
+at the FIRST safe point instead of after a threshold's worth of garbage. Call before the
+first world-spawning call (worlds inherit it at construction).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.Engine.net_live_bytes_tree" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">net_live_bytes_tree</span>
+
+
+<a href="#dynaplex.runtime.Engine.net_live_bytes_tree" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">net_live_bytes_tree</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Net live bytes (alloc - freed) across the root store and every contained world.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="state-recycling-and-streams">State recycling and streams<a class="headerlink" href="#state-recycling-and-streams" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.runtime.clone_into" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">clone_into</span>
+
+
+<a href="#dynaplex.runtime.clone_into" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">clone_into</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n"><span title="dynaplex.modelling.clone._T">_T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Deep in-place assignment: overwrite <code>dst</code> so it becomes value-equal to a deep
+copy of <code>src</code>, preserving <code>dst</code>'s identity wherever structure matches.</p>
+<p>Both arguments must be two instances of the same MUTABLE dataclass, or two lists of
+the same type. External aliases of reused dst sub-objects observe the new values
+(that is the defined semantics, not an accident); where structure mismatches (None
+flips, ndarray shape changes, aliasing duals) the affected position falls back to a
+fresh clone. Overlapping src/dst graphs are unsupported. <code>clone_into(x, x)</code> is a
+no-op. Returns None (unmistakably a mutation).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.runtime.reseed" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">reseed</span>
+
+
+<a href="#dynaplex.runtime.reseed" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">reseed</span><span class="p">(</span><span class="n">rng</span><span class="p">:</span> <span class="n"><span title="numpy">np</span></span><span class="o">.</span><span class="n"><span title="numpy.random">random</span></span><span class="o">.</span><span class="n"><span title="numpy.random.Generator">Generator</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Generator (dynaplex._core.Generator)" href="../randomness/#dynaplex.Generator">Generator</a></span> <span class="o">|</span> <span class="n"><span title="dynaplex.exactsolver.event_probe.EventProbe">EventProbe</span></span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Re-seed <code>rng</code> in place (see <code>_reseed_generator</code>, the kernel this calls).</p>
+<p>Written DynaML: the union parameter is an overload set — the two generator
+members call the kernel (<code>DP!reseed_dp</code> / <code>DP!reseed_np</code>); the <code>EventProbe</code>
+member is a compile-time failure, because reseeding an enumerator is
+meaningless — the exact solver never reseeds, and a model that does so under
+the probe is wrong. In CPython the same call raises DynaPlexError.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="dynaplex.runtime.combine_seeds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">combine_seeds</span>
+
+
+<a href="#dynaplex.runtime.combine_seeds" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p><code>combine_seeds</code> — deterministic, collision-free RNG seed combiner.</p>
+<p>Ports the legacy DynaPlex <code>CombineSeeds</code> (legacy <code>rng.cpp</code>): the trajectory
+coordinates (<code>sample</code>, <code>trajectory</code>, <code>stream</code>) are packed into DISJOINT bit-fields
+of a single integer, XOR'd with a <code>global_seed</code>, and a high bit is reserved for the
+train/eval partition. Because the fields are disjoint the mapping is a bijection —
+distinct coordinate tuples give distinct seeds <em>by construction</em> (range-checked, not
+"probably distinct"). The result is a NON-NEGATIVE int64, so it feeds
+<code>numpy.random.default_rng(seed)</code> directly.</p>
+<p>Dual role (like <code>clone</code>/<code>sync_worlds</code>): a real CPython function used when DynaML code
+runs in pure Python, AND recognized by the interpreter frontend as a builtin that
+lowers to the C++ <code>DP!combine_seeds</code> CALL_BI. Both paths are bit-identical — this is
+what keeps CRN / reproducibility exact between a CPython reference and compiled workers.</p>
+<p>Bit layout (bit 63 kept 0 so the value stays non-negative):
+    bit  63      : 0  (sign — guarantees a valid non-negative int64 seed)
+    bit  62      : eval  (train = 0 / eval = 1 → disjoint train/eval seed spaces)
+    bits 33..61  : sample      (&lt; 2<strong>29)
+    bits 10..32  : trajectory  (&lt; 2</strong>23)
+    bits  0..9   : stream      (&lt; 2**10)</p>
+<p>This deviates from legacy in ONE way: legacy put <code>eval</code> at bit 63 (the MSB), yielding a
+uint64 that is negative when reinterpreted as int64. numpy's SeedSequence rejects negative
+entropy (scalar AND list forms), so <code>eval</code> is moved to bit 62 to keep the seed non-negative.
+<code>global_seed</code> is therefore bounded to <code>&lt; 2**62</code> so its XOR can never touch the eval/sign bits.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="dynaplex.runtime.combine_seeds.combine_seeds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">combine_seeds</span>
+
+
+<a href="#dynaplex.runtime.combine_seeds.combine_seeds" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">combine_seeds</span><span class="p">(</span><span class="nb">eval</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">global_seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Pack (eval, global_seed, sample, trajectory, stream) into one non-negative int64 seed.</p>
+<p>Raises ValueError if any coordinate is out of range (mirrors the C++ builtin, so
+silent overflow — the classic seeding footgun — is turned into a hard error).
+Any nonzero <code>eval</code> selects the evaluation seed space.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.runtime.monotonic" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">monotonic</span>
+
+
+<a href="#dynaplex.runtime.monotonic" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">monotonic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Monotonic process-wide clock in seconds (arbitrary epoch); timing only.</p>
+
+
+    </div>
+
+</div><h2 id="concurrent-worlds">Concurrent worlds<a class="headerlink" href="#concurrent-worlds" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.runtime.separate_world_class" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">separate_world_class</span>
+
+
+<a href="#dynaplex.runtime.separate_world_class" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">separate_world_class</span><span class="p">(</span><span class="n">_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Decorator combining @dataclass with world marking for the DynaML compiler.</p>
+<p>Instances of the decorated class live in their own Program/DataStore/thread.
+Method calls on a world instance are dispatched asynchronously to that thread.</p>
+<p>Accepts the same keyword arguments as @dataclass (init, slots, frozen, etc.).</p>
+
+
+<details class="usage" open>
+  <summary>Usage</summary>
+  <p>@separate_world_class
+class World:
+    base: int</p>
+<div class="highlight"><pre><span></span><code>def compute(self, num_steps: int) -&gt; float:
+    ...
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.runtime.sync_worlds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sync_worlds</span>
+
+
+<a href="#dynaplex.runtime.sync_worlds" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">sync_worlds</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Barrier over all outstanding @separate_world_class method dispatches.</p>
+<p>Inside a compiled DynaML function, <code>w.method(...)</code> on a world instance posts
+work to that world's thread and returns immediately, writing a placeholder
+into the result temp. <code>sync_worlds()</code> blocks until every outstanding world
+call has finished and flushes each world's result into its result temp.</p>
+<p>Usage contract (not compiler-enforced, like reading an uninitialized value):
+  - Bind each world method call's result to a FRESH variable
+    (e.g. <code>r0 = w0.compute(n)</code>; for multiple returns <code>a, b = w.stats(n)</code>).
+  - Do NOT use those variables until after sync_worlds() has run. Reading or
+    copying them before the barrier yields a placeholder, not the result.</p>
+<p>Calling this directly in CPython is a no-op (it is meaningful only when
+compiled by the DynaML interpreter).</p>
+
+
+    </div>
+
+</div><h2 id="compilation-pipeline">Compilation pipeline<a class="headerlink" href="#compilation-pipeline" title="Permanent link">&para;</a></h2>
+<p>The classes below are deep plumbing; they are listed for completeness and
+documented by their docstrings only.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="dynaplex.runtime.Program" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Program</span>
+
+
+<a href="#dynaplex.runtime.Program" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">Program</span><span class="p">(</span><span class="n">functions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">build_backend</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">checks</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Python wrapper for the C++ compiled module + _cpp_program runtime classes.</p>
+<p>Provides a high-level interface for working with DynaPlex programs,
+including DataModel management and function registration.</p>
+
+        <p>Create a new Program, optionally from a list of functions.</p>
+<p>Automatically discovers all dataclasses used in function signatures, performs all Python-side
+parsing, then creates the C++ Program and DataModel at the end (unless disabled).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>functions</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional list of Python function objects to register. If None, creates empty Program.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>build_backend</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If False, skip building the C++ backend (front-end only).</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>checks</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>True</code> keeps the runtime checks (<code>assert</code> statements, <code>if __debug__:</code>
+blocks, checked list access) in the compiled code; <code>False</code> compiles them out
+(fast mode — misuse is undefined behaviour, like a C release build). <code>None</code>
+(default) takes the <code>DYNAPLEX_CHECKS=0|1</code> environment override if set, else
+<code>True</code> (roadmap/checks_mode.md).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="dynaplex.runtime.compile_function_from_string" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">compile_function_from_string</span>
+
+
+<a href="#dynaplex.runtime.compile_function_from_string" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">compile_function_from_string</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Compile a function from a source string and make it compatible with DynaPlex.</p>
+<p>This function handles the linecache setup needed for DynaPlex to extract
+source code from dynamically created functions.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>source</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Python source code containing a single function definition</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>namespace</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary of globals to use when executing the source.
+       If None, uses an empty namespace.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>filename</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name to use for the source (for error messages and debugging).
+      If None, generates a name based on the function name.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="collections.abc.Callable">Callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The compiled function object, ready to be registered with DynaPlex.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If source doesn't contain exactly one function definition,
+       or if compilation fails.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">dynaplex</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">Point</span><span class="p">:</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">source</span> <span class="o">=</span> <span class="s1">'''</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="s1">def distance(p1: Point, p2: Point) -&gt; int:</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="s1">    dx: int = p1.x - p2.x</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="s1">    dy: int = p1.y - p2.y</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="s1">    return dx * dx + dy * dy</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="s1">'''</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="n">distance</span> <span class="o">=</span> <span class="n">dynaplex</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">compile_function_from_string</span><span class="p">(</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">source</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="p">{</span><span class="s2">"Point"</span><span class="p">:</span> <span class="n">Point</span><span class="p">}</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="p">)</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="n">prog</span> <span class="o">=</span> <span class="n">dynaplex</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">Program</span><span class="p">([</span><span class="n">distance</span><span class="p">])</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div><p><code>build_datamodel_from_dataclasses(dataclasses)</code> — build a <code>DataModel</code> from a
+list of dataclass types (see its docstring via <code>help()</code>).</p>
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.runtime.DataModel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">DataModel</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.runtime.DataModel" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">DataModel</span> <span class="o">=</span> <span class="n"><span title="dynaplex._core">_core</span></span><span class="o">.</span><span class="n"><span title="dynaplex._core.DataModel">DataModel</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.runtime.TypedWordHandle" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">TypedWordHandle</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.runtime.TypedWordHandle" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">TypedWordHandle</span> <span class="o">=</span> <span class="n"><span title="dynaplex._core">_core</span></span><span class="o">.</span><span class="n"><span title="dynaplex._core.TypedWordHandle">TypedWordHandle</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="dynaplex.runtime.TypedWordView" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">TypedWordView</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#dynaplex.runtime.TypedWordView" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">TypedWordView</span> <span class="o">=</span> <span class="n"><span title="dynaplex._core">_core</span></span><span class="o">.</span><span class="n"><span title="dynaplex._core.TypedWordView">TypedWordView</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../gym/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Gym interop">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Gym interop
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../symbols/" class="md-footer__link md-footer__link--next" aria-label="Next: All symbols A–Z">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                All symbols A–Z
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

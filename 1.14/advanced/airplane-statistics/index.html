@@ -1,0 +1,2888 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Solving Markov Decision Problems and similar models (POMDP, HMM), written in Python, executed by a fast multi-threaded engine — for Supply Chain, Logistics and Manufacturing.">
+      
+      
+      
+        <link rel="canonical" href="https://dynaplex.github.io/DynaPlex/1.14/advanced/airplane-statistics/">
+      
+      
+        <link rel="prev" href="../../training/gym-environments/">
+      
+      
+        <link rel="next" href="../../reference/language-reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Custom trajectory statistics - DynaPlex</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#airplane-mdp-with-custom-statistics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="DynaPlex" class="md-header__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DynaPlex
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Custom trajectory statistics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DynaPlex" class="md-nav__button md-logo" aria-label="DynaPlex" data-md-component="logo">
+      
+  <img src="../../assets/images/icon.png" alt="logo">
+
+    </a>
+    DynaPlex
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaPlex/DynaPlex" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaPlex/DynaPlex
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/verifying-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying your installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/introduction-to-mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A brief introduction to MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/airplane-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane ticket selling MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/binpacking-mdp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bin packing MDP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training and evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training and evaluation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/policy-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparing policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/featurizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Featurizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/dcl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Controlled Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/machines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machines and execution plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/gym-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectorized gym environments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom trajectory statistics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom trajectory statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-declare-a-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Declare a context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Declare a context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-decorator-generates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the decorator generates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-declare-the-holder-yourself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional: declare the holder yourself
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-tell-the-mdp-about-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tell the MDP about it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-update-the-statistics-where-the-information-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Update the statistics where the information is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-get-the-statistics-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Get the statistics back
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Get the statistics back">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparing-policies-on-their-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparing policies on their statistics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual simulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full code
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Language reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/language-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/discrete-distributions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discrete distributions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting compile errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/promises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Promises (model validation)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/randomness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributions and randomness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluating policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/exact-solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact solver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/gym/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gym interop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/symbols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All symbols A–Z
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-declare-a-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Declare a context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Declare a context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-decorator-generates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the decorator generates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-declare-the-holder-yourself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional: declare the holder yourself
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-tell-the-mdp-about-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tell the MDP about it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-update-the-statistics-where-the-information-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Update the statistics where the information is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-get-the-statistics-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Get the statistics back
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Get the statistics back">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparing-policies-on-their-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparing policies on their statistics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual simulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full code
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="airplane-mdp-with-custom-statistics">Airplane MDP with custom statistics<a class="headerlink" href="#airplane-mdp-with-custom-statistics" title="Permanent link">&para;</a></h1>
+<p>The <a href="../../tutorials/airplane-mdp/">airplane tutorial</a> evaluates policies on a single
+number: the total cost (negative revenue) per trajectory. Real studies want
+more. For the airline, natural questions are:</p>
+<ul>
+<li>How many customers of each type does a policy accept, and how many does it
+  turn away?</li>
+<li>How is revenue spread over the 25 selling days?</li>
+</ul>
+<p>DynaPlex answers these with <strong>trajectory-context statistics</strong>: you declare a
+context class carrying the statistics you care about, update them inside the
+MDP where the information is already in scope, and <code>PolicyComparer</code> hands
+back one array per statistic with a row per trajectory. This page extends the
+airplane example step by step; the full file is at the bottom.</p>
+<h2 id="1-declare-a-context">1. Declare a context<a class="headerlink" href="#1-declare-a-context" title="Permanent link">&para;</a></h2>
+<p>Every trajectory runs with a <em>context</em> — the object holding the random
+streams, the cumulative cost and the elapsed time. The basic tutorial uses
+the library's <code>TrajectoryContext</code>. To add statistics, declare your own:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@trajectory_context</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">AirplaneContext</span><span class="p">(</span><span class="n">TrajectoryContext</span><span class="p">):</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="c1"># --- statistics ---</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">accepted_per_type</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]]</span>     <span class="c1"># [num_customer_types]</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">rejected_per_type</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]]</span>     <span class="c1"># [num_customer_types]</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">revenue_per_day</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]</span>     <span class="c1"># [initial_days]</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">stocked_out</span><span class="p">:</span> <span class="nb">bool</span>                               <span class="c1"># did the flight sell out?</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">:</span> <span class="n">AirplaneMDP</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>              <span class="c1"># the base members: random streams, cost, time, validity scratch</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">accepted_per_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">num_customer_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rejected_per_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">num_customer_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">revenue_per_day</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">initial_days</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">stocked_out</span> <span class="o">=</span> <span class="kc">False</span>
+</code></pre></div>
+<p>The base class contributes the members every context has — the event and
+policy random streams, <code>cumulative_cost</code>, <code>time_elapsed</code> and the action-validity
+scratch — and <code>super().__init__(mdp)</code> fills them in (with placeholder seeds;
+every generator is reseeded before use). Below them, any number of statistics:</p>
+<table>
+<thead>
+<tr>
+<th>Field type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>float</code>, <code>int</code>, <code>bool</code></td>
+<td>a scalar statistic; re-assign freely (<code>context.stocked_out = True</code>)</td>
+</tr>
+<tr>
+<td><code>Final[NDArray[T]]</code> (1-D; <code>Array2D[T]</code> etc. for more dimensions; float/int/bool)</td>
+<td>a fixed-shape array statistic; mutate in place (<code>context.x[i] += 1</code>)</td>
+</tr>
+<tr>
+<td><code>Final[Generator]</code></td>
+<td>an extra random stream, reseeded with the others</td>
+</tr>
+<tr>
+<td><code>Scratch[int]</code>, <code>Final[Scratch[NDArray[T]]]</code>, ...</td>
+<td>per-trajectory scratch owned by a context-driven policy: never collected (not in <code>Stats</code>), never reset by the kernels</td>
+</tr>
+</tbody>
+</table>
+<p>Scalars are the only fields you re-assign; everything else is <code>Final</code> and
+created once in <code>__init__</code>. Lists are not allowed — a statistic has a fixed
+shape, so use an array. Taking the MDP as the constructor argument keeps the
+array shapes in one place: the context reads <code>mdp.num_customer_types</code> and
+<code>mdp.initial_days</code> rather than repeating the numbers.</p>
+<h3 id="what-the-decorator-generates">What the decorator generates<a class="headerlink" href="#what-the-decorator-generates" title="Permanent link">&para;</a></h3>
+<p><code>@trajectory_context</code> checks the field table above and then writes the
+housekeeping for you — all of it compiled, and called by the kernels once per
+trajectory:</p>
+<table>
+<thead>
+<tr>
+<th>Generated</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reseed(seed, ...)</code></td>
+<td>gives every <code>Final[Generator]</code> field its own independent stream</td>
+</tr>
+<tr>
+<td><code>reset()</code></td>
+<td>zeroes every scalar and zero-fills every array in place (the streams run on)</td>
+</tr>
+<tr>
+<td><code>write_stats(out, row)</code></td>
+<td>copies the statistics into row <code>row</code> of the holder</td>
+</tr>
+<tr>
+<td><code>stats_spec()</code></td>
+<td>dtype and shape of every statistic, read off the instance</td>
+</tr>
+<tr>
+<td><code>AirplaneContext.Stats</code></td>
+<td>the <em>holder</em> class the comparer fills: every statistic under the same name, with one leading trajectory axis</td>
+</tr>
+</tbody>
+</table>
+<p>So the class body is just the declaration and the constructor.</p>
+<h3 id="optional-declare-the-holder-yourself">Optional: declare the holder yourself<a class="headerlink" href="#optional-declare-the-holder-yourself" title="Permanent link">&para;</a></h3>
+<p>The derived <code>AirplaneContext.Stats</code> is a real class at runtime but invisible
+to pyright: <code>assessment.stats</code> shows as <code>Any</code>, and there is no name to
+annotate your own analysis functions with. If you want the type, declare the
+holder and name it in the class body with <code>Stats = ...</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">AirplaneStats</span><span class="p">(</span><span class="n">TrajectoryStats</span><span class="p">):</span>               <span class="c1"># base: cumulative_cost, time_elapsed</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">accepted_per_type</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Array2D</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]]</span>     <span class="c1"># [n, num_customer_types]</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">rejected_per_type</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Array2D</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]]</span>     <span class="c1"># [n, num_customer_types]</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">revenue_per_day</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Array2D</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]</span>     <span class="c1"># [n, initial_days]</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">stocked_out</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]]</span>           <span class="c1"># [n]</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nd">@trajectory_context</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">AirplaneContext</span><span class="p">(</span><span class="n">TrajectoryContext</span><span class="p">):</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">Stats</span> <span class="o">=</span> <span class="n">AirplaneStats</span>                           <span class="c1"># opt in to the typed holder</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="o">...</span>
+</code></pre></div>
+<p>The holder mirrors the context: the same field names, and every field gets
+one extra leading axis — the scalar <code>stocked_out</code> becomes a 1-D array, the
+1-D arrays become <code>Array2D</code>. Every holder field is <code>Final</code> (it is filled in
+place, row by row). The decorator checks that the two match (names, dtypes,
+ranks) when the class is defined, and pyright then knows that
+<code>PolicyComparer(mdp).assess(...).stats</code> is an <code>AirplaneStats</code>. Runtime is
+identical either way; the full code at the bottom ships with this block
+commented out.</p>
+<h2 id="2-tell-the-mdp-about-it">2. Tell the MDP about it<a class="headerlink" href="#2-tell-the-mdp-about-it" title="Permanent link">&para;</a></h2>
+<p>One method, whose return annotation declares the context type and whose body
+constructs it — exactly like <code>get_initial_state</code> does for the state:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@const_dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">AirplaneMDP</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="o">...</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">num_customer_types</span><span class="p">:</span> <span class="nb">int</span>                <span class="c1"># added: sizes the per-type statistics</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AirplaneContext</span><span class="p">:</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="k">return</span> <span class="n">AirplaneContext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">AirplaneContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">State</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">modify_state_with_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">AirplaneContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">modify_state_with_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">AirplaneContext</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</code></pre></div>
+<p>The <code>context</code> parameters of the transition functions are annotated with the
+same class. DynaPlex checks that all of them agree (and <code>assert_mdp</code> lets
+pyright check it in the editor).</p>
+<h2 id="3-update-the-statistics-where-the-information-is">3. Update the statistics where the information is<a class="headerlink" href="#3-update-the-statistics-where-the-information-is" title="Permanent link">&para;</a></h2>
+<p>The MDP already knows, inside <code>modify_state_with_action</code>, which customer type
+arrived, whether it was accepted and what day it is. A few lines:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">modify_state_with_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">AirplaneContext</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>        <span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"No selling days left"</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">-=</span> <span class="mi">1</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        <span class="c1"># We could read context.time_elapsed here, but the MDP promises would not</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="c1"># let us (a dependency on the harness's clock): derive the day from the state.</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="n">day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_days</span> <span class="o">-</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">-</span> <span class="mi">1</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>            <span class="n">context</span><span class="o">.</span><span class="n">rejected_per_type</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">customer_type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>            <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>            <span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"Cannot accept customer: no seats available"</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>            <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">-=</span> <span class="mi">1</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>            <span class="n">context</span><span class="o">.</span><span class="n">cumulative_cost</span> <span class="o">-=</span> <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>            <span class="n">context</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">customer_type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>            <span class="n">context</span><span class="o">.</span><span class="n">revenue_per_day</span><span class="p">[</span><span class="n">day</span><span class="p">]</span> <span class="o">+=</span> <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>                <span class="n">context</span><span class="o">.</span><span class="n">stocked_out</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>            <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>        <span class="o">...</span>
+</code></pre></div>
+<p>Nothing else in the MDP changes. In particular the <em>state</em> is untouched: the
+statistics are not part of the Markov state, so they do not affect the
+policy (or, later, a featurizer and training).</p>
+<h2 id="4-get-the-statistics-back">4. Get the statistics back<a class="headerlink" href="#4-get-the-statistics-back" title="Permanent link">&para;</a></h2>
+<p>Nothing changes in how you evaluate. Build the MDP and a <code>PolicyComparer</code> as
+in <a href="../../training/policy-comparison/">Comparing policies</a> and assess the rule:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">mdp</span> <span class="o">=</span> <span class="n">AirplaneMDP</span><span class="p">(</span><span class="n">initial_days</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">initial_seats</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>                  <span class="n">prices_per_customer_type</span><span class="o">=</span><span class="p">[</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>                  <span class="n">customer_type_probs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">policy</span> <span class="o">=</span> <span class="n">SimplePolicy</span><span class="p">(</span><span class="n">mdp</span><span class="o">=</span><span class="n">mdp</span><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">comparer</span> <span class="o">=</span> <span class="n">PolicyComparer</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">number_of_trajectories</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">assessment</span> <span class="o">=</span> <span class="n">comparer</span><span class="o">.</span><span class="n">assess</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Average profit: €</span><span class="si">{</span><span class="o">-</span><span class="n">assessment</span><span class="o">.</span><span class="n">mean</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (SE </span><span class="si">{</span><span class="n">assessment</span><span class="o">.</span><span class="n">error</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Average profit: €25082.60 (SE 19.95)
+</code></pre></div>
+<p>That is the cost table's number (negated: the MDP books revenue as negative
+cost). New is <code>assessment.stats</code>, the holder with one array per statistic and
+a row per trajectory:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">stats</span> <span class="o">=</span> <span class="n">assessment</span><span class="o">.</span><span class="n">stats</span>                 <span class="c1"># AirplaneContext.Stats (an AirplaneStats, if you declared it)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">stats</span><span class="o">.</span><span class="n">accepted_per_type</span>                  <span class="c1"># int64   [10000, 3]</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">stats</span><span class="o">.</span><span class="n">rejected_per_type</span>                  <span class="c1"># int64   [10000, 3]</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">stats</span><span class="o">.</span><span class="n">revenue_per_day</span>                    <span class="c1"># float64 [10000, 25]</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">stats</span><span class="o">.</span><span class="n">stocked_out</span>                        <span class="c1"># bool    [10000]</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">stats</span><span class="o">.</span><span class="n">cumulative_cost</span>                    <span class="c1"># float64 [10000]</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">stats</span><span class="o">.</span><span class="n">time_elapsed</span>                       <span class="c1"># int64   [10000]</span>
+</code></pre></div>
+<p>There is no summary API on purpose: the arrays are raw, and you compute what
+the study needs in numpy. The questions from the top of the page, answered:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">cumulative_cost</span><span class="p">)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">arrivals</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">accepted_per_type</span> <span class="o">+</span> <span class="n">stats</span><span class="o">.</span><span class="n">rejected_per_type</span>          <span class="c1"># [n, 3]</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">acceptance_rate</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">arrivals</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>   <span class="c1"># per customer type</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">seats_sold</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                           <span class="c1"># per trajectory</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">revenue_curve</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">revenue_per_day</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>                         <span class="c1"># per selling day</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"acceptance rate per type: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">acceptance_rate</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"seats sold: </span><span class="si">{</span><span class="n">seats_sold</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">seats_sold</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"flights sold out: </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stats</span><span class="o">.</span><span class="n">stocked_out</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"mean revenue per day (first 5 / last 5): </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">revenue_curve</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span><span class="si">}</span><span class="s2"> ... </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">revenue_curve</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:])</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>acceptance rate per type: [0.658 0.254 0.201]
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>seats sold: 10.00 ± 0.00
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>flights sold out: 99.9%
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>mean revenue per day (first 5 / last 5): [2092. 2100. 2104. 2102. 2110.] ... [133.  69.  30.  15.   8.]
+</code></pre></div>
+<p>Already a picture: the rule takes two thirds of the €3000 customers and a
+fifth of the €1000 ones, essentially every flight sells out, and revenue is
+front-loaded — the last days sell almost nothing because the seats are gone.</p>
+<h3 id="comparing-policies-on-their-statistics">Comparing policies on their statistics<a class="headerlink" href="#comparing-policies-on-their-statistics" title="Permanent link">&para;</a></h3>
+<p><code>compare</code> works as before and prints the cost table; every result carries its
+own <code>stats</code>. Here a second parameterisation of the same rule, which holds out
+for fewer seats and asks less:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">policy2</span> <span class="o">=</span> <span class="n">SimplePolicy</span><span class="p">(</span><span class="n">mdp</span><span class="o">=</span><span class="n">mdp</span><span class="p">,</span> <span class="n">seat_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">days_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>                       <span class="n">min_price_low_days</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">min_price_high_days</span><span class="o">=</span><span class="mi">2500</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">results</span> <span class="o">=</span> <span class="n">comparer</span><span class="o">.</span><span class="n">compare</span><span class="p">({</span><span class="s2">"simple rule"</span><span class="p">:</span> <span class="n">policy</span><span class="p">,</span> <span class="s2">"eager rule"</span><span class="p">:</span> <span class="n">policy2</span><span class="p">})</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>policy                 mean       error    delta_mean  delta_error
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>simple rule *      -25082.6       19.95             0            0
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>eager rule         -23670.8       22.22        1411.8        11.83
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>(* = benchmark; delta = policy - benchmark, paired on common random numbers)
+</code></pre></div>
+<p>The eager rule earns €1412 less per flight. The statistics say why. The
+guarantee that makes this possible: <strong>row <code>i</code> is trajectory <code>i</code> under common
+random numbers, for every policy</strong> — the same customers arrived, in the same
+order, at the same prices. Differences between policies can therefore be
+taken row by row, with paired standard errors:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">rule</span><span class="p">,</span> <span class="n">eager</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">"simple rule"</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">"eager rule"</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"acceptance rate per type, eager: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">eager</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">arrivals</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"seats sold, eager: </span><span class="si">{</span><span class="n">eager</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, flights sold out: </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">eager</span><span class="o">.</span><span class="n">stocked_out</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="n">d</span> <span class="o">=</span> <span class="n">eager</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">rule</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># €3000 customers, per flight</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"€3000 customers accepted per flight, eager minus simple (paired): "</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>acceptance rate per type, eager: [0.576 0.283 0.281]
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>seats sold, eager: 10.00, flights sold out: 99.9%
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>€3000 customers accepted per flight, eager minus simple (paired): -0.81 ± 0.01
+</code></pre></div>
+<p>Both rules sell all ten seats (10.00 above, and 10.00 for the simple rule in
+the previous section); the eager one gives 0.81 of them per flight
+to a €2000 or €1000 customer instead of a €3000 one — and thanks to the
+pairing, that number has a standard error of 0.01, far tighter than a
+comparison of the two independent acceptance rates would allow.</p>
+<h2 id="manual-simulation">Manual simulation<a class="headerlink" href="#manual-simulation" title="Permanent link">&para;</a></h2>
+<p>Stepping through an episode by hand works as in the basic tutorial;
+<code>new_context(mdp, seed)</code> builds and seeds the MDP's own context:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">context</span> <span class="o">=</span> <span class="n">new_context</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">state</span> <span class="o">=</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="o">...</span>
+</code></pre></div>
+<p>At the end, the statistics are simply the context's fields
+(<code>context.accepted_per_type</code>, <code>context.stocked_out</code>, ...).</p>
+<h2 id="full-code">Full code<a class="headerlink" href="#full-code" title="Permanent link">&para;</a></h2>
+<p>Download: <a href="../../downloads/airplane_statistics_example.py">airplane_statistics_example.py</a>.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">airplane_statistics_example.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">  1</a></span>
+<span class="normal"><a href="#__codelineno-14-2">  2</a></span>
+<span class="normal"><a href="#__codelineno-14-3">  3</a></span>
+<span class="normal"><a href="#__codelineno-14-4">  4</a></span>
+<span class="normal"><a href="#__codelineno-14-5">  5</a></span>
+<span class="normal"><a href="#__codelineno-14-6">  6</a></span>
+<span class="normal"><a href="#__codelineno-14-7">  7</a></span>
+<span class="normal"><a href="#__codelineno-14-8">  8</a></span>
+<span class="normal"><a href="#__codelineno-14-9">  9</a></span>
+<span class="normal"><a href="#__codelineno-14-10"> 10</a></span>
+<span class="normal"><a href="#__codelineno-14-11"> 11</a></span>
+<span class="normal"><a href="#__codelineno-14-12"> 12</a></span>
+<span class="normal"><a href="#__codelineno-14-13"> 13</a></span>
+<span class="normal"><a href="#__codelineno-14-14"> 14</a></span>
+<span class="normal"><a href="#__codelineno-14-15"> 15</a></span>
+<span class="normal"><a href="#__codelineno-14-16"> 16</a></span>
+<span class="normal"><a href="#__codelineno-14-17"> 17</a></span>
+<span class="normal"><a href="#__codelineno-14-18"> 18</a></span>
+<span class="normal"><a href="#__codelineno-14-19"> 19</a></span>
+<span class="normal"><a href="#__codelineno-14-20"> 20</a></span>
+<span class="normal"><a href="#__codelineno-14-21"> 21</a></span>
+<span class="normal"><a href="#__codelineno-14-22"> 22</a></span>
+<span class="normal"><a href="#__codelineno-14-23"> 23</a></span>
+<span class="normal"><a href="#__codelineno-14-24"> 24</a></span>
+<span class="normal"><a href="#__codelineno-14-25"> 25</a></span>
+<span class="normal"><a href="#__codelineno-14-26"> 26</a></span>
+<span class="normal"><a href="#__codelineno-14-27"> 27</a></span>
+<span class="normal"><a href="#__codelineno-14-28"> 28</a></span>
+<span class="normal"><a href="#__codelineno-14-29"> 29</a></span>
+<span class="normal"><a href="#__codelineno-14-30"> 30</a></span>
+<span class="normal"><a href="#__codelineno-14-31"> 31</a></span>
+<span class="normal"><a href="#__codelineno-14-32"> 32</a></span>
+<span class="normal"><a href="#__codelineno-14-33"> 33</a></span>
+<span class="normal"><a href="#__codelineno-14-34"> 34</a></span>
+<span class="normal"><a href="#__codelineno-14-35"> 35</a></span>
+<span class="normal"><a href="#__codelineno-14-36"> 36</a></span>
+<span class="normal"><a href="#__codelineno-14-37"> 37</a></span>
+<span class="normal"><a href="#__codelineno-14-38"> 38</a></span>
+<span class="normal"><a href="#__codelineno-14-39"> 39</a></span>
+<span class="normal"><a href="#__codelineno-14-40"> 40</a></span>
+<span class="normal"><a href="#__codelineno-14-41"> 41</a></span>
+<span class="normal"><a href="#__codelineno-14-42"> 42</a></span>
+<span class="normal"><a href="#__codelineno-14-43"> 43</a></span>
+<span class="normal"><a href="#__codelineno-14-44"> 44</a></span>
+<span class="normal"><a href="#__codelineno-14-45"> 45</a></span>
+<span class="normal"><a href="#__codelineno-14-46"> 46</a></span>
+<span class="normal"><a href="#__codelineno-14-47"> 47</a></span>
+<span class="normal"><a href="#__codelineno-14-48"> 48</a></span>
+<span class="normal"><a href="#__codelineno-14-49"> 49</a></span>
+<span class="normal"><a href="#__codelineno-14-50"> 50</a></span>
+<span class="normal"><a href="#__codelineno-14-51"> 51</a></span>
+<span class="normal"><a href="#__codelineno-14-52"> 52</a></span>
+<span class="normal"><a href="#__codelineno-14-53"> 53</a></span>
+<span class="normal"><a href="#__codelineno-14-54"> 54</a></span>
+<span class="normal"><a href="#__codelineno-14-55"> 55</a></span>
+<span class="normal"><a href="#__codelineno-14-56"> 56</a></span>
+<span class="normal"><a href="#__codelineno-14-57"> 57</a></span>
+<span class="normal"><a href="#__codelineno-14-58"> 58</a></span>
+<span class="normal"><a href="#__codelineno-14-59"> 59</a></span>
+<span class="normal"><a href="#__codelineno-14-60"> 60</a></span>
+<span class="normal"><a href="#__codelineno-14-61"> 61</a></span>
+<span class="normal"><a href="#__codelineno-14-62"> 62</a></span>
+<span class="normal"><a href="#__codelineno-14-63"> 63</a></span>
+<span class="normal"><a href="#__codelineno-14-64"> 64</a></span>
+<span class="normal"><a href="#__codelineno-14-65"> 65</a></span>
+<span class="normal"><a href="#__codelineno-14-66"> 66</a></span>
+<span class="normal"><a href="#__codelineno-14-67"> 67</a></span>
+<span class="normal"><a href="#__codelineno-14-68"> 68</a></span>
+<span class="normal"><a href="#__codelineno-14-69"> 69</a></span>
+<span class="normal"><a href="#__codelineno-14-70"> 70</a></span>
+<span class="normal"><a href="#__codelineno-14-71"> 71</a></span>
+<span class="normal"><a href="#__codelineno-14-72"> 72</a></span>
+<span class="normal"><a href="#__codelineno-14-73"> 73</a></span>
+<span class="normal"><a href="#__codelineno-14-74"> 74</a></span>
+<span class="normal"><a href="#__codelineno-14-75"> 75</a></span>
+<span class="normal"><a href="#__codelineno-14-76"> 76</a></span>
+<span class="normal"><a href="#__codelineno-14-77"> 77</a></span>
+<span class="normal"><a href="#__codelineno-14-78"> 78</a></span>
+<span class="normal"><a href="#__codelineno-14-79"> 79</a></span>
+<span class="normal"><a href="#__codelineno-14-80"> 80</a></span>
+<span class="normal"><a href="#__codelineno-14-81"> 81</a></span>
+<span class="normal"><a href="#__codelineno-14-82"> 82</a></span>
+<span class="normal"><a href="#__codelineno-14-83"> 83</a></span>
+<span class="normal"><a href="#__codelineno-14-84"> 84</a></span>
+<span class="normal"><a href="#__codelineno-14-85"> 85</a></span>
+<span class="normal"><a href="#__codelineno-14-86"> 86</a></span>
+<span class="normal"><a href="#__codelineno-14-87"> 87</a></span>
+<span class="normal"><a href="#__codelineno-14-88"> 88</a></span>
+<span class="normal"><a href="#__codelineno-14-89"> 89</a></span>
+<span class="normal"><a href="#__codelineno-14-90"> 90</a></span>
+<span class="normal"><a href="#__codelineno-14-91"> 91</a></span>
+<span class="normal"><a href="#__codelineno-14-92"> 92</a></span>
+<span class="normal"><a href="#__codelineno-14-93"> 93</a></span>
+<span class="normal"><a href="#__codelineno-14-94"> 94</a></span>
+<span class="normal"><a href="#__codelineno-14-95"> 95</a></span>
+<span class="normal"><a href="#__codelineno-14-96"> 96</a></span>
+<span class="normal"><a href="#__codelineno-14-97"> 97</a></span>
+<span class="normal"><a href="#__codelineno-14-98"> 98</a></span>
+<span class="normal"><a href="#__codelineno-14-99"> 99</a></span>
+<span class="normal"><a href="#__codelineno-14-100">100</a></span>
+<span class="normal"><a href="#__codelineno-14-101">101</a></span>
+<span class="normal"><a href="#__codelineno-14-102">102</a></span>
+<span class="normal"><a href="#__codelineno-14-103">103</a></span>
+<span class="normal"><a href="#__codelineno-14-104">104</a></span>
+<span class="normal"><a href="#__codelineno-14-105">105</a></span>
+<span class="normal"><a href="#__codelineno-14-106">106</a></span>
+<span class="normal"><a href="#__codelineno-14-107">107</a></span>
+<span class="normal"><a href="#__codelineno-14-108">108</a></span>
+<span class="normal"><a href="#__codelineno-14-109">109</a></span>
+<span class="normal"><a href="#__codelineno-14-110">110</a></span>
+<span class="normal"><a href="#__codelineno-14-111">111</a></span>
+<span class="normal"><a href="#__codelineno-14-112">112</a></span>
+<span class="normal"><a href="#__codelineno-14-113">113</a></span>
+<span class="normal"><a href="#__codelineno-14-114">114</a></span>
+<span class="normal"><a href="#__codelineno-14-115">115</a></span>
+<span class="normal"><a href="#__codelineno-14-116">116</a></span>
+<span class="normal"><a href="#__codelineno-14-117">117</a></span>
+<span class="normal"><a href="#__codelineno-14-118">118</a></span>
+<span class="normal"><a href="#__codelineno-14-119">119</a></span>
+<span class="normal"><a href="#__codelineno-14-120">120</a></span>
+<span class="normal"><a href="#__codelineno-14-121">121</a></span>
+<span class="normal"><a href="#__codelineno-14-122">122</a></span>
+<span class="normal"><a href="#__codelineno-14-123">123</a></span>
+<span class="normal"><a href="#__codelineno-14-124">124</a></span>
+<span class="normal"><a href="#__codelineno-14-125">125</a></span>
+<span class="normal"><a href="#__codelineno-14-126">126</a></span>
+<span class="normal"><a href="#__codelineno-14-127">127</a></span>
+<span class="normal"><a href="#__codelineno-14-128">128</a></span>
+<span class="normal"><a href="#__codelineno-14-129">129</a></span>
+<span class="normal"><a href="#__codelineno-14-130">130</a></span>
+<span class="normal"><a href="#__codelineno-14-131">131</a></span>
+<span class="normal"><a href="#__codelineno-14-132">132</a></span>
+<span class="normal"><a href="#__codelineno-14-133">133</a></span>
+<span class="normal"><a href="#__codelineno-14-134">134</a></span>
+<span class="normal"><a href="#__codelineno-14-135">135</a></span>
+<span class="normal"><a href="#__codelineno-14-136">136</a></span>
+<span class="normal"><a href="#__codelineno-14-137">137</a></span>
+<span class="normal"><a href="#__codelineno-14-138">138</a></span>
+<span class="normal"><a href="#__codelineno-14-139">139</a></span>
+<span class="normal"><a href="#__codelineno-14-140">140</a></span>
+<span class="normal"><a href="#__codelineno-14-141">141</a></span>
+<span class="normal"><a href="#__codelineno-14-142">142</a></span>
+<span class="normal"><a href="#__codelineno-14-143">143</a></span>
+<span class="normal"><a href="#__codelineno-14-144">144</a></span>
+<span class="normal"><a href="#__codelineno-14-145">145</a></span>
+<span class="normal"><a href="#__codelineno-14-146">146</a></span>
+<span class="normal"><a href="#__codelineno-14-147">147</a></span>
+<span class="normal"><a href="#__codelineno-14-148">148</a></span>
+<span class="normal"><a href="#__codelineno-14-149">149</a></span>
+<span class="normal"><a href="#__codelineno-14-150">150</a></span>
+<span class="normal"><a href="#__codelineno-14-151">151</a></span>
+<span class="normal"><a href="#__codelineno-14-152">152</a></span>
+<span class="normal"><a href="#__codelineno-14-153">153</a></span>
+<span class="normal"><a href="#__codelineno-14-154">154</a></span>
+<span class="normal"><a href="#__codelineno-14-155">155</a></span>
+<span class="normal"><a href="#__codelineno-14-156">156</a></span>
+<span class="normal"><a href="#__codelineno-14-157">157</a></span>
+<span class="normal"><a href="#__codelineno-14-158">158</a></span>
+<span class="normal"><a href="#__codelineno-14-159">159</a></span>
+<span class="normal"><a href="#__codelineno-14-160">160</a></span>
+<span class="normal"><a href="#__codelineno-14-161">161</a></span>
+<span class="normal"><a href="#__codelineno-14-162">162</a></span>
+<span class="normal"><a href="#__codelineno-14-163">163</a></span>
+<span class="normal"><a href="#__codelineno-14-164">164</a></span>
+<span class="normal"><a href="#__codelineno-14-165">165</a></span>
+<span class="normal"><a href="#__codelineno-14-166">166</a></span>
+<span class="normal"><a href="#__codelineno-14-167">167</a></span>
+<span class="normal"><a href="#__codelineno-14-168">168</a></span>
+<span class="normal"><a href="#__codelineno-14-169">169</a></span>
+<span class="normal"><a href="#__codelineno-14-170">170</a></span>
+<span class="normal"><a href="#__codelineno-14-171">171</a></span>
+<span class="normal"><a href="#__codelineno-14-172">172</a></span>
+<span class="normal"><a href="#__codelineno-14-173">173</a></span>
+<span class="normal"><a href="#__codelineno-14-174">174</a></span>
+<span class="normal"><a href="#__codelineno-14-175">175</a></span>
+<span class="normal"><a href="#__codelineno-14-176">176</a></span>
+<span class="normal"><a href="#__codelineno-14-177">177</a></span>
+<span class="normal"><a href="#__codelineno-14-178">178</a></span>
+<span class="normal"><a href="#__codelineno-14-179">179</a></span>
+<span class="normal"><a href="#__codelineno-14-180">180</a></span>
+<span class="normal"><a href="#__codelineno-14-181">181</a></span>
+<span class="normal"><a href="#__codelineno-14-182">182</a></span>
+<span class="normal"><a href="#__codelineno-14-183">183</a></span>
+<span class="normal"><a href="#__codelineno-14-184">184</a></span>
+<span class="normal"><a href="#__codelineno-14-185">185</a></span>
+<span class="normal"><a href="#__codelineno-14-186">186</a></span>
+<span class="normal"><a href="#__codelineno-14-187">187</a></span>
+<span class="normal"><a href="#__codelineno-14-188">188</a></span>
+<span class="normal"><a href="#__codelineno-14-189">189</a></span>
+<span class="normal"><a href="#__codelineno-14-190">190</a></span>
+<span class="normal"><a href="#__codelineno-14-191">191</a></span>
+<span class="normal"><a href="#__codelineno-14-192">192</a></span>
+<span class="normal"><a href="#__codelineno-14-193">193</a></span>
+<span class="normal"><a href="#__codelineno-14-194">194</a></span>
+<span class="normal"><a href="#__codelineno-14-195">195</a></span>
+<span class="normal"><a href="#__codelineno-14-196">196</a></span>
+<span class="normal"><a href="#__codelineno-14-197">197</a></span>
+<span class="normal"><a href="#__codelineno-14-198">198</a></span>
+<span class="normal"><a href="#__codelineno-14-199">199</a></span>
+<span class="normal"><a href="#__codelineno-14-200">200</a></span>
+<span class="normal"><a href="#__codelineno-14-201">201</a></span>
+<span class="normal"><a href="#__codelineno-14-202">202</a></span>
+<span class="normal"><a href="#__codelineno-14-203">203</a></span>
+<span class="normal"><a href="#__codelineno-14-204">204</a></span>
+<span class="normal"><a href="#__codelineno-14-205">205</a></span>
+<span class="normal"><a href="#__codelineno-14-206">206</a></span>
+<span class="normal"><a href="#__codelineno-14-207">207</a></span>
+<span class="normal"><a href="#__codelineno-14-208">208</a></span>
+<span class="normal"><a href="#__codelineno-14-209">209</a></span>
+<span class="normal"><a href="#__codelineno-14-210">210</a></span>
+<span class="normal"><a href="#__codelineno-14-211">211</a></span>
+<span class="normal"><a href="#__codelineno-14-212">212</a></span>
+<span class="normal"><a href="#__codelineno-14-213">213</a></span>
+<span class="normal"><a href="#__codelineno-14-214">214</a></span>
+<span class="normal"><a href="#__codelineno-14-215">215</a></span>
+<span class="normal"><a href="#__codelineno-14-216">216</a></span>
+<span class="normal"><a href="#__codelineno-14-217">217</a></span>
+<span class="normal"><a href="#__codelineno-14-218">218</a></span>
+<span class="normal"><a href="#__codelineno-14-219">219</a></span>
+<span class="normal"><a href="#__codelineno-14-220">220</a></span>
+<span class="normal"><a href="#__codelineno-14-221">221</a></span>
+<span class="normal"><a href="#__codelineno-14-222">222</a></span>
+<span class="normal"><a href="#__codelineno-14-223">223</a></span>
+<span class="normal"><a href="#__codelineno-14-224">224</a></span>
+<span class="normal"><a href="#__codelineno-14-225">225</a></span>
+<span class="normal"><a href="#__codelineno-14-226">226</a></span>
+<span class="normal"><a href="#__codelineno-14-227">227</a></span>
+<span class="normal"><a href="#__codelineno-14-228">228</a></span>
+<span class="normal"><a href="#__codelineno-14-229">229</a></span>
+<span class="normal"><a href="#__codelineno-14-230">230</a></span>
+<span class="normal"><a href="#__codelineno-14-231">231</a></span>
+<span class="normal"><a href="#__codelineno-14-232">232</a></span>
+<span class="normal"><a href="#__codelineno-14-233">233</a></span>
+<span class="normal"><a href="#__codelineno-14-234">234</a></span>
+<span class="normal"><a href="#__codelineno-14-235">235</a></span>
+<span class="normal"><a href="#__codelineno-14-236">236</a></span>
+<span class="normal"><a href="#__codelineno-14-237">237</a></span>
+<span class="normal"><a href="#__codelineno-14-238">238</a></span>
+<span class="normal"><a href="#__codelineno-14-239">239</a></span>
+<span class="normal"><a href="#__codelineno-14-240">240</a></span>
+<span class="normal"><a href="#__codelineno-14-241">241</a></span>
+<span class="normal"><a href="#__codelineno-14-242">242</a></span>
+<span class="normal"><a href="#__codelineno-14-243">243</a></span>
+<span class="normal"><a href="#__codelineno-14-244">244</a></span>
+<span class="normal"><a href="#__codelineno-14-245">245</a></span>
+<span class="normal"><a href="#__codelineno-14-246">246</a></span>
+<span class="normal"><a href="#__codelineno-14-247">247</a></span>
+<span class="normal"><a href="#__codelineno-14-248">248</a></span>
+<span class="normal"><a href="#__codelineno-14-249">249</a></span>
+<span class="normal"><a href="#__codelineno-14-250">250</a></span>
+<span class="normal"><a href="#__codelineno-14-251">251</a></span>
+<span class="normal"><a href="#__codelineno-14-252">252</a></span>
+<span class="normal"><a href="#__codelineno-14-253">253</a></span>
+<span class="normal"><a href="#__codelineno-14-254">254</a></span>
+<span class="normal"><a href="#__codelineno-14-255">255</a></span>
+<span class="normal"><a href="#__codelineno-14-256">256</a></span>
+<span class="normal"><a href="#__codelineno-14-257">257</a></span>
+<span class="normal"><a href="#__codelineno-14-258">258</a></span>
+<span class="normal"><a href="#__codelineno-14-259">259</a></span>
+<span class="normal"><a href="#__codelineno-14-260">260</a></span>
+<span class="normal"><a href="#__codelineno-14-261">261</a></span>
+<span class="normal"><a href="#__codelineno-14-262">262</a></span>
+<span class="normal"><a href="#__codelineno-14-263">263</a></span>
+<span class="normal"><a href="#__codelineno-14-264">264</a></span>
+<span class="normal"><a href="#__codelineno-14-265">265</a></span>
+<span class="normal"><a href="#__codelineno-14-266">266</a></span>
+<span class="normal"><a href="#__codelineno-14-267">267</a></span>
+<span class="normal"><a href="#__codelineno-14-268">268</a></span>
+<span class="normal"><a href="#__codelineno-14-269">269</a></span>
+<span class="normal"><a href="#__codelineno-14-270">270</a></span>
+<span class="normal"><a href="#__codelineno-14-271">271</a></span>
+<span class="normal"><a href="#__codelineno-14-272">272</a></span>
+<span class="normal"><a href="#__codelineno-14-273">273</a></span>
+<span class="normal"><a href="#__codelineno-14-274">274</a></span>
+<span class="normal"><a href="#__codelineno-14-275">275</a></span>
+<span class="normal"><a href="#__codelineno-14-276">276</a></span>
+<span class="normal"><a href="#__codelineno-14-277">277</a></span>
+<span class="normal"><a href="#__codelineno-14-278">278</a></span>
+<span class="normal"><a href="#__codelineno-14-279">279</a></span>
+<span class="normal"><a href="#__codelineno-14-280">280</a></span>
+<span class="normal"><a href="#__codelineno-14-281">281</a></span>
+<span class="normal"><a href="#__codelineno-14-282">282</a></span>
+<span class="normal"><a href="#__codelineno-14-283">283</a></span>
+<span class="normal"><a href="#__codelineno-14-284">284</a></span>
+<span class="normal"><a href="#__codelineno-14-285">285</a></span>
+<span class="normal"><a href="#__codelineno-14-286">286</a></span>
+<span class="normal"><a href="#__codelineno-14-287">287</a></span>
+<span class="normal"><a href="#__codelineno-14-288">288</a></span>
+<span class="normal"><a href="#__codelineno-14-289">289</a></span>
+<span class="normal"><a href="#__codelineno-14-290">290</a></span>
+<span class="normal"><a href="#__codelineno-14-291">291</a></span>
+<span class="normal"><a href="#__codelineno-14-292">292</a></span>
+<span class="normal"><a href="#__codelineno-14-293">293</a></span>
+<span class="normal"><a href="#__codelineno-14-294">294</a></span>
+<span class="normal"><a href="#__codelineno-14-295">295</a></span>
+<span class="normal"><a href="#__codelineno-14-296">296</a></span>
+<span class="normal"><a href="#__codelineno-14-297">297</a></span>
+<span class="normal"><a href="#__codelineno-14-298">298</a></span>
+<span class="normal"><a href="#__codelineno-14-299">299</a></span>
+<span class="normal"><a href="#__codelineno-14-300">300</a></span>
+<span class="normal"><a href="#__codelineno-14-301">301</a></span>
+<span class="normal"><a href="#__codelineno-14-302">302</a></span>
+<span class="normal"><a href="#__codelineno-14-303">303</a></span>
+<span class="normal"><a href="#__codelineno-14-304">304</a></span>
+<span class="normal"><a href="#__codelineno-14-305">305</a></span>
+<span class="normal"><a href="#__codelineno-14-306">306</a></span>
+<span class="normal"><a href="#__codelineno-14-307">307</a></span>
+<span class="normal"><a href="#__codelineno-14-308">308</a></span>
+<span class="normal"><a href="#__codelineno-14-309">309</a></span>
+<span class="normal"><a href="#__codelineno-14-310">310</a></span>
+<span class="normal"><a href="#__codelineno-14-311">311</a></span>
+<span class="normal"><a href="#__codelineno-14-312">312</a></span>
+<span class="normal"><a href="#__codelineno-14-313">313</a></span>
+<span class="normal"><a href="#__codelineno-14-314">314</a></span>
+<span class="normal"><a href="#__codelineno-14-315">315</a></span>
+<span class="normal"><a href="#__codelineno-14-316">316</a></span>
+<span class="normal"><a href="#__codelineno-14-317">317</a></span>
+<span class="normal"><a href="#__codelineno-14-318">318</a></span>
+<span class="normal"><a href="#__codelineno-14-319">319</a></span>
+<span class="normal"><a href="#__codelineno-14-320">320</a></span>
+<span class="normal"><a href="#__codelineno-14-321">321</a></span>
+<span class="normal"><a href="#__codelineno-14-322">322</a></span>
+<span class="normal"><a href="#__codelineno-14-323">323</a></span>
+<span class="normal"><a href="#__codelineno-14-324">324</a></span>
+<span class="normal"><a href="#__codelineno-14-325">325</a></span>
+<span class="normal"><a href="#__codelineno-14-326">326</a></span>
+<span class="normal"><a href="#__codelineno-14-327">327</a></span>
+<span class="normal"><a href="#__codelineno-14-328">328</a></span>
+<span class="normal"><a href="#__codelineno-14-329">329</a></span>
+<span class="normal"><a href="#__codelineno-14-330">330</a></span>
+<span class="normal"><a href="#__codelineno-14-331">331</a></span>
+<span class="normal"><a href="#__codelineno-14-332">332</a></span>
+<span class="normal"><a href="#__codelineno-14-333">333</a></span>
+<span class="normal"><a href="#__codelineno-14-334">334</a></span>
+<span class="normal"><a href="#__codelineno-14-335">335</a></span>
+<span class="normal"><a href="#__codelineno-14-336">336</a></span>
+<span class="normal"><a href="#__codelineno-14-337">337</a></span>
+<span class="normal"><a href="#__codelineno-14-338">338</a></span>
+<span class="normal"><a href="#__codelineno-14-339">339</a></span>
+<span class="normal"><a href="#__codelineno-14-340">340</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="sd">"""</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="sd">Airplane ticket selling MDP, extended with per-trajectory statistics.</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4"></a><span class="sd">This builds on airplane_mdp_example.py. The MDP and the policy are the same;</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5"></a><span class="sd">the additions are:</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7"></a><span class="sd">1. A custom trajectory context (AirplaneContext) carrying four statistics:</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8"></a><span class="sd">   accepted and rejected customers per type, revenue per selling day, and</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9"></a><span class="sd">   whether the flight sold out — plus, commented out, the optional typed</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10"></a><span class="sd">   holder (AirplaneStats) for pyright.</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11"></a><span class="sd">2. One line on the MDP, make_context(), that constructs the context.</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="sd">3. `+=` updates in modify_state_with_action, where the MDP already knows the</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13"></a><span class="sd">   customer type, the price and the day.</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14"></a><span class="sd">4. Analysis of the raw per-trajectory arrays PolicyComparer hands back,</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15"></a><span class="sd">   including a paired comparison of two parameterisations of the rule.</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16"></a>
+<a id="__codelineno-14-17" name="__codelineno-14-17"></a><span class="sd">NOTE: this example targets the trajectory-context statistics feature</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18"></a><span class="sd">(roadmap/comparer_statistics.md) and does not run on released DynaPlex yet.</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19"></a><span class="sd">"""</span>
+<a id="__codelineno-14-20" name="__codelineno-14-20"></a>
+<a id="__codelineno-14-21" name="__codelineno-14-21"></a><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22"></a>
+<a id="__codelineno-14-23" name="__codelineno-14-23"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Final</span>
+<a id="__codelineno-14-25" name="__codelineno-14-25"></a>
+<a id="__codelineno-14-26" name="__codelineno-14-26"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<a id="__codelineno-14-27" name="__codelineno-14-27"></a><span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<a id="__codelineno-14-28" name="__codelineno-14-28"></a>
+<a id="__codelineno-14-29" name="__codelineno-14-29"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolicyComparer</span>
+<a id="__codelineno-14-30" name="__codelineno-14-30"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex.modelling</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-14-31" name="__codelineno-14-31"></a>    <span class="n">Featurizer</span><span class="p">,</span>
+<a id="__codelineno-14-32" name="__codelineno-14-32"></a>    <span class="n">AliasSampler</span><span class="p">,</span>
+<a id="__codelineno-14-33" name="__codelineno-14-33"></a>    <span class="n">Array1D</span><span class="p">,</span>
+<a id="__codelineno-14-34" name="__codelineno-14-34"></a>    <span class="n">Array2D</span><span class="p">,</span>
+<a id="__codelineno-14-35" name="__codelineno-14-35"></a>    <span class="n">DiscreteDist</span><span class="p">,</span>
+<a id="__codelineno-14-36" name="__codelineno-14-36"></a>    <span class="n">GlobalStateWriter</span><span class="p">,</span>
+<a id="__codelineno-14-37" name="__codelineno-14-37"></a>    <span class="n">HorizonType</span><span class="p">,</span>
+<a id="__codelineno-14-38" name="__codelineno-14-38"></a>    <span class="n">StateCategory</span><span class="p">,</span>
+<a id="__codelineno-14-39" name="__codelineno-14-39"></a>    <span class="n">TrajectoryContext</span><span class="p">,</span>
+<a id="__codelineno-14-40" name="__codelineno-14-40"></a>    <span class="n">TrajectoryStats</span><span class="p">,</span>
+<a id="__codelineno-14-41" name="__codelineno-14-41"></a>    <span class="n">Validity</span><span class="p">,</span>
+<a id="__codelineno-14-42" name="__codelineno-14-42"></a>    <span class="n">assert_mdp</span><span class="p">,</span>
+<a id="__codelineno-14-43" name="__codelineno-14-43"></a>    <span class="n">assert_policy_for_mdp</span><span class="p">,</span>
+<a id="__codelineno-14-44" name="__codelineno-14-44"></a>    <span class="n">const_dataclass</span><span class="p">,</span>
+<a id="__codelineno-14-45" name="__codelineno-14-45"></a>    <span class="n">featurizer</span><span class="p">,</span>
+<a id="__codelineno-14-46" name="__codelineno-14-46"></a>    <span class="n">new_context</span><span class="p">,</span>
+<a id="__codelineno-14-47" name="__codelineno-14-47"></a>    <span class="n">trajectory_context</span><span class="p">,</span>
+<a id="__codelineno-14-48" name="__codelineno-14-48"></a><span class="p">)</span>
+<a id="__codelineno-14-49" name="__codelineno-14-49"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dynaplex.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">policy</span>
+<a id="__codelineno-14-50" name="__codelineno-14-50"></a>
+<a id="__codelineno-14-51" name="__codelineno-14-51"></a>
+<a id="__codelineno-14-52" name="__codelineno-14-52"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-53" name="__codelineno-14-53"></a><span class="c1"># State (unchanged from the basic tutorial)</span>
+<a id="__codelineno-14-54" name="__codelineno-14-54"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-55" name="__codelineno-14-55"></a>
+<a id="__codelineno-14-56" name="__codelineno-14-56"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-14-57" name="__codelineno-14-57"></a><span class="k">class</span><span class="w"> </span><span class="nc">State</span><span class="p">:</span>
+<a id="__codelineno-14-58" name="__codelineno-14-58"></a>    <span class="n">remaining_days</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-14-59" name="__codelineno-14-59"></a>    <span class="n">remaining_seats</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-14-60" name="__codelineno-14-60"></a>    <span class="n">customer_type</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-14-61" name="__codelineno-14-61"></a>    <span class="n">price_offered_per_seat</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-14-62" name="__codelineno-14-62"></a>    <span class="n">category</span><span class="p">:</span> <span class="n">StateCategory</span> <span class="o">=</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">AWAIT_EVENT</span>
+<a id="__codelineno-14-63" name="__codelineno-14-63"></a>
+<a id="__codelineno-14-64" name="__codelineno-14-64"></a>
+<a id="__codelineno-14-65" name="__codelineno-14-65"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-66" name="__codelineno-14-66"></a><span class="c1"># Trajectory context with statistics — NEW</span>
+<a id="__codelineno-14-67" name="__codelineno-14-67"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-68" name="__codelineno-14-68"></a><span class="c1">#</span>
+<a id="__codelineno-14-69" name="__codelineno-14-69"></a><span class="c1"># PolicyComparer can collect additional per-trajectory statistics, returned as</span>
+<a id="__codelineno-14-70" name="__codelineno-14-70"></a><span class="c1"># `assessment.stats` by assess() and compare(). To do that, define a context</span>
+<a id="__codelineno-14-71" name="__codelineno-14-71"></a><span class="c1"># class that inherits from TrajectoryContext, decorate it with</span>
+<a id="__codelineno-14-72" name="__codelineno-14-72"></a><span class="c1"># @trajectory_context, and add a field per statistic. The MDP keeps them up to</span>
+<a id="__codelineno-14-73" name="__codelineno-14-73"></a><span class="c1"># date during the simulation (see modify_state_with_action below); the comparer</span>
+<a id="__codelineno-14-74" name="__codelineno-14-74"></a><span class="c1"># harvests them after every trajectory.</span>
+<a id="__codelineno-14-75" name="__codelineno-14-75"></a><span class="c1">#</span>
+<a id="__codelineno-14-76" name="__codelineno-14-76"></a><span class="c1"># What @trajectory_context generates for you (all compiled, called by the kernels):</span>
+<a id="__codelineno-14-77" name="__codelineno-14-77"></a><span class="c1">#   reseed(seed, ...)      one independent random stream per Final[Generator] field</span>
+<a id="__codelineno-14-78" name="__codelineno-14-78"></a><span class="c1">#   reset()                zero every scalar, zero-fill every array (streams run on)</span>
+<a id="__codelineno-14-79" name="__codelineno-14-79"></a><span class="c1">#   write_stats(out, row)  copy the statistics into row `row` of the holder</span>
+<a id="__codelineno-14-80" name="__codelineno-14-80"></a><span class="c1">#   stats_spec()           dtype/shape of every statistic, read off the instance</span>
+<a id="__codelineno-14-81" name="__codelineno-14-81"></a><span class="c1">#   Stats                  the holder class the comparer fills: every statistic under</span>
+<a id="__codelineno-14-82" name="__codelineno-14-82"></a><span class="c1">#                          the same name with one leading trajectory axis, derived</span>
+<a id="__codelineno-14-83" name="__codelineno-14-83"></a><span class="c1">#                          automatically as AirplaneContext.Stats</span>
+<a id="__codelineno-14-84" name="__codelineno-14-84"></a><span class="c1">#</span>
+<a id="__codelineno-14-85" name="__codelineno-14-85"></a><span class="c1"># Optionally, declare the holder yourself and name it with `Stats = ...` in the</span>
+<a id="__codelineno-14-86" name="__codelineno-14-86"></a><span class="c1"># class body (uncomment below). Runtime is identical; the gain is typing: pyright</span>
+<a id="__codelineno-14-87" name="__codelineno-14-87"></a><span class="c1"># then knows PolicyComparer(mdp).assess(...).stats is an AirplaneStats, and you</span>
+<a id="__codelineno-14-88" name="__codelineno-14-88"></a><span class="c1"># can annotate your own analysis functions with it. The fields must match the</span>
+<a id="__codelineno-14-89" name="__codelineno-14-89"></a><span class="c1"># context's statistics, with one extra leading axis each (a scalar becomes an</span>
+<a id="__codelineno-14-90" name="__codelineno-14-90"></a><span class="c1"># Array1D, a 1-D array an Array2D) — the decorator checks this at import.</span>
+<a id="__codelineno-14-91" name="__codelineno-14-91"></a>
+<a id="__codelineno-14-92" name="__codelineno-14-92"></a><span class="c1"># @dataclass</span>
+<a id="__codelineno-14-93" name="__codelineno-14-93"></a><span class="c1"># class AirplaneStats(TrajectoryStats):               # base: cumulative_cost, time_elapsed</span>
+<a id="__codelineno-14-94" name="__codelineno-14-94"></a><span class="c1">#     accepted_per_type: Final[Array2D[np.int64]]     # [n, num_customer_types]</span>
+<a id="__codelineno-14-95" name="__codelineno-14-95"></a><span class="c1">#     rejected_per_type: Final[Array2D[np.int64]]     # [n, num_customer_types]</span>
+<a id="__codelineno-14-96" name="__codelineno-14-96"></a><span class="c1">#     revenue_per_day: Final[Array2D[np.float64]]     # [n, initial_days]</span>
+<a id="__codelineno-14-97" name="__codelineno-14-97"></a><span class="c1">#     stocked_out: Final[Array1D[np.bool_]]           # [n]</span>
+<a id="__codelineno-14-98" name="__codelineno-14-98"></a>
+<a id="__codelineno-14-99" name="__codelineno-14-99"></a>
+<a id="__codelineno-14-100" name="__codelineno-14-100"></a><span class="nd">@trajectory_context</span>
+<a id="__codelineno-14-101" name="__codelineno-14-101"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-14-102" name="__codelineno-14-102"></a><span class="k">class</span><span class="w"> </span><span class="nc">AirplaneContext</span><span class="p">(</span><span class="n">TrajectoryContext</span><span class="p">):</span>
+<a id="__codelineno-14-103" name="__codelineno-14-103"></a><span class="w">    </span><span class="sd">"""Per-trajectory bookkeeping: the members every context has (inherited from</span>
+<a id="__codelineno-14-104" name="__codelineno-14-104"></a><span class="sd">    TrajectoryContext: the two random streams, cumulative_cost, time_elapsed and</span>
+<a id="__codelineno-14-105" name="__codelineno-14-105"></a><span class="sd">    the validity scratch) plus the statistics we want back from the comparer.</span>
+<a id="__codelineno-14-106" name="__codelineno-14-106"></a>
+<a id="__codelineno-14-107" name="__codelineno-14-107"></a><span class="sd">    Scalars (float/int/bool) may be re-assigned; every other field is Final</span>
+<a id="__codelineno-14-108" name="__codelineno-14-108"></a><span class="sd">    and mutated in place.</span>
+<a id="__codelineno-14-109" name="__codelineno-14-109"></a><span class="sd">    """</span>
+<a id="__codelineno-14-110" name="__codelineno-14-110"></a>    <span class="n">accepted_per_type</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]]</span>     <span class="c1"># [num_customer_types]</span>
+<a id="__codelineno-14-111" name="__codelineno-14-111"></a>    <span class="n">rejected_per_type</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]]</span>     <span class="c1"># [num_customer_types]</span>
+<a id="__codelineno-14-112" name="__codelineno-14-112"></a>    <span class="n">revenue_per_day</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]</span>     <span class="c1"># [initial_days]</span>
+<a id="__codelineno-14-113" name="__codelineno-14-113"></a>    <span class="n">stocked_out</span><span class="p">:</span> <span class="nb">bool</span>                               <span class="c1"># did the flight sell out?</span>
+<a id="__codelineno-14-114" name="__codelineno-14-114"></a>
+<a id="__codelineno-14-115" name="__codelineno-14-115"></a>    <span class="c1"># Stats = AirplaneStats                         # opt in to the typed holder declared above</span>
+<a id="__codelineno-14-116" name="__codelineno-14-116"></a>
+<a id="__codelineno-14-117" name="__codelineno-14-117"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">:</span> <span class="n">AirplaneMDP</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-118" name="__codelineno-14-118"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>             <span class="c1"># the base members (placeholder seeds; reseeded before use)</span>
+<a id="__codelineno-14-119" name="__codelineno-14-119"></a>        <span class="c1"># Shapes come straight from the MDP — the one place they are stated.</span>
+<a id="__codelineno-14-120" name="__codelineno-14-120"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">accepted_per_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">num_customer_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-14-121" name="__codelineno-14-121"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rejected_per_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">num_customer_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-14-122" name="__codelineno-14-122"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">revenue_per_day</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">initial_days</span><span class="p">)</span>
+<a id="__codelineno-14-123" name="__codelineno-14-123"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">stocked_out</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-14-124" name="__codelineno-14-124"></a>
+<a id="__codelineno-14-125" name="__codelineno-14-125"></a>
+<a id="__codelineno-14-126" name="__codelineno-14-126"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-127" name="__codelineno-14-127"></a><span class="c1"># MDP — one added field, one added method, three added lines</span>
+<a id="__codelineno-14-128" name="__codelineno-14-128"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-129" name="__codelineno-14-129"></a>
+<a id="__codelineno-14-130" name="__codelineno-14-130"></a><span class="nd">@mdp</span>
+<a id="__codelineno-14-131" name="__codelineno-14-131"></a><span class="nd">@const_dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-14-132" name="__codelineno-14-132"></a><span class="k">class</span><span class="w"> </span><span class="nc">AirplaneMDP</span><span class="p">:</span>
+<a id="__codelineno-14-133" name="__codelineno-14-133"></a>    <span class="n">initial_days</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-14-134" name="__codelineno-14-134"></a>    <span class="n">initial_seats</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-14-135" name="__codelineno-14-135"></a>    <span class="n">prices_per_customer_type</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]</span>   <span class="c1"># 1-D by default; use Array2D etc. for more dimensions</span>
+<a id="__codelineno-14-136" name="__codelineno-14-136"></a>    <span class="n">num_customer_types</span><span class="p">:</span> <span class="nb">int</span>                <span class="c1"># NEW: sizes the per-type statistics</span>
+<a id="__codelineno-14-137" name="__codelineno-14-137"></a>    <span class="n">average_price</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-14-138" name="__codelineno-14-138"></a>    <span class="n">customer_type_dist</span><span class="p">:</span> <span class="n">DiscreteDist</span>
+<a id="__codelineno-14-139" name="__codelineno-14-139"></a>    <span class="n">customer_type_sampler</span><span class="p">:</span> <span class="n">AliasSampler</span>
+<a id="__codelineno-14-140" name="__codelineno-14-140"></a>    <span class="n">num_actions</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-14-141" name="__codelineno-14-141"></a>    <span class="n">horizon_type</span><span class="p">:</span> <span class="n">HorizonType</span>
+<a id="__codelineno-14-142" name="__codelineno-14-142"></a>
+<a id="__codelineno-14-143" name="__codelineno-14-143"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-14-144" name="__codelineno-14-144"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-14-145" name="__codelineno-14-145"></a>        <span class="n">initial_days</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-14-146" name="__codelineno-14-146"></a>        <span class="n">initial_seats</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-14-147" name="__codelineno-14-147"></a>        <span class="n">prices_per_customer_type</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<a id="__codelineno-14-148" name="__codelineno-14-148"></a>        <span class="n">customer_type_probs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+<a id="__codelineno-14-149" name="__codelineno-14-149"></a>    <span class="p">):</span>
+<a id="__codelineno-14-150" name="__codelineno-14-150"></a>        <span class="k">assert</span> <span class="n">initial_days</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">initial_seats</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<a id="__codelineno-14-151" name="__codelineno-14-151"></a>        <span class="k">assert</span> <span class="n">prices_per_customer_type</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">price</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">price</span> <span class="ow">in</span> <span class="n">prices_per_customer_type</span><span class="p">)</span>
+<a id="__codelineno-14-152" name="__codelineno-14-152"></a>        <span class="k">assert</span> <span class="n">customer_type_probs</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer_type_probs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">prices_per_customer_type</span><span class="p">)</span>
+<a id="__codelineno-14-153" name="__codelineno-14-153"></a>        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">prob</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">customer_type_probs</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">customer_type_probs</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<a id="__codelineno-14-154" name="__codelineno-14-154"></a>
+<a id="__codelineno-14-155" name="__codelineno-14-155"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">initial_days</span> <span class="o">=</span> <span class="n">initial_days</span>
+<a id="__codelineno-14-156" name="__codelineno-14-156"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">initial_seats</span> <span class="o">=</span> <span class="n">initial_seats</span>
+<a id="__codelineno-14-157" name="__codelineno-14-157"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">prices_per_customer_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">prices_per_customer_type</span><span class="p">)</span>
+<a id="__codelineno-14-158" name="__codelineno-14-158"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">num_customer_types</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prices_per_customer_type</span><span class="p">)</span>
+<a id="__codelineno-14-159" name="__codelineno-14-159"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">average_price</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">prices_per_customer_type</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">prices_per_customer_type</span><span class="p">)</span>
+<a id="__codelineno-14-160" name="__codelineno-14-160"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">customer_type_dist</span> <span class="o">=</span> <span class="n">DiscreteDist</span><span class="o">.</span><span class="n">custom</span><span class="p">(</span><span class="n">customer_type_probs</span><span class="p">)</span>
+<a id="__codelineno-14-161" name="__codelineno-14-161"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">customer_type_sampler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">customer_type_dist</span><span class="o">.</span><span class="n">alias_sampler</span><span class="p">()</span>
+<a id="__codelineno-14-162" name="__codelineno-14-162"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">num_actions</span> <span class="o">=</span> <span class="mi">2</span>
+<a id="__codelineno-14-163" name="__codelineno-14-163"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">horizon_type</span> <span class="o">=</span> <span class="n">HorizonType</span><span class="o">.</span><span class="n">FINITE</span>
+<a id="__codelineno-14-164" name="__codelineno-14-164"></a>
+<a id="__codelineno-14-165" name="__codelineno-14-165"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AirplaneContext</span><span class="p">:</span>
+<a id="__codelineno-14-166" name="__codelineno-14-166"></a><span class="w">        </span><span class="sd">"""Declares (by its return annotation) and constructs the context this</span>
+<a id="__codelineno-14-167" name="__codelineno-14-167"></a><span class="sd">        MDP runs with — the sibling of get_initial_state for the state."""</span>
+<a id="__codelineno-14-168" name="__codelineno-14-168"></a>        <span class="k">return</span> <span class="n">AirplaneContext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<a id="__codelineno-14-169" name="__codelineno-14-169"></a>
+<a id="__codelineno-14-170" name="__codelineno-14-170"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">AirplaneContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">State</span><span class="p">:</span>
+<a id="__codelineno-14-171" name="__codelineno-14-171"></a>        <span class="k">return</span> <span class="n">State</span><span class="p">(</span>
+<a id="__codelineno-14-172" name="__codelineno-14-172"></a>            <span class="n">remaining_days</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_days</span><span class="p">,</span>
+<a id="__codelineno-14-173" name="__codelineno-14-173"></a>            <span class="n">remaining_seats</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_seats</span><span class="p">,</span>
+<a id="__codelineno-14-174" name="__codelineno-14-174"></a>            <span class="n">customer_type</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-14-175" name="__codelineno-14-175"></a>            <span class="n">price_offered_per_seat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-14-176" name="__codelineno-14-176"></a>            <span class="n">category</span><span class="o">=</span><span class="n">StateCategory</span><span class="o">.</span><span class="n">AWAIT_EVENT</span><span class="p">,</span>
+<a id="__codelineno-14-177" name="__codelineno-14-177"></a>        <span class="p">)</span>
+<a id="__codelineno-14-178" name="__codelineno-14-178"></a>
+<a id="__codelineno-14-179" name="__codelineno-14-179"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">modify_state_with_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">AirplaneContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-180" name="__codelineno-14-180"></a>        <span class="n">state</span><span class="o">.</span><span class="n">customer_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">customer_type_sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">rng</span><span class="p">)</span>
+<a id="__codelineno-14-181" name="__codelineno-14-181"></a>        <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prices_per_customer_type</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">customer_type</span><span class="p">])</span>
+<a id="__codelineno-14-182" name="__codelineno-14-182"></a>        <span class="n">state</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">AWAIT_ACTION</span>
+<a id="__codelineno-14-183" name="__codelineno-14-183"></a>        <span class="n">context</span><span class="o">.</span><span class="n">time_elapsed</span> <span class="o">+=</span> <span class="mi">1</span>
+<a id="__codelineno-14-184" name="__codelineno-14-184"></a>
+<a id="__codelineno-14-185" name="__codelineno-14-185"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">modify_state_with_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">AirplaneContext</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-186" name="__codelineno-14-186"></a>        <span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"No selling days left"</span>
+<a id="__codelineno-14-187" name="__codelineno-14-187"></a>        <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">-=</span> <span class="mi">1</span>
+<a id="__codelineno-14-188" name="__codelineno-14-188"></a>        <span class="c1"># The current day, 0-based. We could read context.time_elapsed here, but the</span>
+<a id="__codelineno-14-189" name="__codelineno-14-189"></a>        <span class="c1"># MDP promises would not let us: that creates a dependency on the harness's</span>
+<a id="__codelineno-14-190" name="__codelineno-14-190"></a>        <span class="c1"># clock (time-accumulate-only), so the day is derived from the state instead.</span>
+<a id="__codelineno-14-191" name="__codelineno-14-191"></a>        <span class="n">day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_days</span> <span class="o">-</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">-</span> <span class="mi">1</span>
+<a id="__codelineno-14-192" name="__codelineno-14-192"></a>
+<a id="__codelineno-14-193" name="__codelineno-14-193"></a>        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-14-194" name="__codelineno-14-194"></a>            <span class="n">context</span><span class="o">.</span><span class="n">rejected_per_type</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">customer_type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>          <span class="c1"># NEW</span>
+<a id="__codelineno-14-195" name="__codelineno-14-195"></a>            <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-14-196" name="__codelineno-14-196"></a>        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-14-197" name="__codelineno-14-197"></a>            <span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"Cannot accept customer: no seats available"</span>
+<a id="__codelineno-14-198" name="__codelineno-14-198"></a>            <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">-=</span> <span class="mi">1</span>
+<a id="__codelineno-14-199" name="__codelineno-14-199"></a>            <span class="n">context</span><span class="o">.</span><span class="n">cumulative_cost</span> <span class="o">-=</span> <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span>
+<a id="__codelineno-14-200" name="__codelineno-14-200"></a>            <span class="n">context</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">customer_type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>          <span class="c1"># NEW</span>
+<a id="__codelineno-14-201" name="__codelineno-14-201"></a>            <span class="n">context</span><span class="o">.</span><span class="n">revenue_per_day</span><span class="p">[</span><span class="n">day</span><span class="p">]</span> <span class="o">+=</span> <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span>  <span class="c1"># NEW</span>
+<a id="__codelineno-14-202" name="__codelineno-14-202"></a>            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-14-203" name="__codelineno-14-203"></a>                <span class="n">context</span><span class="o">.</span><span class="n">stocked_out</span> <span class="o">=</span> <span class="kc">True</span>                                <span class="c1"># NEW</span>
+<a id="__codelineno-14-204" name="__codelineno-14-204"></a>            <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-14-205" name="__codelineno-14-205"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-14-206" name="__codelineno-14-206"></a>            <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Invalid action: Must be 0 (reject) or 1 (accept)"</span>
+<a id="__codelineno-14-207" name="__codelineno-14-207"></a>
+<a id="__codelineno-14-208" name="__codelineno-14-208"></a>        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-14-209" name="__codelineno-14-209"></a>            <span class="n">state</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">FINAL</span>
+<a id="__codelineno-14-210" name="__codelineno-14-210"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-14-211" name="__codelineno-14-211"></a>            <span class="n">state</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">AWAIT_EVENT</span>
+<a id="__codelineno-14-212" name="__codelineno-14-212"></a>
+<a id="__codelineno-14-213" name="__codelineno-14-213"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_action_validity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">valid</span><span class="p">:</span> <span class="n">Validity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-214" name="__codelineno-14-214"></a>        <span class="n">valid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-14-215" name="__codelineno-14-215"></a>        <span class="n">valid</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-14-216" name="__codelineno-14-216"></a>
+<a id="__codelineno-14-217" name="__codelineno-14-217"></a>
+<a id="__codelineno-14-218" name="__codelineno-14-218"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-219" name="__codelineno-14-219"></a><span class="c1"># Policy (unchanged)</span>
+<a id="__codelineno-14-220" name="__codelineno-14-220"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-221" name="__codelineno-14-221"></a>
+<a id="__codelineno-14-222" name="__codelineno-14-222"></a><span class="nd">@policy</span>
+<a id="__codelineno-14-223" name="__codelineno-14-223"></a><span class="nd">@const_dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-14-224" name="__codelineno-14-224"></a><span class="k">class</span><span class="w"> </span><span class="nc">SimplePolicy</span><span class="p">:</span>
+<a id="__codelineno-14-225" name="__codelineno-14-225"></a>    <span class="n">mdp</span><span class="p">:</span> <span class="n">AirplaneMDP</span>
+<a id="__codelineno-14-226" name="__codelineno-14-226"></a>    <span class="n">seat_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+<a id="__codelineno-14-227" name="__codelineno-14-227"></a>    <span class="n">days_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span>
+<a id="__codelineno-14-228" name="__codelineno-14-228"></a>    <span class="n">min_price_low_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span>
+<a id="__codelineno-14-229" name="__codelineno-14-229"></a>    <span class="n">min_price_high_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3000</span>
+<a id="__codelineno-14-230" name="__codelineno-14-230"></a>
+<a id="__codelineno-14-231" name="__codelineno-14-231"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<a id="__codelineno-14-232" name="__codelineno-14-232"></a>        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-14-233" name="__codelineno-14-233"></a>            <span class="k">return</span> <span class="mi">0</span>
+<a id="__codelineno-14-234" name="__codelineno-14-234"></a>        <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_threshold</span><span class="p">:</span>
+<a id="__codelineno-14-235" name="__codelineno-14-235"></a>            <span class="k">return</span> <span class="mi">1</span>
+<a id="__codelineno-14-236" name="__codelineno-14-236"></a>        <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">days_threshold</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_price_low_days</span><span class="p">:</span>
+<a id="__codelineno-14-237" name="__codelineno-14-237"></a>            <span class="k">return</span> <span class="mi">1</span>
+<a id="__codelineno-14-238" name="__codelineno-14-238"></a>        <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">days_threshold</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_price_high_days</span><span class="p">:</span>
+<a id="__codelineno-14-239" name="__codelineno-14-239"></a>            <span class="k">return</span> <span class="mi">1</span>
+<a id="__codelineno-14-240" name="__codelineno-14-240"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-14-241" name="__codelineno-14-241"></a>            <span class="k">return</span> <span class="mi">0</span>
+<a id="__codelineno-14-242" name="__codelineno-14-242"></a>
+<a id="__codelineno-14-243" name="__codelineno-14-243"></a>
+<a id="__codelineno-14-244" name="__codelineno-14-244"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-245" name="__codelineno-14-245"></a><span class="c1"># Featurizer (unchanged from the basic tutorial; used by the gym/DCL tests)</span>
+<a id="__codelineno-14-246" name="__codelineno-14-246"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-247" name="__codelineno-14-247"></a>
+<a id="__codelineno-14-248" name="__codelineno-14-248"></a><span class="nd">@featurizer</span>
+<a id="__codelineno-14-249" name="__codelineno-14-249"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-14-250" name="__codelineno-14-250"></a><span class="k">class</span><span class="w"> </span><span class="nc">AirplaneFeaturizer</span><span class="p">(</span><span class="n">Featurizer</span><span class="p">):</span>
+<a id="__codelineno-14-251" name="__codelineno-14-251"></a>    <span class="n">mdp</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">AirplaneMDP</span><span class="p">]</span>
+<a id="__codelineno-14-252" name="__codelineno-14-252"></a>    <span class="n">v</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">GlobalStateWriter</span><span class="p">]</span>
+<a id="__codelineno-14-253" name="__codelineno-14-253"></a>
+<a id="__codelineno-14-254" name="__codelineno-14-254"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-255" name="__codelineno-14-255"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">remaining_days</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">initial_days</span><span class="p">)</span>
+<a id="__codelineno-14-256" name="__codelineno-14-256"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">remaining_seats</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">initial_seats</span><span class="p">)</span>
+<a id="__codelineno-14-257" name="__codelineno-14-257"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">price_offered_per_seat</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">average_price</span><span class="p">)</span>
+<a id="__codelineno-14-258" name="__codelineno-14-258"></a>
+<a id="__codelineno-14-259" name="__codelineno-14-259"></a>
+<a id="__codelineno-14-260" name="__codelineno-14-260"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-261" name="__codelineno-14-261"></a><span class="c1"># Manual simulation: the context is now the MDP's own</span>
+<a id="__codelineno-14-262" name="__codelineno-14-262"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-263" name="__codelineno-14-263"></a>
+<a id="__codelineno-14-264" name="__codelineno-14-264"></a><span class="k">def</span><span class="w"> </span><span class="nf">simulate_episode</span><span class="p">(</span><span class="n">mdp</span><span class="p">:</span> <span class="n">AirplaneMDP</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">SimplePolicy</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-265" name="__codelineno-14-265"></a>    <span class="n">context</span> <span class="o">=</span> <span class="n">new_context</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>   <span class="c1"># -&gt; AirplaneContext, via mdp.make_context()</span>
+<a id="__codelineno-14-266" name="__codelineno-14-266"></a>    <span class="n">state</span> <span class="o">=</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+<a id="__codelineno-14-267" name="__codelineno-14-267"></a>    <span class="k">while</span> <span class="n">state</span><span class="o">.</span><span class="n">category</span> <span class="o">!=</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">FINAL</span><span class="p">:</span>
+<a id="__codelineno-14-268" name="__codelineno-14-268"></a>        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">StateCategory</span><span class="o">.</span><span class="n">AWAIT_EVENT</span><span class="p">:</span>
+<a id="__codelineno-14-269" name="__codelineno-14-269"></a>            <span class="n">mdp</span><span class="o">.</span><span class="n">modify_state_with_event</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+<a id="__codelineno-14-270" name="__codelineno-14-270"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-14-271" name="__codelineno-14-271"></a>            <span class="n">mdp</span><span class="o">.</span><span class="n">modify_state_with_action</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">policy</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+<a id="__codelineno-14-272" name="__codelineno-14-272"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"revenue €</span><span class="si">{</span><span class="o">-</span><span class="n">context</span><span class="o">.</span><span class="n">cumulative_cost</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-273" name="__codelineno-14-273"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"accepted per type </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="si">}</span><span class="s2">, rejected per type </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">rejected_per_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-274" name="__codelineno-14-274"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"revenue per day </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">revenue_per_day</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-275" name="__codelineno-14-275"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"sold out: </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">stocked_out</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-276" name="__codelineno-14-276"></a>
+<a id="__codelineno-14-277" name="__codelineno-14-277"></a>
+<a id="__codelineno-14-278" name="__codelineno-14-278"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-279" name="__codelineno-14-279"></a><span class="c1"># Evaluation: raw per-trajectory statistics, summarised in numpy</span>
+<a id="__codelineno-14-280" name="__codelineno-14-280"></a><span class="c1"># ============================================================================</span>
+<a id="__codelineno-14-281" name="__codelineno-14-281"></a>
+<a id="__codelineno-14-282" name="__codelineno-14-282"></a><span class="c1"># note - if we define the stats explicitly, then we can annotate stats : AirplaneStats here</span>
+<a id="__codelineno-14-283" name="__codelineno-14-283"></a><span class="c1"># and everything will be strongly typed. </span>
+<a id="__codelineno-14-284" name="__codelineno-14-284"></a>
+<a id="__codelineno-14-285" name="__codelineno-14-285"></a><span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stats</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-286" name="__codelineno-14-286"></a><span class="w">    </span><span class="sd">"""stats is AirplaneContext.Stats, the derived holder (declare AirplaneStats</span>
+<a id="__codelineno-14-287" name="__codelineno-14-287"></a><span class="sd">    and set `Stats = AirplaneStats` above to annotate this parameter with it).</span>
+<a id="__codelineno-14-288" name="__codelineno-14-288"></a><span class="sd">    stats.&lt;field&gt; is the context field with a leading trajectory axis:</span>
+<a id="__codelineno-14-289" name="__codelineno-14-289"></a><span class="sd">    accepted_per_type [n, 3], rejected_per_type [n, 3], revenue_per_day [n, 25],</span>
+<a id="__codelineno-14-290" name="__codelineno-14-290"></a><span class="sd">    stocked_out [n], cumulative_cost [n], time_elapsed [n]."""</span>
+<a id="__codelineno-14-291" name="__codelineno-14-291"></a>    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">cumulative_cost</span><span class="p">)</span>
+<a id="__codelineno-14-292" name="__codelineno-14-292"></a>    <span class="n">arrivals</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">accepted_per_type</span> <span class="o">+</span> <span class="n">stats</span><span class="o">.</span><span class="n">rejected_per_type</span>          <span class="c1"># [n, 3]</span>
+<a id="__codelineno-14-293" name="__codelineno-14-293"></a>    <span class="n">acceptance_rate</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">arrivals</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>   <span class="c1"># [3]</span>
+<a id="__codelineno-14-294" name="__codelineno-14-294"></a>    <span class="n">seats_sold</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                           <span class="c1"># [n]</span>
+<a id="__codelineno-14-295" name="__codelineno-14-295"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: n=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, revenue €</span><span class="si">{</span><span class="o">-</span><span class="n">stats</span><span class="o">.</span><span class="n">cumulative_cost</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> "</span>
+<a id="__codelineno-14-296" name="__codelineno-14-296"></a>          <span class="sa">f</span><span class="s2">"± </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">cumulative_cost</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-297" name="__codelineno-14-297"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  acceptance rate per type: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">acceptance_rate</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-298" name="__codelineno-14-298"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  seats sold: </span><span class="si">{</span><span class="n">seats_sold</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">seats_sold</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-299" name="__codelineno-14-299"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  flights sold out: </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stats</span><span class="o">.</span><span class="n">stocked_out</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
+<a id="__codelineno-14-300" name="__codelineno-14-300"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  mean revenue per day (first 5 / last 5): "</span>
+<a id="__codelineno-14-301" name="__codelineno-14-301"></a>          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">revenue_per_day</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span><span class="si">}</span><span class="s2"> ... </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">revenue_per_day</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">5</span><span class="p">:])</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-302" name="__codelineno-14-302"></a>
+<a id="__codelineno-14-303" name="__codelineno-14-303"></a>
+<a id="__codelineno-14-304" name="__codelineno-14-304"></a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-14-305" name="__codelineno-14-305"></a>    <span class="n">mdp</span> <span class="o">=</span> <span class="n">AirplaneMDP</span><span class="p">(</span>
+<a id="__codelineno-14-306" name="__codelineno-14-306"></a>        <span class="n">initial_days</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+<a id="__codelineno-14-307" name="__codelineno-14-307"></a>        <span class="n">initial_seats</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-14-308" name="__codelineno-14-308"></a>        <span class="n">prices_per_customer_type</span><span class="o">=</span><span class="p">[</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+<a id="__codelineno-14-309" name="__codelineno-14-309"></a>        <span class="n">customer_type_probs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+<a id="__codelineno-14-310" name="__codelineno-14-310"></a>    <span class="p">)</span>
+<a id="__codelineno-14-311" name="__codelineno-14-311"></a>    <span class="n">policy</span> <span class="o">=</span> <span class="n">SimplePolicy</span><span class="p">(</span><span class="n">mdp</span><span class="o">=</span><span class="n">mdp</span><span class="p">)</span>
+<a id="__codelineno-14-312" name="__codelineno-14-312"></a>    <span class="c1"># A second parameterisation of the same rule: holds out for fewer seats,</span>
+<a id="__codelineno-14-313" name="__codelineno-14-313"></a>    <span class="c1"># switches to the low thresholds later, and asks less at both stages.</span>
+<a id="__codelineno-14-314" name="__codelineno-14-314"></a>    <span class="n">policy2</span> <span class="o">=</span> <span class="n">SimplePolicy</span><span class="p">(</span><span class="n">mdp</span><span class="o">=</span><span class="n">mdp</span><span class="p">,</span> <span class="n">seat_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">days_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-14-315" name="__codelineno-14-315"></a>                           <span class="n">min_price_low_days</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">min_price_high_days</span><span class="o">=</span><span class="mi">2500</span><span class="p">)</span>
+<a id="__codelineno-14-316" name="__codelineno-14-316"></a>    <span class="n">assert_mdp</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>
+<a id="__codelineno-14-317" name="__codelineno-14-317"></a>    <span class="n">assert_policy_for_mdp</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+<a id="__codelineno-14-318" name="__codelineno-14-318"></a>
+<a id="__codelineno-14-319" name="__codelineno-14-319"></a>    <span class="n">simulate_episode</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<a id="__codelineno-14-320" name="__codelineno-14-320"></a>
+<a id="__codelineno-14-321" name="__codelineno-14-321"></a>    <span class="n">comparer</span> <span class="o">=</span> <span class="n">PolicyComparer</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">number_of_trajectories</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-14-322" name="__codelineno-14-322"></a>    <span class="n">assessment</span> <span class="o">=</span> <span class="n">comparer</span><span class="o">.</span><span class="n">assess</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+<a id="__codelineno-14-323" name="__codelineno-14-323"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Average profit: €</span><span class="si">{</span><span class="o">-</span><span class="n">assessment</span><span class="o">.</span><span class="n">mean</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (SE </span><span class="si">{</span><span class="n">assessment</span><span class="o">.</span><span class="n">error</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-14-324" name="__codelineno-14-324"></a>    <span class="n">report</span><span class="p">(</span><span class="s2">"simple rule"</span><span class="p">,</span> <span class="n">assessment</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+<a id="__codelineno-14-325" name="__codelineno-14-325"></a>
+<a id="__codelineno-14-326" name="__codelineno-14-326"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">comparer</span><span class="o">.</span><span class="n">compare</span><span class="p">({</span><span class="s2">"simple rule"</span><span class="p">:</span> <span class="n">policy</span><span class="p">,</span> <span class="s2">"eager rule"</span><span class="p">:</span> <span class="n">policy2</span><span class="p">})</span>
+<a id="__codelineno-14-327" name="__codelineno-14-327"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>                                  <span class="c1"># the cost table, as before</span>
+<a id="__codelineno-14-328" name="__codelineno-14-328"></a>
+<a id="__codelineno-14-329" name="__codelineno-14-329"></a>    <span class="n">rule</span><span class="p">,</span> <span class="n">eager</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">"simple rule"</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">"eager rule"</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span>
+<a id="__codelineno-14-330" name="__codelineno-14-330"></a>    <span class="n">report</span><span class="p">(</span><span class="s2">"eager rule"</span><span class="p">,</span> <span class="n">eager</span><span class="p">)</span>
+<a id="__codelineno-14-331" name="__codelineno-14-331"></a>
+<a id="__codelineno-14-332" name="__codelineno-14-332"></a>    <span class="c1"># Paired comparison: row i of every holder is trajectory i under common</span>
+<a id="__codelineno-14-333" name="__codelineno-14-333"></a>    <span class="c1"># random numbers, so per-trajectory differences are meaningful.</span>
+<a id="__codelineno-14-334" name="__codelineno-14-334"></a>    <span class="n">d</span> <span class="o">=</span> <span class="n">eager</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">rule</span><span class="o">.</span><span class="n">accepted_per_type</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>     <span class="c1"># type-0 (€3000) customers</span>
+<a id="__codelineno-14-335" name="__codelineno-14-335"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"€3000 customers accepted per flight, eager minus simple (paired): "</span>
+<a id="__codelineno-14-336" name="__codelineno-14-336"></a>          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-14-337" name="__codelineno-14-337"></a>
+<a id="__codelineno-14-338" name="__codelineno-14-338"></a>
+<a id="__codelineno-14-339" name="__codelineno-14-339"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+<a id="__codelineno-14-340" name="__codelineno-14-340"></a>    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../training/gym-environments/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Vectorized gym environments">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Vectorized gym environments
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../reference/language-reference/" class="md-footer__link md-footer__link--next" aria-label="Next: Language reference">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Language reference
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "search.suggest", "search.highlight", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
