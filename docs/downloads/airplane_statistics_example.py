@@ -26,7 +26,7 @@ from typing import Final
 import numpy as np
 from numpy.typing import NDArray
 
-from dynaplex import PolicyComparer
+import dynaplex as dp
 from dynaplex.modelling import (
     Featurizer,
     AliasSampler,
@@ -318,7 +318,7 @@ def main() -> None:
 
     simulate_episode(mdp, policy, seed=42)
 
-    comparer = PolicyComparer(mdp, number_of_trajectories=10000, seed=0)
+    comparer = dp.PolicyComparer(mdp, number_of_trajectories=10000, seed=0)
     assessment = comparer.assess(policy)
     print(f"Average profit: €{-assessment.mean:.2f} (SE {assessment.error:.2f})")
     report("simple rule", assessment.stats)

@@ -77,6 +77,7 @@ nav:
       - Exact solver: training/exact-solver.md
       - Featurizers: training/featurizers.md
       - Deep Controlled Learning: training/dcl.md
+      - Trying featurizers and networks: training/dcl-prototyping.md
       - Machines and execution plans: training/machines.md
       - PPO: training/ppo.md
       - Vectorized gym environments: training/gym-environments.md
@@ -85,6 +86,7 @@ nav:
   - Language reference:
       - Language reference: reference/language-reference.md
       - Discrete distributions: reference/discrete-distributions.md
+      - FIFO queues: reference/fifo-queue.md
       - Troubleshooting compile errors: reference/troubleshooting.md
       - Promises (model validation): reference/promises.md
   - API reference:

@@ -127,7 +127,7 @@ random numbers.
     any other:
 
     ```python
-    solver = dynaplex.ExactSolver(mdp)
+    solver = dp.ExactSolver(mdp)
     print(solver.evaluate(policy))          # expected total cost -25074.7 (revenue 25 075)
     opt = solver.solve(warm_start=policy)   # expected total cost -28769.2 (revenue 28 769)
     exact_policy = opt.get_policy()

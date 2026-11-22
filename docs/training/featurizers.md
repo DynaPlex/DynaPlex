@@ -54,7 +54,12 @@ The essentials:
 - `@featurizer` derives a `Holder` class and synthesizes the field-walks
   (install / reset / finish) and a `spec()` describing the observation. `spec()`
   is auto-sized by counting the `append`s on a probe state, so a flat featurizer
-  needs no hand-written spec.
+  needs no hand-written spec. The probe state is the initial state walked (with a
+  fixed seed) to its first decision; the walk gives up after 1000 events. An MDP
+  whose first decision lies further out raises the limit for its featurizer with
+  `@featurizer(probe_steps=N)`, which every user of the featurizer (the synthesized
+  `spec()`, `check_mdp`, `rehearse`, DCL) honours — or starts from an initial state
+  closer to a decision, which is usually the better model anyway.
 
 ## Using a featurizer
 

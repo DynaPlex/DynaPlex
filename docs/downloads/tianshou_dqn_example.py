@@ -33,7 +33,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-import dynaplex
+import dynaplex as dp
 from dynaplex.gym import TianshouVectorEnv
 from dynaplex.modelling import DiscreteDist
 from dynaplex.models.lost_sales import BaseStockPolicy, LostSalesFeaturizer, LostSalesMDP
@@ -82,8 +82,8 @@ def main() -> None:
 
     # One network, two shapes: the DynaPlex Net spec is the source of truth
     # (it is what an NNAgent stores and rebuilds from), the adapter is Tianshou's.
-    spec = train_env.env.spec
-    net_spec = dynaplex.MLP(hidden=(128, 128))
+    spec = train_env.env.feature_spec
+    net_spec = dp.MLP(hidden=(128, 128))
     module = net_spec.build(spec, mdp.num_actions)
 
     policy = DiscreteQLearningPolicy(
@@ -114,9 +114,9 @@ def main() -> None:
 
     # The trained weights ARE a DynaPlex agent: same module, same spec, and the
     # greedy action is the masked argmax over Q-values that `act` already does.
-    agent = dynaplex.NNAgent(module, spec, mdp.num_actions, FEATURIZER, net_spec)
+    agent = dp.NNAgent(module, spec, mdp.num_actions, FEATURIZER, net_spec)
 
-    comparer = dynaplex.PolicyComparer(mdp, number_of_trajectories=256, seed=42)
+    comparer = dp.PolicyComparer(mdp, number_of_trajectories=256, seed=42)
     print("\ncost per period on common random numbers (lower is better):")
     for score in comparer.compare([agent, BaseStockPolicy(mdp)]):
         print(f"  {score.name:16s} {score.mean:8.4f} +/- {score.error:.4f}")

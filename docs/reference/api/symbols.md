@@ -5,6 +5,7 @@ Every public name in the API, with the page where it is documented.
 | Symbol | Import from | Page |
 | --- | --- | --- |
 | [`AliasSampler`][dynaplex.modelling.AliasSampler] | `dynaplex.modelling` | [Distributions and randomness](randomness.md) |
+| [`append_record`][dynaplex.append_record] | `dynaplex` | [Training policies](training.md) |
 | [`Array1D`][dynaplex.modelling.Array1D] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`Array2D`][dynaplex.modelling.Array2D] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`Array3D`][dynaplex.modelling.Array3D] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
@@ -14,6 +15,7 @@ Every public name in the API, with the page where it is documented.
 | [`check_mdp`][dynaplex.check_mdp] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`clone`][dynaplex.modelling.clone] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`clone_into`][dynaplex.runtime.clone_into] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
+| [`CollectionInProgressError`][dynaplex.CollectionInProgressError] | `dynaplex` | [Training policies](training.md) |
 | [`combine_seeds`][dynaplex.runtime.combine_seeds] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`Comparison`][dynaplex.Comparison] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`compile_function_from_string`][dynaplex.runtime.compile_function_from_string] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
@@ -26,6 +28,7 @@ Every public name in the API, with the page where it is documented.
 | [`ContextPolicyProtocol`][dynaplex.modelling.ContextPolicyProtocol] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`DataModel`][dynaplex.runtime.DataModel] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`DCL`][dynaplex.DCL] | `dynaplex` | [Training policies](training.md) |
+| [`DCLExperiment`][dynaplex.DCLExperiment] | `dynaplex` | [Training policies](training.md) |
 | [`default_rng`][dynaplex.default_rng] | `dynaplex` | [Distributions and randomness](randomness.md) |
 | [`DiscreteDist`][dynaplex.modelling.DiscreteDist] | `dynaplex.modelling` | [Distributions and randomness](randomness.md), [Discrete distributions](../discrete-distributions.md) |
 | [`Dtype`][dynaplex.modelling.Dtype] | `dynaplex.modelling` | [Training policies](training.md) |
@@ -37,20 +40,22 @@ Every public name in the API, with the page where it is documented.
 | [`ExactTablePolicy`][dynaplex.ExactTablePolicy] | `dynaplex` | [Exact solver](exact-solver.md) |
 | [`fail`][dynaplex.fail] | `dynaplex` | [Modelling MDPs](modelling.md) |
 | [`feature_spec`][dynaplex.modelling.feature_spec] | `dynaplex.modelling` | [Training policies](training.md) |
+| [`featurize`][dynaplex.featurize] | `dynaplex` | [Training policies](training.md) |
 | [`featurizer`][dynaplex.featurizer] | `dynaplex` | [Training policies](training.md) |
 | [`Featurizer`][dynaplex.Featurizer] | `dynaplex` | [Training policies](training.md) |
 | [`Generator`][dynaplex.Generator] | `dynaplex` | [Distributions and randomness](randomness.md) |
 | [`GlobalStateCounter`][dynaplex.modelling.GlobalStateCounter] | `dynaplex.modelling` | [Training policies](training.md) |
 | [`GlobalStateWriter`][dynaplex.GlobalStateWriter] | `dynaplex` | [Training policies](training.md) |
+| [`HasStats`][dynaplex.modelling.HasStats] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`HorizonType`][dynaplex.modelling.HorizonType] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
-| [`MDPProtocol`][dynaplex.modelling.MDPProtocol] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`MakesContext`][dynaplex.modelling.MakesContext] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`MdpCheckReport`][dynaplex.MdpCheckReport] | `dynaplex` | [Evaluating policies](evaluation.md) |
-| [`HasStats`][dynaplex.modelling.HasStats] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
-| [`new_context`][dynaplex.modelling.new_context] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`MDPProtocol`][dynaplex.modelling.MDPProtocol] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`MLP`][dynaplex.MLP] | `dynaplex` | [Training policies](training.md) |
 | [`monotonic`][dynaplex.runtime.monotonic] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`Net`][dynaplex.Net] | `dynaplex` | [Training policies](training.md) |
+| [`net_factory`][dynaplex.net_factory] | `dynaplex` | [Training policies](training.md) |
+| [`new_context`][dynaplex.modelling.new_context] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`NNAgent`][dynaplex.NNAgent] | `dynaplex` | [Training policies](training.md) |
 | [`PolicyAssessment`][dynaplex.PolicyAssessment] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`PolicyComparer`][dynaplex.PolicyComparer] | `dynaplex` | [Evaluating policies](evaluation.md) |
@@ -61,21 +66,27 @@ Every public name in the API, with the page where it is documented.
 | [`Program`][dynaplex.runtime.Program] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`RandomPolicy`][dynaplex.RandomPolicy] | `dynaplex` | [Training policies](training.md) |
 | [`Rank`][dynaplex.modelling.Rank] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`read_record`][dynaplex.read_record] | `dynaplex` | [Training policies](training.md) |
+| [`read_record_into`][dynaplex.read_record_into] | `dynaplex` | [Training policies](training.md) |
+| [`RecordReader`][dynaplex.RecordReader] | `dynaplex` | [Training policies](training.md) |
+| [`RecordWriter`][dynaplex.RecordWriter] | `dynaplex` | [Training policies](training.md) |
 | [`RehearsalReport`][dynaplex.RehearsalReport] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`rehearse`][dynaplex.rehearse] | `dynaplex` | [Evaluating policies](evaluation.md) |
 | [`reseed`][dynaplex.runtime.reseed] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
-| [`static_require`][dynaplex.static_require] | `dynaplex` | [Modelling MDPs](modelling.md) |
-| [`trajectory_context`][dynaplex.modelling.trajectory_context] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
-| [`validity_scratch`][dynaplex.modelling.validity_scratch] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`reserve`][dynaplex.reserve] | `dynaplex` | [Training policies](training.md) |
 | [`SampleSet`][dynaplex.SampleSet] | `dynaplex` | [Training policies](training.md) |
 | [`separate_world_class`][dynaplex.runtime.separate_world_class] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`StateCategory`][dynaplex.modelling.StateCategory] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`static_require`][dynaplex.static_require] | `dynaplex` | [Modelling MDPs](modelling.md) |
 | [`sync_worlds`][dynaplex.runtime.sync_worlds] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`TensorSpec`][dynaplex.modelling.TensorSpec] | `dynaplex.modelling` | [Training policies](training.md) |
 | [`train_network`][dynaplex.train_network] | `dynaplex` | [Training policies](training.md) |
+| [`trajectory_context`][dynaplex.modelling.trajectory_context] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`TrajectoryContext`][dynaplex.modelling.TrajectoryContext] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`TrajectoryStats`][dynaplex.modelling.TrajectoryStats] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`TypedWordHandle`][dynaplex.runtime.TypedWordHandle] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`TypedWordView`][dynaplex.runtime.TypedWordView] | `dynaplex.runtime` | [Advanced runtime](runtime.md) |
 | [`Validity`][dynaplex.modelling.Validity] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
+| [`validity_scratch`][dynaplex.modelling.validity_scratch] | `dynaplex.modelling` | [Modelling MDPs](modelling.md) |
 | [`VectorEnv`][dynaplex.gym.VectorEnv] | `dynaplex.gym` | [Gym interop](gym.md) |
+| [`WorkdirMismatchError`][dynaplex.WorkdirMismatchError] | `dynaplex` | [Training policies](training.md) |

@@ -16,8 +16,8 @@ plan**, and `DCL(machine=...)` selects one.
 ## Three ways to say where a run happens
 
 ```python
-dcl = dynaplex.DCL(mdp, heuristic, features=MyFeaturizer, n=150_000, m=1000, h=30,
-                   machine="auto")        # recognize this allocation (the default)
+dcl = dp.DCL(mdp, heuristic, n=150_000, m=1000, h=30,
+             machine="auto")        # recognize this allocation (the default)
 ```
 
 | `machine=` | what happens |
@@ -41,19 +41,23 @@ so a plan carries two of them:
   workers simulate) and large slots; on the cpu it takes cores reserved for the forward's
   torch threads.
 
-Each shape is part of the experiment identity for the generations it runs: the run
-record stores, per shape, `controllers` (the total number of engines, `processes × engines`)
-and `slots_per_controller` (`workers × slots`). Labels are bit-identical at constant values of
-those two, whatever the split; two different shapes are two different experiments.
+A shape is not part of what a run is: a run that moves to another machine, or is started
+with another plan, finds its directory and goes on (see
+[When a run is reused](dcl.md#when-a-run-is-reused)). The shape does decide which states
+are sampled. Every generation's sample set records the shape it was collected under, as
+`controllers` (the total number of engines, `processes × engines`) and
+`slots_per_controller` (`workers × slots`); samples are bit-identical at constant values of
+those two, whatever the split. When a run uses stored samples that were collected under
+other values, it prints one line saying so.
 
 `DCL(gen0=..., trained=...)` take a `dynaplex.Shape` each, and a shape is an **overlay**: a
 field you set replaces the plan's, a field you leave `None` keeps it.
 
 ```python
-dp.DCL(mdp, heuristic, features=F)                                  # both shapes from the plan
-dp.DCL(mdp, heuristic, features=F, trained=dp.Shape(workers=6))     # trained side: 6 workers, rest as planned
-dp.DCL(mdp, heuristic, features=F, gen0=dp.Shape(workers=8))        # generation 0 only
-dp.DCL(mdp, heuristic, features=F, machine=None,
+dp.DCL(mdp, heuristic)                                  # both shapes from the plan
+dp.DCL(mdp, heuristic, trained=dp.Shape(workers=6))     # trained side: 6 workers, rest as planned
+dp.DCL(mdp, heuristic, gen0=dp.Shape(workers=8))        # generation 0 only
+dp.DCL(mdp, heuristic, machine=None,
        gen0=dp.Shape(workers=8), trained=dp.Shape(engines=2, workers=4, slots=4096))
 ```
 
@@ -94,8 +98,10 @@ the network to the engines; see below).
 
 ### Cluster units (fixed, engineered)
 
-These match the allocation units SLURM hands out on Snellius, and they exist in quarter,
-half and whole variants with the same per-GPU shape:
+These match the allocation units SLURM hands out on
+[Snellius](https://www.surf.nl/en/services/compute/snellius-the-national-supercomputer),
+the Dutch national supercomputer operated by SURF, on which these plans were tuned. They
+exist in quarter, half and whole variants with the same per-GPU shape:
 
 | plan | allocation | generation 0: processes × engines × workers × slots | trained policy: processes × engines × workers × slots | device |
 |---|---|---|---|---|
@@ -153,7 +159,8 @@ Linux machine you run it on:
 Generation 0 is always one engine with `cores - 2` workers and 512 slots, accelerator or not:
 with no forward to overlap, the two-engine shape only adds the second engine's build
 (measured on an M4 Pro, lost sales, m=1000, h=30: `2 × 4 × 4096` and `1 × 8 × 512` are equal
-per sample at steady state). Cores are Apple performance cores where known, else the
+per sample at steady state). Cores are Apple performance cores where known (every core
+tier macOS does not name `Efficiency`: `Super` + `Performance` on an M5 Pro), else the
 logical CPUs. The plan's note says what was chosen and why, e.g. `derived on mymac (Darwin):
 10 performance cores; using mps, 2 engines from generation 1` or `...; cpu only — torch
 2.13.0+cpu is a CPU-only build (install the CUDA wheel to use a GPU)`. `macbook`, `ms-laptop`, `mac` and `local` are aliases of `laptop`.
@@ -236,7 +243,7 @@ and the run header of a generation-0 collection says so.
 
 **Checks and the rehearsal.** `DCL(checks=...)` applies to the generation-0 collection only.
 The default, `"rehearsal"`, first runs that collection once with every runtime check on at a
-tiny budget, so an out-of-range index or a failing `assert` in the model or featurizer is
+tiny budget, so an out-of-range index or a failing `assert` in the MDP model or featurizer is
 reported before the fast compile. The rehearsal is not a model checker: run
 [`check_mdp`](../reference/api/evaluation.md) for that. Two model faults that used to stall
 a collection fail with a named cause in every mode instead: a decision state with no valid

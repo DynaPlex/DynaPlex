@@ -106,14 +106,22 @@ backends.
 
 ## Backends
 
-- `backend="auto"` (default) compiles an evaluation kernel per policy type and
-  runs it multi-threaded; policies outside the DynaML subset fall back to a
-  pure-Python evaluation that is *bit-identical* to the compiled one, so CRN
-  pairing survives even a mixed comparison.
+- `backend="engine"` (the default) compiles an evaluation kernel per policy type
+  and runs it multi-threaded. A policy or MDP model that does not compile,
+  because it uses Python outside the DynaML subset or breaks a promise, is an
+  error.
+- `backend="python"` evaluates in plain Python, serially. The result is
+  *bit-identical* to the compiled one.
+- `backend="auto"` asks for the fallback: each policy is compiled, and one whose
+  build fails is evaluated in Python, with a warning. Because the two are
+  bit-identical, CRN pairing survives such a mixed comparison.
 - `NNAgent` policies run a dedicated **NN harness**: the engine advances
   thousands of trajectories in lock-step and the network runs one batched
   forward per step — evaluating a trained agent costs about as much as
-  evaluating a simple heuristic.
+  evaluating a simple heuristic. **A trained agent runs on the engine only.**
+  Under `backend="python"` it is refused with a `ValueError`; use `"engine"` or
+  `"auto"`. Under `"auto"` it still runs on the engine, and a build failure is
+  an error for it, while the other policies in the comparison may fall back.
 - `workers` (default: CPU count − 2) is a pure throughput knob; results do
   not depend on it.
 

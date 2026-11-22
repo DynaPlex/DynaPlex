@@ -11,11 +11,38 @@ vocabulary (`TensorSpec`, `Dtype`, and friends), which lives in
 
 ::: dynaplex.DCL
 
+::: dynaplex.DCLExperiment
+
+::: dynaplex.WorkdirMismatchError
+
+::: dynaplex.CollectionInProgressError
+
+::: dynaplex.featurize
+
 ::: dynaplex.PPO
 
 ::: dynaplex.PPOConfig
 
 ::: dynaplex.SampleSet
+
+## Records on disk
+
+DCL writes the state and the statistics of every sample to disk while it
+collects, as *records*: objects of one class, appended one after the other
+from compiled model code. The same writers and readers are available to your
+own model code and harnesses.
+
+::: dynaplex.RecordWriter
+
+::: dynaplex.RecordReader
+
+::: dynaplex.append_record
+
+::: dynaplex.read_record
+
+::: dynaplex.read_record_into
+
+::: dynaplex.reserve
 
 ## Built-in policies
 
@@ -58,5 +85,7 @@ synthesizes one that sizes by counting on a probe state.
 ::: dynaplex.MLP
 
 ::: dynaplex.Net
+
+::: dynaplex.net_factory
 
 ::: dynaplex.train_network

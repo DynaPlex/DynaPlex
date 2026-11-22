@@ -50,7 +50,7 @@ Factories on the class build a distribution from parameters:
 | Family | Factory |
 | --- | --- |
 | Point mass | `DiscreteDist.constant(value)` |
-| Arbitrary PMF | `DiscreteDist.custom(probs, offset=0)` — `probs[i]` is the probability of `offset + i`; the offset may be negative |
+| Arbitrary PMF | `DiscreteDist.custom(probs, offset=0)` — `probs[i]` is the probability of `offset + i`; the offset may be negative; `probs` is a float64 array or a `list[float]`, in compiled code too |
 | Poisson | `DiscreteDist.poisson(mean)` |
 | Geometric on `{0, 1, ...}` | `DiscreteDist.geometric(mean)` or `DiscreteDist.geometric_from_prob(p)` |
 | Binomial | `DiscreteDist.binomial(n, p)` |

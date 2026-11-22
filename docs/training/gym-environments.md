@@ -2,7 +2,7 @@
 
 `dynaplex.gym.VectorEnv` turns any DynaPlex MDP into a fast, vectorized,
 [Gymnasium](https://gymnasium.farama.org)-compatible environment. It is the
-substrate [PPO](ppo.md) trains on, and the bridge for using DynaPlex models
+substrate [PPO](ppo.md) trains on, and the bridge for using DynaPlex MDP models
 with external RL code.
 
 Requires the optional `gymnasium` dependency: `pip install "dynaplex[gym]"`.
@@ -51,16 +51,8 @@ accordingly.
 
 ## Episode lifecycle
 
-The env **autoresets on the same step**: when an episode ends during
-`step()`, the returned observation and mask already belong to the *next*
-episode, and the ended episode's last state surfaces through the infos —
-
-```python
-if "final_observation" in infos:
-    which = infos["_final_observation"]          # bool [num_envs]
-    final_obs = infos["final_observation"]       # object array; where `which`,
-                                                 # each entry is an obs dict
-```
+`VectorEnv` is a `gymnasium.vector.VectorEnv` (Gymnasium 1.x). An episode ends
+in one of two ways:
 
 - `terminated[i]` — the episode reached a `FINAL` state (finite-horizon MDPs).
 - `truncated[i]` — the episode hit the time cap: the first decision point
@@ -68,13 +60,61 @@ if "final_observation" in infos:
   **time units**, not action counts. Defaults: 2048 for infinite-horizon
   MDPs, never for finite-horizon ones.
 
-The final observation is exactly what value-based algorithms need to
-bootstrap truncated episodes correctly — [PPO](ppo.md#correctness-notes) uses
-it for that.
+What happens next is set by `autoreset_mode=`, one of Gymnasium's three
+`AutoresetMode`s (importable from `dynaplex.gym`). The three run the **same
+episodes**; they differ in where the end of an episode and the start of the
+next one appear.
+
+- **`AutoresetMode.NEXT_STEP`** (the default, as in Gymnasium). When an episode
+  ends during `step()`, the returned row holds its **end** state, with
+  `terminated` or `truncated` set. The next `step()` on that env ignores its
+  action and returns the first observation and mask of the next episode, with
+  reward 0, `infos["dt"]` 0 and both flags False.
+- **`AutoresetMode.SAME_STEP`**. The returned observation and mask already
+  belong to the *next* episode, and the end state of the episode that ended
+  comes through the infos:
+
+    ```python
+    from dynaplex.gym import AutoresetMode
+
+    env = dp.gym.VectorEnv(mdp, features=LostSalesFeaturizer, num_envs=256,
+                           autoreset_mode=AutoresetMode.SAME_STEP)
+    ...
+    if "final_obs" in infos:
+        which = infos["_final_obs"]              # bool [num_envs]
+        final_obs = infos["final_obs"]           # object array; where `which`,
+                                                 # each entry is an obs dict
+    ```
+
+    The final observation is what value-based algorithms need to bootstrap
+    truncated episodes correctly; [PPO](ppo.md#correctness-notes) runs in this
+    mode and uses it for that.
+- **`AutoresetMode.DISABLED`**. An episode that ended does not restart until
+  you reset it: [park mode](#park-mode-collectors-that-reset-environments-themselves),
+  below.
+
+!!! note "Coming from 1.14"
+    `autoreset=True`, the 1.14 default, is `autoreset_mode=AutoresetMode.SAME_STEP`,
+    and `autoreset=False` is `AutoresetMode.DISABLED`. The default is now
+    `NEXT_STEP`, which 1.14 did not have: a training loop written for 1.14 keeps
+    its behaviour only when it asks for `SAME_STEP`. `infos["final_observation"]`
+    is now `infos["final_obs"]`, and the feature spec of the observation is
+    `env.feature_spec` (`env.spec` is Gymnasium's `EnvSpec`).
+
+## How long a step took
+
+`step()` also returns `infos["dt"]`, one integer per env: the time in the MDP
+model (`context.time_elapsed`) that the step took, up to the end of the episode
+when it ended. It is 1 everywhere for an MDP model with one decision per period,
+and 0 for a decision that takes no time. Gymnasium has no place for the duration
+of a step, so an algorithm that discounts once per `step()` optimises the cost
+per *decision*. On an MDP model where the number of decisions per period depends
+on the policy that is not the cost per period; discount by `gamma ** dt` to get
+the latter, as [PPO](ppo.md#correctness-notes) does.
 
 !!! note "Featurizers meet FINAL states"
-    With same-step autoreset, the featurizer runs on episode **end** states —
-    including `FINAL` states of finite-horizon MDPs. Featurizers are plain
+    In every mode the featurizer runs on episode **end** states, including
+    `FINAL` states of finite-horizon MDPs. Featurizers are plain
     field readers, so this normally just works, but it is part of the
     contract: your featurizer must tolerate `FINAL` states.
     `write_action_validity` is never called on them.
@@ -92,11 +132,17 @@ Episode streams are seeded per (environment, episode) from the reset seed:
 
 ## Backends
 
-`backend="auto"` (default) compiles the MDP into the engine kernel and falls
-back to pure-Python execution if the model uses Python features outside the
-DynaML subset; `"engine"` and `"python"` force one. The two backends are
-**bit-identical** (the Python path executes the same kernel code), so you can
-develop against `"python"` and switch on the speed later.
+- `backend="engine"` (the default) compiles the MDP model and the featurizer into
+  the engine kernel. One that does not compile, because it uses Python outside
+  the DynaML subset or breaks a promise, is an error.
+- `backend="python"` executes the same kernel code in plain Python, for MDP
+  models outside the DynaML subset.
+- `backend="auto"` asks for the fallback: it compiles, and when the build fails
+  it warns and runs in Python. It never falls back silently.
+
+The two backends are **bit-identical** (the Python path executes the same
+kernel code), so you can develop against `"python"` and switch on the speed
+later.
 
 See [`dynaplex.gym.VectorEnv`](../reference/api/gym.md) for all constructor
 options (`num_envs`, `max_episode_steps`, `workers`, `backend`, `jit`, ...).
@@ -105,11 +151,13 @@ options (`num_envs`, `max_episode_steps`, `workers`, `backend`, `jit`, ...).
 
 Some RL libraries do not want autoreset. Their collector notices `done`,
 keeps the terminal observation, and resets the finished environments itself.
-`autoreset=False` gives them that:
+`autoreset_mode=AutoresetMode.DISABLED` gives them that:
 
 ```python
+from dynaplex.gym import AutoresetMode
+
 env = dp.gym.VectorEnv(mdp, features=LostSalesFeaturizer, num_envs=256,
-                       autoreset=False)
+                       autoreset_mode=AutoresetMode.DISABLED)
 obs, infos = env.reset(seed=42)
 obs, rewards, terminated, truncated, infos = env.step(actions)
 
@@ -119,18 +167,21 @@ if parked.size:
 ```
 
 - The returned observation **is** the terminal one — there is no
-  `final_observation` channel in this mode, because the regular row already
+  `final_obs` channel in this mode, because the regular row already
   carries the end state.
 - A parked environment is skipped by `step`: it pays reward 0 and **holds** its
   terminal flags, so the row keeps saying *done, reset me*. Stepping one is a
   no-op, not an error.
 - `reset(env_id=...)` revives exactly those environments at their stream's next
   episode, and returns only those rows, in the order you asked for.
+- `reset(options={"reset_mask": mask})` is Gymnasium's form of the same: it
+  revives the environments where the boolean `mask` is True and returns all
+  rows.
 - `step(actions, ready_env_ids)` likewise addresses a subset: pass one action
   per id (or a full-width array), and every return covers just those rows.
 
 Because episode streams are seeded per (environment, episode index), parking
-and immediately reviving reproduces the autoreset run **bit for bit** — the two
+and immediately reviving reproduces an autoreset run **bit for bit** — the
 modes differ only in where the terminal observation surfaces.
 
 ## Tianshou
@@ -150,7 +201,8 @@ env = TianshouVectorEnv(mdp, features=LostSalesFeaturizer, num_envs=64)
 collector = Collector(algorithm, env, VectorReplayBuffer(50_000, len(env)))
 ```
 
-It takes the same arguments as `VectorEnv` apart from `autoreset`. The
+It takes the same arguments as `VectorEnv` apart from `autoreset_mode`, which
+is `AutoresetMode.DISABLED` here. The
 action-validity mask rides **inside the observation** under the key `"mask"`,
 which is where Tianshou's discrete algorithms look for it (`batch.obs.mask`) —
 so a featurizer may not declare a tensor called `mask`. Off-policy and

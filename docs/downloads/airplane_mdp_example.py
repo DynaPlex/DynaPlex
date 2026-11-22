@@ -14,7 +14,7 @@ from typing import Final
 import numpy as np
 from numpy.typing import NDArray
 
-from dynaplex import PolicyComparer
+import dynaplex as dp
 from dynaplex.modelling import (
     Featurizer,
     AliasSampler,
@@ -358,7 +358,7 @@ def main() -> None:
 
     # PolicyComparer runs the episodes on the compiled engine (falling back to
     # plain Python automatically if a policy cannot be compiled).
-    comparer = PolicyComparer(mdp, number_of_trajectories=num_simulations, seed=0)
+    comparer = dp.PolicyComparer(mdp, number_of_trajectories=num_simulations, seed=0)
     assessment = comparer.assess(policy)
 
     # Costs are negative revenues, so profit = -cost.
@@ -376,8 +376,7 @@ def main() -> None:
 
 def train_ppo_airplane() -> None:
     """Train a PPO policy for the airplane MDP."""
-    # Imported here so the example (and its MDP) stays importable without torch.
-    from dynaplex import MLP, PPO, PPOConfig
+    # dp.PPO and dp.MLP load torch on first use: this file stays importable without it.
 
     # Create MDP
     initial_days = 25
@@ -392,7 +391,7 @@ def train_ppo_airplane() -> None:
     policy = SimplePolicy(mdp=mdp)
     
     # Configure PPO trainer
-    config = PPOConfig(
+    config = dp.PPOConfig(
         seed=42,
         device="cpu",
         num_envs=100,
@@ -405,11 +404,11 @@ def train_ppo_airplane() -> None:
     # Train policy. Artifacts land in dynaplex_runs/; if the workdir was
     # already trained, train() loads and returns the stored agent instead
     # of retraining.
-    ppo = PPO(
+    ppo = dp.PPO(
         mdp,
         features=AirplaneFeaturizer,
         config=config,
-        network=MLP(hidden=(128, 128)),
+        network=dp.MLP(hidden=(128, 128)),
     )
     print("Training policy...")
     trained_policy = ppo.train()
@@ -421,7 +420,7 @@ def train_ppo_airplane() -> None:
     print("=" * 80)
     # Both policies see the same random streams (common random numbers), so the
     # delta columns are paired differences with tight standard errors.
-    comparer = PolicyComparer(mdp, number_of_trajectories=1000, seed=0)
+    comparer = dp.PolicyComparer(mdp, number_of_trajectories=1000, seed=0)
     results = comparer.compare({"simple rule": policy, "trained (PPO)": trained_policy})
     print(results)
     print("=" * 80)

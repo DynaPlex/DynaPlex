@@ -151,7 +151,10 @@ class MyMDP:
 
 Const only restricts *compiled* methods; a hand-written
 `__init__`/`__post_init__` (plain CPython) may still set fields during
-construction. Individual `list` or `NDArray` fields can be marked read-only
+construction. One thing it may not do is hand the *same* Python list or array
+to a const field and to a non-const field: a write through the non-const
+field would change the const one, so the engine refuses the object when it
+takes it in, naming the field. Give one of the two its own copy. Individual `list` or `NDArray` fields can be marked read-only
 with `Annotated[list[int], Const()]` (`Const` is importable from
 `dynaplex`), independent of the enclosing class. More conveniently, use the
 shorthands `ConstList[int]` and `ConstArray1D[np.float64]` /
@@ -573,14 +576,19 @@ Control flow in DynaML is restricted to structured constructs: `if` /
 
 The allowed iterables in `for` loops are `range(...)` with one, two, or
 three integer arguments (`range(stop)`, `range(start, stop)`,
-`range(start, stop, step)`), lists, and `enumerate(...)` over a list. Loops
+`range(start, stop, step)`), lists, one-dimensional ndarrays, and
+`enumerate(...)` over a list or a one-dimensional ndarray. Loops
 over lists are supported both for `list` variables and for `list` literals.
 For the latter, the type of the list literal must be clear from the code:
 `for x in []:` will fail, but `for x in [1, 2, 3]:` is supported. For
 `enumerate`, the only variant that compiles is
-`for i, x in enumerate(some_list):`, where `some_list` is a list variable or
-literal. The index and value variables may reuse the names of already
-defined locals, but the types must match.
+`for i, x in enumerate(xs):`, where `xs` is a list variable or literal or a
+one-dimensional ndarray. Over an ndarray the loop variable has the scalar type
+of the dtype (`bool`, `int` or `float`); an array of rank two or more cannot be
+iterated directly, since a row would be a sub-array view: index its leading
+axis instead (`for i in range(len(a)): row = a[i]`, and `row` can then be
+iterated). Loop variables are scoped to the loop and may not reuse the name of
+an existing local (see "Local variables").
 
 You can use if-expressions (the "ternary" operator) to assign the result of
 a conditional directly. The form is `A if condition else B`, just as in
@@ -600,12 +608,19 @@ reference is non-`None`. A simple `while` loop example:
 
 ```python
 def countdown(start: int) -> int:
+    remaining = start          # parameters are read-only; count down a local
     steps = 0
-    while start != 0: # or while start:
-        start -= 1
+    while remaining != 0:      # or `while remaining:` — an int is truthy when nonzero
+        remaining -= 1
         steps += 1
     return steps
 ```
+
+A `while True:` loop is left by `break` or `return` only; a function that returns
+from inside one and never breaks does not need a return after the loop. Code that
+can never run — a statement after a `return`, `break` or `continue`, after an
+`if`/`else` whose branches all return, or after a `while True:` without a `break`
+(including its `else`) — is a compile error, not silently dropped.
 
 `for` loops iterating over lists are also supported. An example using the
 `Point` dataclass defined above:
@@ -619,6 +634,16 @@ def sum_points(points: list[Point]) -> tuple[int, int]:
         sum_x += point.x
         sum_y += point.y
     return sum_x, sum_y
+```
+
+The same form walks a one-dimensional ndarray, without an index variable:
+
+```python
+def total_demand(demand: Array1D[np.int64]) -> int:
+    total = 0
+    for d in demand:       # d is an int
+        total += d
+    return total
 ```
 
 ### Assertions, `__debug__` and `dynaplex.fail`
@@ -654,7 +679,7 @@ def get_action(self, state: State) -> int:
     for a in range(self.mdp.num_actions):
         if self.feasible(state, a):
             return a
-    dynaplex.fail("no feasible action")     # NoReturn: the method ends here
+    dp.fail("no feasible action")           # NoReturn: the method ends here
 ```
 
 A third form is decided before anything runs: **`dynaplex.static_require(condition,
@@ -848,10 +873,10 @@ exactly as its CPython counterpart unless noted otherwise.
 | `int(x)`, `float(x)`, `bool(x)` | scalar casts; `bool` also accepts objects (`None` → `False`) |
 | `abs(x)` | `int -> int`, `float -> float` |
 | `round(x)` | returns `int` |
-| `min(a, b, ...)`, `max(a, b, ...)` | two or more scalar arguments of a common type |
+| `min(a, b, ...)`, `max(a, b, ...)` | two or more scalar arguments of a common type; or one list, `min(xs)` (for an array use `a.min()`) |
 | `sum(xs)` | over `list[int]` or `list[float]` |
 | `any(xs)`, `all(xs)` | over `list[bool]` |
-| `len(xs)` | list length |
+| `len(xs)` | list length; for an ndarray, the size of its first dimension |
 | `sorted(xs)` | new sorted list; same element requirements as `.sort()` |
 | `range(...)`, `enumerate(...)` | loop headers only, see [control flow](#control-flow) |
 | `assert cond, msg` | a *check*: live in checked mode, compiled out in fast mode (Python `-O` semantics); `msg` may be a simple f-string |
@@ -865,8 +890,9 @@ exactly as its CPython counterpart unless noted otherwise.
 
 All take a `float` (an `int` is implicitly accepted) and return `float`,
 except `math.floor` / `math.ceil`, which return `int`, and
-`math.isfinite` / `math.isnan`, which return `bool`. Import `math` at module
-level.
+`math.isfinite` / `math.isnan`, which return `bool`. The constants `math.pi`,
+`math.e`, `math.inf` and `math.nan` are available as well. Import `math` at
+module level.
 
 ### `heapq` module
 
@@ -958,21 +984,31 @@ dimensions may be arbitrary integer expressions
 (`np.zeros((m + 1, 2 * n), ...)`), but the shape as a whole cannot be built
 elsewhere and passed in via a variable.
 
-**Element access.** Indexing with one index per dimension is supported —
-`a[i]`, `a[i, j]`, `a[i, j, k]` — for both reading and assignment,
-including augmented assignment (`a[i] += w`) and negative indices. Slicing
+**Element access.** Indexing with one index per dimension reads or assigns
+one element — `a[i]` on a 1-D array, `a[i, j]`, `a[i, j, k]` — including
+augmented assignment (`a[i] += w`) and negative indices.
+
+**Rows.** With fewer indices than dimensions the result is a *view* on the
+remaining dimensions, as in NumPy: for a 2-D array `a`, `row = a[i]` is a 1-D
+array that shares its storage with `a`, so `row[j] = x` changes `a[i, j]`.
+A view can be iterated, reduced and passed to a function like any array of
+its rank. Assigning to one, `a[i] = row`, copies the values; the shapes must
+match exactly, since DynaML does not broadcast. Slicing with a colon
 (`a[1:3]`, `a[i, :]`) is **not** supported.
 
-!!! warning "Array indices are not bounds-checked"
-    Unlike list indexing, which raises an error on an out-of-range index,
-    ndarray indexing is **not** bounds-checked at runtime: an out-of-range
-    index (outside `[-n, n - 1]` for a dimension of size `n`) silently
-    reads — or, on assignment, overwrites — unrelated memory. Validate
-    index arithmetic by running the model under plain CPython, where NumPy
-    raises `IndexError`.
+!!! warning "Array indices are checked in checked mode only"
+    An index outside `[-n, n - 1]` for a dimension of size `n` raises in
+    checked mode, like a list index
+    (`ndarray index 9 is out of bounds for axis 1 with size 3`), and so does a
+    row assignment with the wrong shape. In fast mode neither is checked: an
+    out-of-range index silently reads — or, on assignment, overwrites —
+    unrelated memory. By default every algorithm rehearses your model in
+    checked mode first; see
+    [Runtime checks and fast mode](#runtime-checks-and-fast-mode).
 
 **Shape.** The size of dimension `k` is available as `a.shape[k]` (indexed
-access only; bare `a.shape` has no tuple type in DynaML).
+access only; bare `a.shape` has no tuple type in DynaML), and `len(a)` is
+the size of the first dimension.
 
 **Whole-array reductions.** `sum`, `mean`, `min`, `max`, `any`, `all` are
 available both as methods (`a.sum()`, `a.mean()`, ...) and as free functions
@@ -981,7 +1017,7 @@ free function. Reductions always cover the whole array — there is no
 `axis=` argument.
 
 **Not supported:** elementwise arithmetic on arrays (`a + b`, `a * 2`,
-elementwise comparisons) — loop over elements instead; slicing and views;
+elementwise comparisons) — loop over elements instead; slicing with a colon;
 `reshape`; boolean masking. Arrays are best used as fixed-shape numeric
 storage that you index explicitly.
 
@@ -1020,12 +1056,23 @@ Methods on both families:
     - The NumPy-only keyword arguments `size=`, `replace=`, `axis=`, and
       `shuffle=` are not supported, and neither is the weighted form
       `p=probs` (see the note below).
+- `rng.permutation(n)` — a uniformly random order of `0, ..., n-1` as a
+  `list[int]`, for a policy that visits components in a random order
+  (`for i in rng.permutation(n): ...`). `n` must be an int; `n = 0` gives an
+  empty list.
+- `rng.shuffle(xs)` — reorders the list `xs` in place, with the same draws
+  as `permutation`. Any list element type; arrays cannot be shuffled in
+  place (build the order with `permutation(n)` and index).
 
 !!! note "Reproducibility"
     For the NumPy family, `rng.random()` and `rng.uniform()` reproduce
-    NumPy's streams bit-for-bit. `rng.choice(n)` (integer form) uses a
-    different integer-sampling algorithm than NumPy and will generally
-    return a different (equally uniform) stream for the same seed. 
+    NumPy's streams bit-for-bit. `rng.choice(n)` (integer form),
+    `rng.permutation(n)` and `rng.shuffle(xs)` use a different
+    integer-sampling algorithm than NumPy and will generally return a
+    different (equally uniform) stream or order for the same seed. In plain
+    CPython the NumPy family runs NumPy's own `permutation`, which returns an
+    array where compiled code returns a list; iterate it rather than relying
+    on list methods. The native family returns the same list in both.
 
 !!! note "Weighted draws"
     `rng.choice(xs, p=probs)` is not available in released DynaPlex: it
@@ -1063,7 +1110,11 @@ A high-level tour of what they can do is on the
 lists the compilable surface.
 
 - Factories: `DiscreteDist.constant(v)`, `DiscreteDist.custom(probs,
-  offset=0)`, `DiscreteDist.poisson(mean)`, `DiscreteDist.geometric(mean)`,
+  offset=0)` (`probs` a rank-1 float64 array or a `list[float]`; an integer list
+  is rejected, since an integer PMF can only be a point mass — use
+  `DiscreteDist.constant`; an empty list literal `[]` must be assigned to a typed
+  variable first),
+  `DiscreteDist.poisson(mean)`, `DiscreteDist.geometric(mean)`,
   `DiscreteDist.geometric_from_prob(p)`, `DiscreteDist.binomial(n, p)`,
   `DiscreteDist.negative_binomial(r, p)`,
   and — building a distribution from a mean and standard deviation — the
@@ -1089,6 +1140,13 @@ lists the compilable surface.
 
 See the bin packing tutorial for a worked example
 ([Python code](../tutorials/binpacking-mdp.md#python-code)).
+
+### FIFO queues
+
+`FifoQueue` (importable from `dynaplex.modelling`) is a first-in-first-out
+queue of integers with `push_back`, `pop_front`, `front`, `back`, `len`,
+indexing by position and `sum`, for pipelines of orders and lines of waiting
+jobs. See [FIFO queues](fifo-queue.md).
 
 ## Trajectory contexts and statistics
 
@@ -1300,6 +1358,31 @@ harnesses on top of the engine (see the
 - **`combine_seeds(eval, global_seed, sample, trajectory, stream)`** —
   packs coordinates into a single collision-free non-negative seed, for
   constructing independent random streams in simulation experiments.
+- **`reserve(xs, n)`** — makes room in the list `xs` for `n` elements in
+  total, so that a loop of appends that follows does not grow it step by
+  step. The list's length and elements do not change, so it never changes
+  what a program computes. (Imported from `dynaplex`.)
+- **`append_record(obj, writer)`**, **`read_record(obj, reader, k)`**,
+  **`read_record_into(objs, reader, k)`** — write an object to a file on
+  disk as record `k`, and read record `k` back: into an existing object, or
+  as a new object appended to a list (the list gives the class, so this also
+  serves classes with a `Final` field). `writer` and `reader` are a
+  `dynaplex.RecordWriter` and `dynaplex.RecordReader`, opened in plain Python
+  for one class and handed to the model code. See the
+  [records reference](api/training.md#records-on-disk).
+- **`dynaplex.gc()`** — a point at which the engine may free memory that
+  is no longer reachable. Compiled code does not free an object the moment
+  its last reference goes; unreachable objects are swept at points where the
+  engine knows everything that is still in use. Every call into the engine
+  starts with such a point and the algorithms that ship with DynaPlex add
+  their own, so **a model or a policy never needs this call**. It is for a compiled function of your own that
+  runs for a long time in one call, a loop over many trajectories, say: put
+  `dp.gc()` at the top of that loop and memory levels off instead of growing
+  until the function returns. The call sweeps only when enough has been
+  allocated since the last sweep, so it is cheap, but not free: once per
+  trajectory or episode, not once per period. Everything your function can
+  still name (its locals and parameters) is kept. In plain Python it does
+  nothing.
 - **`monotonic()`** — a monotonic wall-clock reading in seconds
   (like `time.perf_counter`), coherent across threads.
 - **`time.sleep(seconds)`** — suspends execution.
@@ -1314,7 +1397,11 @@ harnesses on top of the engine (see the
 
 Compiled code can run in two modes. **Checked** keeps every runtime check:
 `assert` statements, `if __debug__:` blocks, the bounds checks on list and
-array indexing (`xs[i]` raises on an index out of range, as in Python), and
+array indexing (`xs[i]` raises on an index out of range, as in Python, naming
+the index and the length: `list index -5 out of range for a list of length 4`,
+`ndarray index 9 is out of bounds for axis 1 with size 3`), the shape check on
+a row assignment `g[i] = row` (the value must have exactly the view's shape;
+DynaML does not broadcast), and
 the numeric guards that mirror Python's exceptions: a negative shift count,
 an integer `//` or `%` by zero, a float-to-int conversion of NaN, infinity
 or a value outside the 64-bit range, and a 64-bit integer overflow, which
@@ -1331,11 +1418,11 @@ bit-identical between the modes whenever no check would have fired.
 The mode is a single flag on the compile entry points and on every algorithm:
 
 ```python
-dynaplex.Engine(Root, ..., checks=False)        # fast
-dynaplex.Program(fns, checks=True)              # checked (the default for Engine/Program)
-dynaplex.PolicyComparer(mdp, checks="rehearsal")   # the default for the algorithms
-dynaplex.DCL(mdp, policy, features=F, checks="rehearsal")
-dynaplex.gym.VectorEnv(mdp, features=F, checks="rehearsal")
+dp.Engine(Root, ..., checks=False)              # fast
+dp.Program(fns, checks=True)                    # checked (the default for Engine/Program)
+dp.PolicyComparer(mdp, checks="rehearsal")      # the default for the algorithms
+dp.DCL(mdp, policy, checks="rehearsal")
+dp.gym.VectorEnv(mdp, features=F, checks="rehearsal")
 ```
 
 For the algorithms the default is **`"rehearsal"`**: the algorithm first
@@ -1356,7 +1443,7 @@ without a code change (`DYNAPLEX_CHECKS=0` forces fast); an explicit
 own, before any experiment, call the same step directly:
 
 ```python
-report = dynaplex.rehearse(mdp, policy, features=MyFeaturizer, trajectories=64)
+report = dp.rehearse(mdp, policy, features=MyFeaturizer, trajectories=64)
 ```
 
 `rehearse` validates the policy shape and the featurizer declaration, runs the

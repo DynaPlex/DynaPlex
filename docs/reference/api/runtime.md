@@ -1,7 +1,7 @@
 # Advanced runtime
 
 Advanced runtime primitives, for authors of custom algorithm harnesses.
-Everything on this page lives in `dynaplex.runtime`. Everyday modelling
+Everything on this page lives in `dynaplex.runtime`, except `dynaplex.gc`. Everyday modelling
 and solving does not need anything here.
 
 ## Engine
@@ -17,6 +17,14 @@ and solving does not need anything here.
 ::: dynaplex.runtime.combine_seeds
 
 ::: dynaplex.runtime.monotonic
+
+## Memory
+
+Algorithms free unreachable memory on their own. `dynaplex.gc()` is for a
+compiled function of your own that runs for a long time in one call; see
+[Advanced runtime primitives](../language-reference.md#advanced-runtime-primitives).
+
+::: dynaplex.gc
 
 ## Concurrent worlds
 

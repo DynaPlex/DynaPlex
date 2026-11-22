@@ -12,7 +12,7 @@ build-from-source step and no external LLVM to install — the JIT is bundled.
 | | |
 |---|---|
 | Python | 3.11 – 3.14 |
-| macOS (Apple Silicon) | arm64, macOS 14.0 or newer |
+| macOS (Apple Silicon) | arm64, macOS 15.0 or newer (1.14.x: 14.0) |
 | macOS (Intel) | x86_64, macOS 15.0 or newer |
 | Linux | x86_64, glibc 2.28 or newer (`manylinux_2_28`) |
 | Windows | AMD64 (64-bit) |

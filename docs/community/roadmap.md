@@ -3,8 +3,7 @@
 DynaPlex is a ground-up rewrite of the original DynaPlex, and not everything
 from the original library has been ported yet. This page records what is
 planned, so you know what is coming and what is deliberately absent today.
-Once the public issue tracker is live, individual items will be tracked
-there — if one of these matters to you, let us know in
+If one of these matters to you, let us know in
 [Discussions](https://github.com/DynaPlex/DynaPlex/discussions); it helps us
 prioritize.
 
@@ -24,7 +23,7 @@ policy iteration, single-threaded and in memory. Planned on top of it:
 ## Cluster / HPC job scripts
 
 DCL parallelizes well beyond a single workstation. We plan to provide
-ready-to-adapt job scripts for HPC clusters (SLURM-based, with Snellius —
+ready-to-adapt job scripts for HPC clusters (SLURM-based, with [Snellius](https://www.surf.nl/en/services/compute/snellius-the-national-supercomputer) —
 the Dutch national supercomputer — as the worked example), covering
 installation into a cluster environment and running larger training jobs.
 
@@ -44,6 +43,19 @@ We are building on this in stages:
   sets of entities) — the [featurizer](../training/featurizers.md) support for
   this is landing and still stabilizing; a worked example will follow.
 - **Graph neural networks** over multi-tensor features — under development.
+
+## DCL: random tie-breaking and activation-aware root selection
+
+A trained network breaks exact ties between actions by picking the lowest action
+index. Exact ties are structural in models with symmetry (two identical machines,
+two identical orders in a pointer network), and a fixed rule then loads the same
+one every time. Planned: the network's activations return to the engine, action
+selection runs there, and exact ties are broken uniformly at random from the
+trajectory's own policy stream, so the choice stays reproducible and
+independent of the number of workers or the device. The same rule applies to
+ties between candidate actions when DCL labels a state. With the activations on
+the engine side, DCL can also start pruning the candidate set at the root by the
+current policy's own preferences, AlphaZero-style; that is a follow-on.
 
 ## Ports of models from the original DynaPlex
 

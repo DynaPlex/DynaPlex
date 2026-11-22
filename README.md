@@ -2,6 +2,10 @@
 
 **One intuitive modelling interface. Three ways to solve.**
 
+**[Documentation & tutorials](https://dynaplex.github.io/DynaPlex/)** ·
+**[PyPI](https://pypi.org/project/dynaplex/)** ·
+**[Discussions](https://github.com/DynaPlex/DynaPlex/discussions)**
+
 DynaPlex is an optimization library for formulating and solving Markov Decision
 Processes (MDPs), i.e. for identifying well-performing policies that select
 actions based on complete or partial observations of the state. Its design
@@ -31,10 +35,6 @@ That one model then feeds every method in the library:
   [exact solver](https://dynaplex.github.io/DynaPlex/latest/training/exact-solver/)
   computes exact policy costs and optimal policies for finite and infinite
   horizons, a yardstick for heuristics and trained agents.
-
-**[Documentation & tutorials](https://dynaplex.github.io/DynaPlex/)** ·
-**[PyPI](https://pypi.org/project/dynaplex/)** ·
-**[Discussions](https://github.com/DynaPlex/DynaPlex/discussions)**
 
 ## A new DynaPlex
 

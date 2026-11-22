@@ -50,19 +50,25 @@ def main() -> None:
     assert_policy_for_mdp(mdp, lowest_weight)
     assert_policy_for_mdp(mdp, first_fit)
 
+    # What is collected: no featurizer and no network here. Generation 0 stores the
+    # state of every sample, so other featurizers and networks can be tried on it
+    # later without collecting again.
     d = dp.DCL(
         mdp, lowest_weight,                # generation-0 rollout policy
-        features=BinPackingFeaturizer,
         n=8000,                            # labeled samples per generation
         m=200,                             # rollouts per candidate action
         h=100,                             # rollout horizon (periods)
+    )
+    # What is trained on it: a featurizer, a network and the training settings.
+    agents = d.run(
+        3,                                 # generations
+        features=BinPackingFeaturizer,
         # NOTE: a plain MLP over the raw (unsorted) weight vector ignores the
         # symmetry between bins — see the warning in the tutorial.
         network=dp.MLP(hidden=[128, 128]),
-        train=dict(loss="ce", epochs=50, batch_size=64, lr=1e-3,
+        train=dict(loss="soft_ce", epochs=50, batch_size=64, lr=1e-3,   # soft_ce is the default
                    patience=10, val_fraction=0.1),
     )
-    agents = d.run(generations=3)
 
     # Evaluate all policies on common random numbers: each sees the same
     # weight streams, so the delta columns are paired differences.
