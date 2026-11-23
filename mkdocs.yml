@@ -72,6 +72,7 @@ nav:
   - Tutorials:
       - Airplane ticket selling MDP: tutorials/airplane-mdp.md
       - Bin packing MDP: tutorials/binpacking-mdp.md
+      - Vehicle routing on a grid: tutorials/vehicle-routing.md
   - Training and evaluation:
       - Comparing policies: training/policy-comparison.md
       - Exact solver: training/exact-solver.md
