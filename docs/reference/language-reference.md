@@ -1188,8 +1188,9 @@ the MDP is bound (`infer_context_type`):
   `TrajectoryContext`, or spell them out in that order as a standalone
   class): `float` / `int` / `bool`
   scalars, `Final[NDArray[...]]` of dtype float64 / int64 / bool (any rank), and
-  `Final[Generator]` streams. Nothing else — in particular no lists: a
-  statistic has a fixed shape.
+  `Final[Generator]` streams. One list is allowed: `Final[list[Generator]]`, a
+  fixed number of streams filled in `__init__` (from 2.0.1). Nothing else — in
+  particular no other lists: a statistic has a fixed shape.
 - **Uniform `Final` rule.** Scalars are the only fields you re-assign
   (`context.stockouts += 1`); every other field is `Final`, created once in
   `__init__` and mutated in place (`context.holding[k] += ...`). A generator

@@ -48,6 +48,7 @@ every generator is reseeded before use). Below them, any number of statistics:
 | `float`, `int`, `bool` | a scalar statistic; re-assign freely (`context.stocked_out = True`) |
 | `Final[NDArray[T]]` (1-D; `Array2D[T]` etc. for more dimensions; float/int/bool) | a fixed-shape array statistic; mutate in place (`context.x[i] += 1`) |
 | `Final[Generator]` | an extra random stream, reseeded with the others |
+| `Final[list[Generator]]` | a fixed number of extra streams, filled in `__init__` (one per action, say); each is reseeded on its own stream (from 2.0.1) |
 | `Scratch[int]`, `Final[Scratch[NDArray[T]]]`, ... | per-trajectory scratch owned by a context-driven policy: never collected (not in `Stats`), never reset by the kernels |
 
 Scalars are the only fields you re-assign; everything else is `Final` and

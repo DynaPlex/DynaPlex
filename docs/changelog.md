@@ -2,6 +2,22 @@
 
 Changes per release, newest first. Breaking changes are marked **breaking**.
 
+## 2.0.1
+
+### Random streams per action in `resource_allocation`
+
+- A trajectory context can hold a list of generators, `Final[list[Generator]]`, filled
+  in `__init__`. Every generator in the list is reseeded on its own stream, after the
+  single generators, so the streams of an existing context do not change.
+- `dynaplex.models.resource_allocation` draws task durations from one stream per action
+  (`context.duration_rngs`) instead of one stream for all (`context.duration_rng`, which
+  is gone). With one stream, two rollouts that assigned tasks in a different order gave
+  the same draw to different tasks and drifted apart. With a stream per action, a task
+  nearly always gets the same duration whatever the policy does. On `two_chain_instance()`
+  the variance of the cost difference between two candidate actions, the noise in a DCL
+  label, drops by a factor of about 100. Costs for a given seed change for this model;
+  their distribution does not.
+
 ## 2.0.0
 
 ### States on disk
