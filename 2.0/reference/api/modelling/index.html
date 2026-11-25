@@ -4564,7 +4564,8 @@ construction a context <code>__init__</code> ever writes.</p>
     <div class="doc doc-contents ">
 
         <p>The validated field table of a decorated context class, in declaration
-order: (name, kind, info) with kind in {'scalar', 'array', 'generator', 'valid'};
+order: (name, kind, info) with kind in {'scalar', 'array', 'generator',
+'generator_list', 'valid'};
 info['scratch'] marks a Scratch[...] scalar/array (neither reset nor collected).</p>
 
 
@@ -4638,11 +4639,12 @@ housekeeping methods.</p>
 <code>valid: Final[ValidityWriter]</code>), then any number of statistics — <code>float</code> /
 <code>int</code> / <code>bool</code> scalars (re-assignable), <code>Final[NDArray[...]]</code> of float / int /
 bool dtype (fixed shape, mutated in place) — extra <code>Final[Generator]</code>
-streams, and per-trajectory SCRATCH: the same scalars / ndarrays wrapped in
+streams, <code>Final[list[Generator]]</code> (a fixed number of streams decided in
+<code>__init__</code>, e.g. one per action), and per-trajectory SCRATCH: the same scalars / ndarrays wrapped in
 <code>Scratch[...]</code> (carried by clones, but neither collected nor reset — the
 kernels never write it; intermediate storage owned by a context-driven
 policy, which decides from the state when it is stale; a scratch ndarray
-need not be Final). Nothing else (in particular no lists). Scalars are the only
+need not be Final). Nothing else (in particular no other lists). Scalars are the only
 non-Final fields apart from scratch ndarrays.</p>
 <p>Statistics holder. Name it as a class attribute — <code>Stats = MyStats</code> in the
 class body, with <code>@dataclass class MyStats(TrajectoryStats)</code> — carrying
@@ -4654,7 +4656,8 @@ checks names, dtypes, ranks and <code>Final</code>; pyright then types
 holder is DERIVED (<code>MyContext.Stats</code>, named <code>&lt;Context&gt;Stats</code>) — same
 runtime, but untyped (<code>Any</code>) for pyright.</p>
 <p>Synthesized: <code>reseed(global_seed, eval=0, sample=0, trajectory=0)</code> — every
-generator field gets its own <code>combine_seeds</code> stream, in declaration order
+generator field gets its own <code>combine_seeds</code> stream, in declaration order,
+then every generator of every list
 (never hand-written: the stream convention is machine-owned) — and <code>reset()</code>
 — zero every scalar and zero-fill every array in place, generators and
 scratch untouched (hand-written <code>reset</code> wins); <code>write_stats(out, row)</code> — copy every collected

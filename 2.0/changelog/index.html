@@ -355,6 +355,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#201" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.0.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.0.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-streams-per-action-in-resource_allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random streams per action in resource_allocation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#200" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2205,6 +2233,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#201" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.0.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.0.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-streams-per-action-in-resource_allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random streams per action in resource_allocation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#200" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2761,6 +2817,21 @@
 
 <h1 id="whats-new">What's new<a class="headerlink" href="#whats-new" title="Permanent link">&para;</a></h1>
 <p>Changes per release, newest first. Breaking changes are marked <strong>breaking</strong>.</p>
+<h2 id="201">2.0.1<a class="headerlink" href="#201" title="Permanent link">&para;</a></h2>
+<h3 id="random-streams-per-action-in-resource_allocation">Random streams per action in <code>resource_allocation</code><a class="headerlink" href="#random-streams-per-action-in-resource_allocation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A trajectory context can hold a list of generators, <code>Final[list[Generator]]</code>, filled
+  in <code>__init__</code>. Every generator in the list is reseeded on its own stream, after the
+  single generators, so the streams of an existing context do not change.</li>
+<li><code>dynaplex.models.resource_allocation</code> draws task durations from one stream per action
+  (<code>context.duration_rngs</code>) instead of one stream for all (<code>context.duration_rng</code>, which
+  is gone). With one stream, two rollouts that assigned tasks in a different order gave
+  the same draw to different tasks and drifted apart. With a stream per action, a task
+  nearly always gets the same duration whatever the policy does. On <code>two_chain_instance()</code>
+  the variance of the cost difference between two candidate actions, the noise in a DCL
+  label, drops by a factor of about 100. Costs for a given seed change for this model;
+  their distribution does not.</li>
+</ul>
 <h2 id="200">2.0.0<a class="headerlink" href="#200" title="Permanent link">&para;</a></h2>
 <h3 id="states-on-disk">States on disk<a class="headerlink" href="#states-on-disk" title="Permanent link">&para;</a></h3>
 <p>A DynaPlex MDP model can now write its states to disk and read them back, from

@@ -1972,6 +1972,10 @@ every generator is reseeded before use). Below them, any number of statistics:</
 <td>an extra random stream, reseeded with the others</td>
 </tr>
 <tr>
+<td><code>Final[list[Generator]]</code></td>
+<td>a fixed number of extra streams, filled in <code>__init__</code> (one per action, say); each is reseeded on its own stream (from 2.0.1)</td>
+</tr>
+<tr>
 <td><code>Scratch[int]</code>, <code>Final[Scratch[NDArray[T]]]</code>, ...</td>
 <td>per-trajectory scratch owned by a context-driven policy: never collected (not in <code>Stats</code>), never reset by the kernels</td>
 </tr>
