@@ -42,7 +42,7 @@ vehicles that drive to the same order, and for orders in a far corner that
 wait a long time.
 
 If the player does not show, open it
-[as a page of its own](../vehicle-routing-episode.html).
+<a href="../vehicle-routing-episode.html">as a page of its own</a>.
 
 ## Training neural networks on it
 
